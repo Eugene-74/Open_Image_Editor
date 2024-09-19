@@ -1,24 +1,29 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
-            "name": "C++ Launch (Windows)",
-            "type": "cppvsdbg",
+            "name": "Debug with GDB",
+            "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/main.exe",
-            "symbolSearchPath": "C:\\Symbols;C:\\SymbolDir2",
-            "externalConsole": true,
-            "logging": {
-              "moduleLoad": false,
-              "trace": true
-            },
-            "visualizerFile": "${workspaceFolder}/my.natvis",
-            "showDisplayString": true
-          }
-          
-
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build with script",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "internalConsoleOptions": "openOnSessionStart",
+            "logging": { "moduleLoad": false }
+        }
     ]
 }

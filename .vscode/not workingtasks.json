@@ -1,0 +1,35 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "get pkg-config flags",
+            "type": "shell",
+            "command": "pkg-config",
+            "args": [
+                "--cflags",
+                "--libs",
+                "opencv4"
+            ],
+            "problemMatcher": [],
+            "group": "build",
+            "detail": "Retrieve pkg-config flags for OpenCV"
+        },
+        {
+            "label": "build with g++",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-o", "main.exe",
+                "main.cpp",
+                "`pkg-config --cflags --libs opencv4`"
+            ],
+            "dependsOn": "get pkg-config flags",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "detail": "Compile main.cpp with g++ using pkg-config for OpenCV"
+        }
+    ]
+}
