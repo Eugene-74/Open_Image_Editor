@@ -131,6 +131,7 @@
     "typeinfo": "cpp",
     "variant": "cpp",
     "filesystem": "cpp",
-    "codecvt": "cpp"
+    "codecvt": "cpp",
+    "cinttypes": "cpp"
   }
 }

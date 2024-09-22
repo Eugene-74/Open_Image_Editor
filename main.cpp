@@ -4,7 +4,14 @@
 #include <filesystem>
 #include <algorithm>
 
+#include <exiv2/exiv2.hpp>
+
 namespace fs = std::filesystem;
+
+
+template <typename T>
+void addUnique(std::vector<T>& vec, const T& element);
+
 
 class Date
 {
@@ -49,6 +56,7 @@ public:
         for (const std::string& valeur : folders) {
             std::cout << valeur << " ";
         }
+        std::cout << std::endl;
     }
     std::string getFolderList() const {
         std::string folderList;
@@ -60,8 +68,9 @@ public:
         }
         return folderList; // Retourner la chaîne complète
     }
-    void addFolder(std::string folder) {
-        folders.push_back(folder);
+    void addFolder(const std::string& folder) {
+        addUnique(folders, folder);
+
     }
     std::vector<std::string>  getFolders(){
         return folders;
@@ -69,20 +78,49 @@ public:
 
 };
 
+std::map<std::string, std::string> getImageMetadata(const std::string& imagePath);
+
+class MetaData
+{
+public:
+    std::map<std::string, std::string> metaData;
+
+
+    std::map<std::string, std::string> get(){
+        return metaData;
+    }
+
+    void set(std::map<std::string, std::string> toAddMetaData){
+        metaData = toAddMetaData;
+    }
+    void load(std::string imagePath){
+        std::map<std::string, std::string> toAddMetaData = getImageMetadata(imagePath);
+        if (!toAddMetaData.empty()){
+            metaData = toAddMetaData;
+        }
+    }
+
+    void setData(std::string key, std::string value){
+        metaData[key] = value;
+    }
+
+
+};
+
+
 class ImageData
 {
 public:
     std::string imagePath;
     long date;
-    int id;
     Folders folders;
+    MetaData metaData;
 
-    ImageData(std::string a, long d, int b, const Folders& c) : imagePath(a), date(d), id(b), folders(c) {}
+    ImageData(std::string a, long d, const Folders& c) : imagePath(a), date(d), folders(c) {}
 
     void print() const {
         std::cout << "Image : " << imagePath
             << " date : " << date
-            << " numéro : " << id
             << " fichiers : " << folders.getFolderList();
 
         std::cout << std::endl;
@@ -90,13 +128,12 @@ public:
     std::string get() const {
         return "Image : " + imagePath +
             " date : " + std::to_string(date) +
-            " numéro : " + std::to_string(id) +
-            " fichiers : " + folders.getFolderList();
+            " fichiers : " + folders.getFolderList() + "\n";
     }
     void addFolder(std::string toAddFolder) {
         folders.addFolder(toAddFolder);
     }
-    void addFolders(std::vector<std::string>  toAddFolders) {
+    void addFolders(const std::vector<std::string>  toAddFolders)  {
         for (size_t i = 0; i < toAddFolders.size(); ++i) {
             folders.addFolder(toAddFolders[i]);
         }
@@ -104,7 +141,7 @@ public:
     std::vector<std::string>  getFolders() {
         return folders.getFolders();
     }
-    std::string getImageName() {
+    std::string getImageName() const {
         std::filesystem::path filePath(imagePath);
         std::string imageName = filePath.filename().string();
         return imageName;
@@ -119,6 +156,21 @@ public:
 
         return imageName == imageNameOther;
     }
+    std::string getImagePath(){
+        return imagePath;
+    }
+    std::map<std::string, std::string> getMetaData(){
+        return metaData.get();
+    }
+    void setMetaData(std::map<std::string, std::string> toAddMetaData){
+        metaData.set(toAddMetaData);
+    }
+
+    void loadMetaData(){
+        metaData.load(imagePath);
+
+    }
+
 };
 
 
@@ -131,20 +183,21 @@ public:
     ImagesData(std::vector<ImageData>  a) : imagesData(a) {}
 
     void print() const {
-        std::cout << "Images : ";
+        std::cout << "ImagesData : \n";
 
         for (const ImageData& valeur : imagesData) {
-            std::cout << valeur.get() << " ";
+            std::cout << valeur.get();
         }
 
         std::cout << std::endl;
     }
     void addImage(ImageData& imageD){
-        // chercher le bon element
+
         // Utiliser std::find_if avec une lambda pour comparer les noms d'image
+
         auto it = std::find_if(imagesData.begin(), imagesData.end(),
-            [&imageD](ImageData& imgD) {
-                return imgD.getImageName() == imageD.getImageName();
+            [&imageD](const ImageData& imgD) {
+                return imgD == imageD;
             });
 
         // Si l'élément est trouvé, le supprimer
@@ -152,6 +205,8 @@ public:
             ImageData lastImageD = *it;
             imagesData.erase(it);
             imageD.addFolders(lastImageD.getFolders());
+
+            imagesData.push_back(imageD);
         }
         else {
             // si il n'existe pas encore
@@ -169,48 +224,58 @@ public:
             imagesData.erase(it);
         }
     }
+    ImageData getImageData(int id){
+        return imagesData[id];
+    }
 };
 
+
+
 bool estImage(const std::string& cheminFichier);
-void listerContenu(const std::string& chemin);
+void listerContenu(const std::string initialPath, const std::string chemin, ImagesData& imagesData);
+
 
 int main() {
-    // std::vector<std::string> fichiers = { "dossier1", "dossier2", "dossier3" };
-    // Folders folders(fichiers);
-
-    // ImageData image("/home/eugene/Documents/image.png", 128489237832, 0, folders);
-    // image.print();
-
     std::string path = "/home/eugene/Documents";
-    listerContenu(path);
-
+    ImagesData imagesData({});
+    listerContenu(path, path, imagesData);
+    imagesData.print();
+    imagesData.getImageData(0).loadMetaData();
+    // getImageMetadata(imagesData.getImageData(0).getImagePath());
     return 0;
 }
 
-void listerContenu(const std::string& chemin) {
-    ImagesData imagesData({});
-    // TODO definir image data plus tot 
-    for (const auto& entry : fs::directory_iterator(chemin)) {
+void listerContenu(const std::string initialPath, const std::string path, ImagesData& imagesData) {
+
+
+
+    for (const auto& entry : fs::directory_iterator(path)) {
         if (fs::is_regular_file(entry.status())) {
             if (estImage(entry.path())) {
-                std::cout << "Image: " << entry.path().filename() << std::endl;
 
-                std::vector<std::string> fichiers = { entry.path().parent_path().filename() };
+                // On ne garde que la partie après "Documents"
+                fs::path relativePath = fs::relative(entry.path(), fs::path(initialPath).parent_path());
+
+                std::vector<std::string> fichiers;
+
+                fichiers = { relativePath };
+
                 Folders folders(fichiers);
-                ImageData image(entry.path(), 128489237832, 0, folders);
-                image.print();
-                imagesData.addImage(image);
+
+                std::string text = entry.path();
+
+                std::transform(text.begin(), text.end(), text.begin(),
+                    [](unsigned char c) { return std::tolower(c); });
+
+                ImageData imageD(text, 128489237832, folders);
+                imagesData.addImage(imageD);
             }
-            // else{
-            //     std::cout << "Fichier: " << entry.path().filename() << std::endl;
-            // }
         }
         else if (fs::is_directory(entry.status())) {
-            listerContenu(entry.path());
-            // std::cout << "Dossier: " << entry.path().filename() << std::endl;
+            listerContenu(initialPath, entry.path(), imagesData);
         }
     }
-    imagesData.print();
+    // return imagesData;
 }
 
 bool estImage(const std::string& cheminFichier) {
@@ -225,4 +290,45 @@ bool estImage(const std::string& cheminFichier) {
 
     // Vérifier si l'extension est dans la liste des extensions d'images
     return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
+}
+
+template <typename T>
+void addUnique(std::vector<T>& vec, const T& element) {
+    // Cherche l'élément dans le vecteur
+    auto it = std::find(vec.begin(), vec.end(), element);
+
+    // Si l'élément est trouvé, le retire
+    if (it != vec.end()) {
+        return;
+    }
+    // Ajoute l'élément à la fin du vecteur
+    vec.push_back(element);
+}
+
+// TODO l'activer
+// Fonction qui renvoie les métadonnées EXIF sous forme de map
+std::map<std::string, std::string> getImageMetadata(const std::string& imagePath) {
+    std::map<std::string, std::string> metadataMap;
+
+    try {
+        // Ouvrir l'image avec Exiv2
+        Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(imagePath);
+        image->readMetadata();
+
+        // Récupérer les métadonnées EXIF
+        Exiv2::ExifData& exifData = image->exifData();
+        if (exifData.empty()) {
+            std::cerr << "No EXIF data found in the file: " << imagePath << std::endl;
+        }
+        else {
+            for (Exiv2::ExifData::const_iterator md = exifData.begin(); md != exifData.end(); ++md) {
+                metadataMap[md->key()] = md->value().toString();
+            }
+        }
+    }
+    catch (Exiv2::Error& e) {
+        std::cerr << "Error reading metadata: " << e.what() << std::endl;
+    }
+
+    return metadataMap;
 }
