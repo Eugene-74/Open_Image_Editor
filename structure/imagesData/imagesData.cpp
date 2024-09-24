@@ -3,11 +3,11 @@
 
 
 void ImagesData::print() const {
-    std::cout << "ImagesData : \n";
+    std::cerr << "ImagesData : \n";
     for (const ImageData& valeur : imagesData) {
-        std::cout << valeur.get();
+        std::cerr << valeur.get();
     }
-    std::cout << std::endl;
+    std::cerr << std::endl;
 }
 
 void ImagesData::addImage(ImageData& imageD) {

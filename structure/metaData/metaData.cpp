@@ -18,7 +18,7 @@ void MetaData::load(const std::string& imagePath){
 
     displayExifData(metaData);
 
-    std::cout
+    std::cerr
         << "\norientation: " << getImageOrientation()
         << "\nx : " << getImageWidth()
         << "\ny : " << getImageHeight()
@@ -35,7 +35,7 @@ void MetaData::load(const std::string& imagePath){
 void MetaData::save(const std::string& imageName){
 
     saveExifData(imageName, metaData);
-    std::cout << "Métadonnées sauvegardées pour l'image : " << imageName << std::endl;
+    std::cerr << "Métadonnées sauvegardées pour l'image : " << imageName << std::endl;
 }
 
 // Fonction pour récupérer la largeur de l'image
@@ -159,14 +159,15 @@ bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData)
 // Fonction pour afficher les métadonnées EXIF
 void displayExifData(const Exiv2::ExifData& exifData) {
     if (exifData.empty()) {
-        std::cout << "Aucune métadonnée EXIF disponible." << std::endl;
-        return;
+        std::cerr << "Aucune métadonnée EXIF disponible." << std::endl;
+        // return "Aucune métadonnée EXIF disponible.";
     }
 
     // Parcourir toutes les entrées EXIF
     for (const auto& exifItem : exifData) {
         if (exifItem.key().substr(0, 10) == "Exif.Image") {
-            std::cout << exifItem.key() << " : " << exifItem.value() << std::endl;
+            std::cerr << exifItem.key() << " : " << exifItem.value() << std::endl;
         }
     }
+    // return resultStream.str();
 }

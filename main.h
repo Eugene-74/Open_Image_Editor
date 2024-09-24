@@ -16,9 +16,9 @@
 
 
 
-bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData);
-Exiv2::ExifData loadExifData(const std::string& imagePath);
-void displayExifData(const Exiv2::ExifData& exifData);
+// bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData);
+// Exiv2::ExifData loadExifData(const std::string& imagePath);
+// void displayExifData(const Exiv2::ExifData& exifData);
 Date timestampToDate(time_t timestamp);
 
 

@@ -6,7 +6,7 @@
 
 
 void ImageData::print() const {
-    std::cout << "Image : " << imagePath
+    std::cerr << "Image : " << imagePath
         << " fichiers : " << folders.getFolderList() << std::endl;
 }
 

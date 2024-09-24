@@ -2,7 +2,7 @@
 #include "date.h"
 
 void Date::print() const {
-    std::cout << "Jour : " << day << " Mois : " << month << " Année : " << year << std::endl;
+    std::cerr << "Jour : " << day << " Mois : " << month << " Année : " << year << std::endl;
 }
 
 std::string Date::getStringJJ_MM_AAAA() const {

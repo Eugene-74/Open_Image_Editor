@@ -27,7 +27,6 @@ int main() {
     imagesData.print();
     loadImagesMetaData(imagesData);
 
-    // TODO modifyExifValue not working
     imagesData.getImageData(1)->getMetaData()->modifyExifValue("Exif.Image.Orientation", std::to_string(9));
     displayExifData(imagesData.getImageData(1)->getMetaData()->get());
 
@@ -115,7 +114,7 @@ void loadImagesMetaData(ImagesData& imagesData) {
     for (int i = 0; i < imagesData.get().size(); ++i) {
         // if (imageData) { 
         imagesData.getImageData(i)->loadMetaData();
-        // std::cout << " | Valeur : " << imagesData.getImageData(i)->getImageOrientation() << std::endl;
+        // std::cerr << " | Valeur : " << imagesData.getImageData(i)->getImageOrientation() << std::endl;
         // displayExifData(imagesData.getImageData(i)->getMetaData().get());
 
 

@@ -5,9 +5,9 @@
 
 void Folders::print() const {
     for (const std::string& valeur : folders) {
-        std::cout << valeur << " ";
+        std::cerr << valeur << " ";
     }
-    std::cout << std::endl;
+    std::cerr << std::endl;
 }
 
 std::string Folders::getFolderList() const {
