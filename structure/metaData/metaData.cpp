@@ -11,28 +11,14 @@ void MetaData::set(const Exiv2::ExifData& toAddMetaData){
     metaData = toAddMetaData;
 }
 
-void MetaData::load(const std::string& imagePath){
+void MetaData::loadMetaData(const std::string& imagePath){
     Exiv2::ExifData toAddMetaData = loadExifData(imagePath);
     // if (!toAddMetaData){
     metaData = toAddMetaData;
 
-    displayExifData(metaData);
-
-    std::cerr
-        << "\norientation: " << getImageOrientation()
-        << "\nx : " << getImageWidth()
-        << "\ny : " << getImageHeight()
-
-
-        << std::endl;
-    // modifyExifValue("Exif.Image.Orientation", std::to_string(6));
-    // displayExifData(metaData);
-    // saveExifData(imagePath, metaData);
-
-
 }
 
-void MetaData::save(const std::string& imageName){
+void MetaData::saveMetaData(const std::string& imageName){
 
     saveExifData(imageName, metaData);
     std::cerr << "Métadonnées sauvegardées pour l'image : " << imageName << std::endl;
@@ -160,14 +146,11 @@ bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData)
 void displayExifData(const Exiv2::ExifData& exifData) {
     if (exifData.empty()) {
         std::cerr << "Aucune métadonnée EXIF disponible." << std::endl;
-        // return "Aucune métadonnée EXIF disponible.";
     }
 
-    // Parcourir toutes les entrées EXIF
     for (const auto& exifItem : exifData) {
         if (exifItem.key().substr(0, 10) == "Exif.Image") {
             std::cerr << exifItem.key() << " : " << exifItem.value() << std::endl;
         }
     }
-    // return resultStream.str();
 }

@@ -66,11 +66,11 @@ void ImageData::setMetaData(const Exiv2::ExifData& toAddMetaData) {
 }
 
 void ImageData::loadMetaData() {
-    metaData.load(imagePath);
+    metaData.loadMetaData(imagePath);
 }
 
 void ImageData::saveMetaData() {
-    metaData.save(imagePath);
+    metaData.saveMetaData(imagePath);
 }
 
 int ImageData::getImageWidth(){

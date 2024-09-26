@@ -11,33 +11,99 @@
 #include "structure/date/date.h"
 #include "structure/folders/folders.h"
 
-
 #include "functions/vector/vector.h"
+#include "functions/thumbnail/thumbnail.h"
+
+
+#include "display/imageEditor/imageEditor.h"
+
+#include <QApplication>
+#include <QMainWindow>
+#include <QPushButton>
+#include <QLabel>
+#include <QPixmap>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <QFileDialog>
+#include <chrono>
 
 
 namespace fs = std::filesystem;
 
 
-int main() {
+
+int main(int argc, char* argv[]) {
     std::string path = "/home/eugene/Documents";
     ImagesData imagesData({});
+    imagesData = loadImagesData();
     using ImagesData = std::vector<ImageData*>;
 
-    listerContenu(path, path, imagesData);
-    imagesData.print();
-    loadImagesMetaData(imagesData);
 
-    imagesData.getImageData(1)->getMetaData()->modifyExifValue("Exif.Image.Orientation", std::to_string(9));
-    displayExifData(imagesData.getImageData(1)->getMetaData()->get());
+    // startLoadingImagesFromFolder(path, imagesData);
+    // imagesData.saveImagesData();
+    // loadImagesMetaData(imagesData);
 
 
+    QApplication app(argc, argv);
 
-    return 0;
+    ImageEditor window(imagesData);
+
+    window.showMaximized();
+
+    // window.show();
+
+    imagesData.setImageNumber(0);
+
+    std::string cheminImage = imagesData.getImageData(0)->imagePath;
+
+    QString qcheminImage = QString::fromStdString(cheminImage);
+
+    std::vector<std::string> imagePaths;
+    imagePaths.push_back(cheminImage);
+
+    // auto start = std::chrono::high_resolution_clock::now();
+    createThumbnails(imagePaths, THUMBNAIL_PATH);
+    // auto end = std::chrono::high_resolution_clock::now();
+    // std::chrono::duration<double, std::milli> duration = end - start;
+    // std::cout << "Temps d'exécution: " << duration.count() << " ms" << std::endl;
+
+    window.setImage(qcheminImage);
+    return app.exec();
 }
 
+void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData& imagesData){
+    int nbrImage = 0;
+    countImagesFromFolder(imagePaths, nbrImage);
+    std::cerr << "nombre d'image à charger : " << nbrImage << std::endl;
 
+    loadImagesFromFolder(imagePaths, imagePaths, imagesData, nbrImage);
 
-void listerContenu(const std::string initialPath, const std::string path, ImagesData& imagesData) {
+    loadImagesMetaData(imagesData);
+
+}
+
+void countImagesFromFolder(const std::string path, int& nbrImage){
+    // int nbrImage;
+    // std::cerr << "path : " << path << std::endl;
+
+    for (const auto& entry : fs::directory_iterator(path)) {
+        if (fs::is_regular_file(entry.status())) {
+            // std::cerr << "nombre d'image à charger :: " << nbrImage << std::endl;
+
+            if (estImage(entry.path())) {
+                nbrImage += 1;
+                // std::cerr << "nombre d'image à charger ::: " << nbrImage << std::endl;
+
+            }
+        }
+        else if (fs::is_directory(entry.status())) {
+            countImagesFromFolder(entry.path(), nbrImage);
+        }
+    }
+    // return nbrImage;
+}
+
+void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData& imagesData, int& nbrImage) {
 
 
 
@@ -54,17 +120,17 @@ void listerContenu(const std::string initialPath, const std::string path, Images
 
                 Folders folders(fichiers);
 
-                // std::string text = entry.path();
-
-                // std::transform(text.begin(), text.end(), text.begin(),
-                //     [](unsigned char c) { return std::tolower(c); });
-
                 ImageData imageD(entry.path(), folders);
                 imagesData.addImage(imageD);
+                nbrImage -= 1;
+                std::cerr << "Viens de charger : " << entry.path() << std::endl;
+                std::cerr << "Image restante : " << nbrImage << std::endl;
+
+
             }
         }
         else if (fs::is_directory(entry.status())) {
-            listerContenu(initialPath, entry.path(), imagesData);
+            loadImagesFromFolder(initialPath, entry.path(), imagesData, nbrImage);
         }
     }
     // return imagesData;
@@ -96,30 +162,15 @@ Date timestampToDate(time_t timestamp) {
     // Convertir le timestamp en une structure tm
     std::tm* timeStruct = std::localtime(&timestamp);
 
-    // Date date;
     Date date = Date(timeStruct->tm_sec, timeStruct->tm_min, timeStruct->tm_hour, timeStruct->tm_mday, timeStruct->tm_mon + 1, timeStruct->tm_year + 1900);
-    // date.seconds = timeStruct->tm_sec;
-    // date.minutes = timeStruct->tm_min;
-    // date.hours = timeStruct->tm_hour;
-    // date.day = timeStruct->tm_mday;
-    // date.month = timeStruct->tm_mon + 1; // tm_mon commence à 0 pour janvier
-    // date.year = timeStruct->tm_year + 1900; // tm_year est le nombre d'années depuis 1900
 
     return date;
 }
 
 void loadImagesMetaData(ImagesData& imagesData) {
-    // using ImagesData = std::vector<ImageData*>;
-    // for (int i : ) {
     for (int i = 0; i < imagesData.get().size(); ++i) {
-        // if (imageData) { 
         imagesData.getImageData(i)->loadMetaData();
-        // std::cerr << " | Valeur : " << imagesData.getImageData(i)->getImageOrientation() << std::endl;
-        // displayExifData(imagesData.getImageData(i)->getMetaData().get());
 
-
-        // imageData.loadMetaData();
-        // }
     }
 }
 

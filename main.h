@@ -13,7 +13,7 @@
 #include "structure/imagesData/imagesData.h"
 
 
-
+const std::string THUMBNAIL_PATH = "/home/eugene/";
 
 
 // bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData);
@@ -24,8 +24,15 @@ Date timestampToDate(time_t timestamp);
 
 
 bool estImage(const std::string& cheminFichier);
-void listerContenu(const std::string initialPath, const std::string chemin, ImagesData& imagesData);
+
+
+
+void countImagesFromFolder(const std::string path, int& nbrImage);
+void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData& imagesData, int& nbrImage);
+void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData& imagesData);
 void loadImagesMetaData(ImagesData& imagesData);
+void nextImage(int nbr);
+
 
 
 #endif

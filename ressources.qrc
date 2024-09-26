@@ -1,0 +1,7 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+        <file>ressources/next.JPG</file>
+        <file>ressources/before.JPG</file>
+    </qresource>
+</RCC>

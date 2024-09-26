@@ -17,7 +17,22 @@ public:
     Folders folders;
     MetaData metaData;
 
+    ImageData() : imagePath(""), folders(Folders()), metaData(MetaData()) {}
+
+    ImageData(const ImageData& other)
+        : imagePath(other.imagePath), folders(other.folders), metaData(other.metaData) {}
+
     ImageData(std::string a, const Folders& c) : imagePath(a), folders(c) {}
+
+    // Opérateur d'affectation
+    ImageData& operator=(const ImageData& other) {
+        if (this != &other) {
+            imagePath = other.imagePath;
+            folders = other.folders;
+            metaData = other.metaData;
+        }
+        return *this;
+    }
 
     void print() const;
 
@@ -58,6 +73,23 @@ public:
 
     void turnImage(int rotation);
 
+
+    void save(std::ofstream& out) const {
+        size_t pathLength = imagePath.size();
+        out.write(reinterpret_cast<const char*>(&pathLength), sizeof(pathLength));
+        out.write(imagePath.c_str(), pathLength);
+        folders.save(out);
+        metaData.save(out);
+    }
+
+    void load(std::ifstream& in) {
+        size_t pathLength;
+        in.read(reinterpret_cast<char*>(&pathLength), sizeof(pathLength));
+        imagePath.resize(pathLength);
+        in.read(&imagePath[0], pathLength);
+        folders.load(in);
+        metaData.load(in);
+    }
 
 };
 

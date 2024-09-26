@@ -132,6 +132,10 @@
     "variant": "cpp",
     "filesystem": "cpp",
     "codecvt": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+    "qapplication": "cpp",
+    "qpixmap": "cpp",
+    "qlabel": "cpp",
+    "qvboxlayout": "cpp"
   }
 }

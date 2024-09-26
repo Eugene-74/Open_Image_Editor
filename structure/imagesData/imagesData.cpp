@@ -46,3 +46,24 @@ ImageData* ImagesData::getImageData(int id) {
 std::vector<ImageData>  ImagesData::get() {
     return imagesData;
 }
+
+ImagesData loadImagesData() {
+    ImagesData loadedImagesData({});
+
+    // Ouvrir le fichier en mode binaire
+    std::ifstream inFile(SAVE_DAT_PATH, std::ios::binary);
+
+    // Vérifier si le fichier a été ouvert correctement
+    if (!inFile) {
+        std::cerr << "Erreur : le fichier imagesData.dat n'existe pas ou ne peut pas être ouvert." << std::endl;
+        // Vous pouvez gérer cette situation selon vos besoins
+        return loadedImagesData; // Retourne un objet vide ou lance une exception selon votre logique
+    }
+
+    // Charger les données à partir du fichier
+    loadedImagesData.load(inFile);
+
+    inFile.close(); // Fermer le fichier
+
+    return loadedImagesData; // Retourner l'objet chargé
+}
