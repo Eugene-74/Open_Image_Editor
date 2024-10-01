@@ -3,6 +3,7 @@
 
 // #include "../../functions/vector/vector.h"
 #include <filesystem>
+#include "../metaData/metaData.h"
 
 
 void ImageData::print() const {
@@ -59,14 +60,14 @@ std::string ImageData::getImagePath() {
 
 
 
-void ImageData::setMetaData(const Exiv2::ExifData& toAddMetaData) {
-    metaData.set(toAddMetaData);
+void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
+    metaData.setExifData(toAddMetaData);
     // Sauvegarde après modification des métadonnées
     saveMetaData();
 }
 
-void ImageData::loadMetaData() {
-    metaData.loadMetaData(imagePath);
+void ImageData::loadData() {
+    metaData.loadData(imagePath);
 }
 
 void ImageData::saveMetaData() {
@@ -82,12 +83,25 @@ int ImageData::getImageHeight(){
 int ImageData::getImageOrientation(){
     return metaData.getImageOrientation();
 }
-Date ImageData::getImageDate(){
-    return metaData.getImageDate();
-}
+// Date ImageData::getImageDate(){
+//     return metaData.getImageDate();
+// }
 void ImageData::turnImage(int rotation){
+
     // 1 : normal, 3 : 90° left, 6 : 180°, 9: 90 right
     metaData.modifyExifValue("Exif.Image.Orientation", std::to_string(rotation));
+    metaData.modifyExifValue("Exif.Thumbnail.Orientation", std::to_string(rotation));
+    metaData.modifyXmpValue("Xmp.tiff.Orientation", std::to_string(rotation));
+
+    // Exiv2::ExifData& exifData = metaData.get();
+    // Exiv2::ExifKey key("Exif.Image.Orientation");
+
 }
+
+void ImageData::setOrCreateExifData(){
+    metaData.setOrCreateExifData(imagePath);
+
+}
+
 
 

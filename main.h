@@ -13,7 +13,7 @@
 #include "structure/imagesData/imagesData.h"
 
 
-const std::string THUMBNAIL_PATH = "/home/eugene/";
+const std::string THUMBNAIL_PATH = "/home/eugene/.cache/thumbnails";
 
 
 // bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData);

@@ -6,6 +6,8 @@
 
 #include "../folders/folders.h"
 #include "../metaData/metaData.h"
+// #include "../imagesData/imagesData.h"
+
 
 // #include <folders.h>
 
@@ -57,9 +59,9 @@ public:
 
 
 
-    void setMetaData(const Exiv2::ExifData& toAddMetaData);
+    void setExifMetaData(const Exiv2::ExifData& toAddMetaData);
 
-    void loadMetaData();
+    void loadData();
 
     void saveMetaData();
 
@@ -90,6 +92,8 @@ public:
         folders.load(in);
         metaData.load(in);
     }
+
+    void setOrCreateExifData();
 
 };
 

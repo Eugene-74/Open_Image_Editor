@@ -1,7 +1,9 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
     <qresource>
-        <file>ressources/next.JPG</file>
-        <file>ressources/before.JPG</file>
+        <file>ressources/next.png</file>
+        <file>ressources/before.png</file>
+        <file>ressources/rotateLeft.png</file>
+        <file>ressources/rotateRight.png</file>
     </qresource>
 </RCC>

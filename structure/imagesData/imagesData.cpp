@@ -1,5 +1,7 @@
 #include <iostream>
-#include "imagesData.h"
+#include "../imagesData/imagesData.h"
+#include "../imageData/imageData.h"
+
 
 
 void ImagesData::print() const {

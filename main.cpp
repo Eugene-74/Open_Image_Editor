@@ -30,18 +30,52 @@
 
 namespace fs = std::filesystem;
 
+// impossible de faire l'orientation effective des PNG
+
+
 
 
 int main(int argc, char* argv[]) {
-    std::string path = "/home/eugene/Documents";
+    std::string path = "/home/eugene/Documents/photo trié";
     ImagesData imagesData({});
     imagesData = loadImagesData();
     using ImagesData = std::vector<ImageData*>;
 
 
-    // startLoadingImagesFromFolder(path, imagesData);
+    startLoadingImagesFromFolder(path, imagesData);
+    loadImagesMetaData(imagesData);
+    // imagesData.getImageData(2)->setOrCreateExifData();
+
+    // std::cerr << imagesData.getImageData(2)->getImageOrientation() << std::endl;
+    // std::cerr << imagesData.getImageData(2)->getImageName() << std::endl;
+
+
+
+    // imagesData.getImageData(4)->getMetaData()->modifyExifValue("Exif.Image.Orientation", std::to_string(3));
+    // imagesData.getImageData(4)->getMetaData()->modifyExifValue("Exif.Thumbnail.Orientation", std::to_string(3));
+
+
+
+    loadImagesMetaData(imagesData);
+    int nbr = 1;
+
+
+    imagesData.getImageData(nbr)->getMetaData()->displayMetaData();
+
+    imagesData.getImageData(nbr)->turnImage(8);
+
+    imagesData.getImageData(nbr)->getMetaData()->displayMetaData();
+
+
+    // imagesData.getImageData(2)->getMetaData()->get()["Exif.Image.Orientation"] = 8;
+
+    imagesData.getImageData(nbr)->saveMetaData();
+
+
+
+    // imagesData.getImageData(5)->saveMetaData();
+    // imagesData.sa
     // imagesData.saveImagesData();
-    // loadImagesMetaData(imagesData);
 
 
     QApplication app(argc, argv);
@@ -79,6 +113,7 @@ void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData& imag
     loadImagesFromFolder(imagePaths, imagePaths, imagesData, nbrImage);
 
     loadImagesMetaData(imagesData);
+    imagesData.print();
 
 }
 
@@ -169,8 +204,7 @@ Date timestampToDate(time_t timestamp) {
 
 void loadImagesMetaData(ImagesData& imagesData) {
     for (int i = 0; i < imagesData.get().size(); ++i) {
-        imagesData.getImageData(i)->loadMetaData();
-
+        imagesData.getImageData(i)->loadData();
     }
 }
 

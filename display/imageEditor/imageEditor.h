@@ -50,14 +50,6 @@ public:
     void previousImage(ImagesData& imagesData);
 
 
-    void onImage1Clicked() {
-        QMessageBox::information(this, "Image 1", "Vous avez cliqué sur l'image 1 !");
-    }
-
-    void onImage2Clicked() {
-        QMessageBox::information(this, "Image 2", "Vous avez cliqué sur l'image 2 !");
-    }
-
 protected:
     // void resizeEvent(ImagesData& imagesData) override;
 

@@ -3,8 +3,9 @@
 
 #include <iostream>
 #include <vector>
+
 #include "../imageData/imageData.h"
-// #include "../../main.h"
+
 
 const std::string SAVE_DAT_PATH = "/home/eugene/save.bat";
 
@@ -33,13 +34,15 @@ public:
     }
 
     void setImageNumber(int nbr){
+
         if (nbr < 0){
             nbr += imagesData.size();
         }
-        else if (nbr > imagesData.size()){
+        else if (nbr >= imagesData.size()){
             nbr -= imagesData.size();
 
         }
+
         imageNumber = nbr;
     }
     int getImageNumber(){

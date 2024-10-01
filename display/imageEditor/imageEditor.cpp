@@ -13,6 +13,7 @@
 
 #include "../main.h"
 #include "../../structure/imagesData/imagesData.h"
+// #include "../../structure/imagesData/imagesData.h"
 
 // using ImagesData = std::vector<ImageData*>;
 
@@ -35,58 +36,65 @@ ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent)
 }
 
 ImageEditor::ImageEditor(ImagesData& imagesData, QWidget* parent) : QMainWindow(parent) {
+    QRect windowRect = geometry();
+
     // Créer un widget central
     QWidget* centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
-    // Créer un layout vertical
-    QVBoxLayout* layout = new QVBoxLayout(centralWidget);
-    layout->setSpacing(10);  // Espacement entre les widgets
-    layout->setContentsMargins(20, 20, 20, 20);// Marges autour des bords (gauche, haut, droite, bas)
+    // Créer un layout vertical pour toute la fenêtre
+    QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
+    mainLayout->setSpacing(10);  // Espacement entre les widgets
+    mainLayout->setContentsMargins(20, 20, 20, 20); // Marges autour des bords (gauche, haut, droite, bas)
+
+    QHBoxLayout* actionButtonLayout = new QHBoxLayout();
+    // Créer les boutons avec des tailles spécifiques
+    ClickableLabel* imageActionLabel1 = new ClickableLabel(":ressources/rotateRight.png", this);
+    imageActionLabel1->setFixedSize(windowRect.size() * 1 / 12); // Définir la taille fixe du bouton (largeur, hauteur)
+
+    ClickableLabel* imageActionLabel2 = new ClickableLabel(":ressources/rotateLeft.png", this);
+    imageActionLabel2->setFixedSize(windowRect.size() * 1 / 12); // Définir la taille fixe du bouton (largeur, hauteur)
+
+    actionButtonLayout->addWidget(imageActionLabel1);
+    actionButtonLayout->addWidget(imageActionLabel2);
+
+    actionButtonLayout->setAlignment(Qt::AlignCenter);
+
+    mainLayout->addLayout(actionButtonLayout);
+
+
+
+    // Créer un layout horizontal pour les boutons
+    QHBoxLayout* buttonLayout = new QHBoxLayout();
+
+    // Créer les boutons avec des tailles spécifiques
+    ClickableLabel* buttonImageBefore = new ClickableLabel(":ressources/before.png", this);
+    buttonImageBefore->setFixedSize(windowRect.size() * 1 / 12); // Définir la taille fixe du bouton (largeur, hauteur)
+
+    ClickableLabel* buttonImageNext = new ClickableLabel(":ressources/next.png", this);
+    buttonImageNext->setFixedSize(windowRect.size() * 1 / 12); // Définir la taille fixe du bouton (largeur, hauteur)
+
+
     // Créer un QLabel pour afficher l'image
     imageLabel = new QLabel(this);
-
-    QSize imageLabelSize = QGuiApplication::primaryScreen()->size(); // taille de l'ecran
-    imageLabelSize.setWidth(imageLabelSize.width() * 2 / 3);
-    imageLabelSize.setHeight(imageLabelSize.height() * 2 / 3);
-    // std::cerr << imageLabelSize.height() << "\n" << std::endl;
-    // std::cerr << imageLabelSize.width() << std::endl;
-    imageLabel->setFixedSize(imageLabelSize);
-    // TODO enlevre ça :
-    imageLabel->setFixedSize(500, 300);
+    imageLabel->setFixedSize(windowRect.size() * 5 / 6); // Ajuster la taille de l'image
+    imageLabel->setAlignment(Qt::AlignCenter); // Centrer l'image dans le QLabel
 
 
-    imageLabel->setAlignment(Qt::AlignCenter);
-    layout->addWidget(imageLabel);
+    buttonLayout->addWidget(buttonImageBefore);
+    buttonLayout->addWidget(imageLabel, 0, Qt::AlignCenter);
+    buttonLayout->addWidget(buttonImageNext);
+    buttonLayout->setAlignment(Qt::AlignCenter); // Centrer les boutons horizontalement
 
-    // Créer un bouton pour changer l'image
-    QPushButton* nextImageButton = new QPushButton("Changer l'image", this);
-    layout->addWidget(nextImageButton);
-    connect(nextImageButton, &QPushButton::clicked, [this, &imagesData]() { this->nextImage(imagesData); });
-
-    QWidget* upWidget = new QWidget(this);
-
-    // Créer un layout horizental
-    QHBoxLayout* buttonLayout = new QHBoxLayout(upWidget);
-    buttonLayout->setSpacing(10);
-
-    // Créer et ajouter des images cliquables
-    ClickableLabel* imageLabel1 = new ClickableLabel(":ressources/next.JPG", this);
-    buttonLayout->addWidget(imageLabel1);
-
-    ClickableLabel* imageLabel2 = new ClickableLabel(":ressources/before.JPG", this);
-    buttonLayout->addWidget(imageLabel2);
+    // Ajouter le layout des boutons au layout principal
+    mainLayout->addLayout(buttonLayout);
 
     // Connecter les images cliquables à des actions
-    connect(imageLabel1, &ClickableLabel::clicked, [this, &imagesData]() { this->nextImage(imagesData); });
-    connect(imageLabel2, &ClickableLabel::clicked, [this, &imagesData]() { this->previousImage(imagesData); });
-
-
+    connect(buttonImageBefore, &ClickableLabel::clicked, [this, &imagesData]() { this->previousImage(imagesData); });
+    connect(buttonImageNext, &ClickableLabel::clicked, [this, &imagesData]() { this->nextImage(imagesData); });
 
     // Définir le titre de la fenêtre
     setWindowTitle("Changer l'image dans QMainWindow");
-
-
 }
 
 void ImageEditor::setImage(const QString& imagePath) {
@@ -104,7 +112,6 @@ void ImageEditor::setImage(const QString& imagePath) {
 
 void ImageEditor::nextImage(ImagesData& imagesData){
 
-    std::cerr << "prochaine image : " << std::endl;
 
     imagesData.setImageNumber(imagesData.getImageNumber() + 1);
 
@@ -119,7 +126,6 @@ void ImageEditor::nextImage(ImagesData& imagesData){
 
 void ImageEditor::previousImage(ImagesData& imagesData){
 
-    std::cerr << "prochaine image : " << std::endl;
 
     imagesData.setImageNumber(imagesData.getImageNumber() - 1);
 

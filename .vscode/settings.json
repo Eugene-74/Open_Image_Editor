@@ -136,6 +136,7 @@
     "qapplication": "cpp",
     "qpixmap": "cpp",
     "qlabel": "cpp",
-    "qvboxlayout": "cpp"
+    "qvboxlayout": "cpp",
+    "*.moc": "cpp"
   }
 }
