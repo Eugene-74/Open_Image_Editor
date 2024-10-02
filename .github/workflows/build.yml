@@ -27,6 +27,7 @@ jobs:
 
     - name: Run library compilation script
       run: |
+        mkdir -p lib
         chmod +x compileLib.sh  # Make sure the script is executable
         ./compileLib.sh  # Run the script
 
