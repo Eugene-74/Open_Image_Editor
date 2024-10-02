@@ -3,13 +3,18 @@ name: Build C++ Project
 on:
   push:
     branches:
-      - main  # Change this to your target branch if necessary
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build:
+    
+  build-linux:
     runs-on: ubuntu-latest
 
     steps:
+        
     - name: Checkout code
       uses: actions/checkout@v3
 
@@ -18,11 +23,17 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y g++ pkg-config libopencv-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libexiv2-dev
 
-    - name: Build the project
+    - name: Run library compilation script
       run: |
-        g++ main.cpp qrc_resources.cpp -fPIC -o main.exe `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core opencv4` -lexiv2
+        chmod +x compileLib.sh  # Make sure the script is executable
+        ./compileLib.sh  # Run the script
 
-    - name: Archive build artifacts
+    - name: Build the main project
+      run: |
+        g++ main.cpp qrc_resources.cpp -fPIC -L./lib -lfolders -o main.exe \
+        `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core opencv4` -lexiv2
+
+    - name: Archive Linux artifacts
       uses: actions/upload-artifact@v3
       with:
         name: linux-build
