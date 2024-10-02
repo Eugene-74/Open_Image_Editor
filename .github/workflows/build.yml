@@ -1,0 +1,130 @@
+name: Build C++ Project
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y cmake g++ pkg-config libopencv-dev libexiv2-dev qt5-default
+
+    - name: Build project
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make
+
+    - name: Archive Linux artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: linux-build
+<<<<<<< HEAD
+        path: ./build/
+=======
+        path: ./main.exe
+# not working
+#   build-windows:
+#     runs-on: windows-latest
+>>>>>>> 1374f42 (first auto create for linux)
+
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v3
+
+<<<<<<< HEAD
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        choco install mingw cmake
+        choco install qt5-opensource-lgpl -y
+        # Install OpenCV and Exiv2 for Windows, adapt according to your setup
+
+    - name: Build project
+      run: |
+        mkdir build
+        cd build
+        cmake -G "MinGW Makefiles" ..
+        mingw32-make
+
+    - name: Archive Windows artifacts
+      uses: actions/upload-artifact@v2
+=======
+#     - name: Install vcpkg
+#       run: |
+#         git clone https://github.com/microsoft/vcpkg.git
+#         cd vcpkg
+#         .\bootstrap-vcpkg.bat
+#         .\vcpkg.exe integrate install
+
+#     - name: Install Exiv2 via vcpkg
+#       run: |
+#         cd vcpkg
+#         .\vcpkg.exe install exiv2
+
+#     - name: Download Qt Installer
+#       run: |
+#         curl -L -o qt-installer.exe https://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+
+#     - name: Verify Downloaded Qt Installer
+#       run: |
+#         if (Test-Path qt-installer.exe) {
+#             certutil -hashfile qt-installer.exe SHA256
+#             # Compare the hash here with the expected hash
+#         } else {
+#             Write-Host "Failed to download Qt installer."
+#             exit 1
+#         }
+    
+#     - name: Install dependencies
+#       run: |
+#         choco install mingw
+#         setx /M PATH "C:\Qt\5.x\mingw64\bin;%PATH%"
+
+#     - name: Verify pkg-config Installation
+#       run: |
+#         where pkg-config
+
+#     - name: Build the main project
+#       run: |
+#         $pkgConfigFlags = & "C:\vcpkg\installed\x64-windows\bin\pkg-config" --cflags --libs opencv4
+#         g++ main.cpp qrc_resources.cpp -fPIC -L./lib -lfolders -o main.exe `
+#         -I"C:\Qt\5.15.2\mingw81_64\include" `
+#         -I"C:\vcpkg\installed\x64-windows\include" `
+#         -L"C:\vcpkg\installed\x64-windows\lib" `
+#         $pkgConfigFlags -lexiv2
+
+#     - name: Archive Windows artifacts
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: windows-build
+#         path: ./main.exe
+
+  release:
+    runs-on: ubuntu-latest  # or windows-latest depending on your needs
+
+    needs: [build-linux]  # , build-windows Wait for the previous jobs to complete
+    steps:
+    - name: Create Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+>>>>>>> 1374f42 (first auto create for linux)
+      with:
+        name: windows-build
+        path: ./build/
