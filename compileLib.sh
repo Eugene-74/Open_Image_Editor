@@ -23,8 +23,8 @@ g++ -c moc_imageEditor.cpp -fPIC `pkg-config --cflags --libs Qt5Widgets` -o lib/
 
 
 
-# ar rcs lib/libfolders.a lib/vector.o lib/folders.o lib/date.o lib/metaData.o lib/imageData.o lib/imagesData.o lib/thumbnail.o lib/imageEditor.o lib/moc_imageEditor.o lib/clickableLabel.o
-ar rcs lib/libfolders.a lib/*.o
+ar rcs lib/libfolders.a lib/vector.o lib/folders.o lib/date.o lib/metaData.o lib/imageData.o lib/imagesData.o lib/thumbnail.o lib/imageEditor.o lib/moc_imageEditor.o lib/clickableLabel.o
+# ar rcs lib/libfolders.a lib/*.o
 
 
 # sh compileLib.sh
