@@ -33,9 +33,9 @@ jobs:
 
     - name: Build the main project
       run: |
-        g++ main.cpp qrc_resources.cpp ImageEditor.cpp -fPIC -L./lib -lfolders -o main.exe \
+        g++ main.cpp qrc_resources.cpp -fPIC -L./lib -lfolders -o main.exe \
         `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core opencv4` -lexiv2
-        
+
     - name: Archive Linux artifacts
       uses: actions/upload-artifact@v3
       with:
