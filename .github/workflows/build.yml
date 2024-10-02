@@ -3,20 +3,13 @@ name: Build C++ Project
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  release:
-    types: [created]  # Trigger on release creation
+      - main  # Change this to your target branch if necessary
 
 jobs:
-    
-  build-linux:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-        
     - name: Checkout code
       uses: actions/checkout@v3
 
@@ -25,96 +18,12 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y g++ pkg-config libopencv-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libexiv2-dev
 
-    - name: Run library compilation script
+    - name: Build the project
       run: |
-        mkdir -p lib
-        chmod +x compileLib.sh  # Make sure the script is executable
-        ./compileLib.sh  # Run the script
+        g++ main.cpp qrc_resources.cpp -fPIC -o main.exe `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core opencv4` -lexiv2
 
-    - name: Build the main project
-      run: |
-        g++ main.cpp qrc_resources.cpp -fPIC -L./lib -lfolders -o main.exe \
-        `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core opencv4` -lexiv2
-
-    - name: Archive Linux artifacts
+    - name: Archive build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: linux-build
         path: ./main.exe
-
-  # build-windows:
-  #   runs-on: windows-latest
-
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3
-
-  #     - name: Install Chocolatey
-  #       run: |
-  #         Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12;
-  #         iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-
-  #     - name: Install dependencies
-  #       run: |
-  #         choco install -y opencv
-  #         choco install -y qt5
-
-  #     - name: Download and install Exiv2
-  #       run: |
-  #         # Create a directory for Exiv2
-  #         mkdir exiv2
-  #         cd exiv2
-  #         # Download the Exiv2 binaries (replace the version number with the latest)
-  #         Invoke-WebRequest -Uri "https://github.com/Exiv2/exiv2/releases/download/v0.28.3/exiv2-0.28.3-2019msvc64.zip" -OutFile "exiv2.zip"
-  #         # Extract the zip file
-  #         Expand-Archive -Path "exiv2.zip" -DestinationPath "exiv2"
-  #         # Add the Exiv2 bin directory to the PATH
-  #         echo "::add-path::$(pwd)\exiv2\bin"
-
-  #     - name: Run library compilation script
-  #       run: |
-  #         bash ./compileLib.sh  # Ensure this script is adapted for Windows if necessary
-
-  #     - name: Build the main project
-  #       run: |
-  #         g++ main.cpp qrc_resources.cpp -fPIC -L./lib -lfolders -o main.exe ^
-  #         `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core opencv4` -lexiv2
-
-  #     - name: Archive Windows artifacts
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: windows-build
-  #         path: ./main.exe
-
-  release:
-    runs-on: ubuntu-latest  # or windows-latest depending on your needs
-
-    needs: [build-linux]  # , build-windowsWait for the previous jobs to complete
-    steps:
-    - name: Create Release
-      id: create_release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: |
-          - Linux build: ${{ steps.linux-build.outputs.artifact_url }}
-#  - Windows build: ${{ steps.windows-build.outputs.artifact_url }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Upload Linux executable
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: ${{ github.ref }}
-        files: ./main.exe
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    # - name: Upload Windows executable
-    #   uses: softprops/action-gh-release@v1
-    #   with:
-    #     tag_name: ${{ github.ref }}
-    #     files: ./main.exe
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
