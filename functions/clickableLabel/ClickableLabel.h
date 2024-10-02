@@ -1,5 +1,10 @@
+#ifndef CLICKABLELABEL_H
+#define CLICKABLELABEL_H
+
 #include <QLabel>
 #include <QEvent>
+#include <QGraphicsOpacityEffect>
+
 
 class ClickableLabel : public QLabel {
     Q_OBJECT
@@ -7,11 +12,20 @@ class ClickableLabel : public QLabel {
 public:
     explicit ClickableLabel(const QString& imagePath, QWidget* parent = nullptr);
 
+signals:
+    void clicked();  // Signal émis lors du clic
+
 protected:
-    void enterEvent(QEvent* event) override;  // Utiliser QEvent
+    void enterEvent(QEvent* event) override;
     void leaveEvent(QEvent* event) override;
+    // Gestion de l'événement de clic de souris
+    void mousePressEvent(QMouseEvent* event) override {
+        emit clicked();  // Émettre le signal quand on clique
+    }
 
 private:
-    QString defaultImagePath;  // Variable pour stocker l'image par défaut
-    QString hoverImagePath;    // Variable pour stocker l'image de surbrillance
+    QGraphicsOpacityEffect* opacityEffect;  // Déclaration de l'effet d'opacité
+    QPixmap defaultPixmap;                  // Image par défaut pour le QLabel
 };
+
+#endif

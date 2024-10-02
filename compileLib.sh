@@ -8,7 +8,7 @@ g++ -I./functions -I./structure -I./display -c structure/imagesData/imagesData.c
 
 
 g++ -I./functions -I./structure -I./display -c functions/vector/vector.cpp -o lib/vector.o
-g++ -I./functions -I./structure -I./display -c functions/clickableLabel/ClickableLabel.cpp -o lib/clickableLabel.o
+g++ -I./functions -I./structure -I./display -c functions/clickableLabel/ClickableLabel.cpp -fPIC `pkg-config --cflags --libs Qt5Widgets` -o lib/clickableLabel.o
 
 g++ -I./functions -I./structure -I./display `pkg-config --cflags --libs opencv4` -c functions/thumbnail/thumbnail.cpp -o lib/thumbnail.o
 
