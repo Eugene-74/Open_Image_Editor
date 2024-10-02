@@ -7,65 +7,51 @@ on:
   pull_request:
     branches:
       - main
+  release:
+    types: [created]  # Trigger on release creation
 
 jobs:
+    
   build-linux:
     runs-on: ubuntu-latest
 
     steps:
+        
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Install dependencies
       run: |
-        sudo apt update
-        sudo apt install -y cmake g++ pkg-config libopencv-dev libexiv2-dev qt5-default
+        sudo apt-get update
+        sudo apt-get install -y g++ pkg-config libopencv-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libexiv2-dev
 
-    - name: Build project
+    - name: Verify pkg-config Installation
       run: |
-        mkdir build
-        cd build
-        cmake ..
-        make
+        pkg-config --version
+
+    - name: Run library compilation script
+      run: |
+        chmod +x compileLib.sh  # Make sure the script is executable
+        ./compileLib.sh  # Run the script
+
+    - name: Build the main project
+      run: |
+        g++ main.cpp qrc_resources.cpp -fPIC -L./lib -lfolders -o main.exe \
+        `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core opencv4` -lexiv2
 
     - name: Archive Linux artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: linux-build
-<<<<<<< HEAD
-        path: ./build/
-=======
         path: ./main.exe
-# not working
+
 #   build-windows:
 #     runs-on: windows-latest
->>>>>>> 1374f42 (first auto create for linux)
 
 #     steps:
 #     - name: Checkout code
 #       uses: actions/checkout@v3
 
-<<<<<<< HEAD
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Install dependencies
-      run: |
-        choco install mingw cmake
-        choco install qt5-opensource-lgpl -y
-        # Install OpenCV and Exiv2 for Windows, adapt according to your setup
-
-    - name: Build project
-      run: |
-        mkdir build
-        cd build
-        cmake -G "MinGW Makefiles" ..
-        mingw32-make
-
-    - name: Archive Windows artifacts
-      uses: actions/upload-artifact@v2
-=======
 #     - name: Install vcpkg
 #       run: |
 #         git clone https://github.com/microsoft/vcpkg.git
@@ -91,7 +77,7 @@ jobs:
 #             Write-Host "Failed to download Qt installer."
 #             exit 1
 #         }
-    
+
 #     - name: Install dependencies
 #       run: |
 #         choco install mingw
@@ -103,12 +89,11 @@ jobs:
 
 #     - name: Build the main project
 #       run: |
-#         $pkgConfigFlags = & "C:\vcpkg\installed\x64-windows\bin\pkg-config" --cflags --libs opencv4
-#         g++ main.cpp qrc_resources.cpp -fPIC -L./lib -lfolders -o main.exe `
-#         -I"C:\Qt\5.15.2\mingw81_64\include" `
-#         -I"C:\vcpkg\installed\x64-windows\include" `
-#         -L"C:\vcpkg\installed\x64-windows\lib" `
-#         $pkgConfigFlags -lexiv2
+#         g++ main.cpp qrc_resources.cpp -fPIC -L./lib -lfolders -o main.exe ^
+#         -I"C:\Qt\5.15.2\mingw81_64\include" ^
+#         -I"C:\vcpkg\installed\x64-windows\include" ^
+#         -L"C:\vcpkg\installed\x64-windows\lib" ^
+#         $(C:\vcpkg\installed\x64-windows\bin\pkg-config --cflags --libs opencv4) -lexiv2
 
 #     - name: Archive Windows artifacts
 #       uses: actions/upload-artifact@v3
@@ -124,7 +109,27 @@ jobs:
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v1
->>>>>>> 1374f42 (first auto create for linux)
       with:
-        name: windows-build
-        path: ./build/
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          - Linux build: ${{ steps.linux-build.outputs.artifact_url }}
+        #   - Windows build: ${{ steps.windows-build.outputs.artifact_url }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload Linux executable
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref }}
+        files: ./main.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # - name: Upload Windows executable
+    #   uses: softprops/action-gh-release@v1
+    #   with:
+    #     tag_name: ${{ github.ref }}
+    #     files: ./main.exe
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
