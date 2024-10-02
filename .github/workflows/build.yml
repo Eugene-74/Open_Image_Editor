@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  deployments: write
+
 jobs:
   build-linux:
     runs-on: ubuntu-latest
@@ -42,7 +46,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.sha }}  # Create a tag based on the commit SHA
-        release_name: Release ${{ github.sha }}
+        name: Release ${{ github.sha }}  # Use 'name' instead of 'release_name'
         body: |
           Automated release for commit ${{ github.sha }}.
           Linux build: [Download](https://github.com/${{ github.repository }}/actions/artifacts/${{ github.run_id }})/linux-build
