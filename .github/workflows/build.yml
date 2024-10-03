@@ -1,5 +1,9 @@
 name: Build C++ Project
 
+# Define the version as a constant
+env:
+  VERSION: v1.0.1
+
 on:
   push:
     branches:
@@ -33,7 +37,7 @@ jobs:
     - name: Archive Linux artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: v1.0.1
+        name: linux-build
         path: ./main.exe
 
   release:
@@ -41,22 +45,27 @@ jobs:
     needs: build-linux  # This job will run after the build job
 
     steps:
+    - name: Download Linux executable
+      uses: actions/download-artifact@v3
+      with:
+        name: linux-build  # This should match the artifact name from the build step
+
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: v1.0.1  # Specify a meaningful tag name
-        name: Release v1.0.1  # Release name
+        tag_name: ${{ env.VERSION }}  # Use the version defined at the top
+        name: Release ${{ env.VERSION }}  # Release name
         body: |
           Automated release for commit ${{ github.sha }}.
-          Linux build: [Download](https://github.com/${{ github.repository }}/actions/artifacts/${{ github.run_id }})/linux-build
+          Linux build: [Download Linux Executable](https://github.com/${{ github.repository }}/releases/download/${{ steps.create_release.outputs.tag_name }}/main.exe)
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload Linux executable
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: v1.0.1  # Use the same tag as above
+        tag_name: ${{ env.VERSION }}  # Use the same version constant
         files: ./main.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
