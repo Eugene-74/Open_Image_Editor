@@ -30,17 +30,16 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y g++ pkg-config libopencv-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libexiv2-dev
 
-    - name: Build the main project
+    - name: Build the main project with static linking
       run: |
-        g++ main.cpp ressources/qrc_resources.cpp -fPIC -L./lib -lfolders -o main-linux.exe \
-        `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core opencv4` -lexiv2
+        g++ main.cpp ressources/qrc_resources.cpp -fPIC -static -L./lib -lfolders -o main-linux.exe \
+        `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core opencv4` -lexiv2 -static-libgcc -static-libstdc++
 
     - name: Archive Linux artifacts
       uses: actions/upload-artifact@v4
       with:
         name: linux-build
         path: ./main-linux.exe
-
 
   # build-windows:
   #   runs-on: windows-latest
