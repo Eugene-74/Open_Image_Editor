@@ -32,7 +32,7 @@ jobs:
         sudo apt-get install build-essential
         # sudo apt-get install qt5-default
         sudo apt-get install libstdc++-12-dev # Ensure the C++ libraries are available
-    - name: Build Qt statically
+    # - name: Build Qt statically
       # run: |
       #   git clone git://code.qt.io/qt/qt5.git
       #   cd qt5
