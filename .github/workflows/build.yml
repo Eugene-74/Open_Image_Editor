@@ -69,7 +69,7 @@ jobs:
       
     - name: Install Qt
       run: |
-        .\qt-installer.exe --silent --platform minimal --script qt_installer_script.qs
+        .\qt-installer.exe --platform minimal --script qt_installer_script.qs
 
     - name: Build the main project
       run: |
