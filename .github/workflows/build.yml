@@ -49,16 +49,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # - name: Install vcpkg
-    #   run: |
-    #     git clone https://github.com/microsoft/vcpkg.git
-    #     cd vcpkg
-    #     .\bootstrap-vcpkg.bat
-    #     .\vcpkg.exe integrate install
+    - name: Install vcpkg
+      run: |
+        git clone https://github.com/microsoft/vcpkg.git
+        cd vcpkg
+        .\bootstrap-vcpkg.bat
+        .\vcpkg.exe integrate install
 
-    # - name: Install OpenCV and Exiv2 via vcpkg
-    #   run: |
-    #     .\vcpkg\vcpkg.exe install opencv exiv2
+    - name: Install OpenCV and Exiv2 via vcpkg
+      run: |
+        .\vcpkg\vcpkg.exe install opencv exiv2
 
     - name: (2) Get all tags for correct version determination
       working-directory:  ${{ github.workspace }}
