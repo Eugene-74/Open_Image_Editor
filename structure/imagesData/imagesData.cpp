@@ -45,12 +45,20 @@ ImageData* ImagesData::getImageData(int id) {
     return &imagesData.at(id);
     // renvoie un pointeur ce qui permet une modification automatique dans ImagesData
 }
+
+ImageData* ImagesData::getCurrentImageData() {
+    if (imageNumber < 0 || imageNumber >= imagesData.size()) {
+        throw std::out_of_range("Index hors limites");
+    }
+    return &imagesData.at(imageNumber);
+    // renvoie un pointeur ce qui permet une modification automatique dans ImagesData
+}
 std::vector<ImageData>  ImagesData::get() {
     return imagesData;
 }
 
 ImagesData loadImagesData() {
-    ImagesData loadedImagesData({});
+    ImagesData loadedImagesData(std::vector<ImageData>{});
 
     // Ouvrir le fichier en mode binaire
     std::ifstream inFile(SAVE_DAT_PATH, std::ios::binary);

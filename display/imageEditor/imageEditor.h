@@ -26,7 +26,7 @@ class ClickableLabel : public QLabel {
     Q_OBJECT
 
 public:
-    explicit ClickableLabel(const QString& imagePath, QWidget* parent = nullptr);
+    explicit ClickableLabel(const QString& i, QWidget* parent = nullptr);
 
 signals:
     void clicked();  // Signal émis lors du clic
@@ -51,15 +51,21 @@ class ImageEditor : public QMainWindow {
     Q_OBJECT
 
 public:
-    ImageEditor(ImagesData& imagesData, QWidget* parent = nullptr);
+    ImagesData& imagesData;
+    // Constructor
+    ImageEditor(ImagesData& a, QWidget* parent = nullptr);   // Initialize the reference member
+
     ~ImageEditor(){}
 
     void reload();
+    void reloadMainImage();
 
     void setImage(ImageData& imageData);
 
-    void nextImage(ImagesData& imagesData);
-    void previousImage(ImagesData& imagesData);
+    void nextImage();
+    void previousImage();
+    void rotateLeft();
+    void rotateRight();
 
 
 protected:

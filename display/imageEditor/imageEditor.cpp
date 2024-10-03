@@ -135,7 +135,8 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
 
 
 
-ImageEditor::ImageEditor(ImagesData& imagesData, QWidget* parent) : QMainWindow(parent) {
+ImageEditor::ImageEditor(ImagesData& i, QWidget* parent) : QMainWindow(parent), // Initialize the base class
+imagesData(i) {
 
     QScreen* screen = QGuiApplication::primaryScreen();
     QRect screenR = screen->availableGeometry();
@@ -175,14 +176,14 @@ ImageEditor::ImageEditor(ImagesData& imagesData, QWidget* parent) : QMainWindow(
     QHBoxLayout* actionButtonLayout = new QHBoxLayout();
     // Créer les boutons avec des tailles spécifiques
     // TODO mieux deffir pour que il soit carrer
-    ClickableLabel* imageActionLabel1 = new ClickableLabel("ressources/rotateRight.png", this);
-    imageActionLabel1->setFixedSize(actionButtonSize, actionButtonSize); // Définir la taille fixe du bouton (largeur, hauteur)
+    ClickableLabel* imageRotateLeft = new ClickableLabel("ressources/rotateRight.png", this);
+    imageRotateLeft->setFixedSize(actionButtonSize, actionButtonSize); // Définir la taille fixe du bouton (largeur, hauteur)
 
-    ClickableLabel* imageActionLabel2 = new ClickableLabel("ressources/rotateLeft.png", this);
-    imageActionLabel2->setFixedSize(actionButtonSize, actionButtonSize); // Définir la taille fixe du bouton (largeur, hauteur)
+    ClickableLabel* imageRotateRight = new ClickableLabel("ressources/rotateLeft.png", this);
+    imageRotateRight->setFixedSize(actionButtonSize, actionButtonSize); // Définir la taille fixe du bouton (largeur, hauteur)
 
-    actionButtonLayout->addWidget(imageActionLabel1);
-    actionButtonLayout->addWidget(imageActionLabel2);
+    actionButtonLayout->addWidget(imageRotateLeft);
+    actionButtonLayout->addWidget(imageRotateRight);
 
     actionButtonLayout->setAlignment(Qt::AlignCenter);
 
@@ -217,8 +218,10 @@ ImageEditor::ImageEditor(ImagesData& imagesData, QWidget* parent) : QMainWindow(
     mainLayout->addLayout(buttonLayout);
 
     // Connecter les images cliquables à des actions
-    connect(buttonImageBefore, &ClickableLabel::clicked, [this, &imagesData]() { this->previousImage(imagesData); });
-    connect(buttonImageNext, &ClickableLabel::clicked, [this, &imagesData]() { this->nextImage(imagesData); });
+    connect(buttonImageBefore, &ClickableLabel::clicked, [this]() { this->previousImage(); });
+    connect(buttonImageNext, &ClickableLabel::clicked, [this]() { this->nextImage(); });
+    connect(imageRotateLeft, &ClickableLabel::clicked, [this]() { this->rotateLeft(); });
+    connect(imageRotateRight, &ClickableLabel::clicked, [this]() { this->rotateRight(); });
 
     // Définir le titre de la fenêtre
     setWindowTitle("Changer l'image dans QMainWindow");
@@ -226,6 +229,8 @@ ImageEditor::ImageEditor(ImagesData& imagesData, QWidget* parent) : QMainWindow(
 
 void ImageEditor::setImage(ImageData& imageData) {
     std::string imagePath = imageData.getImagePath();
+    std::cerr << imagePath << std::endl;
+
 
     cv::Mat image = cv::imread(imagePath, cv::IMREAD_UNCHANGED);
     if (!image.empty()) {
@@ -244,13 +249,13 @@ void ImageEditor::setImage(ImageData& imageData) {
 
                 // Rotate the image based on the EXIF orientation
                 switch (orientation) {
-                case 3:  // 180 degrees
-                    cv::rotate(image, image, cv::ROTATE_180);
-                    break;
-                case 6:  // 90 degrees clockwise
+                case 3:
                     cv::rotate(image, image, cv::ROTATE_90_CLOCKWISE);
                     break;
-                case 8:  // 90 degrees counterclockwise
+                case 6:
+                    cv::rotate(image, image, cv::ROTATE_180);
+                    break;
+                case 8:
                     cv::rotate(image, image, cv::ROTATE_90_COUNTERCLOCKWISE);
                     break;
                 }
@@ -278,11 +283,11 @@ void ImageEditor::setImage(ImageData& imageData) {
     else {
         imageLabel->setText("Erreur : Image non valide !");
     }
-    reload();
+    reloadMainImage();
 }
 
 
-void ImageEditor::nextImage(ImagesData& imagesData){
+void ImageEditor::nextImage(){
 
 
     imagesData.setImageNumber(imagesData.getImageNumber() + 1);
@@ -290,7 +295,7 @@ void ImageEditor::nextImage(ImagesData& imagesData){
     setImage(*imagesData.getImageData(imagesData.getImageNumber()));
 }
 
-void ImageEditor::previousImage(ImagesData& imagesData){
+void ImageEditor::previousImage(){
 
 
     imagesData.setImageNumber(imagesData.getImageNumber() - 1);
@@ -299,8 +304,67 @@ void ImageEditor::previousImage(ImagesData& imagesData){
     setImage(*imagesData.getImageData(imagesData.getImageNumber()));
 }
 
-void ImageEditor::reload(){
-    imageLabel->update();
+void ImageEditor::rotateLeft(){
+    ImageData* imageData = imagesData.getCurrentImageData();
+    int orientation = imageData->getImageOrientation();
+
+    if (orientation == 1){
+        orientation = 8;
+    }
+    else if (orientation == 8){
+        orientation = 6;
+    }
+    else if (orientation == 6){
+        orientation = 3;
+    }
+    else{
+        orientation = 1;
+    }
+    imageData->turnImage(orientation);
+    std::cerr << "test1" << std::endl;
+
+    reload();
+    imagesData.saveImagesData();
+
 }
+void ImageEditor::rotateRight(){
+    ImageData* imageData = imagesData.getCurrentImageData();
+    // imageData->turnImage(3);
+    int orientation = imageData->getImageOrientation();
+    if (orientation == 1){
+        orientation = 3;
+    }
+    else if (orientation == 3){
+        orientation = 6;
+    }
+    else if (orientation == 6){
+        orientation = 8;
+    }
+    else{
+        orientation = 1;
+    }
+    imageData->turnImage(orientation);
+    std::cerr << "test2" << std::endl;
+
+    reload();
+    imagesData.saveImagesData();
+    std::cerr << "reload1" << std::endl;
+
+
+}
+
+void ImageEditor::reload(){
+    std::cerr << "reload2" << std::endl;
+
+    setImage(*imagesData.getCurrentImageData());
+
+}
+
+void ImageEditor::reloadMainImage(){
+
+    imageLabel->update();
+
+}
+
 
 

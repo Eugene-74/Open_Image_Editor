@@ -5,42 +5,6 @@
 // #include "../imagesData/imagesData.h"
 
 
-
-// Exiv2::ExifData& MetaData::getExifData(){
-//     return exifMetaData;
-// }
-
-// Exiv2::XmpData& MetaData::getXmpData(){
-//     return xmpMetaData;
-// }
-
-// Exiv2::IptcData& MetaData::getIptcData(){
-//     return iptcMetaData;
-// }
-
-// void MetaData::setExifData(const Exiv2::ExifData data){
-//     exifMetaData = data;
-// }
-
-// void MetaData::loadExifMetaData(const std::string& imagePath){
-//     Exiv2::ExifData toAddMetaData = loadExifData(imagePath);
-//     // if (!toAddMetaData){
-//     exifMetaData = toAddMetaData;
-
-// }
-// void MetaData::loadXmpMetaData(const std::string& imagePath){
-//     Exiv2::XmpMetadata toAddMetaData = loadXmpData(imagePath);
-//     // if (!toAddMetaData){
-//     xmpMetaData = toAddMetaData;
-
-// }
-// void MetaData::loadIptcMetaData(const std::string& imagePath){
-//     Exiv2::ExifData toAddMetaData = loadIptcData(imagePath);
-//     // if (!toAddMetaData){
-//     iptcMetaData = toAddMetaData;
-
-// }
-
 void MetaData::saveMetaData(const std::string& imageName){
 
     saveExifData(imageName, exifMetaData);
@@ -76,7 +40,7 @@ int MetaData::getImageOrientation() {
             return entry.toLong();
         }
     }
-    return -1;  // Retourne -1 si l'orientation n'est pas trouvée
+    return 1;  // Retourne -1 si l'orientation n'est pas trouvée
 }
 
 

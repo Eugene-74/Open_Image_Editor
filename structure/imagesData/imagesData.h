@@ -16,7 +16,7 @@ public:
     std::vector<ImageData> imagesData;
     int imageNumber;
 
-    // ImagesData() : imageNumber(0) {}
+    ImagesData() : imageNumber(0) {}
 
     // Constructeur de copie
     ImagesData(const ImagesData& other)
@@ -57,6 +57,8 @@ public:
     void removeImage(const ImageData& image);
 
     ImageData* getImageData(int id);
+    ImageData* getCurrentImageData();
+
 
     std::vector<ImageData>  get();
 

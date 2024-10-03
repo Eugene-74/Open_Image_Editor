@@ -37,7 +37,7 @@ namespace fs = std::filesystem;
 
 int main(int argc, char* argv[]) {
     std::string path = "/home/eugene/Documents/photo trié";
-    ImagesData imagesData({});
+    ImagesData imagesData(std::vector<ImageData>{});
     imagesData = loadImagesData();
     using ImagesData = std::vector<ImageData*>;
 
