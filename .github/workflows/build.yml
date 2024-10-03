@@ -25,12 +25,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install dependencies and libraries
+      - name: Install dependencies and specific g++ version
         run: |
           sudo apt-get update
-          sudo apt-get install -y g++ make cmake pkg-config libopencv-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libexiv2-dev
-          sudo apt-get install build-essential
-          sudo apt-get install libstdc++-12-dev # Ensure the C++ libraries are available
+          # Installer les dépendances de base
+          sudo apt-get install -y build-essential make cmake pkg-config libopencv-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libexiv2-dev
+          # Installer g++-11 et gcc-11
+          sudo apt-get install -y g++-11 gcc-11 libstdc++-11-dev
+          # Configurer g++-11 comme version par défaut
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100
+          # Vérifier les versions
+          gcc --version
+          g++ --version
+
+      - name: Set environment variables for GCC and G++
+        run: |
+          echo "CC=gcc-11" >> $GITHUB_ENV
+          echo "CXX=g++-11" >> $GITHUB_ENV
 
       - name: Build Qt statically
         run: |
@@ -38,7 +50,7 @@ jobs:
           cd qt5
           git checkout v5.15.2
           ./init-repository
-          ./configure -static -release -prefix /usr/local/Qt-5.15.2-static -nomake examples -nomake tests -opensource -confirm-license
+          ./configure -static -release -prefix /usr/local/Qt-5.15.2-static -nomake examples -nomake tests -opensource -confirm-license -platform linux-g++-64 -c++std c++11
           make -j$(nproc)
           sudo make install
 
@@ -47,7 +59,7 @@ jobs:
           git clone https://github.com/Exiv2/exiv2.git
           cd exiv2
           mkdir build && cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/exiv2 ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/exiv2 -DCMAKE_CXX_STANDARD=11 ..
           make -j$(nproc)
           sudo make install
 
@@ -55,7 +67,7 @@ jobs:
         run: |
           git clone https://github.com/opencv/opencv.git
           mkdir -p opencv/build && cd opencv/build
-          cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local/opencv ..
+          cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local/opencv -DCMAKE_CXX_STANDARD=11 ..
           make -j$(nproc)
           sudo make install
 
@@ -77,6 +89,7 @@ jobs:
           -lopencv_core -lopencv_imgproc -lopencv_highgui \
           -lexiv2 \
           -static-libgcc -static-libstdc++ \
+          -std=c++11 \
           -o main-linux
 
       - name: Verify static linking
@@ -109,7 +122,6 @@ jobs:
           asset_path: ./main-linux
           asset_name: main-linux
           asset_content_type: application/octet-stream
-
 
   # build-windows:
   #   runs-on: windows-latest
