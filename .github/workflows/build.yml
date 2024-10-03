@@ -38,50 +38,44 @@ jobs:
       with:
         name: linux-build
         path: ./main-linux.exe
+
+        
   build-windows:
     runs-on: windows-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
 
-    - name: Install Chocolatey
+    - name: Install vcpkg
       run: |
-        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-      shell: powershell
+        git clone https://github.com/microsoft/vcpkg.git
+        cd vcpkg
+        .\bootstrap-vcpkg.bat
+        .\vcpkg.exe integrate install
 
-    - name: Install OpenCV and Git
-      run: choco install -y opencv git
-      shell: cmd
-
-    - name: Download and Extract MinGW
+    - name: Install OpenCV and Exiv2 via vcpkg
       run: |
-        curl -L -o mingw.zip "https://github.com/brechtsanders/winlibs_mingw/releases/download/12.1.0-14.0.6/posix-seh-x86_64-12.1.0-14.0.6-release.zip"
-        powershell -Command "Expand-Archive mingw.zip -DestinationPath C:\mingw"
-      shell: cmd
+        .\vcpkg\vcpkg.exe install opencv exiv2
 
-    - name: Add MinGW to PATH
+    - name: Download and Install Qt
       run: |
-        echo "C:\mingw\bin" >> $Env:PATH
-        [Environment]::SetEnvironmentVariable('PATH', $Env:PATH, [EnvironmentVariableTarget]::Machine)
-      shell: powershell
-
-    - name: Download and Install Qt5
-      run: |
-        curl -L -o qt-installer.exe "https://download.qt.io/official_releases/qt/5.15/5.15.2/qt-opensource-windows-x86-5.15.2.exe"
-        start /wait qt-installer.exe /silent /dir "C:\Qt"
-      shell: cmd
+        curl -L -o qt-installer.exe https://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+        qt-installer.exe --silent --platform minimal --script qt_installer_script.qs
 
     - name: Build the main project
       run: |
-        g++ main.cpp qrc_resources.cpp -L./lib -lfolders -o main-windows.exe -lopencv_world -lQt5Widgets -lQt5Gui -lQt5Core -lexiv2
-      shell: cmd
+        g++ main.cpp qrc_resources.cpp -fPIC -L./lib -lfolders -o main.exe \
+        -I"C:\Qt\5.15.2\mingw81_64\include" \
+        -I"C:\vcpkg\installed\x64-windows\include" \
+        -L"C:\vcpkg\installed\x64-windows\lib" \
+        `pkg-config --cflags --libs opencv4` -lexiv2
 
     - name: Archive Windows artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: windows-build
-        path: ./main-windows.exe
+        path: ./main.exe
 
 
   release:
