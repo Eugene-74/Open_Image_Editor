@@ -95,7 +95,7 @@ void ClickableLabel::mousePressEvent(QMouseEvent* event) {
 
     if (event->button() == Qt::LeftButton) {
         // Emit clicked signal
-        emit clicked();
+        // emit clicked();
         // Change style to indicate click
         setStyleSheet(R"(
         QLabel {
@@ -224,10 +224,38 @@ ImageEditor::ImageEditor(ImagesData& imagesData, QWidget* parent) : QMainWindow(
     setWindowTitle("Changer l'image dans QMainWindow");
 }
 
-void ImageEditor::setImage(const QString& imagePath) {
-    // Load image using OpenCV
-    cv::Mat image = cv::imread(imagePath.toStdString(), cv::IMREAD_UNCHANGED);
+void ImageEditor::setImage(ImageData& imageData) {
+    std::string imagePath = imageData.getImagePath();
+
+    cv::Mat image = cv::imread(imagePath, cv::IMREAD_UNCHANGED);
     if (!image.empty()) {
+
+
+        Exiv2::ExifData exifData = imageData.getMetaData()->getExifData();
+        if (exifData.empty()) {
+            std::cerr << "No EXIF data found in image!" << std::endl;
+        }
+        else {
+            // Check for the orientation tag
+            // Exiv2::ExifKey key("Exif.Image.Orientation");
+
+            if (exifData["Exif.Image.Orientation"].count() != 0) {
+                int orientation = exifData["Exif.Image.Orientation"].toLong();
+
+                // Rotate the image based on the EXIF orientation
+                switch (orientation) {
+                case 3:  // 180 degrees
+                    cv::rotate(image, image, cv::ROTATE_180);
+                    break;
+                case 6:  // 90 degrees clockwise
+                    cv::rotate(image, image, cv::ROTATE_90_CLOCKWISE);
+                    break;
+                case 8:  // 90 degrees counterclockwise
+                    cv::rotate(image, image, cv::ROTATE_90_COUNTERCLOCKWISE);
+                    break;
+                }
+            }
+        }
         // Convert the OpenCV image (BGR format) to QImage (RGB format)
         if (image.channels() == 4) {
             // Create QImage from OpenCV Mat with alpha channel
@@ -259,13 +287,7 @@ void ImageEditor::nextImage(ImagesData& imagesData){
 
     imagesData.setImageNumber(imagesData.getImageNumber() + 1);
 
-
-    const std::string imagePath = imagesData.getImageData(imagesData.getImageNumber())->imagePath;
-
-    QString qimagePath = QString::fromStdString(imagePath);
-
-    setImage(qimagePath);
-    std::cerr << "prochaine image : " << imagePath << std::endl;
+    setImage(*imagesData.getImageData(imagesData.getImageNumber()));
 }
 
 void ImageEditor::previousImage(ImagesData& imagesData){
@@ -274,12 +296,7 @@ void ImageEditor::previousImage(ImagesData& imagesData){
     imagesData.setImageNumber(imagesData.getImageNumber() - 1);
 
 
-    const std::string imagePath = imagesData.getImageData(imagesData.getImageNumber())->imagePath;
-
-    QString qimagePath = QString::fromStdString(imagePath);
-
-    setImage(qimagePath);
-    std::cerr << "prochaine image : " << imagePath << std::endl;
+    setImage(*imagesData.getImageData(imagesData.getImageNumber()));
 }
 
 void ImageEditor::reload(){

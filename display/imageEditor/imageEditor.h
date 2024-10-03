@@ -56,7 +56,7 @@ public:
 
     void reload();
 
-    void setImage(const QString& imagePath);
+    void setImage(ImageData& imageData);
 
     void nextImage(ImagesData& imagesData);
     void previousImage(ImagesData& imagesData);

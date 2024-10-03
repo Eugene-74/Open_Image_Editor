@@ -90,7 +90,6 @@ int main(int argc, char* argv[]) {
 
     std::string cheminImage = imagesData.getImageData(0)->imagePath;
 
-    QString qcheminImage = QString::fromStdString(cheminImage);
 
     std::vector<std::string> imagePaths;
     imagePaths.push_back(cheminImage);
@@ -101,7 +100,7 @@ int main(int argc, char* argv[]) {
     // std::chrono::duration<double, std::milli> duration = end - start;
     // std::cout << "Temps d'exécution: " << duration.count() << " ms" << std::endl;
 
-    window.setImage(qcheminImage);
+    window.setImage(*imagesData.getImageData(0));
     return app.exec();
 }
 
