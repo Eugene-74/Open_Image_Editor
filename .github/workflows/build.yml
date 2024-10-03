@@ -46,16 +46,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: |
-        choco install -y mingw
-        choco install -y opencv qt5
+    - name: Install MinGW
+      run: choco install -y mingw
       shell: cmd
 
     - name: Add MinGW to PATH
-      run: |
-        echo "C:\Program Files\mingw-w64\mingw64\bin" >> $Env:PATH
+      run: echo "C:\Program Files\mingw-w64\mingw64\bin" >> $Env:PATH
       shell: powershell
+
+    - name: Install OpenCV
+      run: choco install -y opencv
+      shell: cmd
+
+    - name: Download and Install Qt5
+      run: |
+        curl -L -o qt-installer.exe "https://download.qt.io/official_releases/qt/5.15/5.15.2/qt-opensource-windows-x86-5.15.2.exe"
+        start /wait qt-installer.exe /silent /dir "C:\Qt"
+      shell: cmd
 
     - name: Build the main project
       run: |
@@ -67,6 +74,7 @@ jobs:
       with:
         name: windows-build
         path: ./main-windows.exe
+
 
   release:
     runs-on: ubuntu-latest
