@@ -107,10 +107,10 @@ jobs:
       with:
         name: linux-build
 
-    - name: Download Windows executable
-      uses: actions/download-artifact@v4
-      with:
-        name: windows-build
+    # - name: Download Windows executable
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: windows-build
 
     - name: Create Release
       id: create_release
