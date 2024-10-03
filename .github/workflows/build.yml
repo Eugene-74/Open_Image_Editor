@@ -33,14 +33,14 @@ jobs:
         # sudo apt-get install qt5-default
         sudo apt-get install libstdc++-12-dev # Ensure the C++ libraries are available
     - name: Build Qt statically
-      run: |
-        git clone git://code.qt.io/qt/qt5.git
-        cd qt5
-        git checkout v5.15.2
-        ./init-repository
-        ./configure -static -prefix /usr/local/Qt-5.15.2-static
-        make -j$(nproc)
-        sudo make install
+      # run: |
+      #   git clone git://code.qt.io/qt/qt5.git
+      #   cd qt5
+      #   git checkout v5.15.2
+      #   ./init-repository
+      #   ./configure -static -prefix /usr/local/Qt-5.15.2-static
+      #   make -j$(nproc)
+      #   sudo make install
 
     - name: Build Exiv2 statically
       run: |
