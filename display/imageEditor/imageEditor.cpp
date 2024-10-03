@@ -30,6 +30,7 @@
 #include <QResizeEvent>
 #include <QSize>
 #include <QGraphicsOpacityEffect>
+#include <QTimer>
 
 
 // #include "../../functions/clickableLabel/ClickableLabel.h"
@@ -76,6 +77,7 @@ ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent)
             background-color: #b3b3b3; 
         }
     )");
+    // connect(timer, &QTimer::timeout, this, &ClickableLabel::resetStyle);
 }
 // Gérer l'entrée de la souris
 void ClickableLabel::enterEvent(QEvent* event) {
@@ -101,13 +103,14 @@ void ClickableLabel::mousePressEvent(QMouseEvent* event) {
             border-radius: 15px;
         }
         QLabel:hover {
-            border: 2px solid red;
+            border: 2px solid #969393;
             border-radius: 15px;
-            background-color: #b3b3b3; 
+            background-color: #9c9c9c; 
         }
     )");
     }
     QLabel::mousePressEvent(event);  // Call the base class implementation
+
 }
 
 void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
@@ -129,6 +132,8 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
     }
     QLabel::mouseReleaseEvent(event);  // Call the base class implementation
 }
+
+
 
 ImageEditor::ImageEditor(ImagesData& imagesData, QWidget* parent) : QMainWindow(parent) {
 

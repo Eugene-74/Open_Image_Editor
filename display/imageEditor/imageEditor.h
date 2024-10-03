@@ -19,7 +19,7 @@
 // #include "../../functions/clickableLabel/ClickableLabel.h"
 
 #include <QGraphicsOpacityEffect>
-
+#include <QTimer>
 
 
 class ClickableLabel : public QLabel {
@@ -39,6 +39,8 @@ protected:
 
     // Gestion de l'événement de clic de souris
     // void mousePressEvent(QMouseEvent* event) override;
+
+
 
 private:
     QGraphicsOpacityEffect* opacityEffect;  // Déclaration de l'effet d'opacité
@@ -66,6 +68,7 @@ protected:
 
 private:
     QLabel* imageLabel; // Pour afficher l'image
+
 };
 #endif
 

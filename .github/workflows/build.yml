@@ -30,7 +30,7 @@ jobs:
 
     - name: Build the main project
       run: |
-        g++ main.cpp qrc_resources.cpp -fPIC -L./lib -lfolders -o main-linux.exe \
+        g++ main.cpp ressources/qrc_resources.cpp -fPIC -L./lib -lfolders -o main-linux.exe \
         `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core opencv4` -lexiv2
 
     - name: Archive Linux artifacts
@@ -60,8 +60,11 @@ jobs:
 
     - name: Download Qt Installer
       run: |
-        curl -L -o qt-installer.exe https://download.qt.io/official_releases/online_installers/qt-unified-windows-x64-online.exe
+        curl -vLo qt-unified-windows-x86-online.exe http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+
+        # curl -L -o qt-installer.exe https://download.qt.io/official_releases/online_installers/qt-unified-windows-x64-online.exe
         # ls -la
+
       
     - name: Set Executable Permissions
       run: |
@@ -70,7 +73,8 @@ jobs:
     - name: Install Qt
       run: |
         # .\qt-installer.exe --platform minimal --script qt_installer_script.qs
-        .\qt-installer.exe --platform minimal --script qt_installer_script.qs --verbose
+        # .\qt-installer.exe --platform minimal --script qt_installer_script.qs --verbose
+        qt-unified-windows-x86-online.exe --verbose --script ..\ci\qt.qs
 
 
     - name: Build the main project
