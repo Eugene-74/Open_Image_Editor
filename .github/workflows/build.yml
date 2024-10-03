@@ -38,7 +38,7 @@ jobs:
       with:
         name: linux-build
         path: ./main-linux.exe
-   build-windows:
+  build-windows:
     runs-on: windows-latest
 
     steps:
