@@ -49,15 +49,22 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install vcpkg
+    # - name: Install vcpkg
+    #   run: |
+    #     git clone https://github.com/microsoft/vcpkg.git
+    #     cd vcpkg
+    #     .\bootstrap-vcpkg.bat
+
+    # - name: Install OpenCV and Exiv2 via vcpkg
+    #   run: |
+    #     .\vcpkg\vcpkg.exe install opencv exiv2 --triplet x64-windows
+    - name: Install vcpkg with binary caching
       run: |
         git clone https://github.com/microsoft/vcpkg.git
         cd vcpkg
         .\bootstrap-vcpkg.bat
-
-    - name: Install OpenCV and Exiv2 via vcpkg
-      run: |
-        .\vcpkg\vcpkg.exe install opencv exiv2 --triplet x64-windows
+        .\vcpkg.exe integrate install
+        .\vcpkg.exe install opencv exiv2 --triplet x64-windows --binarysource=default
 
     - name: (2) Get all tags for correct version determination
       working-directory:  ${{ github.workspace }}
