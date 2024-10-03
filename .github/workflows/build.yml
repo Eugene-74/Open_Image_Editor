@@ -64,7 +64,7 @@ jobs:
         cd vcpkg
         .\bootstrap-vcpkg.bat
         .\vcpkg.exe integrate install
-        .\vcpkg.exe install opencv exiv2 --triplet x64-windows --binarysource=default
+        .\vcpkg.exe install opencv[core] exiv2 --triplet x64-windows --binarysource=default
 
     - name: (2) Get all tags for correct version determination
       working-directory:  ${{ github.workspace }}
