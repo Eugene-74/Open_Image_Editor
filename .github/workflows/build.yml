@@ -1,9 +1,21 @@
-name: Build and Release Linux Executable
+name: Build C++ Project with Static Libraries
+
+env:
+  VERSION: v1.0.1
+  SOURCE_DIR:   ${{ github.workspace }}
+  QT_VERSION:   5.15.2
 
 on:
   push:
-    tags:
-      - 'v*..'  # Déclenche le workflow lors de la création d'un tag de version
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  deployments: write
 
 jobs:
   build-linux:
