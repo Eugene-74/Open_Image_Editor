@@ -1,5 +1,5 @@
 function Controller() {
-    this.silent = true; // run in silent mode
+    // No need for the silent property in the script
 }
 
 Controller.prototype.Illuminate = function() {
