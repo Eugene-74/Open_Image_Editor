@@ -2,6 +2,8 @@ name: Build C++ Project
 
 env:
   VERSION: v1.0.1
+  SOURCE_DIR:   ${{ github.workspace }}
+  QT_VERSION:   5.15.2
 
 on:
   push:
@@ -58,23 +60,20 @@ jobs:
     #   run: |
     #     .\vcpkg\vcpkg.exe install opencv exiv2
 
-    - name: Download Qt Installer
+    - name: (2) Get all tags for correct version determination
+      working-directory:  ${{ github.workspace }}
       run: |
-        curl -vLo qt-unified-windows-x86-online.exe http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
-
-        # curl -L -o qt-installer.exe https://download.qt.io/official_releases/online_installers/qt-unified-windows-x64-online.exe
-        # ls -la
-
-      
-    # - name: Set Executable Permissions
-    #   run: |
-    #      chmod +x qt-installer.exe
-      
-    - name: Install Qt
-      run: |
-        # .\qt-installer.exe --platform minimal --script qt_installer_script.qs
-        # .\qt-installer.exe --platform minimal --script qt_installer_script.qs --verbose
-        qt-unified-windows-x86-online.exe --verbose --script ..\ci\qt.qs
+        git fetch --all --tags -f
+    - name: (3) Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version:      ${{ env.QT_VERSION }}
+        host:         windows
+        target:       desktop
+        arch:         win64_msvc2019_64
+        dir:          ${{ runner.temp }}
+        modules:      qtcharts qt3d
+        setup-python: false
 
 
     - name: Build the main project
