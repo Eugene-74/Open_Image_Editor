@@ -34,10 +34,11 @@ signals:
 protected:
     void enterEvent(QEvent* event) override;
     void leaveEvent(QEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;   // Override mouse press event
+    void mouseReleaseEvent(QMouseEvent* event) override;  // Override mouse release event
+
     // Gestion de l'événement de clic de souris
-    void mousePressEvent(QMouseEvent* event) override {
-        emit clicked();  // Émettre le signal quand on clique
-    }
+    // void mousePressEvent(QMouseEvent* event) override;
 
 private:
     QGraphicsOpacityEffect* opacityEffect;  // Déclaration de l'effet d'opacité

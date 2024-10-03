@@ -1,1 +1,1 @@
-rcc -o qrc_resources.cpp ressources.qrc
+rcc -o ressources/qrc_resources.cpp ressources/ressources.qrc

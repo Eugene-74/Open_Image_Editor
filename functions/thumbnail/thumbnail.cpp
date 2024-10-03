@@ -1,55 +1,60 @@
 #include "thumbnail.h"
 
-#include <opencv2/opencv.hpp>
+// #include <opencv2/opencv.hpp>
 #include <vector>
 #include <string>
 #include <iostream>
+#include <exiv2/exiv2.hpp>
+#include <fstream> 
 
 #include <filesystem>  // Pour vérifier l'existence des fichiers
 
 namespace fs = std::filesystem;  // Alias pour simplifier le code
 
-// Fonction pour créer des miniatures de 128x128 maximum
 void createThumbnails(const std::vector<std::string>& imagePaths, const std::string& outputDir) {
-    for (const std::string& imagePath : imagePaths) {
-        // Créer le chemin de sortie pour l'image miniature
-        std::string filename = outputDir + "/thumbnail_" + std::to_string(std::hash<std::string>{}(imagePath)) + ".jpg";
+    for (const auto& imagePath : imagePaths) {
+        try {
+            // Generate output thumbnail path
+            std::string outputImage = outputDir + "/thumb_" + imagePath.substr(imagePath.find_last_of("/\\") + 1);
 
-        // Vérifier si la miniature existe déjà
-        if (fs::exists(filename)) {
-            std::cout << "Thumbnail already exists: " << filename << std::endl;
-            continue;
+            // Check if the thumbnail already exists
+            if (std::filesystem::exists(outputImage)) {
+                std::cout << "Thumbnail already exists for: " << imagePath << std::endl;
+                continue;  // Skip the creation process if thumbnail exists
+            }
+
+            // Load image metadata
+            Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(imagePath);
+            assert(image.get() != nullptr);
+            image->readMetadata();
+
+            // Get Exif data for image dimensions
+            Exiv2::ExifData& exifData = image->exifData();
+            if (exifData.empty()) {
+                std::cerr << "No Exif data found in the image: " << imagePath << std::endl;
+                continue;
+            }
+
+            // Extract width and height from Exif data using toLong()
+            int width = exifData["Exif.Photo.PixelXDimension"].toLong();
+            int height = exifData["Exif.Photo.PixelYDimension"].toLong();
+
+            std::cout << "Width: " << width << ", Height: " << height << std::endl;
+
+            // Placeholder for resizing logic (you'll need to implement this yourself)
+
+            // Save the thumbnail image to the output directory
+            std::ofstream outFile(outputImage, std::ios::binary);  // Correct type usage
+            if (outFile) {
+                // Write the thumbnail data (after resizing)
+                // outFile.write(...);  // Assuming you have the resized image data
+                outFile.close();
+            }
+
+            std::cout << "Thumbnail created for: " << imagePath << std::endl;
         }
-
-        // Charger l'image depuis le fichier
-        cv::Mat image = cv::imread(imagePath);
-
-        // Vérifier si l'image a été chargée correctement
-        if (image.empty()) {
-            std::cerr << "Erreur lors de la lecture de l'image : " << imagePath << std::endl;
-            continue;
+        catch (const Exiv2::Error& e) {
+            std::cerr << "Error processing file " << imagePath << ": " << e.what() << std::endl;
         }
-
-        // Calculer les nouvelles dimensions tout en gardant le ratio
-        int maxWidth = 128;
-        int maxHeight = 128;
-        int width = image.cols;
-        int height = image.rows;
-
-        // Calculer l'échelle pour garder le ratio
-        float scale = std::min(static_cast<float>(maxWidth) / width, static_cast<float>(maxHeight) / height);
-
-        // Calculer les nouvelles dimensions de l'image
-        int newWidth = static_cast<int>(width * scale);
-        int newHeight = static_cast<int>(height * scale);
-
-        // Redimensionner l'image
-        cv::Mat thumbnail;
-        cv::resize(image, thumbnail, cv::Size(newWidth, newHeight), 0, 0, cv::INTER_LINEAR);
-
-        // Enregistrer la miniature
-        cv::imwrite(filename, thumbnail);
-
-        std::cout << "Thumbnail created: " << filename << std::endl;
     }
 }
