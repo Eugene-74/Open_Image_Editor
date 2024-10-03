@@ -48,17 +48,22 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+      
+    - name: Cache vcpkg
+      uses: actions/cache@v3
+      with:
+        path: $(vcpkgRoot)
+        key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+        restore-keys: |
+          vcpkg-${{ runner.os }}-
 
-    - name: Install vcpkg
+    - name: Download pre-built vcpkg
       run: |
-        git clone https://github.com/microsoft/vcpkg.git
-        cd vcpkg
-        .\bootstrap-vcpkg.bat
-        .\vcpkg.exe integrate install
+        curl -L -o vcpkg.exe https://github.com/microsoft/vcpkg/releases/latest/download/vcpkg.exe
 
-    - name: Install OpenCV and Exiv2 via vcpkg
+    - name: Install dependencies using vcpkg
       run: |
-        .\vcpkg\vcpkg.exe install opencv exiv2
+        .\vcpkg\vcpkg.exe install --triplet x64-windows
 
     - name: (2) Get all tags for correct version determination
       working-directory:  ${{ github.workspace }}
