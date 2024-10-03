@@ -22,7 +22,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4  # Update to version 4 for Node.js 20 support
 
     - name: Install dependencies
       run: |
@@ -35,7 +35,7 @@ jobs:
         `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core opencv4` -lexiv2
 
     - name: Archive Linux artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4  # Update to version 4 for Node.js 20 support
       with:
         name: linux-build
         path: ./main.exe
@@ -46,26 +46,26 @@ jobs:
 
     steps:
     - name: Download Linux executable
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4  # Ensure you're using the latest version
       with:
-        name: linux-build  # This should match the artifact name from the build step
+        name: linux-build
 
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ env.VERSION }}  # Use the version defined at the top
-        name: Release ${{ env.VERSION }}  # Release name
+        tag_name: ${{ env.VERSION }}
+        name: Release ${{ env.VERSION }}
         body: |
           Automated release for commit ${{ github.sha }}.
-          Linux build: [Download Linux Executable](https://github.com/${{ github.repository }}/releases/download/${{ steps.create_release.outputs.tag_name }}/main.exe)
+          # Linux build: [Download Linux Executable](https://github.com/${{ github.repository }}/releases/download/${{ steps.create_release.outputs.tag_name }}/main.exe)
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload Linux executable
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ env.VERSION }}  # Use the same version constant
+        tag_name: ${{ env.VERSION }}
         files: ./main.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
