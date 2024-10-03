@@ -61,7 +61,7 @@ jobs:
     - name: Download Qt Installer
       run: |
         curl -L -o qt-installer.exe https://download.qt.io/official_releases/online_installers/qt-unified-windows-x64-online.exe
-        ls -la
+        # ls -la
       
     - name: Set Executable Permissions
       run: |
