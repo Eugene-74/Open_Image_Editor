@@ -2,8 +2,8 @@ name: Build C++ Project with Static Libraries
 
 env:
   VERSION: v1.0.1
-  SOURCE_DIR:   ${{ github.workspace }}
-  QT_VERSION:   5.15.2
+  SOURCE_DIR: ${{ github.workspace }}
+  QT_VERSION: 5.15.2
 
 on:
   push:
@@ -28,19 +28,9 @@ jobs:
     - name: Install dependencies and libraries
       run: |
         sudo apt-get update
-        sudo apt-get install -y g++ make cmake pkg-config libopencv-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libexiv2-dev
-        sudo apt-get install build-essential
-        # sudo apt-get install qt5-default
-        sudo apt-get install libstdc++-12-dev # Ensure the C++ libraries are available
-    # - name: Build Qt statically
-      # run: |
-      #   git clone git://code.qt.io/qt/qt5.git
-      #   cd qt5
-      #   git checkout v5.15.2
-      #   ./init-repository
-      #   ./configure -static -prefix /usr/local/Qt-5.15.2-static
-      #   make -j$(nproc)
-      #   sudo make install
+        sudo apt-get install -y g++ make cmake pkg-config libopencv-dev \
+          qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libexiv2-dev \
+          build-essential libstdc++-12-dev # Ensure the C++ libraries are available
 
     - name: Build Exiv2 statically
       run: |
@@ -61,9 +51,10 @@ jobs:
 
     - name: Build the main project with static libraries
       run: |
-        g++ main.cpp ressources/qrc_resources.cpp -fPIC -static -L/usr/local/Qt-5.15.2-static/lib -L./lib -lfolders -o main-linux.exe \
+        g++ main.cpp ressources/qrc_resources.cpp -fPIC -static -o main-linux.exe \
+        -L/usr/local/lib \
         `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core` \
-        -L/usr/local/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lexiv2 -static-libgcc -static-libstdc++
+        -lopencv_core -lopencv_imgproc -lopencv_highgui -lexiv2 -static-libgcc -static-libstdc++
 
     - name: Archive Linux artifacts
       uses: actions/upload-artifact@v4
