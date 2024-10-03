@@ -10,7 +10,7 @@ void MetaData::saveMetaData(const std::string& imageName){
     saveExifData(imageName, exifMetaData);
     saveXmpData(imageName, xmpMetaData);
     saveIptcData(imageName, iptcMetaData);
-
+    displayExifData(exifMetaData);
     std::cerr << "Métadonnées sauvegardées pour l'image : " << imageName << std::endl;
 }
 

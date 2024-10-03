@@ -7,7 +7,7 @@
 #include "../imageData/imageData.h"
 
 
-const std::string SAVE_DAT_PATH = "/home/eugene/save.bat";
+const std::string SAVE_DAT_PATH = "/home/eugene/save.dat";
 
 
 class ImagesData
@@ -63,7 +63,7 @@ public:
     std::vector<ImageData>  get();
 
 
-    void   saveImagesData() {
+    void saveImagesData() {
         // Sauvegarder l'objet dans un fichier binaire
         std::ofstream outFile(SAVE_DAT_PATH, std::ios::binary);
         save(outFile);
@@ -87,8 +87,10 @@ public:
 
         // Sauvegarder chaque image
         for (const auto& image : imagesData) {
+            std::cerr << image.get() << std::endl;
             image.save(out);
-            std::cerr << "save an image." << std::endl;
+
+            // std::cerr << "save an image." << std::endl;
 
         }
 

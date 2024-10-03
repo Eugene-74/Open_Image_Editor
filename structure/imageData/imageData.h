@@ -82,6 +82,10 @@ public:
         out.write(imagePath.c_str(), pathLength);
         folders.save(out);
         metaData.save(out);
+        // metaData.exifMetaData;
+        // displayExifData(metaData.exifMetaData);
+        // std::cerr <<  << std::endl;
+
     }
 
     void load(std::ifstream& in) {

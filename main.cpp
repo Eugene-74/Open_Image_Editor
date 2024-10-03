@@ -44,6 +44,8 @@ int main(int argc, char* argv[]) {
 
     startLoadingImagesFromFolder(path, imagesData);
     loadImagesMetaData(imagesData);
+
+
     // imagesData.getImageData(2)->setOrCreateExifData();
 
     // std::cerr << imagesData.getImageData(2)->getImageOrientation() << std::endl;
@@ -57,25 +59,31 @@ int main(int argc, char* argv[]) {
 
 
     loadImagesMetaData(imagesData);
-    int nbr = 1;
+    // int nbr = 1;
 
 
-    imagesData.getImageData(nbr)->getMetaData()->displayMetaData();
+    // imagesData.getImageData(nbr)->getMetaData()->displayMetaData();
 
-    imagesData.getImageData(nbr)->turnImage(8);
+    // imagesData.getImageData(nbr)->turnImage(8);
 
-    imagesData.getImageData(nbr)->getMetaData()->displayMetaData();
-
-
-    // imagesData.getImageData(2)->getMetaData()->get()["Exif.Image.Orientation"] = 8;
-
-    imagesData.getImageData(nbr)->saveMetaData();
+    // imagesData.getImageData(nbr)->getMetaData()->displayMetaData();
 
 
+    // // imagesData.getImageData(2)->getMetaData()->get()["Exif.Image.Orientation"] = 8;
 
-    // imagesData.getImageData(5)->saveMetaData();
+    // imagesData.getImageData(nbr)->saveMetaData();
+
+
+
     // imagesData.sa
     // imagesData.saveImagesData();
+
+    // TODO create a function
+    // Save metadata in the images itself
+    for (int i = 0;i < imagesData.get().size();i++){
+        imagesData.getImageData(i)->saveMetaData();
+        // std::cerr << imagesData.getImageData(i)->getImageName() << std::endl;
+    }
 
 
     QApplication app(argc, argv);
@@ -113,6 +121,7 @@ void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData& imag
 
     loadImagesMetaData(imagesData);
     imagesData.print();
+    std::cerr << imagesData.getImageData(3)->getImageOrientation() << std::endl;
 
 }
 

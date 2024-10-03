@@ -250,10 +250,10 @@ void ImageEditor::setImage(ImageData& imageData) {
                 // Rotate the image based on the EXIF orientation
                 switch (orientation) {
                 case 3:
-                    cv::rotate(image, image, cv::ROTATE_90_CLOCKWISE);
+                    cv::rotate(image, image, cv::ROTATE_180);
                     break;
                 case 6:
-                    cv::rotate(image, image, cv::ROTATE_180);
+                    cv::rotate(image, image, cv::ROTATE_90_CLOCKWISE);
                     break;
                 case 8:
                     cv::rotate(image, image, cv::ROTATE_90_COUNTERCLOCKWISE);
@@ -311,50 +311,51 @@ void ImageEditor::rotateLeft(){
     if (orientation == 1){
         orientation = 8;
     }
-    else if (orientation == 8){
+    else if (orientation == 3){
         orientation = 6;
     }
-    else if (orientation == 6){
+    else if (orientation == 8){
         orientation = 3;
     }
     else{
         orientation = 1;
     }
     imageData->turnImage(orientation);
-    std::cerr << "test1" << std::endl;
 
-    reload();
     imagesData.saveImagesData();
+    imageData->saveMetaData();
+    reload();
+
 
 }
 void ImageEditor::rotateRight(){
     ImageData* imageData = imagesData.getCurrentImageData();
     // imageData->turnImage(3);
     int orientation = imageData->getImageOrientation();
+
     if (orientation == 1){
-        orientation = 3;
-    }
-    else if (orientation == 3){
         orientation = 6;
     }
-    else if (orientation == 6){
+    else if (orientation == 3){
         orientation = 8;
+    }
+    else if (orientation == 6){
+        orientation = 3;
     }
     else{
         orientation = 1;
     }
     imageData->turnImage(orientation);
-    std::cerr << "test2" << std::endl;
 
-    reload();
     imagesData.saveImagesData();
-    std::cerr << "reload1" << std::endl;
+    imageData->saveMetaData();
+    reload();
+
 
 
 }
 
 void ImageEditor::reload(){
-    std::cerr << "reload2" << std::endl;
 
     setImage(*imagesData.getCurrentImageData());
 
