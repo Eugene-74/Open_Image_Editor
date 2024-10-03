@@ -66,9 +66,9 @@ jobs:
         # ls -la
 
       
-    - name: Set Executable Permissions
-      run: |
-         chmod +x qt-installer.exe
+    # - name: Set Executable Permissions
+    #   run: |
+    #      chmod +x qt-installer.exe
       
     - name: Install Qt
       run: |
