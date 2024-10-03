@@ -38,7 +38,7 @@ jobs:
       with:
         name: linux-build
         path: ./main-linux.exe
-  build-windows:
+   build-windows:
     runs-on: windows-latest
 
     steps:
@@ -47,13 +47,12 @@ jobs:
 
     - name: Download and Install MinGW
       run: |
-        curl -L -o mingw-installer.exe "https://sourceforge.net/projects/mingw/files/Installer/mingw-get-setup.exe/download"
-        start /wait mingw-installer.exe /silent
-        mingw-get install gcc g++ mingw32-libz mingw32-libz-dev
+        curl -L -o mingw.zip "https://phoenixnap.dl.sourceforge.net/project/mingw-w64/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/12.1.0/threads-posix/seh/x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z"
+        7z x mingw.zip -oC:\mingw
       shell: cmd
 
     - name: Add MinGW to PATH
-      run: echo "C:\MinGW\bin" >> $Env:PATH
+      run: echo "C:\mingw\bin" >> $Env:PATH
       shell: powershell
 
     - name: Install OpenCV
