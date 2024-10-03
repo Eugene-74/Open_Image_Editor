@@ -1,66 +1,102 @@
-name: Build C++ Project with Static Libraries
-
-env:
-  VERSION: v1.0.1
-  SOURCE_DIR: ${{ github.workspace }}
-  QT_VERSION: 5.15.2
+name: Build and Release Linux Executable
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-permissions:
-  contents: write
-  deployments: write
+    tags:
+      - 'v*..'  # Déclenche le workflow lors de la création d'un tag de version
 
 jobs:
   build-linux:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Install dependencies and libraries
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y g++ make cmake pkg-config libopencv-dev \
-          qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libexiv2-dev \
-          build-essential libstdc++-12-dev # Ensure the C++ libraries are available
+      - name: Install dependencies and libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ make cmake pkg-config libopencv-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libexiv2-dev
+          sudo apt-get install build-essential
+          sudo apt-get install libstdc++-12-dev # Ensure the C++ libraries are available
 
-    - name: Build Exiv2 statically
-      run: |
-        git clone https://github.com/Exiv2/exiv2.git
-        cd exiv2
-        mkdir build && cd build
-        cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF ..
-        make -j$(nproc)
-        sudo make install
+      - name: Build Qt statically
+        run: |
+          git clone git://code.qt.io/qt/qt5.git
+          cd qt5
+          git checkout v5.15.2
+          ./init-repository
+          ./configure -static -release -prefix /usr/local/Qt-5.15.2-static -nomake examples -nomake tests -opensource -confirm-license
+          make -j$(nproc)
+          sudo make install
 
-    - name: Build OpenCV statically
-      run: |
-        git clone https://github.com/opencv/opencv.git
-        mkdir -p opencv/build && cd opencv/build
-        cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release ..
-        make -j$(nproc)
-        sudo make install
+      - name: Build Exiv2 statically
+        run: |
+          git clone https://github.com/Exiv2/exiv2.git
+          cd exiv2
+          mkdir build && cd build
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/exiv2 ..
+          make -j$(nproc)
+          sudo make install
 
-    - name: Build the main project with static libraries
-      run: |
-        g++ main.cpp ressources/qrc_resources.cpp -fPIC -static -o main-linux.exe \
-        -L/usr/local/lib \
-        `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core` \
-        -lopencv_core -lopencv_imgproc -lopencv_highgui -lexiv2 -static-libgcc -static-libstdc++
+      - name: Build OpenCV statically
+        run: |
+          git clone https://github.com/opencv/opencv.git
+          mkdir -p opencv/build && cd opencv/build
+          cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local/opencv ..
+          make -j$(nproc)
+          sudo make install
 
-    - name: Archive Linux artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: linux-build
-        path: ./main-linux.exe
+      - name: Set environment variables for static linking
+        run: |
+          echo "/usr/local/Qt-5.15.2-static/lib" | sudo tee /etc/ld.so.conf.d/qt-static.conf
+          echo "/usr/local/exiv2/lib" | sudo tee /etc/ld.so.conf.d/exiv2.conf
+          echo "/usr/local/opencv/lib" | sudo tee /etc/ld.so.conf.d/opencv.conf
+          sudo ldconfig
+
+      - name: Build the main project with static libraries
+        run: |
+          g++ main.cpp ressources/qrc_resources.cpp -fPIC -static \
+          -I/usr/local/Qt-5.15.2-static/include \
+          -L/usr/local/Qt-5.15.2-static/lib \
+          -L/usr/local/exiv2/lib \
+          -L/usr/local/opencv/lib \
+          -lQt5Widgets -lQt5Gui -lQt5Core \
+          -lopencv_core -lopencv_imgproc -lopencv_highgui \
+          -lexiv2 \
+          -static-libgcc -static-libstdc++ \
+          -o main-linux
+
+      - name: Verify static linking
+        run: |
+          ldd main-linux || echo "Statically linked executable"
+
+      - name: Archive Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build
+          path: ./main-linux
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./main-linux
+          asset_name: main-linux
+          asset_content_type: application/octet-stream
 
 
   # build-windows:
