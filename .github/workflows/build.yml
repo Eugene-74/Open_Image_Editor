@@ -1,4 +1,4 @@
-name: Build C++ Project
+name: Build C++ Project with Static Libraries
 
 env:
   VERSION: v1.0.1
@@ -25,21 +25,50 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install dependencies
+    - name: Install dependencies and libraries
       run: |
         sudo apt-get update
-        sudo apt-get install -y g++ pkg-config libopencv-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libexiv2-dev
+        sudo apt-get install -y g++ make cmake pkg-config libopencv-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libexiv2-dev
 
-    - name: Build the main project with static linking
+    - name: Build Qt statically
       run: |
-        g++ main.cpp ressources/qrc_resources.cpp -fPIC -static -L./lib -lfolders -o main-linux.exe \
-        `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core opencv4` -lexiv2 -static-libgcc -static-libstdc++
+        git clone git://code.qt.io/qt/qt5.git
+        cd qt5
+        git checkout v5.15.2
+        ./init-repository
+        ./configure -static -prefix /usr/local/Qt-5.15.2-static
+        make -j$(nproc)
+        sudo make install
+
+    - name: Build Exiv2 statically
+      run: |
+        git clone https://github.com/Exiv2/exiv2.git
+        cd exiv2
+        mkdir build && cd build
+        cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF ..
+        make -j$(nproc)
+        sudo make install
+
+    - name: Build OpenCV statically
+      run: |
+        git clone https://github.com/opencv/opencv.git
+        mkdir -p opencv/build && cd opencv/build
+        cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release ..
+        make -j$(nproc)
+        sudo make install
+
+    - name: Build the main project with static libraries
+      run: |
+        g++ main.cpp ressources/qrc_resources.cpp -fPIC -static -L/usr/local/Qt-5.15.2-static/lib -L./lib -lfolders -o main-linux.exe \
+        `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core` \
+        -L/usr/local/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lexiv2 -static-libgcc -static-libstdc++
 
     - name: Archive Linux artifacts
       uses: actions/upload-artifact@v4
       with:
         name: linux-build
         path: ./main-linux.exe
+
 
   # build-windows:
   #   runs-on: windows-latest
