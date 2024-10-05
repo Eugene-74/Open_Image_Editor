@@ -138,6 +138,20 @@
     "qlabel": "cpp",
     "qvboxlayout": "cpp",
     "*.moc": "cpp",
-    "qgraphicsopacityeffect": "cpp"
+    "qgraphicsopacityeffect": "cpp",
+    "any": "cpp",
+    "strstream": "cpp",
+    "bitset": "cpp",
+    "cfenv": "cpp",
+    "csignal": "cpp",
+    "forward_list": "cpp",
+    "unordered_set": "cpp",
+    "regex": "cpp",
+    "source_location": "cpp",
+    "ranges": "cpp",
+    "shared_mutex": "cpp",
+    "stacktrace": "cpp",
+    "stdfloat": "cpp",
+    "typeindex": "cpp"
   }
 }

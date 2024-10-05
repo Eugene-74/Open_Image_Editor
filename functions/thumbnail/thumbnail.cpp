@@ -24,7 +24,7 @@ void createThumbnails(const std::vector<std::string>& imagePaths, const std::str
             }
 
             // Load image metadata
-            Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(imagePath);
+            std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(imagePath);
             assert(image.get() != nullptr);
             image->readMetadata();
 
@@ -35,9 +35,9 @@ void createThumbnails(const std::vector<std::string>& imagePaths, const std::str
                 continue;
             }
 
-            // Extract width and height from Exif data using toLong()
-            int width = exifData["Exif.Photo.PixelXDimension"].toLong();
-            int height = exifData["Exif.Photo.PixelYDimension"].toLong();
+            // Extract width and height from Exif data using toInt64()
+            int width = exifData["Exif.Photo.PixelXDimension"].toInt64();
+            int height = exifData["Exif.Photo.PixelYDimension"].toInt64();
 
             std::cout << "Width: " << width << ", Height: " << height << std::endl;
 

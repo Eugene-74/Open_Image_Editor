@@ -245,7 +245,7 @@ void ImageEditor::setImage(ImageData& imageData) {
             // Exiv2::ExifKey key("Exif.Image.Orientation");
 
             if (exifData["Exif.Image.Orientation"].count() != 0) {
-                int orientation = exifData["Exif.Image.Orientation"].toLong();
+                int orientation = exifData["Exif.Image.Orientation"].toInt64();
 
                 // Rotate the image based on the EXIF orientation
                 switch (orientation) {

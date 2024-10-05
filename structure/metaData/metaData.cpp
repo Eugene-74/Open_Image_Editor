@@ -18,7 +18,7 @@ void MetaData::saveMetaData(const std::string& imageName){
 int MetaData::getImageWidth() {
     for (auto& entry : exifMetaData) {
         if (entry.key() == "Exif.Image.ImageWidth") {
-            return entry.toLong();
+            return entry.toInt64();
         }
     }
     return -1;  // Retourne -1 si la largeur n'est pas trouvée
@@ -28,7 +28,7 @@ int MetaData::getImageWidth() {
 int MetaData::getImageHeight() {
     for (auto& entry : exifMetaData) {
         if (entry.key() == "Exif.Image.ImageLength") {
-            return entry.toLong();
+            return entry.toInt64();
         }
     }
     return -1;  // Retourne -1 si la hauteur n'est pas trouvée
@@ -37,7 +37,7 @@ int MetaData::getImageHeight() {
 int MetaData::getImageOrientation() {
     for (auto& entry : exifMetaData) {
         if (entry.key() == "Exif.Image.Orientation") {
-            return entry.toLong();
+            return entry.toInt64();
         }
     }
     return 1;  // Retourne -1 si l'orientation n'est pas trouvée
@@ -170,7 +170,7 @@ void MetaData::setOrCreateExifData(std::string& imagePath) {
 void MetaData::loadData(const std::string& imagePath) {
     try {
         // Charger l'image
-        Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(imagePath);
+        std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(imagePath);
         image->readMetadata();
         exifMetaData = image->exifData();
         xmpMetaData = image->xmpData();
@@ -189,7 +189,7 @@ void MetaData::loadData(const std::string& imagePath) {
 bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData) {
     try {
         // Charger l'image
-        Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(imagePath);
+        std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(imagePath);
         image->readMetadata();
 
         // Ajouter ou remplacer les métadonnées EXIF
@@ -207,7 +207,7 @@ bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData)
 bool saveXmpData(const std::string& imagePath, const Exiv2::XmpData& exifData) {
     try {
         // Charger l'image
-        Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(imagePath);
+        std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(imagePath);
         image->readMetadata();
 
         // Ajouter ou remplacer les métadonnées EXIF
@@ -225,7 +225,7 @@ bool saveXmpData(const std::string& imagePath, const Exiv2::XmpData& exifData) {
 bool saveIptcData(const std::string& imagePath, const Exiv2::IptcData& exifData) {
     try {
         // Charger l'image
-        Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(imagePath);
+        std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(imagePath);
         image->readMetadata();
 
         // Ajouter ou remplacer les métadonnées EXIF
@@ -316,7 +316,8 @@ void MetaData::load(std::ifstream& in) {
 
         // Insérer l'entrée dans metaData (la clé et la valeur)
         Exiv2::ExifKey exifKey(key);
-        Exiv2::Value::AutoPtr exifValue = Exiv2::Value::create(Exiv2::asciiString);
+        // Exiv2::Value::AutoPtr exifValue = Exiv2::Value::create(Exiv2::asciiString);
+        std::unique_ptr<Exiv2::Value> exifValue = Exiv2::Value::create(Exiv2::asciiString);
         exifValue->read(value);
         exifMetaData.add(exifKey, exifValue.get());
     }
