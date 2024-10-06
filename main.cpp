@@ -43,37 +43,7 @@ int main(int argc, char* argv[]) {
     loadImagesMetaData(imagesData);
 
 
-    // imagesData.getImageData(2)->setOrCreateExifData();
-
-    // std::cerr << imagesData.getImageData(2)->getImageOrientation() << std::endl;
-    // std::cerr << imagesData.getImageData(2)->getImageName() << std::endl;
-
-
-
-    // imagesData.getImageData(4)->getMetaData()->modifyExifValue("Exif.Image.Orientation", std::to_string(3));
-    // imagesData.getImageData(4)->getMetaData()->modifyExifValue("Exif.Thumbnail.Orientation", std::to_string(3));
-
-
-
     loadImagesMetaData(imagesData);
-    // int nbr = 1;
-
-
-    // imagesData.getImageData(nbr)->getMetaData()->displayMetaData();
-
-    // imagesData.getImageData(nbr)->turnImage(8);
-
-    // imagesData.getImageData(nbr)->getMetaData()->displayMetaData();
-
-
-    // // imagesData.getImageData(2)->getMetaData()->get()["Exif.Image.Orientation"] = 8;
-
-    // imagesData.getImageData(nbr)->saveMetaData();
-
-
-
-    // imagesData.sa
-    // imagesData.saveImagesData();
 
     // TODO create a function
     // Save metadata in the images itself
