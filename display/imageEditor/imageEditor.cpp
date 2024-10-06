@@ -115,22 +115,14 @@ imagesData(i) {
 
     int actionButtonSize;
     if (screenGeometry.width() < screenGeometry.height()) {
-        actionButtonSize = (screenGeometry.width() * 1 / 12) / pixelRatio;
+        actionButtonSize = (screenGeometry.width() * 1 / 24) / pixelRatio;
     }
     else {
-        actionButtonSize = (screenGeometry.height() * 1 / 12) / pixelRatio;
+        actionButtonSize = (screenGeometry.height() * 1 / 24) / pixelRatio;
 
     }
 
-
-    // QRect windowRect = screen->geometry();
-    // windowRect.setSize(size());
-    // std::cerr << screen->geometry().height() << std::endl;
-
-
-    // std::cerr << screenGeometry.size().width() << std::endl;
-    // std::cerr << screenGeometry.size().height() << std::endl;
-
+    QSize previewSize = (screenGeometry * 1 / 12) / pixelRatio;
 
     // Créer un widget central
     QWidget* centralWidget = new QWidget(this);
@@ -159,6 +151,7 @@ imagesData(i) {
 
 
 
+
     // Créer un layout horizontal pour les boutons
     QHBoxLayout* buttonLayout = new QHBoxLayout();
 
@@ -184,6 +177,16 @@ imagesData(i) {
 
     // Ajouter le layout des boutons au layout principal
     mainLayout->addLayout(buttonLayout);
+
+
+    QHBoxLayout* previewButtonLayout = new QHBoxLayout();
+
+    ClickableLabel* previewButton = new ClickableLabel("ressources/rotateLeft.png", this);
+    previewButton->setFixedSize(previewSize); // Définir la taille fixe du bouton (largeur, hauteur)
+    previewButtonLayout->addWidget(previewButton);
+
+    previewButtonLayout->setAlignment(Qt::AlignCenter);
+    mainLayout->addLayout(previewButtonLayout);
 
     // Connecter les images cliquables à des actions
     connect(buttonImageBefore, &ClickableLabel::clicked, [this]() { this->previousImage(); });

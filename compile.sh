@@ -1,13 +1,13 @@
 unset GTK_PATH
-# sh compileLib.sh
+sh compileLib.sh
     # -L./opencv/build/lib -lopencv_ts \
     # -I/usr/include/opencv4 \
+    # -I/libraries/Exiv2/exiv2/include/exiv2 -L/libraries/Exiv2/install/lib -lexiv2 \
+    # -I/libraries/opencv/include -L/libraries/opencv/build/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_imgproc\
 
 g++ -g main.cpp ressources/qrc_ressources.cpp \
     -fPIC \
-    -I/libraries/Exiv2/exiv2/include/exiv2 -L/libraries/Exiv2/install/lib -lexiv2 -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs \
-    -I/libraries/opencv/include -L/libraries/opencv/build/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_imgproc\
-    -L./lib -lfolders -o main.exe  `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core`
+    -L./lib -lfolders -o main.exe  `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core opencv4` -lexiv2
     # opencv4
 
 # g++ main.cpp ressources/qrc_resources.cpp \

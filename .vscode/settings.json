@@ -155,5 +155,6 @@
     "typeindex": "cpp",
     "qresizeevent": "cpp",
     "qpushbutton": "cpp"
-  }
+  },
+  "cmake.sourceDirectory": "/home/eugene/Documents/git/Easy_Image_Editor/libraries/opencv/apps"
 }

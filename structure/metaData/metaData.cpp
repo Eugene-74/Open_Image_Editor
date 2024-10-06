@@ -253,6 +253,7 @@ void displayExifData(const Exiv2::ExifData& data) {
     if (data.empty()) {
         std::cerr << "Aucune métadonnée EXIF disponible." << std::endl;
     }
+    std::cerr << "métadonnée : " << std::endl;
 
     for (const auto& item : data) {
         if (item.key().substr(0, 10) == "Exif.Image") {

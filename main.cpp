@@ -43,13 +43,13 @@ int main(int argc, char* argv[]) {
     loadImagesMetaData(imagesData);
 
 
-    loadImagesMetaData(imagesData);
+    // loadImagesMetaData(imagesData);
+    displayExifData(imagesData.getImageData(3)->getMetaData()->getExifData());
 
     // TODO create a function
     // Save metadata in the images itself
     for (int i = 0;i < imagesData.get().size();i++){
         imagesData.getImageData(i)->saveMetaData();
-        // std::cerr << imagesData.getImageData(i)->getImageName() << std::endl;
     }
 
 
