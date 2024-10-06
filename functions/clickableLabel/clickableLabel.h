@@ -1,5 +1,4 @@
-#ifndef CLICKABLELABEL_H
-#define CLICKABLELABEL_H
+#pragma once
 
 #include <QLabel>
 #include <QEvent>
@@ -28,4 +27,3 @@ private:
     QPixmap defaultPixmap;                  // Image par défaut pour le QLabel
 };
 
-#endif

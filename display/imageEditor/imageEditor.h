@@ -1,10 +1,4 @@
-
-#ifndef IMAGEEDITOR_H
-#define IMAGEEDITOR_H
-
-#include <iostream>
-#include "../../structure/imagesData/imagesData.h"
-
+#pragma once
 
 #include <QApplication>
 #include <QMainWindow>
@@ -16,11 +10,16 @@
 #include <QFileDialog>
 #include <QScreen>
 #include <QMessageBox>
-// #include "../../functions/clickableLabel/ClickableLabel.h"
-
-#include <QGraphicsOpacityEffect>
 #include <QTimer>
+#include <iostream>
+#include <QPushButton>
+#include <QResizeEvent>
+#include <QSize>
+#include <QGraphicsOpacityEffect>
 
+#include <opencv2/opencv.hpp>
+
+#include "../../structure/imagesData/imagesData.h"
 
 class ClickableLabel : public QLabel {
     Q_OBJECT
@@ -37,8 +36,6 @@ protected:
     void mousePressEvent(QMouseEvent* event) override;   // Override mouse press event
     void mouseReleaseEvent(QMouseEvent* event) override;  // Override mouse release event
 
-    // Gestion de l'événement de clic de souris
-    // void mousePressEvent(QMouseEvent* event) override;
 
 
 
@@ -76,5 +73,5 @@ private:
     QLabel* imageLabel; // Pour afficher l'image
 
 };
-#endif
+
 

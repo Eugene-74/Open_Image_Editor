@@ -1,10 +1,13 @@
-#include <iostream>
 #include "imageData.h"
 
-// #include "../../functions/vector/vector.h"
-#include <filesystem>
-#include "../metaData/metaData.h"
-
+ImageData& ImageData::operator=(const ImageData& other) {
+    if (this != &other) {
+        imagePath = other.imagePath;
+        folders = other.folders;
+        metaData = other.metaData;
+    }
+    return *this;
+}
 
 void ImageData::print() const {
     std::cerr << "Image : " << imagePath
@@ -83,9 +86,7 @@ int ImageData::getImageHeight(){
 int ImageData::getImageOrientation(){
     return metaData.getImageOrientation();
 }
-// Date ImageData::getImageDate(){
-//     return metaData.getImageDate();
-// }
+
 void ImageData::turnImage(int rotation){
 
 
@@ -94,8 +95,6 @@ void ImageData::turnImage(int rotation){
     metaData.modifyExifValue("Exif.Thumbnail.Orientation", std::to_string(rotation));
     metaData.modifyXmpValue("Xmp.tiff.Orientation", std::to_string(rotation));
 
-    // Exiv2::ExifData& exifData = metaData.get();
-    // Exiv2::ExifKey key("Exif.Image.Orientation");
 
 }
 
@@ -106,3 +105,20 @@ void ImageData::setOrCreateExifData(){
 
 
 
+
+void ImageData::save(std::ofstream& out) const {
+    size_t pathLength = imagePath.size();
+    out.write(reinterpret_cast<const char*>(&pathLength), sizeof(pathLength));
+    out.write(imagePath.c_str(), pathLength);
+    folders.save(out);
+    metaData.save(out);
+}
+
+void ImageData::load(std::ifstream& in) {
+    size_t pathLength;
+    in.read(reinterpret_cast<char*>(&pathLength), sizeof(pathLength));
+    imagePath.resize(pathLength);
+    in.read(&imagePath[0], pathLength);
+    folders.load(in);
+    metaData.load(in);
+}

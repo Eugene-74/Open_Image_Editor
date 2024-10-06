@@ -1,9 +1,15 @@
-#include <iostream>
 #include "metaData.h"
-#include <exiv2/exiv2.hpp>
-#include <ctime>
-// #include "../imagesData/imagesData.h"
 
+
+MetaData& MetaData::operator=(const MetaData& other) {
+    if (this != &other) {
+        exifMetaData = other.exifMetaData; // Utiliser l'opérateur d'affectation de std::vector
+        xmpMetaData = other.xmpMetaData; // Utiliser l'opérateur d'affectation de std::vector
+        iptcMetaData = other.iptcMetaData; // Utiliser l'opérateur d'affectation de std::vector
+
+    }
+    return *this;
+}
 
 void MetaData::saveMetaData(const std::string& imageName){
 
@@ -179,7 +185,7 @@ void MetaData::loadData(const std::string& imagePath) {
 
 
     }
-    catch (Exiv2::Error& e) {
+    catch (const Exiv2::Error& e) {
         std::cerr << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what() << std::endl;
         // return Exiv2::ExifData(); // Retourne des métadonnées vides en cas d'erreur
     }
@@ -199,7 +205,7 @@ bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData)
         image->writeMetadata();
         return true;
     }
-    catch (Exiv2::Error& e) {
+    catch (const Exiv2::Error& e) {
         std::cerr << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what() << std::endl;
         return false;
     }
@@ -217,7 +223,7 @@ bool saveXmpData(const std::string& imagePath, const Exiv2::XmpData& exifData) {
         image->writeMetadata();
         return true;
     }
-    catch (Exiv2::Error& e) {
+    catch (const Exiv2::Error& e) {
         std::cerr << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what() << std::endl;
         return false;
     }
@@ -235,7 +241,7 @@ bool saveIptcData(const std::string& imagePath, const Exiv2::IptcData& exifData)
         image->writeMetadata();
         return true;
     }
-    catch (Exiv2::Error& e) {
+    catch (const Exiv2::Error& e) {
         std::cerr << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what() << std::endl;
         return false;
     }

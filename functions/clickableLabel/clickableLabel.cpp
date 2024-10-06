@@ -1,5 +1,4 @@
-#include "ClickableLabel.h"
-#include <QGraphicsOpacityEffect>
+#include "clickableLabel.h"
 
 
 ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent)

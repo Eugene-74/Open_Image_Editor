@@ -3,7 +3,6 @@
 #!/bin/bash
 
 # Compile individual files
-g++ -I./functions -I./structure -I./display `pkg-config --cflags --libs opencv4` `pkg-config --cflags --libs exiv2` -c structure/date/date.cpp -o lib/date.o
 g++ -I./functions -I./structure -I./display `pkg-config --cflags --libs opencv4` `pkg-config --cflags --libs exiv2` -c structure/folders/folders.cpp -o lib/folders.o
 g++ -I./functions -I./structure -I./display `pkg-config --cflags --libs opencv4` `pkg-config --cflags --libs exiv2` -c structure/metaData/metaData.cpp -o lib/metaData.o
 g++ -I./functions -I./structure -I./display `pkg-config --cflags --libs opencv4` `pkg-config --cflags --libs exiv2` -c structure/imageData/imageData.cpp -o lib/imageData.o

@@ -1,5 +1,4 @@
-#ifndef IMAGESDATA_H
-#define IMAGESDATA_H
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -24,30 +23,10 @@ public:
 
     ImagesData(const std::vector<ImageData> a) : imagesData(a) {}
 
-    ImagesData& operator=(const ImagesData& other) {
-        if (this != &other) {
-            imagesData = other.imagesData; // Utiliser l'opérateur d'affectation de std::vector
-            imageNumber = other.imageNumber;
+    ImagesData& operator=(const ImagesData& other);
 
-        }
-        return *this;
-    }
-
-    void setImageNumber(int nbr){
-
-        if (nbr < 0){
-            nbr += imagesData.size();
-        }
-        else if (nbr >= imagesData.size()){
-            nbr -= imagesData.size();
-
-        }
-
-        imageNumber = nbr;
-    }
-    int getImageNumber(){
-        return imageNumber;
-    }
+    void setImageNumber(int nbr);
+    int getImageNumber();
 
 
     void print() const;
@@ -63,63 +42,12 @@ public:
     std::vector<ImageData>  get();
 
 
-    void saveImagesData() {
-        // Sauvegarder l'objet dans un fichier binaire
-        std::ofstream outFile(SAVE_DAT_PATH, std::ios::binary);
-        save(outFile);
-        outFile.close();
-
-        std::cerr << "ImagesData saved in : " << SAVE_DAT_PATH << std::endl;
-
-
-    }
-
-
-
-
-
+    void saveImagesData();
 
     // Sauvegarder l'objet entier en binaire
-    void save(std::ofstream& out) const {
-        // Sauvegarder le nombre d'images
-        size_t imageCount = imagesData.size();
-        out.write(reinterpret_cast<const char*>(&imageCount), sizeof(imageCount));
-
-        // Sauvegarder chaque image
-        for (const auto& image : imagesData) {
-            std::cerr << image.get() << std::endl;
-            image.save(out);
-
-            // std::cerr << "save an image." << std::endl;
-
-        }
-
-        // Sauvegarder imageNumber
-        out.write(reinterpret_cast<const char*>(&imageNumber), sizeof(imageNumber));
-
-    }
+    void save(std::ofstream& out) const;
 
     // Charger l'objet à partir d'un fichier binaire
-    void load(std::ifstream& in) {
-        // Effacer les données existantes
-        imagesData.clear();
-
-        // Lire le nombre d'images
-        size_t imageCount;
-        in.read(reinterpret_cast<char*>(&imageCount), sizeof(imageCount));
-
-        // Lire chaque image
-        imagesData.resize(imageCount);
-        for (size_t i = 0; i < imageCount; ++i) {
-            imagesData[i].load(in);
-        }
-
-        // Charger imageNumber
-        in.read(reinterpret_cast<char*>(&imageNumber), sizeof(imageNumber));
-    }
+    void load(std::ifstream& in);
 };
 ImagesData loadImagesData();
-
-
-
-#endif

@@ -152,6 +152,8 @@
     "shared_mutex": "cpp",
     "stacktrace": "cpp",
     "stdfloat": "cpp",
-    "typeindex": "cpp"
+    "typeindex": "cpp",
+    "qresizeevent": "cpp",
+    "qpushbutton": "cpp"
   }
 }

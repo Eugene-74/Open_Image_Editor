@@ -1,16 +1,10 @@
-#ifndef METADATA_H
-#define METADATA_H
+#pragma once
 
 #include <iostream>
 #include <vector>
 #include <fstream>
 #include <exiv2/exiv2.hpp>
-// #include "../imagesData/imagesData.h"
-
-
-
-#include "../../structure/date/date.h"
-
+#include <ctime>
 
 class MetaData
 {
@@ -27,24 +21,10 @@ public:
     MetaData(const MetaData& other) : exifMetaData(other.exifMetaData) {}
 
     // Opérateur d'affectation
-    MetaData& operator=(const MetaData& other) {
-        if (this != &other) {
-            exifMetaData = other.exifMetaData; // Utiliser l'opérateur d'affectation de std::vector
-            xmpMetaData = other.xmpMetaData; // Utiliser l'opérateur d'affectation de std::vector
-            iptcMetaData = other.iptcMetaData; // Utiliser l'opérateur d'affectation de std::vector
+    MetaData& operator=(const MetaData& other);
 
-        }
-        return *this;
-    }
-
-    // Exiv2::ExifData& getExif();
 
     void setExif(const Exiv2::ExifData& toAddMetaData);
-
-    // void loadExifMetaData(const std::string& imagePath);
-    // void loadXmpMetaData(const std::string& imagePath);
-    // void loadIptcMetaData(const std::string& imagePath);
-
 
     void saveMetaData(const std::string& imageName);
 
@@ -95,5 +75,3 @@ void displayXmpData(const Exiv2::XmpData& data);
 void displayIptcData(const Exiv2::IptcData& data);
 
 
-
-#endif

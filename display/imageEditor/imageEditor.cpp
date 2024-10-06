@@ -1,37 +1,5 @@
 #include "imageEditor.h"
 
-#include <opencv2/opencv.hpp>
-#include <iostream>
-#include <QApplication>
-#include <QLabel>
-#include <QWidget>
-
-#include <QPixmap>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QPainter>
-
-#include "../main.h"
-#include "../../structure/imagesData/imagesData.h"
-
-// #include "../../structure/imagesData/imagesData.h"
-
-// using ImagesData = std::vector<ImageData*>;
-
-
-#include <QApplication>
-#include <QMainWindow>
-#include <QPushButton>
-#include <QLabel>
-#include <QPixmap>
-#include <QVBoxLayout>
-#include <QWidget>
-#include <QFileDialog>
-#include <QResizeEvent>
-#include <QSize>
-#include <QGraphicsOpacityEffect>
-#include <QTimer>
-
 
 // #include "../../functions/clickableLabel/ClickableLabel.h"
 
@@ -241,8 +209,6 @@ void ImageEditor::setImage(ImageData& imageData) {
             std::cerr << "No EXIF data found in image!" << std::endl;
         }
         else {
-            // Check for the orientation tag
-            // Exiv2::ExifKey key("Exif.Image.Orientation");
 
             if (exifData["Exif.Image.Orientation"].count() != 0) {
                 int orientation = exifData["Exif.Image.Orientation"].toInt64();

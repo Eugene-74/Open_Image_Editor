@@ -8,13 +8,10 @@
 #include <algorithm>
 #include <exiv2/exiv2.hpp>
 
-#include "structure/date/date.h"
 #include "structure/folders/folders.h"
 
 #include "functions/vector/vector.h"
 #include "functions/thumbnail/thumbnail.h"
-
-
 #include "display/imageEditor/imageEditor.h"
 
 #include <QApplication>
@@ -201,14 +198,7 @@ bool estImage(const std::string& cheminFichier) {
 
 
 
-Date timestampToDate(time_t timestamp) {
-    // Convertir le timestamp en une structure tm
-    std::tm* timeStruct = std::localtime(&timestamp);
 
-    Date date = Date(timeStruct->tm_sec, timeStruct->tm_min, timeStruct->tm_hour, timeStruct->tm_mday, timeStruct->tm_mon + 1, timeStruct->tm_year + 1900);
-
-    return date;
-}
 
 void loadImagesMetaData(ImagesData& imagesData) {
     for (int i = 0; i < imagesData.get().size(); ++i) {

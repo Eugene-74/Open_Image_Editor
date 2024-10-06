@@ -1,8 +1,39 @@
-#include <iostream>
-#include "../imagesData/imagesData.h"
-#include "../imageData/imageData.h"
+#include "imagesData.h"
+
+ImagesData& ImagesData::operator = (const ImagesData& other){
+    if (this != &other) {
+        imagesData = other.imagesData; // Utiliser l'opérateur d'affectation de std::vector
+        imageNumber = other.imageNumber;
+
+    }
+    return *this;
+}
+
+void ImagesData::setImageNumber(int nbr){
+
+    if (nbr < 0){
+        nbr += imagesData.size();
+    }
+    else if (nbr >= imagesData.size()){
+        nbr -= imagesData.size();
+
+    }
+
+    imageNumber = nbr;
+}
+int ImagesData::getImageNumber(){
+    return imageNumber;
+}
+void ImagesData::saveImagesData() {
+    // Sauvegarder l'objet dans un fichier binaire
+    std::ofstream outFile(SAVE_DAT_PATH, std::ios::binary);
+    save(outFile);
+    outFile.close();
+
+    std::cerr << "ImagesData saved in : " << SAVE_DAT_PATH << std::endl;
 
 
+}
 
 void ImagesData::print() const {
     std::cerr << "ImagesData : \n";
@@ -55,6 +86,43 @@ ImageData* ImagesData::getCurrentImageData() {
 }
 std::vector<ImageData>  ImagesData::get() {
     return imagesData;
+}
+
+void ImagesData::save(std::ofstream& out) const {
+    // Sauvegarder le nombre d'images
+    size_t imageCount = imagesData.size();
+    out.write(reinterpret_cast<const char*>(&imageCount), sizeof(imageCount));
+
+    // Sauvegarder chaque image
+    for (const auto& image : imagesData) {
+        std::cerr << image.get() << std::endl;
+        image.save(out);
+
+        // std::cerr << "save an image." << std::endl;
+
+    }
+
+    // Sauvegarder imageNumber
+    out.write(reinterpret_cast<const char*>(&imageNumber), sizeof(imageNumber));
+
+}
+
+void ImagesData::load(std::ifstream& in) {
+    // Effacer les données existantes
+    imagesData.clear();
+
+    // Lire le nombre d'images
+    size_t imageCount;
+    in.read(reinterpret_cast<char*>(&imageCount), sizeof(imageCount));
+
+    // Lire chaque image
+    imagesData.resize(imageCount);
+    for (size_t i = 0; i < imageCount; ++i) {
+        imagesData[i].load(in);
+    }
+
+    // Charger imageNumber
+    in.read(reinterpret_cast<char*>(&imageNumber), sizeof(imageNumber));
 }
 
 ImagesData loadImagesData() {
