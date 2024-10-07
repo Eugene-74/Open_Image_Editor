@@ -45,24 +45,20 @@ ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent)
             background-color: #b3b3b3; 
         }
     )");
-    // connect(timer, &QTimer::timeout, this, &ClickableLabel::resetStyle);
 }
 // Gérer l'entrée de la souris
 void ClickableLabel::enterEvent(QEvent* event) {
-    // opacityEffect->setOpacity(0.5);  // Réduire l'opacité à 50% au survol
     QLabel::enterEvent(event);
 }
 
 // Gérer la sortie de la souris
 void ClickableLabel::leaveEvent(QEvent* event) {
-    // opacityEffect->setOpacity(1.0);  // Remettre l'opacité à 100% après le survol
     QLabel::leaveEvent(event);
 }
 
 void ClickableLabel::mousePressEvent(QMouseEvent* event) {
 
     if (event->button() == Qt::LeftButton) {
-        // Emit clicked signal
         // emit clicked();
         // Change style to indicate click
         setStyleSheet(R"(
@@ -178,12 +174,39 @@ imagesData(i) {
     // Ajouter le layout des boutons au layout principal
     mainLayout->addLayout(buttonLayout);
 
+    std::vector<QString> imagePaths;
+
+    for (int i = 0; i < 3; ++i) {
+        if (imagesData.getImageNumber() - i > 0) {
+            std::cerr << imagesData.getImageNumber() - i << std::endl;
+            imagePaths.push_back(QString::fromStdString(imagesData.getImageData(imagesData.getImageNumber() - i)->getImagePath()));
+        }
+    }
+
+    imagePaths.push_back(QString::fromStdString(imagesData.getCurrentImageData()->getImagePath()));
+
+    for (int i = 1; i < 4; ++i) {
+        if (imagesData.getImageNumber() + i < imagesData.get().size()) {
+            std::cerr << imagesData.getImageNumber() + i << std::endl;
+
+            imagePaths.push_back(QString::fromStdString(imagesData.getImageData(imagesData.getImageNumber() + i)->getImagePath()));
+            std::cerr << "path : " << imagesData.getImageData(imagesData.getImageNumber() + i)->getImagePath() << "\n" << std::endl;
+        }
+    }
 
     QHBoxLayout* previewButtonLayout = new QHBoxLayout();
 
-    ClickableLabel* previewButton = new ClickableLabel("ressources/rotateLeft.png", this);
-    previewButton->setFixedSize(previewSize); // Définir la taille fixe du bouton (largeur, hauteur)
-    previewButtonLayout->addWidget(previewButton);
+    // ClickableLabel* previewButton = new ClickableLabel("ressources/rotateLeft.png", this);
+    // previewButton->setFixedSize(previewSize); // Définir la taille fixe du bouton (largeur, hauteur)
+    // previewButtonLayout->addWidget(previewButton);
+    for (int i = 0; i < imagePaths.size(); ++i) {
+
+        std::cerr << imagePaths[i].toStdString() << "\n" << std::endl;
+
+        ClickableLabel* previewButton = new ClickableLabel(imagePaths[i], this);
+        previewButton->setFixedSize(previewSize); // Set the fixed size for the button
+        previewButtonLayout->addWidget(previewButton); // Add the button to the layout
+    }
 
     previewButtonLayout->setAlignment(Qt::AlignCenter);
     mainLayout->addLayout(previewButtonLayout);

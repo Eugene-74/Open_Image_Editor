@@ -154,7 +154,10 @@
     "stdfloat": "cpp",
     "typeindex": "cpp",
     "qresizeevent": "cpp",
-    "qpushbutton": "cpp"
+    "qpushbutton": "cpp",
+    "*.ipp": "cpp",
+    "slist": "cpp",
+    "valarray": "cpp"
   },
   "cmake.sourceDirectory": "/home/eugene/Documents/git/Easy_Image_Editor/libraries/opencv/apps"
 }
