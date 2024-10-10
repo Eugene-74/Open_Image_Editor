@@ -9,7 +9,6 @@ ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize 
     cv::Mat image = cv::imread(imagePath.toStdString(), cv::IMREAD_UNCHANGED);
 
     size = (size - QSize(10, 10));
-    // size = QSize(100, 100);
 
     if (!image.empty()) {
 
@@ -149,14 +148,14 @@ imagesData(i) {
 
     QSize actionSize(actionButtonSize, actionButtonSize);
 
-    ClickableLabel* imageRotateLeft = new ClickableLabel("ressources/rotateRight.png", this, actionSize);
-    imageRotateLeft->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
-
-    ClickableLabel* imageRotateRight = new ClickableLabel("ressources/rotateLeft.png", this, actionSize);
+    ClickableLabel* imageRotateRight = new ClickableLabel("ressources/rotateRight.png", this, actionSize);
     imageRotateRight->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
 
-    actionButtonLayout->addWidget(imageRotateLeft);
+    ClickableLabel* imageRotateLeft = new ClickableLabel("ressources/rotateLeft.png", this, actionSize);
+    imageRotateLeft->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
+
     actionButtonLayout->addWidget(imageRotateRight);
+    actionButtonLayout->addWidget(imageRotateLeft);
 
     actionButtonLayout->setAlignment(Qt::AlignCenter);
 
@@ -212,7 +211,6 @@ imagesData(i) {
 
 void ImageEditor::setImage(ImageData& imageData) {
     std::string imagePath = imageData.getImagePath();
-    std::cerr << imagePath << std::endl;
 
 
     cv::Mat image = cv::imread(imagePath, cv::IMREAD_UNCHANGED);
@@ -337,11 +335,6 @@ void ImageEditor::reload(){
 
     setImage(*imagesData.getCurrentImageData());
     updatePreview();
-    // if (&previewButtonLayout == nullptr) {
-    //     std::cerr << "previewButtonLayout est nul." << std::endl;
-    //     return;
-    // }
-    // updatePreview(previewButtonLayout); // Assurez-vous que cette fonction fonctionne correctement
 
 
 
@@ -357,7 +350,6 @@ void ImageEditor::reloadMainImage(){
 
 void ImageEditor::updatePreview() {
     std::vector<QString> imagePaths;
-    std::cerr << "NBR ::" << imagesData.getImageNumber() << std::endl;
 
     int currentImageNumber = imagesData.getImageNumber();
     int totalImages = imagesData.get().size();
@@ -366,9 +358,7 @@ void ImageEditor::updatePreview() {
     for (int i = 4; i >= 1; --i) {
 
         if (currentImageNumber - i >= 0) {
-            std::cerr << currentImageNumber - i << std::endl;
             imagePaths.push_back(QString::fromStdString(imagesData.getImageData(currentImageNumber - i)->getImagePath()));
-            // std::cerr << "path : " << imagesData.getImageData(currentImageNumber - i)->getImagePath() << "\n" << std::endl;
             under += 1;
         }
     }
@@ -378,9 +368,7 @@ void ImageEditor::updatePreview() {
     for (int i = 1; i <= 4; ++i) {
 
         if (currentImageNumber + i <= totalImages - 1) {
-            std::cerr << currentImageNumber + i << std::endl;
             imagePaths.push_back(QString::fromStdString(imagesData.getImageData(currentImageNumber + i)->getImagePath()));
-            // std::cerr << "path : " << imagesData.getImageData(currentImageNumber + i)->getImagePath() << "\n" << std::endl;
         }
     }
 
@@ -393,7 +381,6 @@ void ImageEditor::updatePreview() {
 
     // Créer et ajouter les nouveaux boutons
     for (int i = 0; i < imagePaths.size(); ++i) {
-        // std::cerr << imagePaths[i].toStdString() << "\n" << std::endl;
 
         ClickableLabel* previewButton = new ClickableLabel(imagePaths[i], this, previewSize);
 

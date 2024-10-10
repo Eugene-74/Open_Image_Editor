@@ -91,16 +91,12 @@ void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData& imag
 }
 
 void countImagesFromFolder(const std::string path, int& nbrImage){
-    // int nbrImage;
-    // std::cerr << "path : " << path << std::endl;
 
     for (const auto& entry : fs::directory_iterator(path)) {
         if (fs::is_regular_file(entry.status())) {
-            // std::cerr << "nombre d'image à charger :: " << nbrImage << std::endl;
 
             if (estImage(entry.path())) {
                 nbrImage += 1;
-                // std::cerr << "nombre d'image à charger ::: " << nbrImage << std::endl;
 
             }
         }
@@ -146,7 +142,7 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
 
 bool estImage(const std::string& cheminFichier) {
     // Liste des extensions d'images courantes
-    std::vector<std::string> extensionsImages = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp" };
+    std::vector<std::string> extensionsImages = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp",".webp" };
 
     // Récupération de l'extension du fichier
     std::string extension = fs::path(cheminFichier).extension().string();

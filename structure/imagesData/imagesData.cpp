@@ -105,7 +105,6 @@ void ImagesData::save(std::ofstream& out) const {
         std::cerr << image.get() << std::endl;
         image.save(out);
 
-        // std::cerr << "save an image." << std::endl;
 
     }
 
