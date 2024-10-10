@@ -16,6 +16,8 @@
 #include <QResizeEvent>
 #include <QSize>
 #include <QGraphicsOpacityEffect>
+#include <QPointer>
+
 
 #include <opencv2/opencv.hpp>
 
@@ -25,7 +27,7 @@ class ClickableLabel : public QLabel {
     Q_OBJECT
 
 public:
-    explicit ClickableLabel(const QString& i, QWidget* parent = nullptr);
+    explicit ClickableLabel(const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0));
 
 signals:
     void clicked();  // Signal émis lors du clic
@@ -40,7 +42,7 @@ protected:
 
 
 private:
-    QGraphicsOpacityEffect* opacityEffect;  // Déclaration de l'effet d'opacité
+    // QGraphicsOpacityEffect* opacityEffect;  // Déclaration de l'effet d'opacité
     QPixmap defaultPixmap;                  // Image par défaut pour le QLabel
 };
 
@@ -48,7 +50,7 @@ class ImageEditor : public QMainWindow {
     Q_OBJECT
 
 public:
-    ImagesData& imagesData;
+
     // Constructor
     ImageEditor(ImagesData& a, QWidget* parent = nullptr);   // Initialize the reference member
 
@@ -63,6 +65,7 @@ public:
     void previousImage();
     void rotateLeft();
     void rotateRight();
+    void updatePreview();
 
 
 protected:
@@ -70,8 +73,15 @@ protected:
 
 
 private:
+    ImagesData& imagesData;
     QLabel* imageLabel; // Pour afficher l'image
+    // QVBoxLayout& mainLayout;
+    QHBoxLayout* previewButtonLayout;
+    QSize previewSize;
+
+
 
 };
+
 
 

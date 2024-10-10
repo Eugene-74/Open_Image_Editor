@@ -33,6 +33,8 @@ namespace fs = std::filesystem;
 
 
 int main(int argc, char* argv[]) {
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
     std::string path = "/home/eugene/Documents/photo trié";
     ImagesData imagesData(std::vector<ImageData>{});
     imagesData = loadImagesData();
@@ -40,40 +42,37 @@ int main(int argc, char* argv[]) {
 
 
     startLoadingImagesFromFolder(path, imagesData);
-    loadImagesMetaData(imagesData);
+    // loadImagesMetaData(imagesData);
 
 
     // loadImagesMetaData(imagesData);
-    displayExifData(imagesData.getImageData(3)->getMetaData()->getExifData());
+    // displayExifData(imagesData.getImageData(3)->getMetaData()->getExifData());
 
     // TODO create a function
     // Save metadata in the images itself
-    for (int i = 0;i < imagesData.get().size();i++){
-        imagesData.getImageData(i)->saveMetaData();
-    }
+    // for (int i = 0;i < imagesData.get().size();i++){
+    //     imagesData.getImageData(i)->saveMetaData();
+    // }
 
 
     QApplication app(argc, argv);
 
+
+
+    imagesData.setImageNumber(0);
     ImageEditor window(imagesData);
 
     window.showMaximized();
 
     // window.show();
 
-    imagesData.setImageNumber(0);
 
-    std::string cheminImage = imagesData.getImageData(0)->imagePath;
+    // std::string cheminImage = imagesData.getCurrentImageData()->imagePath;
+    // std::vector<std::string> imagePaths;
+    // imagePaths.push_back(cheminImage);
+    // createThumbnails(imagePaths, THUMBNAIL_PATH);
 
 
-    std::vector<std::string> imagePaths;
-    imagePaths.push_back(cheminImage);
-
-    // auto start = std::chrono::high_resolution_clock::now();
-    createThumbnails(imagePaths, THUMBNAIL_PATH);
-    // auto end = std::chrono::high_resolution_clock::now();
-    // std::chrono::duration<double, std::milli> duration = end - start;
-    // std::cout << "Temps d'exécution: " << duration.count() << " ms" << std::endl;
 
     window.setImage(*imagesData.getImageData(0));
     return app.exec();
@@ -88,7 +87,6 @@ void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData& imag
 
     loadImagesMetaData(imagesData);
     imagesData.print();
-    std::cerr << imagesData.getImageData(3)->getImageOrientation() << std::endl;
 
 }
 

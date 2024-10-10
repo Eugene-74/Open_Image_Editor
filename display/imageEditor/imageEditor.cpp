@@ -3,24 +3,35 @@
 
 // #include "../../functions/clickableLabel/ClickableLabel.h"
 
-ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent)
+ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize size)
     : QLabel(parent) {
     // Load image using OpenCV with alpha channel
     cv::Mat image = cv::imread(imagePath.toStdString(), cv::IMREAD_UNCHANGED);
+
+    size = (size - QSize(10, 10));
+    // size = QSize(100, 100);
+
     if (!image.empty()) {
+
         // Convert BGR to RGB (if needed) and keep alpha channel
         if (image.channels() == 4) {
             // Create QImage from OpenCV Mat with alpha channel
             QImage qImage(image.data, image.cols, image.rows, image.step[0], QImage::Format_ARGB32);
             // Set the pixmap with scaling
-            this->setPixmap(QPixmap::fromImage(qImage).scaled(this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            this->setPixmap(QPixmap::fromImage(qImage).scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
         else {
             // Handle images without an alpha channel (optional)
             cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
+
+            cv::Mat resizedImage;
+
+            // cv::resize(image, resizedImage, cv::Size(size.width(), size.height()), 0, 0, cv::INTER_CUBIC); // Utilisez INTER_LINEAR pour un redimensionnement rapide
+            // QImage qImage(resizedImage.data, resizedImage.cols, resizedImage.rows, resizedImage.step[0], QImage::Format_RGB888);
             QImage qImage(image.data, image.cols, image.rows, image.step[0], QImage::Format_RGB888);
-            this->setPixmap(QPixmap::fromImage(qImage).scaled(this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            this->setPixmap(QPixmap::fromImage(qImage).scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
+
     }
     else {
         // Handle the case where the image is not valid (optional)
@@ -104,21 +115,23 @@ imagesData(i) {
 
     QScreen* screen = QGuiApplication::primaryScreen();
     QRect screenR = screen->availableGeometry();
+    // TO delete after 
+    screenR.setSize(QSize(1920, 1080));
     qreal pixelRatio = screen->devicePixelRatio();
-    // screen->geometry()
-        // QRect screenSize = screen.geometry();
     QSize screenGeometry = screenR.size();
 
     int actionButtonSize;
     if (screenGeometry.width() < screenGeometry.height()) {
-        actionButtonSize = (screenGeometry.width() * 1 / 24) / pixelRatio;
+        actionButtonSize = (screenGeometry.width() * 1 / 12) / pixelRatio;
     }
     else {
-        actionButtonSize = (screenGeometry.height() * 1 / 24) / pixelRatio;
+        actionButtonSize = (screenGeometry.height() * 1 / 12) / pixelRatio;
 
     }
 
-    QSize previewSize = (screenGeometry * 1 / 12) / pixelRatio;
+    previewSize = (screenGeometry * 1 / 12) / pixelRatio;
+
+
 
     // Créer un widget central
     QWidget* centralWidget = new QWidget(this);
@@ -126,17 +139,21 @@ imagesData(i) {
 
     // Créer un layout vertical pour toute la fenêtre
     QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
-    mainLayout->setSpacing(10);  // Espacement entre les widgets
-    mainLayout->setContentsMargins(20, 20, 20, 20); // Marges autour des bords (gauche, haut, droite, bas)
+    mainLayout->setSpacing(5);  // Espacement entre les widgets
+    mainLayout->setContentsMargins(5, 5, 5, 5); // Marges autour des bords (gauche, haut, droite, bas)
+
 
     QHBoxLayout* actionButtonLayout = new QHBoxLayout();
     // Créer les boutons avec des tailles spécifiques
     // TODO mieux deffir pour que il soit carrer
-    ClickableLabel* imageRotateLeft = new ClickableLabel("ressources/rotateRight.png", this);
-    imageRotateLeft->setFixedSize(actionButtonSize, actionButtonSize); // Définir la taille fixe du bouton (largeur, hauteur)
 
-    ClickableLabel* imageRotateRight = new ClickableLabel("ressources/rotateLeft.png", this);
-    imageRotateRight->setFixedSize(actionButtonSize, actionButtonSize); // Définir la taille fixe du bouton (largeur, hauteur)
+    QSize actionSize(actionButtonSize, actionButtonSize);
+
+    ClickableLabel* imageRotateLeft = new ClickableLabel("ressources/rotateRight.png", this, actionSize);
+    imageRotateLeft->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
+
+    ClickableLabel* imageRotateRight = new ClickableLabel("ressources/rotateLeft.png", this, actionSize);
+    imageRotateRight->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
 
     actionButtonLayout->addWidget(imageRotateLeft);
     actionButtonLayout->addWidget(imageRotateRight);
@@ -148,15 +165,16 @@ imagesData(i) {
 
 
 
+
     // Créer un layout horizontal pour les boutons
     QHBoxLayout* buttonLayout = new QHBoxLayout();
 
     // Créer les boutons avec des tailles spécifiques
-    ClickableLabel* buttonImageBefore = new ClickableLabel("ressources/before.png", this);
-    buttonImageBefore->setFixedSize(actionButtonSize, actionButtonSize); // Définir la taille fixe du bouton (largeur, hauteur)
+    ClickableLabel* buttonImageBefore = new ClickableLabel("ressources/before.png", this, actionSize);
+    buttonImageBefore->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
 
-    ClickableLabel* buttonImageNext = new ClickableLabel("ressources/next.png", this);
-    buttonImageNext->setFixedSize(actionButtonSize, actionButtonSize); // Définir la taille fixe du bouton (largeur, hauteur)
+    ClickableLabel* buttonImageNext = new ClickableLabel("ressources/next.png", this, actionSize);
+    buttonImageNext->setFixedSize(actionSize);// Définir la taille fixe du bouton (largeur, hauteur)
 
 
     // Créer un QLabel pour afficher l'image
@@ -174,42 +192,13 @@ imagesData(i) {
     // Ajouter le layout des boutons au layout principal
     mainLayout->addLayout(buttonLayout);
 
-    std::vector<QString> imagePaths;
 
-    for (int i = 0; i < 3; ++i) {
-        if (imagesData.getImageNumber() - i > 0) {
-            std::cerr << imagesData.getImageNumber() - i << std::endl;
-            imagePaths.push_back(QString::fromStdString(imagesData.getImageData(imagesData.getImageNumber() - i)->getImagePath()));
-        }
-    }
+    previewButtonLayout = new QHBoxLayout();
 
-    imagePaths.push_back(QString::fromStdString(imagesData.getCurrentImageData()->getImagePath()));
-
-    for (int i = 1; i < 4; ++i) {
-        if (imagesData.getImageNumber() + i < imagesData.get().size()) {
-            std::cerr << imagesData.getImageNumber() + i << std::endl;
-
-            imagePaths.push_back(QString::fromStdString(imagesData.getImageData(imagesData.getImageNumber() + i)->getImagePath()));
-            std::cerr << "path : " << imagesData.getImageData(imagesData.getImageNumber() + i)->getImagePath() << "\n" << std::endl;
-        }
-    }
-
-    QHBoxLayout* previewButtonLayout = new QHBoxLayout();
-
-    // ClickableLabel* previewButton = new ClickableLabel("ressources/rotateLeft.png", this);
-    // previewButton->setFixedSize(previewSize); // Définir la taille fixe du bouton (largeur, hauteur)
-    // previewButtonLayout->addWidget(previewButton);
-    for (int i = 0; i < imagePaths.size(); ++i) {
-
-        std::cerr << imagePaths[i].toStdString() << "\n" << std::endl;
-
-        ClickableLabel* previewButton = new ClickableLabel(imagePaths[i], this);
-        previewButton->setFixedSize(previewSize); // Set the fixed size for the button
-        previewButtonLayout->addWidget(previewButton); // Add the button to the layout
-    }
-
-    previewButtonLayout->setAlignment(Qt::AlignCenter);
     mainLayout->addLayout(previewButtonLayout);
+
+
+    updatePreview();
 
     // Connecter les images cliquables à des actions
     connect(buttonImageBefore, &ClickableLabel::clicked, [this]() { this->previousImage(); });
@@ -218,7 +207,7 @@ imagesData(i) {
     connect(imageRotateRight, &ClickableLabel::clicked, [this]() { this->rotateRight(); });
 
     // Définir le titre de la fenêtre
-    setWindowTitle("Changer l'image dans QMainWindow");
+    setWindowTitle("Changer l'image");
 }
 
 void ImageEditor::setImage(ImageData& imageData) {
@@ -266,11 +255,6 @@ void ImageEditor::setImage(ImageData& imageData) {
             QImage qImage(image.data, image.cols, image.rows, image.step[0], QImage::Format_RGB888);
             imageLabel->setPixmap(QPixmap::fromImage(qImage).scaled(imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
-        // cv::cvtColor(image, image, cv::COLOR_BGR2RGB); // Convert BGR to RGB
-        // QImage qImage(image.data, image.cols, image.rows, image.step[0], QImage::Format_RGB888);
-
-        // // Set the QPixmap to the label with scaling
-        // imageLabel->setPixmap(QPixmap::fromImage(qImage).scaled(imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     }
     else {
         imageLabel->setText("Erreur : Image non valide !");
@@ -285,6 +269,7 @@ void ImageEditor::nextImage(){
     imagesData.setImageNumber(imagesData.getImageNumber() + 1);
 
     setImage(*imagesData.getImageData(imagesData.getImageNumber()));
+    reload();
 }
 
 void ImageEditor::previousImage(){
@@ -294,6 +279,7 @@ void ImageEditor::previousImage(){
 
 
     setImage(*imagesData.getImageData(imagesData.getImageNumber()));
+    reload();
 }
 
 void ImageEditor::rotateLeft(){
@@ -350,6 +336,14 @@ void ImageEditor::rotateRight(){
 void ImageEditor::reload(){
 
     setImage(*imagesData.getCurrentImageData());
+    updatePreview();
+    // if (&previewButtonLayout == nullptr) {
+    //     std::cerr << "previewButtonLayout est nul." << std::endl;
+    //     return;
+    // }
+    // updatePreview(previewButtonLayout); // Assurez-vous que cette fonction fonctionne correctement
+
+
 
 }
 
@@ -361,3 +355,59 @@ void ImageEditor::reloadMainImage(){
 
 
 
+void ImageEditor::updatePreview() {
+    std::vector<QString> imagePaths;
+    std::cerr << "NBR ::" << imagesData.getImageNumber() << std::endl;
+
+    int currentImageNumber = imagesData.getImageNumber();
+    int totalImages = imagesData.get().size();
+
+    int under = 0;
+    for (int i = 4; i >= 1; --i) {
+
+        if (currentImageNumber - i >= 0) {
+            std::cerr << currentImageNumber - i << std::endl;
+            imagePaths.push_back(QString::fromStdString(imagesData.getImageData(currentImageNumber - i)->getImagePath()));
+            // std::cerr << "path : " << imagesData.getImageData(currentImageNumber - i)->getImagePath() << "\n" << std::endl;
+            under += 1;
+        }
+    }
+
+    imagePaths.push_back(QString::fromStdString(imagesData.getCurrentImageData()->getImagePath()));
+
+    for (int i = 1; i <= 4; ++i) {
+
+        if (currentImageNumber + i <= totalImages - 1) {
+            std::cerr << currentImageNumber + i << std::endl;
+            imagePaths.push_back(QString::fromStdString(imagesData.getImageData(currentImageNumber + i)->getImagePath()));
+            // std::cerr << "path : " << imagesData.getImageData(currentImageNumber + i)->getImagePath() << "\n" << std::endl;
+        }
+    }
+
+    // Effacer les boutons existants
+    QLayoutItem* item;
+    while ((item = previewButtonLayout->takeAt(0)) != nullptr) {
+        delete item->widget(); // Supprimer le widget associé
+        delete item; // Supprimer l'élément de layout
+    }
+
+    // Créer et ajouter les nouveaux boutons
+    for (int i = 0; i < imagePaths.size(); ++i) {
+        // std::cerr << imagePaths[i].toStdString() << "\n" << std::endl;
+
+        ClickableLabel* previewButton = new ClickableLabel(imagePaths[i], this, previewSize);
+
+        previewButton->setFixedSize(previewSize); // Définir la taille fixe du bouton
+        int imageNbr = imagesData.getImageNumber() + i - under;
+        connect(previewButton, &ClickableLabel::clicked, [this, imageNbr]() {
+            imagesData.setImageNumber(imageNbr);
+            setImage(*imagesData.getImageData(imagesData.getImageNumber()));
+            // TODO reload not working ::: Segmentation fault (core dumped) ::: so preview doesn't update
+            // reload();
+            });
+
+        previewButtonLayout->addWidget(previewButton); // Ajouter le bouton au layout
+    }
+
+    previewButtonLayout->setAlignment(Qt::AlignCenter);
+}

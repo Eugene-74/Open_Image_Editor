@@ -12,12 +12,19 @@ ImagesData& ImagesData::operator = (const ImagesData& other){
 void ImagesData::setImageNumber(int nbr){
 
     if (nbr < 0){
-        nbr += imagesData.size();
+        nbr += 1;
     }
     else if (nbr >= imagesData.size()){
-        nbr -= imagesData.size();
-
+        nbr -= 1;
     }
+
+    // if (nbr < 0){
+    //     nbr += imagesData.size();
+    // }
+    // else if (nbr >= imagesData.size()){
+    //     nbr -= imagesData.size();
+
+    // }
 
     imageNumber = nbr;
 }
