@@ -111,7 +111,6 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
 
 ImageEditor::ImageEditor(Data& i, QWidget* parent) : QMainWindow(parent), // Initialize the base class
 data(i) {
-
     QScreen* screen = QGuiApplication::primaryScreen();
     QRect screenR = screen->availableGeometry();
     // TO delete after 
@@ -129,7 +128,6 @@ data(i) {
     }
 
     previewSize = (screenGeometry * 1 / 12) / pixelRatio;
-
 
 
     // Créer un widget central
@@ -210,11 +208,14 @@ data(i) {
 
     connect(imageRotateLeft, &ClickableLabel::clicked, [this]() { this->rotateLeft(); });
     connect(imageRotateRight, &ClickableLabel::clicked, [this]() { this->rotateRight(); });
+
     connect(imageDelete, &ClickableLabel::clicked, [this]() { this->data.preDeleteImage(data.imagesData.getImageNumber()); });
 
 
     // Définir le titre de la fenêtre
     setWindowTitle("Changer l'image");
+    setImage(*data.imagesData.getImageData(data.imagesData.getImageNumber()));
+
 }
 
 void ImageEditor::setImage(ImageData& imageData) {

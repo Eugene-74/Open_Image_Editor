@@ -12,6 +12,6 @@ public:
     void preDeleteImage(int imageNbr);
 
     void revocerDeletedImage(int imageNbr);
-
+    void removeDeletedImages();
 
 };

@@ -6,7 +6,6 @@
 #include "../imageData/imageData.h"
 
 
-const std::string SAVE_DAT_PATH = "/home/eugene/save.dat";
 
 
 class ImagesData
@@ -46,7 +45,7 @@ public:
     std::vector<ImageData>  get();
 
 
-    void saveImagesData();
+    void saveImagesData(std::string savePath);
 
     // Sauvegarder l'objet entier en binaire
     void save(std::ofstream& out) const;
@@ -55,4 +54,4 @@ public:
     void load(std::ifstream& in);
 
 };
-ImagesData loadImagesData();
+ImagesData loadImagesData(std::string savePath);

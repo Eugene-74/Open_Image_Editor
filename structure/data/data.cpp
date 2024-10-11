@@ -18,3 +18,15 @@ void Data::revocerDeletedImage(int imageNbr){
     deletedImagesData.removeImage(*imageData);
 
 }
+
+void Data::removeDeletedImages() {
+    for (const auto& deletedImage : deletedImagesData.get()) {
+        // Find the image in imagesData
+        auto it = std::find(imagesData.get().begin(), imagesData.get().end(), deletedImage);
+        // If it exists, remove it from imagesData
+        if (it != imagesData.get().end()) {
+            imagesData.get().erase(it);
+        }
+    }
+}
+

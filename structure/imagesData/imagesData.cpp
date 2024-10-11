@@ -25,15 +25,15 @@ void ImagesData::setImageNumber(int nbr){
     //     nbr -= imagesData.size();
 
     // }
-
+    // std::cerr << "nbr" << nbr << std::endl;
     imageNumber = nbr;
 }
 int ImagesData::getImageNumber(){
     return imageNumber;
 }
-void ImagesData::saveImagesData() {
+void ImagesData::saveImagesData(std::string savePath) {
     // Sauvegarder l'objet dans un fichier binaire
-    std::ofstream outFile(SAVE_DAT_PATH, std::ios::binary);
+    std::ofstream outFile(savePath, std::ios::binary);
     save(outFile);
     outFile.close();
 
@@ -89,7 +89,8 @@ ImageData* ImagesData::getImageData(int id) {
 
 ImageData* ImagesData::getCurrentImageData() {
     if (imageNumber < 0 || imageNumber >= imagesData.size()) {
-        throw std::out_of_range("Index hors limites");
+
+        throw std::out_of_range("getCurrentImageData : Index hors limites");
     }
     return &imagesData.at(imageNumber);
     // renvoie un pointeur ce qui permet une modification automatique dans ImagesData
@@ -135,11 +136,11 @@ void ImagesData::load(std::ifstream& in) {
     in.read(reinterpret_cast<char*>(&imageNumber), sizeof(imageNumber));
 }
 
-ImagesData loadImagesData() {
+ImagesData loadImagesData(std::string savePath) {
     ImagesData loadedImagesData(std::vector<ImageData>{});
 
     // Ouvrir le fichier en mode binaire
-    std::ifstream inFile(SAVE_DAT_PATH, std::ios::binary);
+    std::ifstream inFile(savePath, std::ios::binary);
 
     // Vérifier si le fichier a été ouvert correctement
     if (!inFile) {

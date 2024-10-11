@@ -29,6 +29,7 @@ namespace fs = std::filesystem;
 
 // impossible de faire l'orientation effective des PNG
 
+const std::string SAVE_DAT_PATH = "/home/eugene/save.dat";
 
 
 
@@ -44,13 +45,15 @@ int main(int argc, char* argv[]) {
     data.imagesData = imagesData;
     data.deletedImagesData = deletedImagesData;
 
+    // TODO mettre const dans un autre fichier et ajouter bouton save + pop up quand on ferme
+    // charger de save.dat
+    data.imagesData = loadImagesData(SAVE_DAT_PATH);
 
-    data.imagesData = loadImagesData();
 
 
     startLoadingImagesFromFolder(path, data.imagesData);
 
-
+    data.imagesData.print();
     // loadImagesMetaData(imagesData);
 
 
@@ -68,8 +71,11 @@ int main(int argc, char* argv[]) {
 
 
 
-    imagesData.setImageNumber(0);
+    data.imagesData.setImageNumber(0);
+
     ImageEditor window(data);
+
+
 
     window.showMaximized();
 
@@ -83,7 +89,6 @@ int main(int argc, char* argv[]) {
 
 
 
-    window.setImage(*data.imagesData.getImageData(0));
     return app.exec();
 }
 
@@ -95,7 +100,6 @@ void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData& imag
     loadImagesFromFolder(imagePaths, imagePaths, imagesData, nbrImage);
 
     loadImagesMetaData(imagesData);
-    imagesData.print();
 
 }
 
