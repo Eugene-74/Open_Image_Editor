@@ -22,6 +22,8 @@
 #include <opencv2/opencv.hpp>
 
 #include "../../structure/imagesData/imagesData.h"
+#include "../../structure/data/data.h"
+
 
 class ClickableLabel : public QLabel {
     Q_OBJECT
@@ -52,7 +54,7 @@ class ImageEditor : public QMainWindow {
 public:
 
     // Constructor
-    ImageEditor(ImagesData& a, QWidget* parent = nullptr);   // Initialize the reference member
+    ImageEditor(Data& a, QWidget* parent = nullptr);   // Initialize the reference member
 
     ~ImageEditor(){}
 
@@ -73,11 +75,12 @@ protected:
 
 
 private:
-    ImagesData& imagesData;
+    // ImagesData& imagesData;
     QLabel* imageLabel; // Pour afficher l'image
     // QVBoxLayout& mainLayout;
     QHBoxLayout* previewButtonLayout;
     QSize previewSize;
+    Data data;
 
 
 

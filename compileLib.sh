@@ -7,6 +7,7 @@ g++ -I./functions -I./structure -I./display `pkg-config --cflags --libs opencv4`
 g++ -I./functions -I./structure -I./display `pkg-config --cflags --libs opencv4` `pkg-config --cflags --libs exiv2` -c structure/metaData/metaData.cpp -o lib/metaData.o
 g++ -I./functions -I./structure -I./display `pkg-config --cflags --libs opencv4` `pkg-config --cflags --libs exiv2` -c structure/imageData/imageData.cpp -o lib/imageData.o
 g++ -I./functions -I./structure -I./display `pkg-config --cflags --libs opencv4` `pkg-config --cflags --libs exiv2` -c structure/imagesData/imagesData.cpp -o lib/imagesData.o
+g++ -I./functions -I./structure -I./display `pkg-config --cflags --libs opencv4` `pkg-config --cflags --libs exiv2` -c structure/data/data.cpp -o lib/data.o
 
 # Compile the rest of the files similarly...
 

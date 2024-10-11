@@ -109,8 +109,8 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
 
 
 
-ImageEditor::ImageEditor(ImagesData& i, QWidget* parent) : QMainWindow(parent), // Initialize the base class
-imagesData(i) {
+ImageEditor::ImageEditor(Data& i, QWidget* parent) : QMainWindow(parent), // Initialize the base class
+data(i) {
 
     QScreen* screen = QGuiApplication::primaryScreen();
     QRect screenR = screen->availableGeometry();
@@ -154,8 +154,13 @@ imagesData(i) {
     ClickableLabel* imageRotateLeft = new ClickableLabel("ressources/rotateLeft.png", this, actionSize);
     imageRotateLeft->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
 
+    ClickableLabel* imageDelete = new ClickableLabel("ressources/rotateRight.png", this, actionSize);
+    imageDelete->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
+
     actionButtonLayout->addWidget(imageRotateRight);
     actionButtonLayout->addWidget(imageRotateLeft);
+    actionButtonLayout->addWidget(imageDelete);
+
 
     actionButtonLayout->setAlignment(Qt::AlignCenter);
 
@@ -202,8 +207,11 @@ imagesData(i) {
     // Connecter les images cliquables à des actions
     connect(buttonImageBefore, &ClickableLabel::clicked, [this]() { this->previousImage(); });
     connect(buttonImageNext, &ClickableLabel::clicked, [this]() { this->nextImage(); });
+
     connect(imageRotateLeft, &ClickableLabel::clicked, [this]() { this->rotateLeft(); });
     connect(imageRotateRight, &ClickableLabel::clicked, [this]() { this->rotateRight(); });
+    connect(imageDelete, &ClickableLabel::clicked, [this]() { this->data.preDeleteImage(data.imagesData.getImageNumber()); });
+
 
     // Définir le titre de la fenêtre
     setWindowTitle("Changer l'image");
@@ -263,6 +271,7 @@ void ImageEditor::setImage(ImageData& imageData) {
 
 void ImageEditor::nextImage(){
 
+    ImagesData& imagesData = data.imagesData;
 
     imagesData.setImageNumber(imagesData.getImageNumber() + 1);
 
@@ -272,6 +281,7 @@ void ImageEditor::nextImage(){
 
 void ImageEditor::previousImage(){
 
+    ImagesData& imagesData = data.imagesData;
 
     imagesData.setImageNumber(imagesData.getImageNumber() - 1);
 
@@ -281,6 +291,9 @@ void ImageEditor::previousImage(){
 }
 
 void ImageEditor::rotateLeft(){
+
+    ImagesData& imagesData = data.imagesData;
+
     ImageData* imageData = imagesData.getCurrentImageData();
     int orientation = imageData->getImageOrientation();
 
@@ -305,6 +318,9 @@ void ImageEditor::rotateLeft(){
 
 }
 void ImageEditor::rotateRight(){
+
+    ImagesData& imagesData = data.imagesData;
+
     ImageData* imageData = imagesData.getCurrentImageData();
     // imageData->turnImage(3);
     int orientation = imageData->getImageOrientation();
@@ -333,6 +349,9 @@ void ImageEditor::rotateRight(){
 
 void ImageEditor::reload(){
 
+    ImagesData& imagesData = data.imagesData;
+
+
     setImage(*imagesData.getCurrentImageData());
     updatePreview();
 
@@ -349,6 +368,9 @@ void ImageEditor::reloadMainImage(){
 
 
 void ImageEditor::updatePreview() {
+
+    ImagesData& imagesData = data.imagesData;
+
     std::vector<QString> imagePaths;
 
     int currentImageNumber = imagesData.getImageNumber();
@@ -387,8 +409,8 @@ void ImageEditor::updatePreview() {
         previewButton->setFixedSize(previewSize); // Définir la taille fixe du bouton
         int imageNbr = imagesData.getImageNumber() + i - under;
         connect(previewButton, &ClickableLabel::clicked, [this, imageNbr]() {
-            imagesData.setImageNumber(imageNbr);
-            setImage(*imagesData.getImageData(imagesData.getImageNumber()));
+            data.imagesData.setImageNumber(imageNbr);
+            setImage(*data.imagesData.getImageData(data.imagesData.getImageNumber()));
             // TODO reload not working ::: Segmentation fault (core dumped) ::: so preview doesn't update
             // reload();
             });

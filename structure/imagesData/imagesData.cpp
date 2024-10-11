@@ -76,6 +76,7 @@ void ImagesData::removeImage(const ImageData& image) {
     }
 }
 
+
 ImageData* ImagesData::getImageData(int id) {
     if (id < 0 || id >= imagesData.size()) {
         throw std::out_of_range("Index hors limites");
@@ -83,6 +84,8 @@ ImageData* ImagesData::getImageData(int id) {
     return &imagesData.at(id);
     // renvoie un pointeur ce qui permet une modification automatique dans ImagesData
 }
+
+
 
 ImageData* ImagesData::getCurrentImageData() {
     if (imageNumber < 0 || imageNumber >= imagesData.size()) {
@@ -107,6 +110,7 @@ void ImagesData::save(std::ofstream& out) const {
 
 
     }
+
 
     // Sauvegarder imageNumber
     out.write(reinterpret_cast<const char*>(&imageNumber), sizeof(imageNumber));
@@ -151,3 +155,4 @@ ImagesData loadImagesData() {
 
     return loadedImagesData; // Retourner l'objet chargé
 }
+

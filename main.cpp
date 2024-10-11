@@ -36,12 +36,21 @@ int main(int argc, char* argv[]) {
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     std::string path = "/home/eugene/Documents/photo trié";
+    Data data;
     ImagesData imagesData(std::vector<ImageData>{});
-    imagesData = loadImagesData();
+    ImagesData deletedImagesData(std::vector<ImageData>{});
     using ImagesData = std::vector<ImageData*>;
 
+    data.imagesData = imagesData;
+    data.deletedImagesData = deletedImagesData;
 
-    startLoadingImagesFromFolder(path, imagesData);
+
+    data.imagesData = loadImagesData();
+
+
+    startLoadingImagesFromFolder(path, data.imagesData);
+
+
     // loadImagesMetaData(imagesData);
 
 
@@ -60,7 +69,7 @@ int main(int argc, char* argv[]) {
 
 
     imagesData.setImageNumber(0);
-    ImageEditor window(imagesData);
+    ImageEditor window(data);
 
     window.showMaximized();
 
@@ -74,7 +83,7 @@ int main(int argc, char* argv[]) {
 
 
 
-    window.setImage(*imagesData.getImageData(0));
+    window.setImage(*data.imagesData.getImageData(0));
     return app.exec();
 }
 

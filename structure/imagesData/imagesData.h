@@ -13,6 +13,9 @@ class ImagesData
 {
 public:
     std::vector<ImageData> imagesData;
+
+
+
     int imageNumber;
 
     ImagesData() : imageNumber(0) {}
@@ -32,8 +35,9 @@ public:
     void print() const;
 
     void addImage(ImageData& imageD);
-
     void removeImage(const ImageData& image);
+
+
 
     ImageData* getImageData(int id);
     ImageData* getCurrentImageData();
@@ -49,5 +53,6 @@ public:
 
     // Charger l'objet à partir d'un fichier binaire
     void load(std::ifstream& in);
+
 };
 ImagesData loadImagesData();

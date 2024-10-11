@@ -122,3 +122,4 @@ void ImageData::load(std::ifstream& in) {
     folders.load(in);
     metaData.load(in);
 }
+

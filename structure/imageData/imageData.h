@@ -14,6 +14,9 @@ public:
     Folders folders;
     MetaData metaData;
 
+    // ImageData& operator=(const ImageData& other);
+
+
     ImageData() : imagePath(""), folders(Folders()), metaData(MetaData()) {}
 
     ImageData(const ImageData& other)
