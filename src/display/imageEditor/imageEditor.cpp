@@ -146,13 +146,14 @@ data(i) {
 
     QSize actionSize(actionButtonSize, actionButtonSize);
 
-    ClickableLabel* imageRotateRight = new ClickableLabel("ressources/rotateRight.png", this, actionSize);
+    // TODO faire marcher la const ressources
+    ClickableLabel* imageRotateRight = new ClickableLabel("../src/ressources/rotateRight.png", this, actionSize);
     imageRotateRight->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
 
-    ClickableLabel* imageRotateLeft = new ClickableLabel("ressources/rotateLeft.png", this, actionSize);
+    ClickableLabel* imageRotateLeft = new ClickableLabel("../src/ressources/rotateLeft.png", this, actionSize);
     imageRotateLeft->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
 
-    ClickableLabel* imageDelete = new ClickableLabel("ressources/rotateRight.png", this, actionSize);
+    ClickableLabel* imageDelete = new ClickableLabel("../src/ressources/rotateRight.png", this, actionSize);
     imageDelete->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
 
     actionButtonLayout->addWidget(imageRotateRight);
@@ -172,10 +173,10 @@ data(i) {
     QHBoxLayout* buttonLayout = new QHBoxLayout();
 
     // Créer les boutons avec des tailles spécifiques
-    ClickableLabel* buttonImageBefore = new ClickableLabel("ressources/before.png", this, actionSize);
+    ClickableLabel* buttonImageBefore = new ClickableLabel("../src/ressources/before.png", this, actionSize);
     buttonImageBefore->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
 
-    ClickableLabel* buttonImageNext = new ClickableLabel("ressources/next.png", this, actionSize);
+    ClickableLabel* buttonImageNext = new ClickableLabel("../src/ressources/next.png", this, actionSize);
     buttonImageNext->setFixedSize(actionSize);// Définir la taille fixe du bouton (largeur, hauteur)
 
 
@@ -312,7 +313,6 @@ void ImageEditor::rotateLeft(){
     }
     imageData->turnImage(orientation);
 
-    imagesData.saveImagesData();
     imageData->saveMetaData();
     reload();
 
@@ -340,7 +340,6 @@ void ImageEditor::rotateRight(){
     }
     imageData->turnImage(orientation);
 
-    imagesData.saveImagesData();
     imageData->saveMetaData();
     reload();
 

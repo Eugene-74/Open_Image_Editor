@@ -37,7 +37,7 @@ void ImagesData::saveImagesData(std::string savePath) {
     save(outFile);
     outFile.close();
 
-    std::cerr << "ImagesData saved in : " << SAVE_DAT_PATH << std::endl;
+    std::cerr << "ImagesData saved in : " << IMAGESDATA_SAVE_DAT_PATH << std::endl;
 
 
 }

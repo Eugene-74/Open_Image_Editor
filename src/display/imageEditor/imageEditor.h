@@ -23,6 +23,8 @@
 
 #include "../../structure/imagesData/imagesData.h"
 #include "../../structure/data/data.h"
+#include "../../const.h"
+
 
 
 class ClickableLabel : public QLabel {

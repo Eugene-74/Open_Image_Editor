@@ -29,10 +29,6 @@ namespace fs = std::filesystem;
 
 // impossible de faire l'orientation effective des PNG
 
-const std::string SAVE_DAT_PATH = "/home/eugene/save.dat";
-
-
-
 int main(int argc, char* argv[]) {
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
@@ -47,7 +43,7 @@ int main(int argc, char* argv[]) {
 
     // TODO mettre const dans un autre fichier et ajouter bouton save + pop up quand on ferme
     // charger de save.dat
-    data.imagesData = loadImagesData(SAVE_DAT_PATH);
+    data.imagesData = loadImagesData(IMAGESDATA_SAVE_DAT_PATH);
 
 
 
