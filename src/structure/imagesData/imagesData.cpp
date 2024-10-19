@@ -1,6 +1,6 @@
 #include "imagesData.h"
 
-ImagesData& ImagesData::operator = (const ImagesData& other){
+ImagesData& ImagesData::operator = (const ImagesData& other) {
     if (this != &other) {
         imagesData = other.imagesData; // Utiliser l'opérateur d'affectation de std::vector
         imageNumber = other.imageNumber;
@@ -9,26 +9,23 @@ ImagesData& ImagesData::operator = (const ImagesData& other){
     return *this;
 }
 
-void ImagesData::setImageNumber(int nbr){
 
-    if (nbr < 0){
+void ImagesData::setImageNumber(int nbr) {
+
+    if (nbr < 0) {
         nbr += 1;
     }
-    else if (nbr >= imagesData.size()){
+    else if (nbr >= imagesData.size()) {
         nbr -= 1;
     }
 
-    // if (nbr < 0){
-    //     nbr += imagesData.size();
-    // }
-    // else if (nbr >= imagesData.size()){
-    //     nbr -= imagesData.size();
 
-    // }
-    // std::cerr << "nbr" << nbr << std::endl;
+    if (nbr < 0 or nbr >= imagesData.size()) {
+        imageNumber = 0;
+    }
     imageNumber = nbr;
 }
-int ImagesData::getImageNumber(){
+int ImagesData::getImageNumber() {
     return imageNumber;
 }
 void ImagesData::saveImagesData(std::string savePath) {
@@ -78,9 +75,14 @@ void ImagesData::removeImage(const ImageData& image) {
 
 
 ImageData* ImagesData::getImageData(int id) {
+
+
     if (id < 0 || id >= imagesData.size()) {
-        throw std::out_of_range("Index hors limites");
+        // return nullptr;
+
+        throw std::out_of_range("getImageData :: Index hors limites" + std::to_string(id));
     }
+
     return &imagesData.at(id);
     // renvoie un pointeur ce qui permet une modification automatique dans ImagesData
 }
@@ -88,14 +90,15 @@ ImageData* ImagesData::getImageData(int id) {
 
 
 ImageData* ImagesData::getCurrentImageData() {
-    if (imageNumber < 0 || imageNumber >= imagesData.size()) {
+    if (imagesData.size() <= 0 || imageNumber >= imagesData.size()) {
+        return nullptr;
+        throw std::out_of_range("getCurrentImageData :: Index hors limites");
 
-        throw std::out_of_range("getCurrentImageData : Index hors limites");
     }
+
     return &imagesData.at(imageNumber);
-    // renvoie un pointeur ce qui permet une modification automatique dans ImagesData
 }
-std::vector<ImageData>  ImagesData::get() {
+std::vector<ImageData>& ImagesData::get() {
     return imagesData;
 }
 

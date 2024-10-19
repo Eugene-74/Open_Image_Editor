@@ -115,19 +115,20 @@ data(i) {
     QRect screenR = screen->availableGeometry();
     // TO delete after 
     screenR.setSize(QSize(1920, 1080));
-    qreal pixelRatio = screen->devicePixelRatio();
-    QSize screenGeometry = screenR.size();
+    pixelRatio = screen->devicePixelRatio();
+    screenGeometry = screenR.size();
 
     int actionButtonSize;
     if (screenGeometry.width() < screenGeometry.height()) {
-        actionButtonSize = (screenGeometry.width() * 1 / 12) / pixelRatio;
+        actionButtonSize = (screenGeometry.width() * 1 / 24) / pixelRatio;
     }
     else {
-        actionButtonSize = (screenGeometry.height() * 1 / 12) / pixelRatio;
+        actionButtonSize = (screenGeometry.height() * 1 / 24) / pixelRatio;
 
     }
 
     previewSize = (screenGeometry * 1 / 12) / pixelRatio;
+
 
 
     // Créer un widget central
@@ -135,91 +136,50 @@ data(i) {
     setCentralWidget(centralWidget);
 
     // Créer un layout vertical pour toute la fenêtre
-    QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
+    mainLayout = new QVBoxLayout(centralWidget);
     mainLayout->setSpacing(5);  // Espacement entre les widgets
     mainLayout->setContentsMargins(5, 5, 5, 5); // Marges autour des bords (gauche, haut, droite, bas)
 
 
-    QHBoxLayout* actionButtonLayout = new QHBoxLayout();
-    // Créer les boutons avec des tailles spécifiques
-    // TODO mieux deffir pour que il soit carrer
 
-    QSize actionSize(actionButtonSize, actionButtonSize);
-
-    // TODO faire marcher la const ressources
-    ClickableLabel* imageRotateRight = new ClickableLabel("../src/ressources/rotateRight.png", this, actionSize);
-    imageRotateRight->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
-
-    ClickableLabel* imageRotateLeft = new ClickableLabel("../src/ressources/rotateLeft.png", this, actionSize);
-    imageRotateLeft->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
-
-    ClickableLabel* imageDelete = new ClickableLabel("../src/ressources/rotateRight.png", this, actionSize);
-    imageDelete->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
-
-    actionButtonLayout->addWidget(imageRotateRight);
-    actionButtonLayout->addWidget(imageRotateLeft);
-    actionButtonLayout->addWidget(imageDelete);
+    QSize actionSizeSet(actionButtonSize, actionButtonSize);
+    actionSize = actionSizeSet;
 
 
+    actionButtonLayout = new QHBoxLayout();
     actionButtonLayout->setAlignment(Qt::AlignCenter);
-
     mainLayout->addLayout(actionButtonLayout);
 
-
-
-
-
-    // Créer un layout horizontal pour les boutons
-    QHBoxLayout* buttonLayout = new QHBoxLayout();
-
-    // Créer les boutons avec des tailles spécifiques
-    ClickableLabel* buttonImageBefore = new ClickableLabel("../src/ressources/before.png", this, actionSize);
-    buttonImageBefore->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
-
-    ClickableLabel* buttonImageNext = new ClickableLabel("../src/ressources/next.png", this, actionSize);
-    buttonImageNext->setFixedSize(actionSize);// Définir la taille fixe du bouton (largeur, hauteur)
-
-
-    // Créer un QLabel pour afficher l'image
-    imageLabel = new QLabel(this);
-    // screenGeometry.size() * 5 / 6
-    imageLabel->setFixedSize((screenGeometry.width() * 4 / 6) / pixelRatio, (screenGeometry.height() * 4 / 6) / pixelRatio); // Ajuster la taille de l'image
-    imageLabel->setAlignment(Qt::AlignCenter); // Centrer l'image dans le QLabel
-
-
-    buttonLayout->addWidget(buttonImageBefore);
-    buttonLayout->addWidget(imageLabel, 0, Qt::AlignCenter);
-    buttonLayout->addWidget(buttonImageNext);
-    buttonLayout->setAlignment(Qt::AlignCenter); // Centrer les boutons horizontalement
-
-    // Ajouter le layout des boutons au layout principal
+    buttonLayout = new QHBoxLayout();
+    buttonLayout->setAlignment(Qt::AlignCenter);
     mainLayout->addLayout(buttonLayout);
 
-
     previewButtonLayout = new QHBoxLayout();
-
+    previewButtonLayout->setAlignment(Qt::AlignCenter);
     mainLayout->addLayout(previewButtonLayout);
 
-
+    createButtons();
+    // updateButtons();
     updatePreview();
 
-    // Connecter les images cliquables à des actions
-    connect(buttonImageBefore, &ClickableLabel::clicked, [this]() { this->previousImage(); });
-    connect(buttonImageNext, &ClickableLabel::clicked, [this]() { this->nextImage(); });
 
-    connect(imageRotateLeft, &ClickableLabel::clicked, [this]() { this->rotateLeft(); });
-    connect(imageRotateRight, &ClickableLabel::clicked, [this]() { this->rotateRight(); });
-
-    connect(imageDelete, &ClickableLabel::clicked, [this]() { this->data.preDeleteImage(data.imagesData.getImageNumber()); });
-
-
-    // Définir le titre de la fenêtre
     setWindowTitle("Changer l'image");
-    setImage(*data.imagesData.getImageData(data.imagesData.getImageNumber()));
+
+    if (data.imagesData.get().size() > 0) {
+        setImage(*data.imagesData.getImageData(data.imagesData.getImageNumber()));
+    }
+
+
 
 }
 
+// Définit l'image principale de la fenetre ImageEditor
 void ImageEditor::setImage(ImageData& imageData) {
+
+    if (data.imagesData.get().size() <= 0) {
+        showInformationMessage(this, "aucune image n'a pour l'instant été charger ! ");
+        return;
+    }
     std::string imagePath = imageData.getImagePath();
 
 
@@ -265,13 +225,14 @@ void ImageEditor::setImage(ImageData& imageData) {
         }
     }
     else {
-        imageLabel->setText("Erreur : Image non valide !");
+        imageLabel->setText("Erreur");
     }
     reloadMainImage();
+
 }
 
 
-void ImageEditor::nextImage(){
+void ImageEditor::nextImage() {
 
     ImagesData& imagesData = data.imagesData;
 
@@ -281,7 +242,7 @@ void ImageEditor::nextImage(){
     reload();
 }
 
-void ImageEditor::previousImage(){
+void ImageEditor::previousImage() {
 
     ImagesData& imagesData = data.imagesData;
 
@@ -292,23 +253,23 @@ void ImageEditor::previousImage(){
     reload();
 }
 
-void ImageEditor::rotateLeft(){
+void ImageEditor::rotateLeft() {
 
     ImagesData& imagesData = data.imagesData;
 
     ImageData* imageData = imagesData.getCurrentImageData();
     int orientation = imageData->getImageOrientation();
 
-    if (orientation == 1){
+    if (orientation == 1) {
         orientation = 8;
     }
-    else if (orientation == 3){
+    else if (orientation == 3) {
         orientation = 6;
     }
-    else if (orientation == 8){
+    else if (orientation == 8) {
         orientation = 3;
     }
-    else{
+    else {
         orientation = 1;
     }
     imageData->turnImage(orientation);
@@ -318,7 +279,7 @@ void ImageEditor::rotateLeft(){
 
 
 }
-void ImageEditor::rotateRight(){
+void ImageEditor::rotateRight() {
 
     ImagesData& imagesData = data.imagesData;
 
@@ -326,40 +287,47 @@ void ImageEditor::rotateRight(){
     // imageData->turnImage(3);
     int orientation = imageData->getImageOrientation();
 
-    if (orientation == 1){
+    if (orientation == 1) {
         orientation = 6;
     }
-    else if (orientation == 3){
+    else if (orientation == 3) {
         orientation = 8;
     }
-    else if (orientation == 6){
+    else if (orientation == 6) {
         orientation = 3;
     }
-    else{
+    else {
         orientation = 1;
     }
     imageData->turnImage(orientation);
 
     imageData->saveMetaData();
     reload();
-
-
-
 }
 
-void ImageEditor::reload(){
+void ImageEditor::reload() {
+    std::cerr << "reload" << std::endl;
+
 
     ImagesData& imagesData = data.imagesData;
 
+    updateButtons();
+    updatePreview();
+    std::cerr << "buton created" << std::endl;
+
+    if (imagesData.get().size() <= 0) {
+        showInformationMessage(this, "no image data loaded");
+        std::cerr << "no image data loaded" << std::endl;
+
+        return;
+    }
 
     setImage(*imagesData.getCurrentImageData());
-    updatePreview();
-
-
+    std::cerr << "realod done" << std::endl;
 
 }
 
-void ImageEditor::reloadMainImage(){
+void ImageEditor::reloadMainImage() {
 
     imageLabel->update();
 
@@ -368,8 +336,21 @@ void ImageEditor::reloadMainImage(){
 
 
 void ImageEditor::updatePreview() {
+    // TODO now TODONOW modifier les icons des boutons et leurs action si besoin
+
+    // Effacer les boutons existants
+    QLayoutItem* item;
+    while ((item = previewButtonLayout->takeAt(0)) != nullptr) {
+        delete item->widget(); // Supprimer le widget associé
+        delete item; // Supprimer l'élément de layout
+    }
 
     ImagesData& imagesData = data.imagesData;
+
+    if (imagesData.get().size() <= 0) {
+        return;
+    }
+
 
     std::vector<QString> imagePaths;
 
@@ -394,12 +375,7 @@ void ImageEditor::updatePreview() {
         }
     }
 
-    // Effacer les boutons existants
-    QLayoutItem* item;
-    while ((item = previewButtonLayout->takeAt(0)) != nullptr) {
-        delete item->widget(); // Supprimer le widget associé
-        delete item; // Supprimer l'élément de layout
-    }
+
 
     // Créer et ajouter les nouveaux boutons
     for (int i = 0; i < imagePaths.size(); ++i) {
@@ -419,4 +395,253 @@ void ImageEditor::updatePreview() {
     }
 
     previewButtonLayout->setAlignment(Qt::AlignCenter);
+}
+
+
+void ImageEditor::createButtons() {
+    // TODO faire marcher la const ressources
+    imageRotateRight = new ClickableLabel("../src/ressources/rotateRight.png", this, actionSize);
+    imageRotateRight->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
+
+    imageRotateLeft = new ClickableLabel("../src/ressources/rotateLeft.png", this, actionSize);
+    imageRotateLeft->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
+
+    if (isTurnable(data.imagesData.getCurrentImageData()->getImagePath())) {
+        imageRotateLeft->setDisabled(true);
+    }
+    if (!imageRotateLeft->isEnabled())
+        imageRotateLeft->setEnabled(true);
+    if (isTurnable(data.imagesData.getCurrentImageData()->getImagePath())) {
+        imageRotateRight->setDisabled(true);
+    }
+    if (!imageRotateRight->isEnabled())
+        imageRotateRight->setEnabled(true);
+
+    imageDelete = new ClickableLabel("../src/ressources/delete.png", this, actionSize);
+    imageDelete->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
+
+    imageSave = new ClickableLabel("../src/ressources/save.png", this, actionSize);
+    imageSave->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
+
+
+    actionButtonLayout->addWidget(imageRotateRight);
+    actionButtonLayout->addWidget(imageRotateLeft);
+    actionButtonLayout->addWidget(imageDelete);
+    actionButtonLayout->addWidget(imageSave);
+
+
+    // Créer les boutons avec des tailles spécifiques
+    buttonImageBefore = new ClickableLabel("../src/ressources/before.png", this, actionSize);
+    buttonImageBefore->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
+
+    buttonImageNext = new ClickableLabel("../src/ressources/next.png", this, actionSize);
+    buttonImageNext->setFixedSize(actionSize);// Définir la taille fixe du bouton (largeur, hauteur)
+
+    if (data.imagesData.getImageNumber() == 0) {
+        buttonImageBefore->setDisabled(true);
+    }
+    if (data.imagesData.getImageNumber() == data.imagesData.get().size() - 1) {
+        buttonImageNext->setDisabled(true);
+    }
+
+    imageLabel = new QLabel(this);
+    imageLabel->setFixedSize((screenGeometry.width() * 4 / 6) / pixelRatio, (screenGeometry.height() * 4 / 6) / pixelRatio); // Ajuster la taille de l'image
+    imageLabel->setAlignment(Qt::AlignCenter); // Centrer l'image dans le QLabel
+
+
+    buttonLayout->addWidget(buttonImageBefore);
+    buttonLayout->addWidget(imageLabel, 0, Qt::AlignCenter);
+    buttonLayout->addWidget(buttonImageNext);
+    buttonLayout->setAlignment(Qt::AlignCenter);
+
+
+    // Connecter les images cliquables à des actions
+    connect(buttonImageBefore, &ClickableLabel::clicked, [this]() { this->previousImage(); });
+    connect(buttonImageNext, &ClickableLabel::clicked, [this]() { this->nextImage(); });
+
+    connect(imageRotateLeft, &ClickableLabel::clicked, [this]() { this->rotateLeft(); });
+    connect(imageRotateRight, &ClickableLabel::clicked, [this]() { this->rotateRight(); });
+
+    connect(imageDelete, &ClickableLabel::clicked, [this]() { this->data.preDeleteImage(data.imagesData.getImageNumber()); });
+
+    connect(imageSave, &ClickableLabel::clicked, [this]() { this->
+        data.removeDeletedImages();
+    if (data.imagesData.get().size() <= 0) {
+        clearWindow();
+    }
+    data.imagesData.saveImagesData(IMAGESDATA_SAVE_DAT_PATH);
+    data.imagesData.setImageNumber(0);
+    reload();
+        });
+}
+
+
+void ImageEditor::updateButtons() {
+    if (imageRotateRight) {
+        // TODO faire marcher la const ressources
+        ClickableLabel* imageRotateRightNew = new ClickableLabel("../src/ressources/rotateRight.png", this, actionSize);
+        imageRotateRightNew->setFixedSize(actionSize);
+
+        connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() { this->rotateRight(); });
+
+
+        if (data.imagesData.get().size() > 0) {
+            if (!isTurnable(data.imagesData.getCurrentImageData()->getImagePath())) {
+                imageRotateRightNew->setDisabled(true);
+            }
+            else {
+                if (!imageRotateRightNew->isEnabled())
+                    imageRotateRightNew->setEnabled(true);
+            }
+        }
+        actionButtonLayout->replaceWidget(imageRotateRight, imageRotateRightNew);
+
+        imageRotateRight->hide();
+        imageRotateRight->deleteLater();
+
+        imageRotateRight = imageRotateRightNew;
+    }
+    if (imageRotateLeft) {
+        ClickableLabel* imageRotateLeftNew = new ClickableLabel("../src/ressources/rotateLeft.png", this, actionSize);
+        imageRotateLeftNew->setFixedSize(actionSize);
+        connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() { this->rotateLeft(); });
+
+        actionButtonLayout->replaceWidget(imageRotateLeft, imageRotateLeftNew);
+
+
+        if (data.imagesData.get().size() > 0) {
+            if (!isTurnable(data.imagesData.getCurrentImageData()->getImagePath())) {
+                imageRotateLeftNew->setDisabled(true);
+            }
+            else {
+                if (!imageRotateLeftNew->isEnabled())
+                    imageRotateLeftNew->setEnabled(true);
+            }
+        }
+
+        imageRotateLeft->hide();
+        imageRotateLeft->deleteLater();
+
+        imageRotateLeft = imageRotateLeftNew;
+    }
+    if (imageDelete) {
+        ClickableLabel* imageDeleteNew = new ClickableLabel("../src/ressources/delete.png", this, actionSize);
+        imageDeleteNew->setFixedSize(actionSize);
+        connect(imageDeleteNew, &ClickableLabel::clicked, [this]() { this->data.preDeleteImage(data.imagesData.getImageNumber()); });
+
+        actionButtonLayout->replaceWidget(imageDelete, imageDeleteNew);
+
+        imageDelete->hide();
+        imageDelete->deleteLater();
+
+        imageDelete = imageDeleteNew;
+    }
+    if (imageSave) {
+        ClickableLabel* imageSaveNew = new ClickableLabel("../src/ressources/save.png", this, actionSize);
+        imageSaveNew->setFixedSize(actionSize);
+        connect(imageSaveNew, &ClickableLabel::clicked, [this]() { this->
+            data.removeDeletedImages();
+        if (data.imagesData.get().size() <= 0) {
+            clearWindow();
+        }
+        data.imagesData.saveImagesData(IMAGESDATA_SAVE_DAT_PATH);
+        data.imagesData.setImageNumber(0);
+        reload();
+            });
+
+        actionButtonLayout->replaceWidget(imageSave, imageSaveNew);
+
+        imageSave->hide();
+        imageSave->deleteLater();
+
+        imageSave = imageSaveNew;
+    }
+    if (buttonImageBefore) {
+        if (data.imagesData.getImageNumber() == 0) {
+            buttonImageBefore->setDisabled(true);
+        }
+
+    }
+    if (buttonImageNext) {
+        if (data.imagesData.getImageNumber() == data.imagesData.get().size() - 1) {
+            buttonImageNext->setDisabled(true);
+        }
+
+    }
+    if (data.imagesData.getImageNumber() != 0) {
+        if (!buttonImageBefore->isEnabled())
+            buttonImageBefore->setEnabled(true);
+    }
+
+    if (data.imagesData.getImageNumber() != data.imagesData.get().size() - 1) {
+        if (!buttonImageNext->isEnabled())
+            buttonImageNext->setEnabled(true);
+    }
+
+
+
+}
+
+// Delete all widget from the windows
+void ImageEditor::clearWindow() {
+
+    std::cerr << imageRotateRight << std::endl;
+    std::cerr << imageRotateLeft << std::endl;
+    std::cerr << imageDelete << std::endl;
+    std::cerr << imageSave << std::endl;
+
+    QTimer::singleShot(100, this, [this]() {
+        if (actionButtonLayout) {
+            QLayoutItem* item;
+            while ((item = actionButtonLayout->takeAt(0)) != nullptr) {
+                if (item->widget()) {
+                    std::cerr << item->widget() << std::endl;
+
+                    item->widget()->disconnect();
+                    item->widget()->hide();
+                    item->widget()->deleteLater();
+
+                }
+                delete item;
+            }
+
+            delete actionButtonLayout;
+            actionButtonLayout = nullptr;
+        }
+
+        if (buttonLayout) {
+            QLayoutItem* item;
+            while ((item = buttonLayout->takeAt(0)) != nullptr) {
+                if (item->widget()) {
+                    item->widget()->disconnect();
+                    item->widget()->hide();
+                    item->widget()->deleteLater();
+                }
+                delete item;
+            }
+
+            delete buttonLayout;
+            buttonLayout = nullptr;
+        }
+
+
+        if (mainLayout) {
+            QLayoutItem* item;
+            while ((item = mainLayout->takeAt(0)) != nullptr) {
+                if (item->widget()) {
+                    item->widget()->disconnect();
+                    item->widget()->hide();
+                    item->widget()->deleteLater();
+                }
+                delete item;
+            }
+
+            delete mainLayout;
+            mainLayout = nullptr;
+        }
+        });
+
+
+
+
 }

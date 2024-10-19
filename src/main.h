@@ -12,9 +12,36 @@
 #include "structure/imagesData/imagesData.h"
 
 
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <filesystem>
+#include <algorithm>
+#include <exiv2/exiv2.hpp>
+
+#include "structure/folders/folders.h"
+
+#include "functions/vector/vector.h"
+#include "functions/thumbnail/thumbnail.h"
+#include "display/imageEditor/imageEditor.h"
+
+#include <QApplication>
+#include <QMainWindow>
+#include <QPushButton>
+#include <QLabel>
+#include <QPixmap>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <QFileDialog>
+#include <chrono>
+
+
 const std::string THUMBNAIL_PATH = "/home/eugene/.cache/thumbnails";
 
-bool estImage(const std::string& cheminFichier);
+bool isImage(const std::string& cheminFichier);
+bool isTurnable(const std::string& cheminFichier);
+
 
 
 

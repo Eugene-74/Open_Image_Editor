@@ -21,8 +21,10 @@
 
 #include <opencv2/opencv.hpp>
 
+#include "../../main.h"
 #include "../../structure/imagesData/imagesData.h"
 #include "../../structure/data/data.h"
+#include "../../display/box/box.h"
 #include "../../const.h"
 
 
@@ -58,7 +60,7 @@ public:
     // Constructor
     ImageEditor(Data& a, QWidget* parent = nullptr);   // Initialize the reference member
 
-    ~ImageEditor(){}
+    ~ImageEditor() {}
 
     void reload();
     void reloadMainImage();
@@ -70,6 +72,9 @@ public:
     void rotateLeft();
     void rotateRight();
     void updatePreview();
+    void updateButtons();
+    void createButtons();
+    void clearWindow();
 
 
 protected:
@@ -79,10 +84,23 @@ protected:
 private:
     // ImagesData& imagesData;
     QLabel* imageLabel; // Pour afficher l'image
-    // QVBoxLayout& mainLayout;
+    QVBoxLayout* mainLayout;
     QHBoxLayout* previewButtonLayout;
+    QHBoxLayout* actionButtonLayout;
+    QHBoxLayout* buttonLayout;
     QSize previewSize;
+    QSize actionSize;
+    QSize screenGeometry;
     Data data;
+    qreal pixelRatio;
+
+    ClickableLabel* buttonImageBefore;
+    ClickableLabel* buttonImageNext;
+
+    ClickableLabel* imageRotateRight;
+    ClickableLabel* imageRotateLeft;
+    ClickableLabel* imageDelete;
+    ClickableLabel* imageSave;
 
 
 

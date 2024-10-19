@@ -29,6 +29,8 @@ moc -o lib/moc_imageEditor.cpp src/display/imageEditor/imageEditor.h
 g++ -I./functions -I./structure -I./display -fPIC `pkg-config --cflags --libs opencv4` `pkg-config --cflags --libs Qt5Widgets`-c src/display/imageEditor/imageEditor.cpp -o lib/imageEditor.o
 g++ -c lib/moc_imageEditor.cpp -fPIC `pkg-config --cflags --libs opencv4` `pkg-config --cflags --libs Qt5Widgets` -o lib/moc_imageEditor.o
 
+g++ -I./functions -I./structure -I./display -fPIC `pkg-config --cflags --libs Qt5Widgets Qt5Gui Qt5Core` -c src/display/box/box.cpp -o lib/box.o
+
 
 
 ar rcs lib/libfolders.a lib/*.o

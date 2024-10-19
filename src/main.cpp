@@ -1,33 +1,11 @@
 #include "main.h"
 
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <filesystem>
-#include <algorithm>
-#include <exiv2/exiv2.hpp>
-
-#include "structure/folders/folders.h"
-
-#include "functions/vector/vector.h"
-#include "functions/thumbnail/thumbnail.h"
-#include "display/imageEditor/imageEditor.h"
-
-#include <QApplication>
-#include <QMainWindow>
-#include <QPushButton>
-#include <QLabel>
-#include <QPixmap>
-#include <QVBoxLayout>
-#include <QWidget>
-#include <QFileDialog>
-#include <chrono>
-
 
 namespace fs = std::filesystem;
 
 // impossible de faire l'orientation effective des PNG
+
 
 int main(int argc, char* argv[]) {
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -45,50 +23,21 @@ int main(int argc, char* argv[]) {
     // charger de save.dat
     data.imagesData = loadImagesData(IMAGESDATA_SAVE_DAT_PATH);
 
-
-
     startLoadingImagesFromFolder(path, data.imagesData);
-
-    data.imagesData.print();
-    // loadImagesMetaData(imagesData);
-
-
-    // loadImagesMetaData(imagesData);
-    // displayExifData(imagesData.getImageData(3)->getMetaData()->getExifData());
-
-    // TODO create a function
-    // Save metadata in the images itself
-    // for (int i = 0;i < imagesData.get().size();i++){
-    //     imagesData.getImageData(i)->saveMetaData();
-    // }
-
-
-    QApplication app(argc, argv);
-
-
 
     data.imagesData.setImageNumber(0);
 
+    QApplication app(argc, argv);
+
     ImageEditor window(data);
 
-
-
     window.showMaximized();
-
-    // window.show();
-
-
-    // std::string cheminImage = imagesData.getCurrentImageData()->imagePath;
-    // std::vector<std::string> imagePaths;
-    // imagePaths.push_back(cheminImage);
-    // createThumbnails(imagePaths, THUMBNAIL_PATH);
-
-
 
     return app.exec();
 }
 
-void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData& imagesData){
+// Charges dans un imagesData toutes les données des images dans un dossier et ses sous dossier
+void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData& imagesData) {
     int nbrImage = 0;
     countImagesFromFolder(imagePaths, nbrImage);
     std::cerr << "nombre d'image à charger : " << nbrImage << std::endl;
@@ -99,12 +48,13 @@ void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData& imag
 
 }
 
-void countImagesFromFolder(const std::string path, int& nbrImage){
+// Conte toutes les images dans un dossier et ses sous dossier
+void countImagesFromFolder(const std::string path, int& nbrImage) {
 
     for (const auto& entry : fs::directory_iterator(path)) {
         if (fs::is_regular_file(entry.status())) {
 
-            if (estImage(entry.path())) {
+            if (isImage(entry.path())) {
                 nbrImage += 1;
 
             }
@@ -116,13 +66,11 @@ void countImagesFromFolder(const std::string path, int& nbrImage){
     // return nbrImage;
 }
 
+// Charges concrètement dans un imagesData toutes les données des images dans un dossier et ses sous dossier
 void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData& imagesData, int& nbrImage) {
-
-
-
     for (const auto& entry : fs::directory_iterator(path)) {
         if (fs::is_regular_file(entry.status())) {
-            if (estImage(entry.path())) {
+            if (isImage(entry.path())) {
 
                 // On ne garde que la partie après "Documents"
                 fs::path relativePath = fs::relative(entry.path(), fs::path(initialPath).parent_path());
@@ -149,12 +97,13 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
     // return imagesData;
 }
 
-bool estImage(const std::string& cheminFichier) {
+// Revoie True si l'extension du fichier correspond à l'extension d'une image
+bool isImage(const std::string& path) {
     // Liste des extensions d'images courantes
     std::vector<std::string> extensionsImages = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp",".webp" };
 
     // Récupération de l'extension du fichier
-    std::string extension = fs::path(cheminFichier).extension().string();
+    std::string extension = fs::path(path).extension().string();
 
     // Convertir l'extension en minuscule pour éviter les problèmes de casse
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
@@ -163,16 +112,21 @@ bool estImage(const std::string& cheminFichier) {
     return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
 }
 
-// 
+bool isTurnable(const std::string& path) {
+    // Liste des extensions d'images courantes
+    std::vector<std::string> extensionsImages = { ".jpg", ".jpeg" };
 
+    // Récupération de l'extension du fichier
+    std::string extension = fs::path(path).extension().string();
 
+    // Convertir l'extension en minuscule pour éviter les problèmes de casse
+    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 
+    // Vérifier si l'extension est dans la liste des extensions d'images
+    return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
+}
 
-
-
-
-
-
+// Charger les meta donnée contenue dans les images
 void loadImagesMetaData(ImagesData& imagesData) {
     for (int i = 0; i < imagesData.get().size(); ++i) {
         imagesData.getImageData(i)->loadData();
