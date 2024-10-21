@@ -8,9 +8,11 @@ env:
 on:
   push:
     branches:
+      -no
  #     - main
   pull_request:
     branches:
+      -no
   #    - main
 
 permissions:
