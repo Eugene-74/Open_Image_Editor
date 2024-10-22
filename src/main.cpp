@@ -8,7 +8,12 @@ namespace fs = std::filesystem;
 
 
 int main(int argc, char* argv[]) {
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    // qputenv("QT_SCALE_FACTOR", "0.5");
+    // qputenv("QT_SCALE_FACTOR", "1");
+
+
+
 
     std::string path = "/home/eugene/Documents/photo trié";
     Data data;

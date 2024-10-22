@@ -33,6 +33,8 @@
 #include <QPixmap>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QDebug>
+
 #include <QFileDialog>
 #include <chrono>
 

@@ -8,7 +8,8 @@ ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize 
     // Load image using OpenCV with alpha channel
     cv::Mat image = cv::imread(imagePath.toStdString(), cv::IMREAD_UNCHANGED);
 
-    size = (size - QSize(10, 10));
+    size = (size - QSize(5, 5));
+
 
     if (!image.empty()) {
 
@@ -23,7 +24,7 @@ ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize 
             // Handle images without an alpha channel (optional)
             cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
 
-            cv::Mat resizedImage;
+            // cv::Mat resizedImage;
 
             // cv::resize(image, resizedImage, cv::Size(size.width(), size.height()), 0, 0, cv::INTER_CUBIC); // Utilisez INTER_LINEAR pour un redimensionnement rapide
             // QImage qImage(resizedImage.data, resizedImage.cols, resizedImage.rows, resizedImage.step[0], QImage::Format_RGB888);
@@ -42,19 +43,22 @@ ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize 
     // Enable mouse tracking
     setMouseTracking(true);
 
+    int border = 0;
+    int border_radius = 0;
 
-    // opacityEffect->setOpacity(1.0);  // Default opacity
-    setStyleSheet(R"(
+    QString styleSheet = QString(R"(
         QLabel {
-            border: 2px solid transparent;
-            border-radius: 15px;
+            border: %1px solid transparent;
+            border-radius: %2px;
         }
         QLabel:hover {
-            border: 2px solid transparent;
-            border-radius: 15px;
+            border: %1px solid transparent;
+            border-radius: %2px;
             background-color: #b3b3b3; 
         }
-    )");
+    )").arg(border).arg(border_radius);
+
+    this->setStyleSheet(styleSheet);
 }
 // Gérer l'entrée de la souris
 void ClickableLabel::enterEvent(QEvent* event) {
@@ -69,19 +73,23 @@ void ClickableLabel::leaveEvent(QEvent* event) {
 void ClickableLabel::mousePressEvent(QMouseEvent* event) {
 
     if (event->button() == Qt::LeftButton) {
-        // emit clicked();
-        // Change style to indicate click
-        setStyleSheet(R"(
+
+        int border = 0;
+        int border_radius = 0;
+
+        QString styleSheet = QString(R"(
         QLabel {
-            border: 2px solid transparent;
-            border-radius: 15px;
+            border: %1px solid transparent;
+            border-radius: %2px;
         }
         QLabel:hover {
-            border: 2px solid #969393;
-            border-radius: 15px;
+            border: %1px solid #969393;
+            border-radius: %2px;
             background-color: #9c9c9c; 
         }
-    )");
+    )").arg(border).arg(border_radius);
+
+        this->setStyleSheet(styleSheet);
     }
     QLabel::mousePressEvent(event);  // Call the base class implementation
 
@@ -92,17 +100,22 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
 
     if (event->button() == Qt::LeftButton) {
         // Reset style on mouse release
-        setStyleSheet(R"(
+        int border = 0;
+        int border_radius = 0;
+
+        QString styleSheet = QString(R"(
         QLabel {
-            border: 2px solid transparent;
-            border-radius: 15px;
+            border: %1px solid transparent;
+            border-radius: %2px;
         }
         QLabel:hover {
-            border: 2px solid transparent;
-            border-radius: 15px;
+            border: %1px solid transparent;
+            border-radius: %2px;
             background-color: #b3b3b3; 
         }
-    )");
+    )").arg(border).arg(border_radius);
+
+        this->setStyleSheet(styleSheet);
     }
     QLabel::mouseReleaseEvent(event);  // Call the base class implementation
 }
@@ -111,23 +124,43 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
 
 ImageEditor::ImageEditor(Data& i, QWidget* parent) : QMainWindow(parent), // Initialize the base class
 data(i) {
+    const QList<QScreen*> screens = QGuiApplication::screens();
+
     QScreen* screen = QGuiApplication::primaryScreen();
+    screen = screens[0];
+
+
     QRect screenR = screen->availableGeometry();
-    // TO delete after 
-    screenR.setSize(QSize(1920, 1080));
+
+
+
+    // pixelRatio = screen->devicePixelRatio();
+    // pixelRatio = QString(qgetenv("QT_SCALE_FACTOR").constData()).toFloat();
     pixelRatio = screen->devicePixelRatio();
-    screenGeometry = screenR.size();
+
+
+    std::cerr << "ratio : " << pixelRatio << std::endl;
+
+    screenGeometry = screenR.size() * pixelRatio;
+
+    std::cerr << "scree size : " << screenGeometry.width() << " , " << screenGeometry.height() << std::endl;
 
     int actionButtonSize;
+
+
     if (screenGeometry.width() < screenGeometry.height()) {
-        actionButtonSize = (screenGeometry.width() * 1 / 24) / pixelRatio;
+        // actionButtonSize = (screenGeometry.width() * 1 / 24) * pixelRatio;
+        actionButtonSize = 32;
+
     }
     else {
-        actionButtonSize = (screenGeometry.height() * 1 / 24) / pixelRatio;
+        // actionButtonSize = (screenGeometry.height() * 1 / 24) * pixelRatio;
+        actionButtonSize = 32;
+
 
     }
 
-    previewSize = (screenGeometry * 1 / 12) / pixelRatio;
+    previewSize = (screenGeometry * 1 / 12);
 
 
 
@@ -391,7 +424,7 @@ void ImageEditor::updatePreview() {
             // reload();
             });
 
-        previewButtonLayout->addWidget(previewButton); // Ajouter le bouton au layout
+        previewButtonLayout->addWidget(previewButton);
     }
 
     previewButtonLayout->setAlignment(Qt::AlignCenter);
@@ -445,7 +478,9 @@ void ImageEditor::createButtons() {
     }
 
     imageLabel = new QLabel(this);
-    imageLabel->setFixedSize((screenGeometry.width() * 4 / 6) / pixelRatio, (screenGeometry.height() * 4 / 6) / pixelRatio); // Ajuster la taille de l'image
+
+
+    imageLabel->setFixedSize((screenGeometry.width() * 4 / 6), (screenGeometry.height() * 4 / 6)); // Ajuster la taille de l'image
     imageLabel->setAlignment(Qt::AlignCenter); // Centrer l'image dans le QLabel
 
 
@@ -577,9 +612,6 @@ void ImageEditor::updateButtons() {
         if (!buttonImageNext->isEnabled())
             buttonImageNext->setEnabled(true);
     }
-
-
-
 }
 
 // Delete all widget from the windows
