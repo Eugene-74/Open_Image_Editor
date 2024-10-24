@@ -10,8 +10,12 @@ public:
     ImagesData deletedImagesData;
 
     void preDeleteImage(int imageNbr);
+    void unPreDeleteImage(int imageNbr);
+
 
     void revocerDeletedImage(int imageNbr);
-    void removeDeletedImages();
+    void revocerDeletedImage(ImageData& imageData);
 
+    void removeDeletedImages();
+    bool isDeleted(int imageNbr);
 };

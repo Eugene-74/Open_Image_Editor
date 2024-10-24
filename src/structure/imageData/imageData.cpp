@@ -77,17 +77,17 @@ void ImageData::saveMetaData() {
     metaData.saveMetaData(imagePath);
 }
 
-int ImageData::getImageWidth(){
+int ImageData::getImageWidth() {
     return metaData.getImageWidth();
 }
-int ImageData::getImageHeight(){
+int ImageData::getImageHeight() {
     return metaData.getImageHeight();
 }
-int ImageData::getImageOrientation(){
+int ImageData::getImageOrientation() {
     return metaData.getImageOrientation();
 }
 
-void ImageData::turnImage(int rotation){
+void ImageData::turnImage(int rotation) {
 
 
     // 1 : normal, 3 : 90° left, 6 : 180°, 8: 90 right
@@ -98,7 +98,7 @@ void ImageData::turnImage(int rotation){
 
 }
 
-void ImageData::setOrCreateExifData(){
+void ImageData::setOrCreateExifData() {
     metaData.setOrCreateExifData(imagePath);
 
 }

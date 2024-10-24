@@ -50,11 +50,15 @@ protected:
 private:
     QPixmap defaultPixmap;
 
-    QString hover_background_color = "#b3b3b3";
-    QString background_color = "transparent";
 
     int border = 0;
     int border_radius = 5;
+
+public:
+    void updateStyleSheet();
+
+    QString background_color = "transparent";
+    QString hover_background_color = "#b3b3b3";
 };
 
 class ImageEditor : public QMainWindow {
@@ -80,6 +84,9 @@ public:
     void updateButtons();
     void createButtons();
     void clearWindow();
+
+
+    ClickableLabel* createImageDelete();
 
 
 protected:

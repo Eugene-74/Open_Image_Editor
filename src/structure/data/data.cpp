@@ -6,16 +6,29 @@ void Data::preDeleteImage(int imageNbr) {
 
     deletedImagesData.addImage(*imageData);
     std::cerr << "image deleted" << imageNbr << std::endl;
-    // removeImage(*imageData);
     deletedImagesData.print();
 
 }
+void Data::unPreDeleteImage(int imageNbr) {
+    ImageData* imageData;
+    imageData = imagesData.getImageData(imageNbr);
+
+    deletedImagesData.removeImage(*imageData);
+
+}
+
+void Data::revocerDeletedImage(ImageData& imageData) {
+    imagesData.addImage(imageData);
+    deletedImagesData.removeImage(imageData);
+}
+
 void Data::revocerDeletedImage(int imageNbr) {
     ImageData* imageData;
     imageData = deletedImagesData.getImageData(imageNbr);
+    revocerDeletedImage(*imageData);
 
-    imagesData.addImage(*imageData);
-    deletedImagesData.removeImage(*imageData);
+    // imagesData.addImage(*imageData);
+    // deletedImagesData.removeImage(*imageData);
 
 }
 
@@ -40,3 +53,22 @@ void Data::removeDeletedImages() {
 
 }
 
+
+bool Data::isDeleted(int imageNbr) {
+    std::cerr << "isDeleted start" << imageNbr << std::endl;
+
+    // Find the image in deletedImagesData
+    auto it = std::find_if(deletedImagesData.get().begin(), deletedImagesData.get().end(),
+        [imageNbr, this](const ImageData& img) {
+            return img == *imagesData.getImageData(imageNbr);
+        });
+
+    if (it != deletedImagesData.get().end()) {
+        std::cerr << "true" << std::endl;
+        imagesData.getImageData(imageNbr)->print();
+        return true;
+    }
+
+    std::cerr << "false" << std::endl;
+    return false;
+}

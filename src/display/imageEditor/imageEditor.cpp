@@ -40,25 +40,8 @@ ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize 
     // Enable mouse tracking
     setMouseTracking(true);
 
-    QString styleSheet = QString(R"(
-        QLabel {
-            border: %1px solid transparent;
-            border-radius: %2px;
-            background-color: %3; 
+    updateStyleSheet();
 
-        }
-        QLabel:hover {
-            border: %1px solid transparent;
-            border-radius: %2px;
-            background-color: %4; 
-        }
-        QLabel:disabled {
-            background-color: rgba(200, 200, 200, 1);
-
-        }
-    )").arg(border).arg(border_radius).arg(background_color).arg(hover_background_color);
-
-    this->setStyleSheet(styleSheet);
 }
 // Gérer l'entrée de la souris
 void ClickableLabel::enterEvent(QEvent* event) {
@@ -74,29 +57,10 @@ void ClickableLabel::mousePressEvent(QMouseEvent* event) {
 
     if (event->button() == Qt::LeftButton) {
 
-        background_color = "#9c9c9c";
+        // background_color = "#9c9c9c";
 
-        QString styleSheet = QString(R"(
-        QLabel {
-            border: %1px solid transparent;
-            border-radius: %2px;
-            background-color: %3; 
+        updateStyleSheet();
 
-        }
-        QLabel:hover {
-            border: %1px solid transparent;
-            border-radius: %2px;
-            background-color: %4; 
-        }
-        QLabel:disabled {
-            background-color: rgba(200, 200, 200, 1);
-
-
-
-        }
-    )").arg(border).arg(border_radius).arg(background_color).arg(hover_background_color);
-
-        this->setStyleSheet(styleSheet);
     }
     QLabel::mousePressEvent(event);  // Call the base class implementation
 
@@ -105,17 +69,22 @@ void ClickableLabel::mousePressEvent(QMouseEvent* event) {
 void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
     emit clicked();  // Émettre le signal quand on clique
 
-    background_color = "transparent";
+    // background_color = "transparent";
 
 
     if (event->button() == Qt::LeftButton) {
 
-        QString styleSheet = QString(R"(
+        updateStyleSheet();
+    }
+    QLabel::mouseReleaseEvent(event);  // Call the base class implementation
+}
+
+void ClickableLabel::updateStyleSheet() {
+    QString styleSheet = QString(R"(
         QLabel {
             border: %1px solid transparent;
             border-radius: %2px;
             background-color: %3; 
-
         }
         QLabel:hover {
             border: %1px solid transparent;
@@ -127,11 +96,11 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
 
         }
     )").arg(border).arg(border_radius).arg(background_color).arg(hover_background_color);
+    this->setStyleSheet(styleSheet);
 
-        this->setStyleSheet(styleSheet);
-    }
-    QLabel::mouseReleaseEvent(event);  // Call the base class implementation
+    std::cerr << "styleSheet : " << background_color.toStdString() << std::endl;
 }
+
 
 
 
@@ -464,8 +433,17 @@ void ImageEditor::createButtons() {
     if (!imageRotateRight->isEnabled())
         imageRotateRight->setEnabled(true);
 
-    imageDelete = new ClickableLabel("../src/ressources/delete.png", this, actionSize);
-    imageDelete->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
+
+    imageDelete = createImageDelete();
+    // imageDelete = new ClickableLabel("../src/ressources/delete.png", this, actionSize);
+
+    // if (data.isDeleted(data.imagesData.getImageNumber())) {
+
+    //     imageDelete->background_color = "#700c13";
+    //     imageDelete->updateStyleSheet();
+    // }
+
+    // imageDelete->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
 
     imageSave = new ClickableLabel("../src/ressources/save.png", this, actionSize);
     imageSave->setFixedSize(actionSize); // Définir la taille fixe du bouton (largeur, hauteur)
@@ -511,7 +489,9 @@ void ImageEditor::createButtons() {
     connect(imageRotateLeft, &ClickableLabel::clicked, [this]() { this->rotateLeft(); });
     connect(imageRotateRight, &ClickableLabel::clicked, [this]() { this->rotateRight(); });
 
-    connect(imageDelete, &ClickableLabel::clicked, [this]() { this->data.preDeleteImage(data.imagesData.getImageNumber()); });
+    // connect(imageDelete, &ClickableLabel::clicked, [this]() { this->data.preDeleteImage(data.imagesData.getImageNumber());
+    // updateButtons();
+    //     });
 
     connect(imageSave, &ClickableLabel::clicked, [this]() { this->
         data.removeDeletedImages();
@@ -574,14 +554,13 @@ void ImageEditor::updateButtons() {
         imageRotateLeft = imageRotateLeftNew;
     }
     if (imageDelete) {
-        ClickableLabel* imageDeleteNew = new ClickableLabel("../src/ressources/delete.png", this, actionSize);
-        imageDeleteNew->setFixedSize(actionSize);
-        connect(imageDeleteNew, &ClickableLabel::clicked, [this]() { this->data.preDeleteImage(data.imagesData.getImageNumber()); });
+        ClickableLabel* imageDeleteNew = createImageDelete();
 
         actionButtonLayout->replaceWidget(imageDelete, imageDeleteNew);
 
         imageDelete->hide();
         imageDelete->deleteLater();
+
 
         imageDelete = imageDeleteNew;
     }
@@ -690,4 +669,41 @@ void ImageEditor::clearWindow() {
 
 
 
+}
+
+
+/**
+ * @brief Creates a clickable label for pre deleting an image.
+ *
+ * This function creates a ClickableLabel object that represents a pre delete button for an image.
+ * If the image is marked as pre deleted, the background color of the label is set to a specific color
+ * and the stylesheet is updated. The label is also connected to a click event that triggers the
+ * pre-delete action for the image and updates the buttons.
+ *
+ * @return A pointer to the created ClickableLabel object.
+ */
+ClickableLabel* ImageEditor::createImageDelete() {
+
+    if (data.imagesData.get().size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageDelete = new ClickableLabel("../src/ressources/delete.png", this, actionSize);
+    if (data.isDeleted(data.imagesData.getImageNumber())) {
+
+        imageDelete->background_color = "#700c13";
+        imageDelete->updateStyleSheet();
+        connect(imageDelete, &ClickableLabel::clicked, [this]() { this->data.unPreDeleteImage(data.imagesData.getImageNumber());
+        updateButtons();
+            });
+    }
+    else {
+        connect(imageDelete, &ClickableLabel::clicked, [this]() { this->data.preDeleteImage(data.imagesData.getImageNumber());
+        updateButtons();
+            });
+
+    }
+    imageDelete->setFixedSize(actionSize);
+
+    return imageDelete;
 }
