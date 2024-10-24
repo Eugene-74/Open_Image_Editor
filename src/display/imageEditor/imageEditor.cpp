@@ -1,8 +1,5 @@
 #include "imageEditor.h"
 
-
-// #include "../../functions/clickableLabel/ClickableLabel.h"
-
 ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize size)
     : QLabel(parent) {
     // Load image using OpenCV with alpha channel
@@ -43,20 +40,23 @@ ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize 
     // Enable mouse tracking
     setMouseTracking(true);
 
-    int border = 0;
-    int border_radius = 0;
-
     QString styleSheet = QString(R"(
         QLabel {
             border: %1px solid transparent;
             border-radius: %2px;
+            background-color: %3; 
+
         }
         QLabel:hover {
             border: %1px solid transparent;
             border-radius: %2px;
-            background-color: #b3b3b3; 
+            background-color: %4; 
         }
-    )").arg(border).arg(border_radius);
+        QLabel:disabled {
+            background-color: rgba(200, 200, 200, 1);
+
+        }
+    )").arg(border).arg(border_radius).arg(background_color).arg(hover_background_color);
 
     this->setStyleSheet(styleSheet);
 }
@@ -74,20 +74,27 @@ void ClickableLabel::mousePressEvent(QMouseEvent* event) {
 
     if (event->button() == Qt::LeftButton) {
 
-        int border = 0;
-        int border_radius = 0;
+        background_color = "#9c9c9c";
 
         QString styleSheet = QString(R"(
         QLabel {
             border: %1px solid transparent;
             border-radius: %2px;
+            background-color: %3; 
+
         }
         QLabel:hover {
-            border: %1px solid #969393;
+            border: %1px solid transparent;
             border-radius: %2px;
-            background-color: #9c9c9c; 
+            background-color: %4; 
         }
-    )").arg(border).arg(border_radius);
+        QLabel:disabled {
+            background-color: rgba(200, 200, 200, 1);
+
+
+
+        }
+    )").arg(border).arg(border_radius).arg(background_color).arg(hover_background_color);
 
         this->setStyleSheet(styleSheet);
     }
@@ -98,27 +105,34 @@ void ClickableLabel::mousePressEvent(QMouseEvent* event) {
 void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
     emit clicked();  // Émettre le signal quand on clique
 
+    background_color = "transparent";
+
+
     if (event->button() == Qt::LeftButton) {
-        // Reset style on mouse release
-        int border = 0;
-        int border_radius = 0;
 
         QString styleSheet = QString(R"(
         QLabel {
             border: %1px solid transparent;
             border-radius: %2px;
+            background-color: %3; 
+
         }
         QLabel:hover {
             border: %1px solid transparent;
             border-radius: %2px;
-            background-color: #b3b3b3; 
+            background-color: %4; 
         }
-    )").arg(border).arg(border_radius);
+        QLabel:disabled {
+            background-color: rgba(200, 200, 200, 1);
+
+        }
+    )").arg(border).arg(border_radius).arg(background_color).arg(hover_background_color);
 
         this->setStyleSheet(styleSheet);
     }
     QLabel::mouseReleaseEvent(event);  // Call the base class implementation
 }
+
 
 
 

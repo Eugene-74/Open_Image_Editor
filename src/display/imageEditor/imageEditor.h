@@ -48,8 +48,13 @@ protected:
 
 
 private:
-    // QGraphicsOpacityEffect* opacityEffect;  // Déclaration de l'effet d'opacité
-    QPixmap defaultPixmap;                  // Image par défaut pour le QLabel
+    QPixmap defaultPixmap;
+
+    QString hover_background_color = "#b3b3b3";
+    QString background_color = "transparent";
+
+    int border = 0;
+    int border_radius = 5;
 };
 
 class ImageEditor : public QMainWindow {
@@ -101,6 +106,8 @@ private:
     ClickableLabel* imageRotateLeft;
     ClickableLabel* imageDelete;
     ClickableLabel* imageSave;
+
+
 
 
 
