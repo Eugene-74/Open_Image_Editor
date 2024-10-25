@@ -80,13 +80,27 @@ public:
     void previousImage();
     void rotateLeft();
     void rotateRight();
+
+    void createPreview();
     void updatePreview();
-    void updateButtons();
+
     void createButtons();
+    void updateButtons();
+
     void clearWindow();
 
+    ClickableLabel* createImagePreview(std::string imagePath, int imageNbr);
 
+
+    ClickableLabel* createImageRotateRight();
+    ClickableLabel* createImageRotateLeft();
     ClickableLabel* createImageDelete();
+    ClickableLabel* createImageSave();
+
+    ClickableLabel* createImageBefore();
+    ClickableLabel* createImageNext();
+
+
 
 
 protected:
@@ -105,6 +119,8 @@ private:
     QSize screenGeometry;
     Data data;
     qreal pixelRatio;
+
+    std::vector<ClickableLabel*> previewButtons;
 
     ClickableLabel* buttonImageBefore;
     ClickableLabel* buttonImageNext;
