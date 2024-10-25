@@ -9,5 +9,5 @@ const std::string DELETED_IMAGESDATA_SAVE_DAT_PATH = "/home/eugene/deleted.dat";
 const std::string RESSOURCE = "../src/ressources/";
 
 
-const int PREVIEW_NBR = 2;
+const int PREVIEW_NBR = 3;
 

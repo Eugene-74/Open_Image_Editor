@@ -361,7 +361,8 @@ void ImageEditor::createPreview() {
     int totalImages = imagesData.get().size();
 
     int under = 0;
-    for (int i = PREVIEW_NBR + 2; i >= 1; --i) {
+    for (int i = PREVIEW_NBR; i > 0; --i) {
+        std::cerr << "for 1 : " << -i << std::endl;
 
         if (currentImageNumber - i >= 0) {
             imagePaths.push_back(imagesData.getImageData(currentImageNumber - i)->getImagePath());
@@ -371,7 +372,9 @@ void ImageEditor::createPreview() {
 
     imagePaths.push_back(imagesData.getCurrentImageData()->getImagePath());
 
-    for (int i = 1; i <= PREVIEW_NBR + 2; ++i) {
+    for (int i = 1; i <= PREVIEW_NBR; ++i) {
+        std::cerr << "for 2 : " << +i << std::endl;
+
 
         if (currentImageNumber + i <= totalImages - 1) {
             imagePaths.push_back(imagesData.getImageData(currentImageNumber + i)->getImagePath());
@@ -392,10 +395,11 @@ void ImageEditor::createPreview() {
 
             previewButtons.push_back(previewButton);
         }
-        // ClickableLabel* previewButton = createImagePreview(imagePaths[0], 0);
-        // previewButtonLayout->addWidget(previewButton);
-        // previewButton->hide();
-        // previewButtons.push_back(previewButton);
+        // create all the button but hide 
+        ClickableLabel* previewButton = createImagePreview(imagePaths[0], 0);
+        previewButtonLayout->addWidget(previewButton);
+        previewButton->hide();
+        previewButtons.push_back(previewButton);
 
 
     }
@@ -437,23 +441,37 @@ void ImageEditor::updatePreview() {
         }
     }
 
+    std::cerr << "2->3 : " << std::endl;
+
 
 
     for (int i = 0; i < PREVIEW_NBR * 2 + 1; ++i) {
         int imageNbr = imagesData.getImageNumber() + i - under;
         if (i < imagePaths.size()) {
+            std::cerr << "for 3 : " << +i << std::endl;
 
             ClickableLabel* previewButtonNew = createImagePreview(imagePaths[i], imageNbr);
+            std::cerr << "for 3" << std::endl;
 
             previewButtonLayout->replaceWidget(previewButtons[i], previewButtonNew);
 
+            std::cerr << "for 3" << std::endl;
+
+            // if (previewButtons[i]->isEnabled()) {
+            std::cerr << "for 3 : enbaled " << +i << std::endl;
+
             previewButtons[i]->hide();
             previewButtons[i]->deleteLater();
+            // }
+
             previewButtons[i] = previewButtonNew;
         }
         else {
+            std::cerr << "for 3 hide : " << +i << std::endl;
+
             previewButtons[i]->hide();
         }
+        std::cerr << "for 3 end : " << +i << std::endl;
 
 
     }
