@@ -565,18 +565,17 @@ void ImageEditor::updateButtons() {
  */
 void ImageEditor::clearWindow() {
 
-    std::cerr << imageRotateRight << std::endl;
-    std::cerr << imageRotateLeft << std::endl;
-    std::cerr << imageDelete << std::endl;
-    std::cerr << imageSave << std::endl;
+    // std::cerr << imageRotateRight << std::endl;
+    // std::cerr << imageRotateLeft << std::endl;
+    // std::cerr << imageDelete << std::endl;
+    // std::cerr << imageSave << std::endl;
 
     QTimer::singleShot(100, this, [this]() {
         if (actionButtonLayout) {
             QLayoutItem* item;
             while ((item = actionButtonLayout->takeAt(0)) != nullptr) {
                 if (item->widget()) {
-                    std::cerr << item->widget() << std::endl;
-
+                    // std::cerr << item->widget() << std::endl;
                     item->widget()->disconnect();
                     item->widget()->hide();
                     item->widget()->deleteLater();
@@ -792,6 +791,7 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
     connect(previewButton, &ClickableLabel::clicked, [this, imageNbr]() {
         data.imagesData.setImageNumber(imageNbr);
         setImage(*data.imagesData.getImageData(data.imagesData.getImageNumber()));
+        reload();
         });
 
 
