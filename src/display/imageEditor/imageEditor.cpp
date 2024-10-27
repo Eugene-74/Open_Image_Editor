@@ -1,32 +1,54 @@
 #include "imageEditor.h"
 
-ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize size)
+ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize size, bool setSize)
     : QLabel(parent) {
     // Load image using OpenCV with alpha channel
     cv::Mat image = cv::imread(imagePath.toStdString(), cv::IMREAD_UNCHANGED);
 
-    size = (size - QSize(5, 5));
+    // size = (size - QSize(5, 5));
 
 
     if (!image.empty()) {
 
         // Convert BGR to RGB (if needed) and keep alpha channel
         if (image.channels() == 4) {
+
+
             // Create QImage from OpenCV Mat with alpha channel
             QImage qImage(image.data, image.cols, image.rows, image.step[0], QImage::Format_ARGB32);
-            // Set the pixmap with scaling
-            this->setPixmap(QPixmap::fromImage(qImage).scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            if (!setSize) {
+                float ratio;
+                if (size.height() / qImage.height() > size.width() / qImage.width()) {
+                    ratio = static_cast<float>(size.width()) / qImage.width();
+                }
+                else {
+                    ratio = static_cast<float>(size.height()) / qImage.height();
+                }
+
+                size.setWidth(qImage.width() * ratio);
+                size.setHeight(qImage.height() * ratio);
+            }
+            this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
         else {
             // Handle images without an alpha channel (optional)
             cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
 
-            // cv::Mat resizedImage;
-
-            // cv::resize(image, resizedImage, cv::Size(size.width(), size.height()), 0, 0, cv::INTER_CUBIC); // Utilisez INTER_LINEAR pour un redimensionnement rapide
-            // QImage qImage(resizedImage.data, resizedImage.cols, resizedImage.rows, resizedImage.step[0], QImage::Format_RGB888);
             QImage qImage(image.data, image.cols, image.rows, image.step[0], QImage::Format_RGB888);
-            this->setPixmap(QPixmap::fromImage(qImage).scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            if (!setSize) {
+                float ratio;
+                if (size.height() / qImage.height() > size.width() / qImage.width()) {
+                    ratio = static_cast<float>(size.width()) / qImage.width();
+                }
+                else {
+                    ratio = static_cast<float>(size.height()) / qImage.height();
+                }
+
+                size.setWidth(qImage.width() * ratio);
+                size.setHeight(qImage.height() * ratio);
+            }
+            this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
         }
 
     }
@@ -34,6 +56,8 @@ ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize 
         // Handle the case where the image is not valid (optional)
         this->setText("Erreur : Image non valide !");
     }
+
+    setFixedSize(size);
 
     this->setAlignment(Qt::AlignCenter);
 
@@ -82,23 +106,21 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
 void ClickableLabel::updateStyleSheet() {
     QString styleSheet = QString(R"(
         QLabel {
-            border: %1px solid transparent;
+            border: %1px solid %3;
             border-radius: %2px;
-            background-color: %3; 
+            background-color: %5;
         }
         QLabel:hover {
-            border: %1px solid transparent;
+            border: %1px solid %4;
             border-radius: %2px;
-            background-color: %4; 
+            background-color: %6; 
         }
         QLabel:disabled {
             background-color: rgba(200, 200, 200, 1);
 
         }
-    )").arg(border).arg(border_radius).arg(background_color).arg(hover_background_color);
+    )").arg(border).arg(border_radius).arg(border_color).arg(hover_border_color).arg(background_color).arg(hover_background_color);
     this->setStyleSheet(styleSheet);
-
-    std::cerr << "styleSheet : " << background_color.toStdString() << std::endl;
 }
 
 
@@ -124,7 +146,7 @@ data(i) {
 
     std::cerr << "ratio : " << pixelRatio << std::endl;
 
-    screenGeometry = screenR.size() * pixelRatio;
+    screenGeometry = screenR.size() / pixelRatio;
 
     std::cerr << "scree size : " << screenGeometry.width() << " , " << screenGeometry.height() << std::endl;
 
@@ -362,7 +384,7 @@ void ImageEditor::createPreview() {
 
     int under = 0;
     for (int i = PREVIEW_NBR; i > 0; --i) {
-        std::cerr << "for 1 : " << -i << std::endl;
+        // std::cerr << "for 1 : " << -i << std::endl;
 
         if (currentImageNumber - i >= 0) {
             imagePaths.push_back(imagesData.getImageData(currentImageNumber - i)->getImagePath());
@@ -373,7 +395,7 @@ void ImageEditor::createPreview() {
     imagePaths.push_back(imagesData.getCurrentImageData()->getImagePath());
 
     for (int i = 1; i <= PREVIEW_NBR; ++i) {
-        std::cerr << "for 2 : " << +i << std::endl;
+        // std::cerr << "for 2 : " << +i << std::endl;
 
 
         if (currentImageNumber + i <= totalImages - 1) {
@@ -386,14 +408,25 @@ void ImageEditor::createPreview() {
     // Créer et ajouter les nouveaux boutons
     for (int i = 0; i < PREVIEW_NBR * 2 + 1; ++i) {
         if (i < imagePaths.size()) {
-
-
             int imageNbr = imagesData.getImageNumber() + i - under;
-            ClickableLabel* previewButton = createImagePreview(imagePaths[i], imageNbr);
+            if (imageNbr == imagesData.getImageNumber()) {
+                ClickableLabel* previewButton = createImagePreview(imagePaths[i], imageNbr);
+                previewButton->background_color = "#b3b3b3";
+                previewButton->updateStyleSheet();
 
-            previewButtonLayout->addWidget(previewButton);
+                previewButtonLayout->addWidget(previewButton);
 
-            previewButtons.push_back(previewButton);
+                previewButtons.push_back(previewButton);
+            }
+            else {
+
+
+                ClickableLabel* previewButton = createImagePreview(imagePaths[i], imageNbr);
+
+                previewButtonLayout->addWidget(previewButton);
+
+                previewButtons.push_back(previewButton);
+            }
         }
         // create all the button but hide 
         ClickableLabel* previewButton = createImagePreview(imagePaths[0], 0);
@@ -422,7 +455,6 @@ void ImageEditor::updatePreview() {
 
     int under = 0;
     for (int i = PREVIEW_NBR; i > 0; --i) {
-        std::cerr << "for 1 : " << -i << std::endl;
 
         if (currentImageNumber - i >= 0) {
             imagePaths.push_back(imagesData.getImageData(currentImageNumber - i)->getImagePath());
@@ -433,7 +465,6 @@ void ImageEditor::updatePreview() {
     imagePaths.push_back(imagesData.getCurrentImageData()->getImagePath());
 
     for (int i = 1; i <= PREVIEW_NBR; ++i) {
-        std::cerr << "for 2 : " << +i << std::endl;
 
 
         if (currentImageNumber + i <= totalImages - 1) {
@@ -441,37 +472,41 @@ void ImageEditor::updatePreview() {
         }
     }
 
-    std::cerr << "2->3 : " << std::endl;
 
 
 
     for (int i = 0; i < PREVIEW_NBR * 2 + 1; ++i) {
-        int imageNbr = imagesData.getImageNumber() + i - under;
         if (i < imagePaths.size()) {
-            std::cerr << "for 3 : " << +i << std::endl;
+            int imageNbr = imagesData.getImageNumber() + i - under;
+            if (imageNbr == imagesData.getImageNumber()) {
+                ClickableLabel* previewButtonNew = createImagePreview(imagePaths[i], imageNbr);
+                // TODO choose the color of the current image
+                previewButtonNew->background_color = "#b3b3b3";
+                previewButtonNew->updateStyleSheet();
 
-            ClickableLabel* previewButtonNew = createImagePreview(imagePaths[i], imageNbr);
-            std::cerr << "for 3" << std::endl;
+                previewButtonLayout->replaceWidget(previewButtons[i], previewButtonNew);
 
-            previewButtonLayout->replaceWidget(previewButtons[i], previewButtonNew);
+                previewButtons[i]->hide();
+                previewButtons[i]->deleteLater();
 
-            std::cerr << "for 3" << std::endl;
+                previewButtons[i] = previewButtonNew;
+            }
+            else {
 
-            // if (previewButtons[i]->isEnabled()) {
-            std::cerr << "for 3 : enbaled " << +i << std::endl;
+                ClickableLabel* previewButtonNew = createImagePreview(imagePaths[i], imageNbr);
 
-            previewButtons[i]->hide();
-            previewButtons[i]->deleteLater();
-            // }
+                previewButtonLayout->replaceWidget(previewButtons[i], previewButtonNew);
 
-            previewButtons[i] = previewButtonNew;
+                previewButtons[i]->hide();
+                previewButtons[i]->deleteLater();
+
+                previewButtons[i] = previewButtonNew;
+            }
         }
         else {
-            std::cerr << "for 3 hide : " << +i << std::endl;
 
             previewButtons[i]->hide();
         }
-        std::cerr << "for 3 end : " << +i << std::endl;
 
 
     }
@@ -802,9 +837,12 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
         return nullptr;
     }
 
-    ClickableLabel* previewButton = new ClickableLabel(QString::fromStdString(imagePath), this, previewSize);
+    ClickableLabel* previewButton = new ClickableLabel(QString::fromStdString(imagePath), this, previewSize, false);
 
-    previewButton->setFixedSize(previewSize); // Définir la taille fixe du bouton
+    std::cerr << previewButton->width() << std::endl;
+    std::cerr << previewButton->height() << std::endl;
+
+    // previewButton->setFixedSize(previewButton->size());
     // int imageNbr = imagesData.getImageNumber() + i - under;
     connect(previewButton, &ClickableLabel::clicked, [this, imageNbr]() {
         data.imagesData.setImageNumber(imageNbr);

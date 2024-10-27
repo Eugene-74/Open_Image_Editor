@@ -55,7 +55,6 @@ void Data::removeDeletedImages() {
 
 
 bool Data::isDeleted(int imageNbr) {
-    std::cerr << "isDeleted start" << imageNbr << std::endl;
 
     // Find the image in deletedImagesData
     auto it = std::find_if(deletedImagesData.get().begin(), deletedImagesData.get().end(),
@@ -64,11 +63,9 @@ bool Data::isDeleted(int imageNbr) {
         });
 
     if (it != deletedImagesData.get().end()) {
-        std::cerr << "true" << std::endl;
         imagesData.getImageData(imageNbr)->print();
         return true;
     }
 
-    std::cerr << "false" << std::endl;
     return false;
 }

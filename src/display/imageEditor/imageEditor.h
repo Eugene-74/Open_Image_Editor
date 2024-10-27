@@ -33,7 +33,7 @@ class ClickableLabel : public QLabel {
     Q_OBJECT
 
 public:
-    explicit ClickableLabel(const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0));
+    explicit ClickableLabel(const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true);
 
 signals:
     void clicked();  // Signal émis lors du clic
@@ -56,6 +56,10 @@ private:
 
 public:
     void updateStyleSheet();
+
+    QString border_color = "transparent"; //#b3b3b3
+    QString hover_border_color = "#9c9c9c";
+
 
     QString background_color = "transparent";
     QString hover_background_color = "#b3b3b3";
