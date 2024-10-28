@@ -1,51 +1,82 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Project name
+# Nom du projet
 project(EasyImageEditor)
 
-# Set C++ standard
+# Définir le standard C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Find Qt packages
-find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
-
-# Find OpenCV packages
-find_package(OpenCV REQUIRED)
-
-# Add the directory containing FindExiv2.cmake to CMAKE_MODULE_PATH
+# Ajouter le répertoire contenant FindExiv2.cmake à CMAKE_MODULE_PATH
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
-# Find Exiv2 packages
+# Trouver les packages Qt nécessaires
+find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+
+# Trouver les packages OpenCV nécessaires
+find_package(OpenCV REQUIRED)
+
+# Trouver les packages Exiv2 nécessaires
 find_package(Exiv2 REQUIRED)
 
-# Include directories
-include_directories(src)
+# Inclure les répertoires d'en-têtes
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${EXIV2_INCLUDE_DIRS})
 
-# Add source files
+# Ajouter les fichiers source
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
-# Add header files for moc
+# Ajouter les fichiers d'en-tête pour moc
 file(GLOB_RECURSE HEADERS "src/*.h")
 
-# Ensure moc is run on header files
+# Ajouter le fichier de ressources
+set(RESOURCE_FILES src/ressources/ressources.qrc)
+
+# S'assurer que moc est exécuté sur les fichiers d'en-tête
 qt5_wrap_cpp(MOC_SOURCES ${HEADERS})
 
-# Add executable
-add_executable(EasyImageEditor ${SOURCES} ${MOC_SOURCES})
+# Compiler les ressources
+qt5_add_resources(QRC_SOURCES ${RESOURCE_FILES})
 
-# Link Qt libraries
+# Ajouter l'exécutable
+add_executable(EasyImageEditor ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
+
+# Lier les bibliothèques Qt
 target_link_libraries(EasyImageEditor Qt5::Core Qt5::Gui Qt5::Widgets)
 
-# Link OpenCV libraries
+# Lier les bibliothèques OpenCV
 target_link_libraries(EasyImageEditor ${OpenCV_LIBS})
 
-# Link Exiv2 libraries
+# Lier les bibliothèques Exiv2
 target_link_libraries(EasyImageEditor ${EXIV2_LIBRARIES})
 
-# Link stdc++fs if using GCC
+# Lier stdc++fs si vous utilisez GCC
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_link_libraries(EasyImageEditor stdc++fs)
 endif()
+
+# Configuration de l'installation
+install(TARGETS EasyImageEditor DESTINATION bin)
+
+# Installer les bibliothèques OpenCV
+foreach(lib ${OpenCV_LIBS})
+    get_filename_component(lib_path ${lib} DIRECTORY)
+    if(EXISTS ${lib_path}/${lib})
+        install(FILES ${lib_path}/${lib} DESTINATION lib)
+    endif()
+endforeach()
+
+# Installer les bibliothèques Exiv2
+foreach(lib ${EXIV2_LIBRARIES})
+    get_filename_component(lib_path ${lib} DIRECTORY)
+    if(EXISTS ${lib_path}/${lib})
+        install(FILES ${lib_path}/${lib} DESTINATION lib)
+    endif()
+endforeach()
+
+# Utiliser CPack pour créer un package
+include(InstallRequiredSystemLibraries)
+set(CPACK_GENERATOR "ZIP")
+set(CPACK_PACKAGE_NAME "EasyImageEditor")
+set(CPACK_PACKAGE_VERSION "1.0.0")
+include(CPack)

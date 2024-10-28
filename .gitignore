@@ -1,1 +1,25 @@
-.vscode
+# Fichiers et répertoires générés par CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Répertoires de build
+build/
+bin/
+lib/
+
+# Fichiers de configuration
+*.cmake
+
+# Fichiers de log
+*.log
+
+# Fichiers de sauvegarde
+*~
+
+# Fichiers spécifiques à l'IDE
+.idea/
+.vscode/
+*.swp
+*.swo

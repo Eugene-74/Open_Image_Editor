@@ -3,9 +3,23 @@
 ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize size, bool setSize)
     : QLabel(parent) {
     // Load image using OpenCV with alpha channel
-    cv::Mat image = cv::imread(imagePath.toStdString(), cv::IMREAD_UNCHANGED);
+    // Check if the resource exists in the Qt resource system
 
-    // size = (size - QSize(5, 5));
+    QFile file(imagePath);
+
+    cv::Mat image;
+    if (file.exists()) {
+        // Load image from Qt resources
+        if (file.open(QIODevice::ReadOnly)) {
+            QByteArray imageData = file.readAll();
+            std::vector<uchar> data(imageData.begin(), imageData.end());
+            image = cv::imdecode(data, cv::IMREAD_UNCHANGED);
+        }
+    }
+    else {
+        // Load image from file system
+        image = cv::imread(imagePath.toStdString(), cv::IMREAD_UNCHANGED);
+    }
 
 
     if (!image.empty()) {
@@ -739,7 +753,7 @@ ClickableLabel* ImageEditor::createImageDelete() {
         return nullptr;
     }
 
-    ClickableLabel* imageDelete = new ClickableLabel("../src/ressources/delete.png", this, actionSize);
+    ClickableLabel* imageDelete = new ClickableLabel(":/delete.png", this, actionSize);
 
     if (data.isDeleted(data.imagesData.getImageNumber())) {
 
@@ -766,7 +780,7 @@ ClickableLabel* ImageEditor::createImageSave() {
         return nullptr;
     }
 
-    ClickableLabel* imageSaveNew = new ClickableLabel("../src/ressources/save.png", this, actionSize);
+    ClickableLabel* imageSaveNew = new ClickableLabel(":/save.png", this, actionSize);
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() { this->
         data.removeDeletedImages();
@@ -794,7 +808,7 @@ ClickableLabel* ImageEditor::createImageRotateRight() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateRightNew = new ClickableLabel("../src/ressources/rotateRight.png", this, actionSize);
+    ClickableLabel* imageRotateRightNew = new ClickableLabel(":/rotateRight.png", this, actionSize);
 
     if (!isTurnable(data.imagesData.getCurrentImageData()->getImagePath())) {
         imageRotateRightNew->setDisabled(true);
@@ -817,7 +831,7 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateLeftNew = new ClickableLabel("../src/ressources/rotateLeft.png", this, actionSize);
+    ClickableLabel* imageRotateLeftNew = new ClickableLabel(":/rotateLeft.png", this, actionSize);
 
     if (!isTurnable(data.imagesData.getCurrentImageData()->getImagePath())) {
         imageRotateLeftNew->setDisabled(true);
@@ -840,7 +854,12 @@ ClickableLabel* ImageEditor::createImageBefore() {
         return nullptr;
     }
 
-    ClickableLabel* buttonImageBeforeNew = new ClickableLabel("../src/ressources/before.png", this, actionSize);
+
+
+
+    ClickableLabel* buttonImageBeforeNew = new ClickableLabel(":/before.png", this, actionSize);
+    // ClickableLabel* buttonImageBeforeNew = new ClickableLabel(":/ressources/before.png", this, actionSize);
+
     buttonImageBeforeNew->setFixedSize(actionSize);
 
     if (data.imagesData.getImageNumber() == 0) {
@@ -860,7 +879,7 @@ ClickableLabel* ImageEditor::createImageNext() {
         return nullptr;
     }
 
-    ClickableLabel* buttonImageNextNew = new ClickableLabel("../src/ressources/next.png", this, actionSize);
+    ClickableLabel* buttonImageNextNew = new ClickableLabel(":/next.png", this, actionSize);
 
     if (data.imagesData.getImageNumber() == data.imagesData.get().size() - 1) {
         buttonImageNextNew->setDisabled(true);

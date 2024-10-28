@@ -15,9 +15,7 @@
 #include <QPushButton>
 #include <QResizeEvent>
 #include <QSize>
-#include <QGraphicsOpacityEffect>
-#include <QPointer>
-
+#include <QResource>
 
 #include <opencv2/opencv.hpp>
 

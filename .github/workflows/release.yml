@@ -38,7 +38,7 @@ jobs:
     - name: Find .so files and zip the compiled program
       run: |
         mkdir release-package
-        cp main-linux release-package/
+        cp build/EasyImageEditor release-package/
         find . -name "*.so" -exec cp {} release-package / \;
         zip -r release-package.zip release-package
     - name: Archive Linux artifacts

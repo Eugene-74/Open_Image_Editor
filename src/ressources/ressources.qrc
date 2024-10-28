@@ -1,9 +1,11 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
-    <qresource>
-        <file>next.png</file>
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/">
         <file>before.png</file>
+        <file>next.png</file>
         <file>rotateLeft.png</file>
         <file>rotateRight.png</file>
+        <file>delete.png</file>
+        <file>save.png</file>
+
     </qresource>
 </RCC>
