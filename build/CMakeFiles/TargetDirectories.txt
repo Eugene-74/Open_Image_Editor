@@ -1,0 +1,3 @@
+/home/eugene/Documents/git/Easy_Image_Editor/build/CMakeFiles/EasyImageEditor.dir
+/home/eugene/Documents/git/Easy_Image_Editor/build/CMakeFiles/edit_cache.dir
+/home/eugene/Documents/git/Easy_Image_Editor/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,13 @@
+# FindExiv2.cmake
+find_path(EXIV2_INCLUDE_DIR NAMES exiv2/exiv2.hpp)
+find_library(EXIV2_LIBRARY NAMES exiv2)
+
+if(EXIV2_INCLUDE_DIR AND EXIV2_LIBRARY)
+    set(EXIV2_FOUND TRUE)
+    set(EXIV2_LIBRARIES ${EXIV2_LIBRARY})
+    set(EXIV2_INCLUDE_DIRS ${EXIV2_INCLUDE_DIR})
+else()
+    set(EXIV2_FOUND FALSE)
+endif()
+
+mark_as_advanced(EXIV2_INCLUDE_DIR EXIV2_LIBRARY)

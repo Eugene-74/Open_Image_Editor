@@ -1,0 +1,6 @@
+-I/home/eugene/Documents/git/Easy_Image_Editor/src
+-I/usr/local/include/opencv4
+-I/usr/local/include
+-o
+/home/eugene/Documents/git/Easy_Image_Editor/build/src/display/loadImage/moc_loadImage.cpp
+/home/eugene/Documents/git/Easy_Image_Editor/src/display/loadImage/loadImage.h

@@ -346,8 +346,11 @@ void ImageEditor::reload() {
 
     ImagesData& imagesData = data.imagesData;
 
+    std::cerr << "reload 1 " << std::endl;
     updateButtons();
+    std::cerr << "updateButtons" << std::endl;
     updatePreview();
+    std::cerr << "updatePreview" << std::endl;
 
     if (imagesData.get().size() <= 0) {
         showInformationMessage(this, "no image data loaded");
@@ -355,6 +358,8 @@ void ImageEditor::reload() {
 
         return;
     }
+
+    std::cerr << "setImage" << std::endl;
 
     setImage(*imagesData.getCurrentImageData());
 }
@@ -384,7 +389,6 @@ void ImageEditor::createPreview() {
 
     int under = 0;
     for (int i = PREVIEW_NBR; i > 0; --i) {
-        // std::cerr << "for 1 : " << -i << std::endl;
 
         if (currentImageNumber - i >= 0) {
             imagePaths.push_back(imagesData.getImageData(currentImageNumber - i)->getImagePath());
@@ -395,7 +399,6 @@ void ImageEditor::createPreview() {
     imagePaths.push_back(imagesData.getCurrentImageData()->getImagePath());
 
     for (int i = 1; i <= PREVIEW_NBR; ++i) {
-        // std::cerr << "for 2 : " << +i << std::endl;
 
 
         if (currentImageNumber + i <= totalImages - 1) {
@@ -540,6 +543,11 @@ void ImageEditor::createButtons() {
 
 
 void ImageEditor::updateButtons() {
+    if (data.imagesData.get().size() <= 0) {
+        return;
+    }
+
+    std::cerr << "updateButtons" << std::endl;
     if (imageRotateRight) {
 
         ClickableLabel* imageRotateRightNew = createImageRotateRight();
@@ -552,6 +560,8 @@ void ImageEditor::updateButtons() {
         imageRotateRight = imageRotateRightNew;
     }
     if (imageRotateLeft) {
+        std::cerr << "updateButtons LEFT " << std::endl;
+
         ClickableLabel* imageRotateLeftNew = createImageRotateLeft();
 
         actionButtonLayout->replaceWidget(imageRotateLeft, imageRotateLeftNew);
@@ -618,17 +628,49 @@ void ImageEditor::updateButtons() {
  */
 void ImageEditor::clearWindow() {
 
-    // std::cerr << imageRotateRight << std::endl;
-    // std::cerr << imageRotateLeft << std::endl;
-    // std::cerr << imageDelete << std::endl;
-    // std::cerr << imageSave << std::endl;
+    std::cerr << imageRotateRight << std::endl;
+    std::cerr << imageRotateLeft << std::endl;
+    std::cerr << imageDelete << std::endl;
+    std::cerr << imageSave << std::endl;
 
     QTimer::singleShot(100, this, [this]() {
-        if (actionButtonLayout) {
+        // if (actionButtonLayout) {
+        //     std::cerr << "actionButtonLayout" << std::endl;
+        //     QLayoutItem* item;
+        //     while ((item = actionButtonLayout->takeAt(0)) != nullptr) {
+        //         if (item->widget()) {
+        //             std::cerr << item->widget() << std::endl;
+        //             item->widget()->disconnect();
+        //             item->widget()->hide();
+        //             item->widget()->deleteLater();
+
+        //         }
+        //         delete item;
+        //     }
+
+        //     delete actionButtonLayout;
+        //     actionButtonLayout = nullptr;
+        // }
+
+        imageRotateRight->deleteLater();
+        imageRotateLeft->deleteLater();
+        imageDelete->deleteLater();
+        if (imageSave) {
+            imageSave->disconnect();
+            imageSave->hide();
+            // TODO delete -> for now it is not possible to delete the imageSave button
+            // imageSave->deleteLater();
+            std::cerr << "delete imageSave" << std::endl;
+        }
+
+
+
+
+        if (previewButtonLayout) {
+            std::cerr << "previewButtonLayout" << std::endl;
             QLayoutItem* item;
-            while ((item = actionButtonLayout->takeAt(0)) != nullptr) {
+            while ((item = previewButtonLayout->takeAt(0)) != nullptr) {
                 if (item->widget()) {
-                    // std::cerr << item->widget() << std::endl;
                     item->widget()->disconnect();
                     item->widget()->hide();
                     item->widget()->deleteLater();
@@ -637,11 +679,12 @@ void ImageEditor::clearWindow() {
                 delete item;
             }
 
-            delete actionButtonLayout;
-            actionButtonLayout = nullptr;
+            delete previewButtonLayout;
+            previewButtonLayout = nullptr;
         }
 
         if (buttonLayout) {
+            std::cerr << "buttonLayout" << std::endl;
             QLayoutItem* item;
             while ((item = buttonLayout->takeAt(0)) != nullptr) {
                 if (item->widget()) {
@@ -658,6 +701,7 @@ void ImageEditor::clearWindow() {
 
 
         if (mainLayout) {
+            std::cerr << "mainLayout" << std::endl;
             QLayoutItem* item;
             while ((item = mainLayout->takeAt(0)) != nullptr) {
                 if (item->widget()) {
@@ -696,6 +740,7 @@ ClickableLabel* ImageEditor::createImageDelete() {
     }
 
     ClickableLabel* imageDelete = new ClickableLabel("../src/ressources/delete.png", this, actionSize);
+
     if (data.isDeleted(data.imagesData.getImageNumber())) {
 
         imageDelete->background_color = "#700c13";
@@ -710,7 +755,6 @@ ClickableLabel* ImageEditor::createImageDelete() {
             });
 
     }
-    imageDelete->setFixedSize(actionSize);
 
     return imageDelete;
 }
@@ -722,21 +766,26 @@ ClickableLabel* ImageEditor::createImageSave() {
         return nullptr;
     }
 
-    ClickableLabel* imageSave = new ClickableLabel("../src/ressources/save.png", this, actionSize);
+    ClickableLabel* imageSaveNew = new ClickableLabel("../src/ressources/save.png", this, actionSize);
 
-    connect(imageSave, &ClickableLabel::clicked, [this]() { this->
+    connect(imageSaveNew, &ClickableLabel::clicked, [this]() { this->
         data.removeDeletedImages();
+    // std::cerr << "save" << std::endl;
     if (data.imagesData.get().size() <= 0) {
+        // std::cerr << "no image data loaded -> clear window" << std::endl;
         clearWindow();
     }
     data.imagesData.saveImagesData(IMAGESDATA_SAVE_DAT_PATH);
+    // std::cerr << "save data" << std::endl;
+
     data.imagesData.setImageNumber(0);
+    // std::cerr << "set image number to 0" << std::endl;
     reload();
+    // std::cerr << "reload" << std::endl;
         });
 
-    imageSave->setFixedSize(actionSize);
 
-    return imageSave;
+    return imageSaveNew;
 }
 
 ClickableLabel* ImageEditor::createImageRotateRight() {
@@ -745,23 +794,20 @@ ClickableLabel* ImageEditor::createImageRotateRight() {
         return nullptr;
     }
 
-    imageRotateRight = new ClickableLabel("../src/ressources/rotateRight.png", this, actionSize);
-    imageRotateRight->setFixedSize(actionSize);
+    ClickableLabel* imageRotateRightNew = new ClickableLabel("../src/ressources/rotateRight.png", this, actionSize);
 
-
-    if (isTurnable(data.imagesData.getCurrentImageData()->getImagePath())) {
-        imageRotateRight->setDisabled(true);
+    if (!isTurnable(data.imagesData.getCurrentImageData()->getImagePath())) {
+        imageRotateRightNew->setDisabled(true);
     }
-    if (!imageRotateRight->isEnabled())
-        imageRotateRight->setEnabled(true);
+    else {
+        if (!imageRotateRightNew->isEnabled())
+            imageRotateRightNew->setEnabled(true);
+    }
+
+    connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() { this->rotateRight(); });
 
 
-    connect(imageRotateRight, &ClickableLabel::clicked, [this]() { this->rotateRight(); });
-
-
-    imageRotateRight->setFixedSize(actionSize);
-
-    return imageRotateRight;
+    return imageRotateRightNew;
 }
 
 
@@ -771,21 +817,19 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
         return nullptr;
     }
 
-    imageRotateLeft = new ClickableLabel("../src/ressources/rotateLeft.png", this, actionSize);
-    imageRotateLeft->setFixedSize(actionSize);
+    ClickableLabel* imageRotateLeftNew = new ClickableLabel("../src/ressources/rotateLeft.png", this, actionSize);
 
-    if (isTurnable(data.imagesData.getCurrentImageData()->getImagePath())) {
-        imageRotateLeft->setDisabled(true);
+    if (!isTurnable(data.imagesData.getCurrentImageData()->getImagePath())) {
+        imageRotateLeftNew->setDisabled(true);
     }
-    if (!imageRotateLeft->isEnabled())
-        imageRotateLeft->setEnabled(true);
+    else {
+        if (!imageRotateLeftNew->isEnabled())
+            imageRotateLeftNew->setEnabled(true);
+    }
 
+    connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() { this->rotateLeft(); });
 
-    connect(imageRotateLeft, &ClickableLabel::clicked, [this]() { this->rotateLeft(); });
-
-    imageRotateLeft->setFixedSize(actionSize);
-
-    return imageRotateLeft;
+    return imageRotateLeftNew;
 }
 
 
@@ -796,17 +840,17 @@ ClickableLabel* ImageEditor::createImageBefore() {
         return nullptr;
     }
 
-    buttonImageBefore = new ClickableLabel("../src/ressources/before.png", this, actionSize);
-    buttonImageBefore->setFixedSize(actionSize);
+    ClickableLabel* buttonImageBeforeNew = new ClickableLabel("../src/ressources/before.png", this, actionSize);
+    buttonImageBeforeNew->setFixedSize(actionSize);
 
     if (data.imagesData.getImageNumber() == 0) {
-        buttonImageBefore->setDisabled(true);
+        buttonImageBeforeNew->setDisabled(true);
     }
 
-    connect(buttonImageBefore, &ClickableLabel::clicked, [this]() { this->previousImage(); });
-    buttonImageBefore->setFixedSize(actionSize);
+    connect(buttonImageBeforeNew, &ClickableLabel::clicked, [this]() { this->previousImage(); });
+    buttonImageBeforeNew->setFixedSize(actionSize);
 
-    return buttonImageBefore;
+    return buttonImageBeforeNew;
 }
 
 
@@ -816,18 +860,17 @@ ClickableLabel* ImageEditor::createImageNext() {
         return nullptr;
     }
 
-    buttonImageNext = new ClickableLabel("../src/ressources/next.png", this, actionSize);
-    buttonImageNext->setFixedSize(actionSize);
+    ClickableLabel* buttonImageNextNew = new ClickableLabel("../src/ressources/next.png", this, actionSize);
 
     if (data.imagesData.getImageNumber() == data.imagesData.get().size() - 1) {
-        buttonImageNext->setDisabled(true);
+        buttonImageNextNew->setDisabled(true);
     }
 
-    connect(buttonImageNext, &ClickableLabel::clicked, [this]() { this->nextImage(); });
+    connect(buttonImageNextNew, &ClickableLabel::clicked, [this]() { this->nextImage(); });
 
-    buttonImageNext->setFixedSize(actionSize);
+    buttonImageNextNew->setFixedSize(actionSize);
 
-    return buttonImageNext;
+    return buttonImageNextNew;
 }
 
 
@@ -839,11 +882,7 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
 
     ClickableLabel* previewButton = new ClickableLabel(QString::fromStdString(imagePath), this, previewSize, false);
 
-    std::cerr << previewButton->width() << std::endl;
-    std::cerr << previewButton->height() << std::endl;
 
-    // previewButton->setFixedSize(previewButton->size());
-    // int imageNbr = imagesData.getImageNumber() + i - under;
     connect(previewButton, &ClickableLabel::clicked, [this, imageNbr]() {
         data.imagesData.setImageNumber(imageNbr);
         setImage(*data.imagesData.getImageData(data.imagesData.getImageNumber()));
