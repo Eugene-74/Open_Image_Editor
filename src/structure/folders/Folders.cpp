@@ -1,4 +1,4 @@
-#include "folders.h"
+#include "Folders.h"
 
 Folders& Folders::operator=(const Folders& other) {
     if (this != &other) {
@@ -53,6 +53,6 @@ void Folders::addFolder(const std::string& folder) {
 
 }
 
-std::vector<std::string>  Folders::getFolders(){
+std::vector<std::string>  Folders::getFolders() {
     return folders;
 }

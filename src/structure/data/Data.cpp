@@ -1,4 +1,4 @@
-#include "data.h"
+#include "Data.h"
 
 void Data::preDeleteImage(int imageNbr) {
     ImageData* imageData;

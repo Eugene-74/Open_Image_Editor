@@ -1,4 +1,4 @@
-#include "thumbnail.h"
+#include "Thumbnail.h"
 
 namespace fs = std::filesystem;  // Alias pour simplifier le code
 

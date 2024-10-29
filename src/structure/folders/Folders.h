@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include "../../functions/vector/vector.h"
+#include "../../functions/vector/Vector.h"
 class Folders
 {
 public:

@@ -1,5 +1,4 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -19,4 +18,3 @@ void addUnique(std::vector<T>& vec, const T& element) {
     vec.push_back(element);
 };
 
-#endif

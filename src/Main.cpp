@@ -1,10 +1,8 @@
-#include "main.h"
+#include "Main.h"
 
 
 
 namespace fs = std::filesystem;
-
-// impossible de faire l'orientation effective des PNG
 
 
 int main(int argc, char* argv[]) {
@@ -12,10 +10,9 @@ int main(int argc, char* argv[]) {
     // qputenv("QT_SCALE_FACTOR", "0.5");
     // qputenv("QT_SCALE_FACTOR", "1");
 
+    // std::string path = "/home/eugene/Documents/photo trié";
+    // startLoadingImagesFromFolder(path, data.imagesData);
 
-
-
-    std::string path = "/home/eugene/Documents/photo trié";
     Data data;
     ImagesData imagesData(std::vector<ImageData>{});
     ImagesData deletedImagesData(std::vector<ImageData>{});
@@ -24,18 +21,16 @@ int main(int argc, char* argv[]) {
     data.imagesData = imagesData;
     data.deletedImagesData = deletedImagesData;
 
-    // TODO mettre const dans un autre fichier et ajouter bouton save + pop up quand on ferme
     // charger de save.dat
     data.imagesData = loadImagesData(IMAGESDATA_SAVE_DAT_PATH);
 
-    startLoadingImagesFromFolder(path, data.imagesData);
-
-    data.imagesData.setImageNumber(0);
-
     QApplication app(argc, argv);
 
-    ImageEditor window(data);
 
+
+
+    InitialWindow window;
+    // window.sh
     window.showMaximized();
 
     return app.exec();

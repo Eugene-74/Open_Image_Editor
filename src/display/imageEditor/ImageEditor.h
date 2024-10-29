@@ -12,18 +12,18 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <iostream>
-#include <QPushButton>
 #include <QResizeEvent>
 #include <QSize>
 #include <QResource>
 
 #include <opencv2/opencv.hpp>
 
-#include "../../main.h"
-#include "../../structure/imagesData/imagesData.h"
-#include "../../structure/data/data.h"
-#include "../../display/box/box.h"
-#include "../../const.h"
+#include "../../Main.h"
+#include "../../structure/imagesData/ImagesData.h"
+#include "../../display/loadImage/LoadImage.h"
+#include "../../structure/data/Data.h"
+#include "../../display/box/Box.h"
+#include "../../Const.h"
 
 
 
@@ -63,6 +63,7 @@ public:
     QString hover_background_color = "#b3b3b3";
 };
 
+
 class ImageEditor : public QMainWindow {
     Q_OBJECT
 
@@ -89,7 +90,7 @@ public:
     void createButtons();
     void updateButtons();
 
-    void clearWindow();
+    void clear();
 
     ClickableLabel* createImagePreview(std::string imagePath, int imageNbr);
 
@@ -110,8 +111,7 @@ protected:
 
 
 private:
-    // ImagesData& imagesData;
-    QLabel* imageLabel; // Pour afficher l'image
+    QLabel* imageLabel;
     QVBoxLayout* mainLayout;
     QHBoxLayout* previewButtonLayout;
     QHBoxLayout* actionButtonLayout;

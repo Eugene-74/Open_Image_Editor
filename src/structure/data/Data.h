@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../imagesData/imagesData.h"
+#include "../imagesData/ImagesData.h"
 
 
 class Data

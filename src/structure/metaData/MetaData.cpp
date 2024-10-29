@@ -1,4 +1,4 @@
-#include "metaData.h"
+#include "MetaData.h"
 
 
 MetaData& MetaData::operator=(const MetaData& other) {
@@ -11,7 +11,7 @@ MetaData& MetaData::operator=(const MetaData& other) {
     return *this;
 }
 
-void MetaData::saveMetaData(const std::string& imageName){
+void MetaData::saveMetaData(const std::string& imageName) {
 
     saveExifData(imageName, exifMetaData);
     saveXmpData(imageName, xmpMetaData);
@@ -275,13 +275,13 @@ void displayXmpData(const Exiv2::XmpData& data) {
     }
 }
 
-void displayData(const MetaData metaData){
+void displayData(const MetaData metaData) {
     displayExifData(metaData.exifMetaData);
     displayXmpData(metaData.xmpMetaData);
     displayIptcData(metaData.iptcMetaData);
 }
 
-void MetaData::displayMetaData(){
+void MetaData::displayMetaData() {
     displayData(*this);
 
 }
@@ -351,22 +351,22 @@ void MetaData::save(std::ofstream& out) const {
     }
 }
 
-void MetaData::setExifData(const Exiv2::ExifData data){
+void MetaData::setExifData(const Exiv2::ExifData data) {
     exifMetaData = data;
 }
-void MetaData::setXmpData(const Exiv2::XmpData data){
+void MetaData::setXmpData(const Exiv2::XmpData data) {
     xmpMetaData = data;
 }
-void MetaData::setIptcData(const Exiv2::IptcData data){
+void MetaData::setIptcData(const Exiv2::IptcData data) {
     iptcMetaData = data;
 }
 
-Exiv2::ExifData MetaData::getExifData(){
+Exiv2::ExifData MetaData::getExifData() {
     return  exifMetaData;
 }
-Exiv2::XmpData MetaData::getXmpData(){
+Exiv2::XmpData MetaData::getXmpData() {
     return xmpMetaData;
 }
-Exiv2::IptcData MetaData::getIptcData(){
+Exiv2::IptcData MetaData::getIptcData() {
     return iptcMetaData;
 }

@@ -6,4 +6,6 @@
 class fileSelector {
 public:
     QStringList openFileDialog();
+    QStringList openDirectoryDialog();
 };
+

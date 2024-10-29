@@ -1,4 +1,4 @@
-#include "imagesData.h"
+#include "ImagesData.h"
 
 ImagesData& ImagesData::operator = (const ImagesData& other) {
     if (this != &other) {

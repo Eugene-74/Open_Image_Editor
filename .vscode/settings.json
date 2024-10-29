@@ -157,7 +157,9 @@
     "qpushbutton": "cpp",
     "*.ipp": "cpp",
     "slist": "cpp",
-    "valarray": "cpp"
+    "valarray": "cpp",
+    "qmainwindow": "cpp",
+    "qscreen": "cpp"
   },
   "cmake.sourceDirectory": "/home/eugene/Documents/git/Easy_Image_Editor/libraries/opencv/apps"
 }

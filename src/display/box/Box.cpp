@@ -1,4 +1,4 @@
-#include "box.h"
+#include "Box.h"
 
 
 // Function to display an information message box
@@ -20,6 +20,6 @@ void showErrorMessage(QWidget* parent, std::string text) {
 bool showQuestionMessage(QWidget* parent, std::string text) {
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(parent, "Question", QString::fromStdString(text),
-        QMessageBox::Yes | QMessageBox::No);
+        QMessageBox::No | QMessageBox::Yes);
     return (reply == QMessageBox::Yes);
 }

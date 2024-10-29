@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 
-#include "../imageData/imageData.h"
-#include "../../const.h"
+#include "../imageData/ImageData.h"
+#include "../../Const.h"
 
 
 
@@ -23,7 +23,8 @@ public:
 
     // Constructeur de copie
     ImagesData(const ImagesData& other)
-        : imagesData(other.imagesData), imageNumber(other.imageNumber) {}
+        : imagesData(other.imagesData), imageNumber(other.imageNumber) {
+    }
 
     ImagesData(const std::vector<ImageData> a) : imagesData(a) {}
 

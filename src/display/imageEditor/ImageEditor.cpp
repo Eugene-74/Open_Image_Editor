@@ -1,4 +1,4 @@
-#include "imageEditor.h"
+#include "ImageEditor.h"
 
 ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize size, bool setSize)
     : QLabel(parent) {
@@ -151,8 +151,6 @@ data(i) {
 
     QRect screenR = screen->availableGeometry();
 
-
-
     // pixelRatio = screen->devicePixelRatio();
     // pixelRatio = QString(qgetenv("QT_SCALE_FACTOR").constData()).toFloat();
     pixelRatio = screen->devicePixelRatio();
@@ -168,13 +166,13 @@ data(i) {
 
 
     if (screenGeometry.width() < screenGeometry.height()) {
-        // actionButtonSize = (screenGeometry.width() * 1 / 24) * pixelRatio;
-        actionButtonSize = 32;
+        actionButtonSize = (screenGeometry.width() * 1 / 48) * pixelRatio;
+        // actionButtonSize = 32;
 
     }
     else {
-        // actionButtonSize = (screenGeometry.height() * 1 / 24) * pixelRatio;
-        actionButtonSize = 32;
+        actionButtonSize = (screenGeometry.height() * 1 / 48) * pixelRatio;
+        // actionButtonSize = 32;
 
 
     }
@@ -184,11 +182,15 @@ data(i) {
 
 
     // Créer un widget central
-    QWidget* centralWidget = new QWidget(this);
+    QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
 
     // Créer un layout vertical pour toute la fenêtre
     mainLayout = new QVBoxLayout(centralWidget);
+
+    // Ajouter le layout principal au widget parent
+    // parent->setLayout(mainLayout);
+
     mainLayout->setSpacing(5);  // Espacement entre les widgets
     mainLayout->setContentsMargins(5, 5, 5, 5); // Marges autour des bords (gauche, haut, droite, bas)
 
@@ -214,7 +216,9 @@ data(i) {
     createPreview();
 
 
-    setWindowTitle("Changer l'image");
+    // setWindowTitle("Changer l'image");
+    // setWindowTitle("EasyImageEditor : Image Editor");
+
 
     if (data.imagesData.get().size() > 0) {
         setImage(*data.imagesData.getImageData(data.imagesData.getImageNumber()));
@@ -360,20 +364,14 @@ void ImageEditor::reload() {
 
     ImagesData& imagesData = data.imagesData;
 
-    std::cerr << "reload 1 " << std::endl;
     updateButtons();
-    std::cerr << "updateButtons" << std::endl;
     updatePreview();
-    std::cerr << "updatePreview" << std::endl;
 
     if (imagesData.get().size() <= 0) {
         showInformationMessage(this, "no image data loaded");
-        std::cerr << "no image data loaded" << std::endl;
-
+        addSelectedFilesToFolders(this);
         return;
     }
-
-    std::cerr << "setImage" << std::endl;
 
     setImage(*imagesData.getCurrentImageData());
 }
@@ -561,7 +559,6 @@ void ImageEditor::updateButtons() {
         return;
     }
 
-    std::cerr << "updateButtons" << std::endl;
     if (imageRotateRight) {
 
         ClickableLabel* imageRotateRightNew = createImageRotateRight();
@@ -574,7 +571,6 @@ void ImageEditor::updateButtons() {
         imageRotateRight = imageRotateRightNew;
     }
     if (imageRotateLeft) {
-        std::cerr << "updateButtons LEFT " << std::endl;
 
         ClickableLabel* imageRotateLeftNew = createImageRotateLeft();
 
@@ -640,7 +636,7 @@ void ImageEditor::updateButtons() {
  *   - Delete each widget and layout item.
  *   - Delete the layout itself and set the corresponding pointer to nullptr.
  */
-void ImageEditor::clearWindow() {
+void ImageEditor::clear() {
 
     std::cerr << imageRotateRight << std::endl;
     std::cerr << imageRotateLeft << std::endl;
@@ -649,11 +645,9 @@ void ImageEditor::clearWindow() {
 
     QTimer::singleShot(100, this, [this]() {
         // if (actionButtonLayout) {
-        //     std::cerr << "actionButtonLayout" << std::endl;
         //     QLayoutItem* item;
         //     while ((item = actionButtonLayout->takeAt(0)) != nullptr) {
         //         if (item->widget()) {
-        //             std::cerr << item->widget() << std::endl;
         //             item->widget()->disconnect();
         //             item->widget()->hide();
         //             item->widget()->deleteLater();
@@ -674,14 +668,13 @@ void ImageEditor::clearWindow() {
             imageSave->hide();
             // TODO delete -> for now it is not possible to delete the imageSave button
             // imageSave->deleteLater();
-            std::cerr << "delete imageSave" << std::endl;
+            // std::cerr << "delete imageSave" << std::endl;
         }
 
 
 
 
         if (previewButtonLayout) {
-            std::cerr << "previewButtonLayout" << std::endl;
             QLayoutItem* item;
             while ((item = previewButtonLayout->takeAt(0)) != nullptr) {
                 if (item->widget()) {
@@ -698,7 +691,6 @@ void ImageEditor::clearWindow() {
         }
 
         if (buttonLayout) {
-            std::cerr << "buttonLayout" << std::endl;
             QLayoutItem* item;
             while ((item = buttonLayout->takeAt(0)) != nullptr) {
                 if (item->widget()) {
@@ -715,7 +707,6 @@ void ImageEditor::clearWindow() {
 
 
         if (mainLayout) {
-            std::cerr << "mainLayout" << std::endl;
             QLayoutItem* item;
             while ((item = mainLayout->takeAt(0)) != nullptr) {
                 if (item->widget()) {
@@ -784,18 +775,13 @@ ClickableLabel* ImageEditor::createImageSave() {
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() { this->
         data.removeDeletedImages();
-    // std::cerr << "save" << std::endl;
     if (data.imagesData.get().size() <= 0) {
-        // std::cerr << "no image data loaded -> clear window" << std::endl;
-        clearWindow();
+        clear();
     }
     data.imagesData.saveImagesData(IMAGESDATA_SAVE_DAT_PATH);
-    // std::cerr << "save data" << std::endl;
 
     data.imagesData.setImageNumber(0);
-    // std::cerr << "set image number to 0" << std::endl;
     reload();
-    // std::cerr << "reload" << std::endl;
         });
 
 

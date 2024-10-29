@@ -1,15 +1,15 @@
-#ifndef MAIN_H
-#define MAIN_H
+#pragma once
+
 
 #include <iostream>
 #include <vector>
 #include <exiv2/exiv2.hpp>
 #include <filesystem>
 
-#include "structure/folders/folders.h"
-#include "structure/metaData/metaData.h"
-#include "structure/imageData/imageData.h"
-#include "structure/imagesData/imagesData.h"
+#include "structure/folders/Folders.h"
+#include "structure/metaData/MetaData.h"
+#include "structure/imageData/ImageData.h"
+#include "structure/imagesData/ImagesData.h"
 
 
 
@@ -20,11 +20,13 @@
 #include <algorithm>
 #include <exiv2/exiv2.hpp>
 
-#include "structure/folders/folders.h"
+#include "structure/folders/Folders.h"
 
-#include "functions/vector/vector.h"
-#include "functions/thumbnail/thumbnail.h"
-#include "display/imageEditor/imageEditor.h"
+#include "functions/vector/Vector.h"
+#include "functions/thumbnail/Thumbnail.h"
+#include "display/imageEditor/ImageEditor.h"
+#include "display/initialWindow/InitialWindow.h"
+
 
 #include <QApplication>
 #include <QMainWindow>
@@ -39,7 +41,7 @@
 #include <chrono>
 
 
-const std::string THUMBNAIL_PATH = "/home/eugene/.cache/thumbnails";
+
 
 bool isImage(const std::string& cheminFichier);
 bool isTurnable(const std::string& cheminFichier);
@@ -52,7 +54,3 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
 void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData& imagesData);
 void loadImagesMetaData(ImagesData& imagesData);
 void nextImage(int nbr);
-
-
-
-#endif

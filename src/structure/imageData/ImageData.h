@@ -4,8 +4,8 @@
 #include <vector>
 #include <filesystem>
 
-#include "../folders/folders.h"
-#include "../metaData/metaData.h"
+#include "../folders/Folders.h"
+#include "../metaData/MetaData.h"
 
 class ImageData
 {
@@ -20,7 +20,8 @@ public:
     ImageData() : imagePath(""), folders(Folders()), metaData(MetaData()) {}
 
     ImageData(const ImageData& other)
-        : imagePath(other.imagePath), folders(other.folders), metaData(other.metaData) {}
+        : imagePath(other.imagePath), folders(other.folders), metaData(other.metaData) {
+    }
 
     ImageData(std::string a, const Folders& c) : imagePath(a), folders(c) {}
 
