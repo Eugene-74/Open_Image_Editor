@@ -147,7 +147,7 @@ ImagesData loadImagesData(std::string savePath) {
 
     // Vérifier si le fichier a été ouvert correctement
     if (!inFile) {
-        std::cerr << "Erreur : le fichier imagesData.dat n'existe pas ou ne peut pas être ouvert." << std::endl;
+        std::cerr << "Erreur : le fichier" << savePath << "n'existe pas ou ne peut pas être ouvert." << std::endl;
         // Vous pouvez gérer cette situation selon vos besoins
         return loadedImagesData; // Retourne un objet vide ou lance une exception selon votre logique
     }

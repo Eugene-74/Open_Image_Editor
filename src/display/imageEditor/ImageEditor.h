@@ -11,13 +11,11 @@
 #include <QScreen>
 #include <QTimer>
 #include <iostream>
-#include <QResizeEvent>
 #include <QSize>
-#include <QResource>
 
-#include <opencv2/opencv.hpp>
+#include <QKeyEvent>
 
-#include "../../Main.h"
+// #include "../../Main.h"
 #include "../../structure/imagesData/ImagesData.h"
 #include "../../display/loadImage/LoadImage.h"
 #include "../../structure/data/Data.h"
@@ -34,7 +32,7 @@ class ImageEditor : public QMainWindow {
 public:
 
     // Constructor
-    ImageEditor(Data& a, QWidget* parent = nullptr);   // Initialize the reference member
+    ImageEditor(Data& a, QWidget* parent = nullptr);
 
     ~ImageEditor() {}
 
@@ -66,13 +64,14 @@ public:
 
     ClickableLabel* createImageBefore();
     ClickableLabel* createImageNext();
-
-
+    void saveImage();
+    void deleteImage();
+    void unDeleteImage();
 
 
 protected:
-    // void resizeEvent(ImagesData& imagesData) override;
-
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
 
 private:
     QLabel* imageLabel;
@@ -95,10 +94,6 @@ private:
     ClickableLabel* imageRotateLeft;
     ClickableLabel* imageDelete;
     ClickableLabel* imageSave;
-
-
-
-
 
 };
 

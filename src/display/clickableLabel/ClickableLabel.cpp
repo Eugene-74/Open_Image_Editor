@@ -95,7 +95,7 @@ void ClickableLabel::mousePressEvent(QMouseEvent* event) {
 
     if (event->button() == Qt::LeftButton) {
 
-        // background_color = "#9c9c9c";
+        hover_background_color = CLICK_BACKGROUND_COLOR;
 
         updateStyleSheet();
 
@@ -107,11 +107,11 @@ void ClickableLabel::mousePressEvent(QMouseEvent* event) {
 void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
     emit clicked();  // Émettre le signal quand on clique
 
-    // background_color = "transparent";
 
 
     if (event->button() == Qt::LeftButton) {
 
+        hover_background_color = HOVER_BACKGROUND_COLOR;
         updateStyleSheet();
     }
     QLabel::mouseReleaseEvent(event);  // Call the base class implementation

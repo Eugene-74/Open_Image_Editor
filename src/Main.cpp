@@ -10,8 +10,6 @@ int main(int argc, char* argv[]) {
     // qputenv("QT_SCALE_FACTOR", "0.5");
     // qputenv("QT_SCALE_FACTOR", "1");
 
-    // std::string path = "/home/eugene/Documents/photo trié";
-    // startLoadingImagesFromFolder(path, data.imagesData);
 
     Data data;
     ImagesData imagesData(std::vector<ImageData>{});
@@ -21,8 +19,7 @@ int main(int argc, char* argv[]) {
     data.imagesData = imagesData;
     data.deletedImagesData = deletedImagesData;
 
-    // charger de save.dat
-    data.imagesData = loadImagesData(IMAGESDATA_SAVE_DAT_PATH);
+
 
     QApplication app(argc, argv);
 

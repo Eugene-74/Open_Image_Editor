@@ -1,5 +1,4 @@
 #include "InitialWindow.h"
-#include <iostream>
 
 
 InitialWindow::InitialWindow() {
@@ -11,7 +10,11 @@ InitialWindow::InitialWindow() {
     data.imagesData = imagesData;
     data.deletedImagesData = deletedImagesData;
 
-    data.imagesData = loadImagesData(IMAGESDATA_SAVE_DAT_PATH);
+
+    std::string path = "/home/eugene/Documents/photo trié";
+    startLoadingImagesFromFolder(path, data.imagesData);
+    // charger de save.dat
+    // data.imagesData = loadImagesData(IMAGESDATA_SAVE_DAT_PATH);
     data.deletedImagesData = loadImagesData(DELETED_IMAGESDATA_SAVE_DAT_PATH);
 
 
@@ -51,6 +54,7 @@ void InitialWindow::createImageEditor(Data& data) {
     QWidget* centralWidget = new QWidget(this);
     centralWidget->setLayout(layout);
     setCentralWidget(centralWidget);
+    imageEditor->setFocus();
 }
 
 void InitialWindow::clearImageEditor() {

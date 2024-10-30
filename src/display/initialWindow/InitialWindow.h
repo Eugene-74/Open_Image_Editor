@@ -7,8 +7,7 @@
 #include "../../structure/imagesData/ImagesData.h"
 #include "../../structure/data/Data.h"
 
-// Assurez-vous que le chemin d'accès à imageEditor.h est correct
-#include "../imageEditor/ImageEditor.h"
+#include "../../display/imageEditor/ImageEditor.h"
 
 class InitialWindow : public QMainWindow {
     Q_OBJECT
@@ -27,4 +26,6 @@ protected:
 private:
     // Data* data;
     // ImageEditor* imageEditor; // Déclarer un pointeur vers ImageEditor
+    // ImageEditor imageEditor;
+
 };

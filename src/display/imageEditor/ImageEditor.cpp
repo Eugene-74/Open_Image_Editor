@@ -176,6 +176,9 @@ void ImageEditor::rotateLeft() {
     ImagesData& imagesData = data.imagesData;
 
     ImageData* imageData = imagesData.getCurrentImageData();
+    if (!isTurnable(imageData->getImagePath())) {
+        return;
+    }
     int orientation = imageData->getImageOrientation();
 
     if (orientation == 1) {
@@ -202,7 +205,10 @@ void ImageEditor::rotateRight() {
     ImagesData& imagesData = data.imagesData;
 
     ImageData* imageData = imagesData.getCurrentImageData();
-    // imageData->turnImage(3);
+    if (!isTurnable(imageData->getImagePath())) {
+        return;
+    }
+
     int orientation = imageData->getImageOrientation();
 
     if (orientation == 1) {
@@ -231,8 +237,10 @@ void ImageEditor::reload() {
     updatePreview();
 
     if (imagesData.get().size() <= 0) {
-        showInformationMessage(this, "no image data loaded");
-        addSelectedFilesToFolders(this);
+        // TODO reactivate
+        // showInformationMessage(this, "no image data loaded");
+        // addSelectedFilesToFolders(this);
+
         return;
     }
 
@@ -507,35 +515,21 @@ void ImageEditor::clear() {
     std::cerr << imageSave << std::endl;
 
     QTimer::singleShot(100, this, [this]() {
-        // if (actionButtonLayout) {
-        //     QLayoutItem* item;
-        //     while ((item = actionButtonLayout->takeAt(0)) != nullptr) {
-        //         if (item->widget()) {
-        //             item->widget()->disconnect();
-        //             item->widget()->hide();
-        //             item->widget()->deleteLater();
+        if (actionButtonLayout) {
+            QLayoutItem* item;
+            while ((item = actionButtonLayout->takeAt(0)) != nullptr) {
+                if (item->widget()) {
+                    item->widget()->disconnect();
+                    item->widget()->hide();
+                    item->widget()->deleteLater();
 
-        //         }
-        //         delete item;
-        //     }
+                }
+                delete item;
+            }
 
-        //     delete actionButtonLayout;
-        //     actionButtonLayout = nullptr;
-        // }
-
-        imageRotateRight->deleteLater();
-        imageRotateLeft->deleteLater();
-        imageDelete->deleteLater();
-        if (imageSave) {
-            imageSave->disconnect();
-            imageSave->hide();
-            // TODO delete -> for now it is not possible to delete the imageSave button
-            // imageSave->deleteLater();
-            // std::cerr << "delete imageSave" << std::endl;
+            delete actionButtonLayout;
+            actionButtonLayout = nullptr;
         }
-
-
-
 
         if (previewButtonLayout) {
             QLayoutItem* item;
@@ -591,6 +585,9 @@ void ImageEditor::clear() {
 }
 
 
+
+
+
 /**
  * @brief Creates a clickable label for pre deleting an image.
  *
@@ -613,16 +610,15 @@ ClickableLabel* ImageEditor::createImageDelete() {
 
         imageDelete->background_color = "#700c13";
         imageDelete->updateStyleSheet();
-        connect(imageDelete, &ClickableLabel::clicked, [this]() { this->data.unPreDeleteImage(data.imagesData.getImageNumber());
-        updateButtons();
-            });
-    }
-    else {
-        connect(imageDelete, &ClickableLabel::clicked, [this]() { this->data.preDeleteImage(data.imagesData.getImageNumber());
-        updateButtons();
-            });
+        // connect(imageDelete, &ClickableLabel::clicked, [this]() { this->unDeleteImage();
 
+        //     });
     }
+    // else {
+    connect(imageDelete, &ClickableLabel::clicked, [this]() { this->deleteImage();
+        });
+
+    // }
 
     return imageDelete;
 }
@@ -637,14 +633,7 @@ ClickableLabel* ImageEditor::createImageSave() {
     ClickableLabel* imageSaveNew = new ClickableLabel(":/save.png", this, actionSize);
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() { this->
-        data.removeDeletedImages();
-    if (data.imagesData.get().size() <= 0) {
-        clear();
-    }
-    data.imagesData.saveImagesData(IMAGESDATA_SAVE_DAT_PATH);
-
-    data.imagesData.setImageNumber(0);
-    reload();
+        saveImage();
         });
 
 
@@ -760,3 +749,146 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
 
     return previewButton;
 }
+
+
+void ImageEditor::keyPressEvent(QKeyEvent* event) {
+    // std::cerr << event->key() << std::endl;
+    switch (event->key()) {
+    case Qt::Key_Left:
+        if (event->modifiers() & Qt::ControlModifier) {
+            imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
+            imageRotateLeft->updateStyleSheet();
+        }
+        else {
+            buttonImageBefore->background_color = CLICK_BACKGROUND_COLOR;
+            buttonImageBefore->updateStyleSheet();
+        }
+        break;
+    case Qt::Key_Right:
+        if (event->modifiers() & Qt::ControlModifier) {
+            imageRotateRight->background_color = CLICK_BACKGROUND_COLOR;
+            imageRotateRight->updateStyleSheet();
+        }
+        else {
+            buttonImageNext->background_color = CLICK_BACKGROUND_COLOR;
+            buttonImageNext->updateStyleSheet();
+        }
+        break;
+
+    case Qt::Key_S:
+        if (event->modifiers() & Qt::ControlModifier) {
+            imageSave->background_color = CLICK_BACKGROUND_COLOR;
+            imageSave->updateStyleSheet();
+        }
+        break;
+    case Qt::Key_Delete:
+        imageDelete->background_color = CLICK_BACKGROUND_COLOR;
+        imageDelete->updateStyleSheet();
+        imageDelete->background_color = CLICK_BACKGROUND_COLOR;
+        imageDelete->updateStyleSheet();
+        break;
+    case Qt::Key_Backspace:
+        imageDelete->background_color = CLICK_BACKGROUND_COLOR;
+        imageDelete->updateStyleSheet();
+        break;
+    case Qt::Key_D:
+        if (event->modifiers() & Qt::ControlModifier) {
+            imageDelete->background_color = CLICK_BACKGROUND_COLOR;
+            imageDelete->updateStyleSheet();
+        }
+        break;
+
+    default:
+        QWidget::keyPressEvent(event); // Call base class implementation for other keys
+    }
+}
+
+void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
+    switch (event->key()) {
+
+    case Qt::Key_Left:
+        if (event->modifiers() & Qt::ControlModifier) {
+            imageRotateLeft->background_color = BACKGROUND_COLOR;
+            imageRotateLeft->updateStyleSheet();
+            rotateLeft();
+        }
+        else {
+            buttonImageBefore->background_color = BACKGROUND_COLOR;
+            buttonImageBefore->updateStyleSheet();
+            previousImage();
+        }
+        break;
+    case Qt::Key_Right:
+        if (event->modifiers() & Qt::ControlModifier) {
+            imageRotateRight->background_color = BACKGROUND_COLOR;
+            imageRotateRight->updateStyleSheet();
+            rotateRight();
+
+        }
+        else {
+            buttonImageNext->background_color = BACKGROUND_COLOR;
+            buttonImageNext->updateStyleSheet();
+            nextImage();
+        }
+        break;
+
+    case Qt::Key_S:
+        if (event->modifiers() & Qt::ControlModifier) {
+            imageSave->background_color = BACKGROUND_COLOR;
+            imageSave->updateStyleSheet();
+            saveImage();
+        }
+        break;
+    case Qt::Key_Delete:
+        imageDelete->background_color = BACKGROUND_COLOR;
+        imageDelete->updateStyleSheet();
+        deleteImage();
+        break;
+    case Qt::Key_Backspace:
+        imageDelete->background_color = BACKGROUND_COLOR;
+        imageDelete->updateStyleSheet();
+        deleteImage();
+        break;
+    case Qt::Key_D:
+        if (event->modifiers() & Qt::ControlModifier) {
+            imageDelete->background_color = BACKGROUND_COLOR;
+            imageDelete->updateStyleSheet();
+            deleteImage();
+        }
+        break;
+
+
+    default:
+        QWidget::keyReleaseEvent(event); // Call base class implementation for other keys
+    }
+}
+
+
+void ImageEditor::saveImage() {
+    data.removeDeletedImages();
+    if (data.imagesData.get().size() <= 0) {
+        clear();
+    }
+    data.imagesData.saveImagesData(IMAGESDATA_SAVE_DAT_PATH);
+
+    data.imagesData.setImageNumber(0);
+    reload();
+}
+
+
+void ImageEditor::deleteImage() {
+    if (data.isDeleted(data.imagesData.getImageNumber())) {
+
+        data.unPreDeleteImage(data.imagesData.getImageNumber());
+        updateButtons();
+    }
+    else {
+        data.preDeleteImage(data.imagesData.getImageNumber());
+        updateButtons();
+
+    }
+}
+// void ImageEditor::unDeleteImage() {
+//     data.unPreDeleteImage(data.imagesData.getImageNumber());
+//     updateButtons();
+// }
