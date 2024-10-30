@@ -6,6 +6,8 @@
         <file>rotateRight.png</file>
         <file>delete.png</file>
         <file>save.png</file>
+        <file>editExif.png</file>
+
 
     </qresource>
 </RCC>

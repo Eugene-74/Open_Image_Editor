@@ -14,6 +14,10 @@
 #include <QSize>
 
 #include <QKeyEvent>
+#include <QListWidget>
+#include <QLineEdit>
+#include <QDateTime>
+#include <QDateTimeEdit>
 
 // #include "../../Main.h"
 #include "../../structure/imagesData/ImagesData.h"
@@ -30,6 +34,8 @@ class ImageEditor : public QMainWindow {
     Q_OBJECT
 
 public:
+
+
 
     // Constructor
     ImageEditor(Data& a, QWidget* parent = nullptr);
@@ -61,6 +67,7 @@ public:
     ClickableLabel* createImageRotateLeft();
     ClickableLabel* createImageDelete();
     ClickableLabel* createImageSave();
+    ClickableLabel* createImageEditExif();
 
     ClickableLabel* createImageBefore();
     ClickableLabel* createImageNext();
@@ -69,16 +76,33 @@ public:
     void unDeleteImage();
 
 
+    void populateMetadataFields();
+    void validateMetadata();
+
+
+
 protected:
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
 
 private:
+    bool exifEditor = false;
+
+    QDateTimeEdit* dateEdit;
+    QLineEdit* geoEdit;
+    QLineEdit* descriptionEdit;
+    QPushButton* validateButton;
+
+
     QLabel* imageLabel;
-    QVBoxLayout* mainLayout;
+    QHBoxLayout* mainLayout;
     QHBoxLayout* previewButtonLayout;
     QHBoxLayout* actionButtonLayout;
     QHBoxLayout* buttonLayout;
+    QVBoxLayout* infoLayout;
+    QVBoxLayout* editionLayout;
+    // QHBoxLayout* infoAndButtonLayout;
+
     QSize previewSize;
     QSize actionSize;
     QSize screenGeometry;
@@ -94,6 +118,7 @@ private:
     ClickableLabel* imageRotateLeft;
     ClickableLabel* imageDelete;
     ClickableLabel* imageSave;
+    ClickableLabel* imageEditExif;
 
 };
 

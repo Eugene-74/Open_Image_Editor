@@ -49,7 +49,7 @@ data(i) {
     setCentralWidget(centralWidget);
 
     // Créer un layout vertical pour toute la fenêtre
-    mainLayout = new QVBoxLayout(centralWidget);
+    mainLayout = new QHBoxLayout(centralWidget);
 
     // Ajouter le layout principal au widget parent
     // parent->setLayout(mainLayout);
@@ -59,24 +59,69 @@ data(i) {
 
 
 
+
     QSize actionSizeSet(actionButtonSize, actionButtonSize);
     actionSize = actionSizeSet;
 
 
+    editionLayout = new QVBoxLayout();
+    editionLayout->setAlignment(Qt::AlignCenter);
+
     actionButtonLayout = new QHBoxLayout();
     actionButtonLayout->setAlignment(Qt::AlignCenter);
-    mainLayout->addLayout(actionButtonLayout);
 
     buttonLayout = new QHBoxLayout();
     buttonLayout->setAlignment(Qt::AlignCenter);
-    mainLayout->addLayout(buttonLayout);
 
     previewButtonLayout = new QHBoxLayout();
     previewButtonLayout->setAlignment(Qt::AlignCenter);
-    mainLayout->addLayout(previewButtonLayout);
+
+    infoLayout = new QVBoxLayout();
+    infoLayout->setAlignment(Qt::AlignCenter);
+
+
+    mainLayout->addLayout(editionLayout);
+    editionLayout->addLayout(actionButtonLayout);
+    editionLayout->addLayout(buttonLayout);
+    editionLayout->addLayout(previewButtonLayout);
+    mainLayout->addLayout(infoLayout);
+
 
     createButtons();
     createPreview();
+
+    // dateEdit = new QLineEdit(this);
+    dateEdit = new QDateTimeEdit(this);
+    dateEdit->setDisplayFormat("dd/MM/yyyy, HH:mm");
+    dateEdit->setCalendarPopup(true);
+
+    geoEdit = new QLineEdit(this);
+    descriptionEdit = new QLineEdit(this);
+    validateButton = new QPushButton("Valider", this);
+    connect(validateButton, &QPushButton::clicked, this, &ImageEditor::validateMetadata);
+
+    // QVBoxLayout* layout = new QVBoxLayout();
+    infoLayout->addWidget(new QLabel("Date:", this));
+    infoLayout->addWidget(dateEdit);
+    infoLayout->addWidget(new QLabel("Géolocalisation:", this));
+    infoLayout->addWidget(geoEdit);
+    infoLayout->addWidget(new QLabel("Description:", this));
+    infoLayout->addWidget(descriptionEdit);
+    infoLayout->addWidget(validateButton);
+    if (exifEditor) {
+
+        populateMetadataFields();
+    }
+    else {
+        for (int i = 0; i < infoLayout->count(); ++i) {
+            QWidget* widget = infoLayout->itemAt(i)->widget();
+            if (widget) {
+                widget->hide();
+            }
+        }
+    }
+
+    // infoLayout->addItem(layout);
 
 
     // setWindowTitle("Changer l'image");
@@ -235,11 +280,22 @@ void ImageEditor::reload() {
 
     updateButtons();
     updatePreview();
+    if (exifEditor) {
+        populateMetadataFields();
+    }
+    else {
+        for (int i = 0; i < infoLayout->count(); ++i) {
+            QWidget* widget = infoLayout->itemAt(i)->widget();
+            if (widget) {
+                widget->hide();
+            }
+        }
+    }
 
     if (imagesData.get().size() <= 0) {
         // TODO reactivate
-        // showInformationMessage(this, "no image data loaded");
-        // addSelectedFilesToFolders(this);
+        showInformationMessage(this, "no image data loaded");
+        addSelectedFilesToFolders(this);
 
         return;
     }
@@ -404,11 +460,15 @@ void ImageEditor::createButtons() {
     imageRotateLeft = createImageRotateLeft();
     imageDelete = createImageDelete();
     imageSave = createImageSave();
+    imageEditExif = createImageEditExif();
+
 
     actionButtonLayout->addWidget(imageRotateRight);
     actionButtonLayout->addWidget(imageRotateLeft);
     actionButtonLayout->addWidget(imageDelete);
     actionButtonLayout->addWidget(imageSave);
+    actionButtonLayout->addWidget(imageEditExif);
+
 
     imageLabel = new QLabel(this);
 
@@ -472,6 +532,18 @@ void ImageEditor::updateButtons() {
         imageSave->deleteLater();
 
         imageSave = imageSaveNew;
+    }
+    if (exifEditor) {
+        if (imageEditExif) {
+            ClickableLabel* imageEditExifNew = createImageEditExif();
+
+            actionButtonLayout->replaceWidget(imageEditExif, imageEditExifNew);
+
+            imageEditExif->hide();
+            imageEditExif->deleteLater();
+
+            imageEditExif = imageEditExifNew;
+        }
     }
     if (buttonImageBefore) {
         if (data.imagesData.getImageNumber() == 0) {
@@ -685,6 +757,33 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
 }
 
 
+ClickableLabel* ImageEditor::createImageEditExif() {
+    if (data.imagesData.get().size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageEditExifNew = new ClickableLabel(":/editExif.png", this, actionSize);
+
+    connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
+        // exifEditor = !exifEditor;
+        if (exifEditor) {
+            exifEditor = false;
+        }
+        else {
+            exifEditor = true;
+            for (int i = 0; i < infoLayout->count(); ++i) {
+                QWidget* widget = infoLayout->itemAt(i)->widget();
+                if (widget) {
+                    widget->setHidden(false);
+                }
+            }
+        }
+        reload();
+        });
+
+    return imageEditExifNew;
+}
+
 
 ClickableLabel* ImageEditor::createImageBefore() {
 
@@ -888,7 +987,50 @@ void ImageEditor::deleteImage() {
 
     }
 }
-// void ImageEditor::unDeleteImage() {
-//     data.unPreDeleteImage(data.imagesData.getImageNumber());
-//     updateButtons();
-// }
+
+
+void ImageEditor::populateMetadataFields() {
+    ImagesData& imagesData = data.imagesData;
+    ImageData* imageData = imagesData.getCurrentImageData();
+    Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
+
+    dateEdit->setDateTime(QDateTime::currentDateTime());
+    geoEdit->clear();
+    descriptionEdit->clear();
+
+
+    if (exifData["Exif.Image.DateTime"].count() != 0) {
+        QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
+        QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
+        dateEdit->setDateTime(dateTime);
+    }
+    if (exifData["Exif.GPSInfo.GPSLatitude"].count() != 0 && exifData["Exif.GPSInfo.GPSLongitude"].count() != 0) {
+        geoEdit->setText(QString::fromStdString(
+            exifData["Exif.GPSInfo.GPSLatitude"].toString() + ", " +
+            exifData["Exif.GPSInfo.GPSLongitude"].toString()));
+    }
+    if (exifData["Exif.Image.ImageDescription"].count() != 0) {
+        descriptionEdit->setText(QString::fromStdString(exifData["Exif.Image.ImageDescription"].toString()));
+    }
+}
+
+
+
+void ImageEditor::validateMetadata() {
+    ImagesData& imagesData = data.imagesData;
+    ImageData* imageData = imagesData.getCurrentImageData();
+    MetaData* metaData = imageData->getMetaData();
+
+    // metaData->modifyExifValue("Exif.Image.DateTime", dateEdit->text().toStdString());
+    QString dateTimeStr = dateEdit->dateTime().toString("yyyy:MM:dd HH:mm:ss");
+    metaData->modifyExifValue("Exif.Image.DateTime", dateTimeStr.toStdString());
+    // Suppose that geoEdit contains latitude and longitude separated by a comma
+    QStringList geoData = geoEdit->text().split(",");
+    if (geoData.size() == 2) {
+        metaData->modifyExifValue("Exif.GPSInfo.GPSLatitude", geoData[0].trimmed().toStdString());
+        metaData->modifyExifValue("Exif.GPSInfo.GPSLongitude", geoData[1].trimmed().toStdString());
+    }
+    metaData->modifyExifValue("Exif.Image.ImageDescription", descriptionEdit->text().toStdString());
+
+    imageData->saveMetaData();
+}
