@@ -95,6 +95,13 @@ data(i) {
     dateEdit->setDisplayFormat("dd/MM/yyyy, HH:mm");
     dateEdit->setCalendarPopup(true);
 
+    QCalendarWidget* calendarWidget = dateEdit->calendarWidget();
+    calendarWidget->setGridVisible(true); // Afficher une grille
+    calendarWidget->setFirstDayOfWeek(Qt::Monday); // Définir le premier jour de la semaine
+    calendarWidget->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader); // Masquer les en-têtes verticaux
+    calendarWidget->setNavigationBarVisible(true); // Afficher la barre de navigation
+
+
     geoEdit = new QLineEdit(this);
     descriptionEdit = new QLineEdit(this);
     validateButton = new QPushButton("Valider", this);

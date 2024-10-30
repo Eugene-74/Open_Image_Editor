@@ -1,32 +1,24 @@
 {
     "configurations": [
-        { 
-            "name": "linux-gcc-x64",
+        {
+            "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/home/eugene/Documents/git/Easy_Image_Editor/structure/",
-                "/home/eugene/Documents/git/Easy_Image_Editor/structure/metaData/",
-                "/home/eugene/Documents/git/Easy_Image_Editor/structure/imageData/",
-                "/home/eugene/Documents/git/Easy_Image_Editor/structure/imagesData/",
-                "/home/eugene/Documents/git/Easy_Image_Editor/structure/folders/",
-                "/home/eugene/Documents/git/Easy_Image_Editor/display/",
-                "/home/eugene/Documents/git/Easy_Image_Editor/display/imageEditor/",
-                "/home/eugene/Documents/git/Easy_Image_Editor/functions/",
-                "/home/eugene/Documents/git/Easy_Image_Editor/functions/vector/",
-                "/home/eugene/Documents/git/Easy_Image_Editor/functions/thumbnail/",
-                "/home/eugene/Documents/git/Easy_Image_Editor/functions/clickableLabel/",
-
-                "/usr/include/x86_64-linux-gnu/qt5",
-                "/usr/include/x86_64-linux-gnu/qt5/QtWidgets",
-                "/usr/include/x86_64-linux-gnu/qt5/QtGui",
-                "/usr/include/x86_64-linux-gnu/qt5/QtCore",
-                "/usr/include/opencv4",
-                "${workspaceFolder}"
+                "/usr/include",
+                "/usr/include/x86_64-linux-gnu",
+                "/usr/include/qt5",
+                "/usr/include/qt5/QtCore",
+                "/usr/include/qt5/QtGui",
+                "/usr/include/qt5/QtWidgets",
+                "/usr/include/qt5/QtQuick",
+                "/usr/include/qt5/QtQuickWidgets",
+                "/usr/include/qt5/QtLocation",
+                "/usr/include/qt5/QtPositioning"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
-            "cStandard": "c17",
-            "cppStandard": "gnu++17",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
             "intelliSenseMode": "linux-gcc-x64"
         }
     ],

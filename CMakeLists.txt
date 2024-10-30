@@ -1,17 +1,20 @@
 cmake_minimum_required(VERSION 3.10)
-
-# Nom du projet
 project(EasyImageEditor)
 
-# Définir le standard C++
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+# Régler les politiques CMake
+if(POLICY CMP0003)
+  cmake_policy(SET CMP0003 NEW)
+endif()
+
+if(POLICY CMP0080)
+  cmake_policy(SET CMP0080 NEW)
+endif()
 
 # Ajouter le répertoire contenant FindExiv2.cmake à CMAKE_MODULE_PATH
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 # Trouver les packages Qt nécessaires
-find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Widgets Location REQUIRED)
 
 # Trouver les packages OpenCV nécessaires
 find_package(OpenCV REQUIRED)
@@ -42,7 +45,7 @@ qt5_add_resources(QRC_SOURCES ${RESOURCE_FILES})
 add_executable(EasyImageEditor ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
 
 # Lier les bibliothèques Qt
-target_link_libraries(EasyImageEditor Qt5::Core Qt5::Gui Qt5::Widgets)
+target_link_libraries(EasyImageEditor Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Location)
 
 # Lier les bibliothèques OpenCV
 target_link_libraries(EasyImageEditor ${OpenCV_LIBS})
@@ -55,28 +58,21 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_link_libraries(EasyImageEditor stdc++fs)
 endif()
 
-# Configuration de l'installation
-install(TARGETS EasyImageEditor DESTINATION bin)
+# Installer l'exécutable
+install(TARGETS EasyImageEditor
+        RUNTIME DESTINATION bin)
 
-# Installer les bibliothèques OpenCV
-foreach(lib ${OpenCV_LIBS})
-    get_filename_component(lib_path ${lib} DIRECTORY)
-    if(EXISTS ${lib_path}/${lib})
-        install(FILES ${lib_path}/${lib} DESTINATION lib)
-    endif()
-endforeach()
-
-# Installer les bibliothèques Exiv2
-foreach(lib ${EXIV2_LIBRARIES})
-    get_filename_component(lib_path ${lib} DIRECTORY)
-    if(EXISTS ${lib_path}/${lib})
-        install(FILES ${lib_path}/${lib} DESTINATION lib)
-    endif()
-endforeach()
-
-# Utiliser CPack pour créer un package
+# Inclure les modules nécessaires
 include(InstallRequiredSystemLibraries)
+
+# Exécuter le script FixupBundle.cmake après l'installation
+install(SCRIPT "${CMAKE_MODULE_PATH}/FixupBundle.cmake")
+
+# Configuration de CPack
 set(CPACK_GENERATOR "ZIP")
 set(CPACK_PACKAGE_NAME "EasyImageEditor")
 set(CPACK_PACKAGE_VERSION "1.0.0")
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
+
 include(CPack)
