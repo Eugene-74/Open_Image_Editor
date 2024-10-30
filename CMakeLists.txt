@@ -58,15 +58,32 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_link_libraries(EasyImageEditor stdc++fs)
 endif()
 
+# Configurer le RPATH pour trouver les bibliothèques dans 'lib'
+set(CMAKE_INSTALL_RPATH "\$ORIGIN/../lib")
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 # Installer l'exécutable
 install(TARGETS EasyImageEditor
         RUNTIME DESTINATION bin)
 
-# Inclure les modules nécessaires
-include(InstallRequiredSystemLibraries)
+# Collecter et installer les dépendances à l'exécution
+install(CODE "
+    include(BundleUtilities)
 
-# Exécuter le script FixupBundle.cmake après l'installation
-install(SCRIPT "${CMAKE_MODULE_PATH}/FixupBundle.cmake")
+    file(GET_RUNTIME_DEPENDENCIES
+        EXECUTABLES \${CMAKE_INSTALL_PREFIX}/bin/EasyImageEditor
+        RESOLVED_DEPENDENCIES_VAR _deps
+        DIRECTORIES \${Qt5_DIR} \${OpenCV_DIR} \${EXIV2_LIBRARIES}
+    )
+
+    foreach(_dep \${_deps})
+        # Vérifier que le fichier existe avant de l'installer
+        if(EXISTS \${_dep})
+            file(INSTALL DESTINATION \${CMAKE_INSTALL_PREFIX}/lib FILES \${_dep})
+        endif()
+    endforeach()
+")
 
 # Configuration de CPack
 set(CPACK_GENERATOR "ZIP")
