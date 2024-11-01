@@ -7,19 +7,38 @@ ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize 
     QFile file(imagePath);
 
     cv::Mat image;
-    if (file.exists()) {
-        // Load image from Qt resources
-        if (file.open(QIODevice::ReadOnly)) {
-            QByteArray imageData = file.readAll();
-            std::vector<uchar> data(imageData.begin(), imageData.end());
-            image = cv::imdecode(data, cv::IMREAD_UNCHANGED);
-        }
+
+
+    // TODO déplacer pour que ça marche
+    std::map<QString, cv::Mat> imageCache;
+
+
+
+    if (imageCache.find(imagePath) != imageCache.end()) {
+        image = imageCache[imagePath];
+        std::cerr << "image already loaded" << std::endl;
     }
     else {
-        // Load image from file system
-        image = cv::imread(imagePath.toStdString(), cv::IMREAD_UNCHANGED);
-    }
+        std::cerr << "image NOT  already loaded" << std::endl;
 
+        if (file.exists()) {
+
+            // Load image from Qt resources
+            if (file.open(QIODevice::ReadOnly)) {
+                QByteArray imageData = file.readAll();
+                std::vector<uchar> data(imageData.begin(), imageData.end());
+                image = cv::imdecode(data, cv::IMREAD_UNCHANGED);
+            }
+        }
+        else {
+            // Load image from file system
+            image = cv::imread(imagePath.toStdString(), cv::IMREAD_UNCHANGED);
+        }
+
+        if (!image.empty()) {
+            imageCache[imagePath] = image;
+        }
+    }
 
     if (!image.empty()) {
 
@@ -80,6 +99,7 @@ ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize 
     updateStyleSheet();
 
 }
+
 
 // Gérer l'entrée de la souris
 void ClickableLabel::enterEvent(QEvent* event) {

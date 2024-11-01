@@ -160,7 +160,8 @@
     "valarray": "cpp",
     "qmainwindow": "cpp",
     "qscreen": "cpp",
-    "qdatetimeedit": "cpp"
+    "qdatetimeedit": "cpp",
+    "expected": "cpp"
   },
   "cmake.sourceDirectory": "/home/eugene/Documents/git/Easy_Image_Editor"
 }

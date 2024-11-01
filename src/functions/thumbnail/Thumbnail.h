@@ -7,5 +7,17 @@
 #include <fstream> 
 
 #include <filesystem>  
-void createThumbnails(const std::vector<std::string>& imagePaths, const std::string& outputDir);
 
+#include "../../Const.h"
+#include <opencv2/opencv.hpp>
+
+void createThumbnails(const std::vector<std::string>& imagePaths, const int maxDim);
+void createThumbnail(const std::string& imagePath, const int maxDim);
+
+
+void createThumbnailsIfNotExists(const std::string& imagePath, const int maxDim);
+void createThumbnailIfNotExists(const std::string& imagePath, const int maxDim);
+
+bool hasThumbnail(const std::string& imagePath, const int maxDim);
+
+void createAllThumbnail(const std::string& path, const int maxDim);

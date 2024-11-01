@@ -37,6 +37,7 @@ class ImageEditor : public QMainWindow {
     Q_OBJECT
 
 public:
+    // std::map<QString, cv::Mat> imageCache;
 
 
 
@@ -50,8 +51,8 @@ public:
 
     void setImage(ImageData& imageData);
 
-    void nextImage();
-    void previousImage();
+    void nextImage(int nbr = 1);
+    void previousImage(int nbr = 1);
     void rotateLeft();
     void rotateRight();
 
@@ -83,6 +84,7 @@ public:
     void validateMetadata();
 
 
+    // void removeImageFromCache(const QString& imagePath);
 
 protected:
     void keyPressEvent(QKeyEvent* event) override;

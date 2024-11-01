@@ -1,95 +1,118 @@
 cmake_minimum_required(VERSION 3.10)
-project(EasyImageEditor)
 
-# Régler les politiques CMake
-if(POLICY CMP0003)
-  cmake_policy(SET CMP0003 NEW)
-endif()
+# Nom du projet
+project(EasyImageEditor VERSION 1.0.0)
 
-if(POLICY CMP0080)
-  cmake_policy(SET CMP0080 NEW)
-endif()
+# Configuration C++
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
-# Ajouter le répertoire contenant FindExiv2.cmake à CMAKE_MODULE_PATH
+# Configuration Qt statique
+set(Qt5_USE_STATIC_LIBS ON)
+set(Qt5_USE_STATIC_RUNTIME ON)
+
+# Chemin Qt
+find_program(QMAKE_EXECUTABLE NAMES qmake)
+get_filename_component(QT_BIN_DIR ${QMAKE_EXECUTABLE} DIRECTORY)
+get_filename_component(QT_ROOT_DIR ${QT_BIN_DIR} DIRECTORY)
+set(CMAKE_PREFIX_PATH "${QT_ROOT_DIR}/lib/cmake")
+
+# Ajout du répertoire pour FindExiv2.cmake
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
-# Trouver les packages Qt nécessaires
+# Trouver les packages
 find_package(Qt5 COMPONENTS Core Gui Widgets Location REQUIRED)
-
-# Trouver les packages OpenCV nécessaires
 find_package(OpenCV REQUIRED)
-
-# Trouver les packages Exiv2 nécessaires
 find_package(Exiv2 REQUIRED)
 
 # Inclure les répertoires d'en-têtes
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${EXIV2_INCLUDE_DIRS})
 
-# Ajouter les fichiers source
+# Sources et en-têtes
 file(GLOB_RECURSE SOURCES "src/*.cpp")
-
-# Ajouter les fichiers d'en-tête pour moc
 file(GLOB_RECURSE HEADERS "src/*.h")
-
-# Ajouter le fichier de ressources
 set(RESOURCE_FILES src/ressources/ressources.qrc)
 
-# S'assurer que moc est exécuté sur les fichiers d'en-tête
+# Génération Qt
 qt5_wrap_cpp(MOC_SOURCES ${HEADERS})
-
-# Compiler les ressources
 qt5_add_resources(QRC_SOURCES ${RESOURCE_FILES})
 
-# Ajouter l'exécutable
-add_executable(EasyImageEditor ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
+# Création de l'exécutable
+add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
 
-# Lier les bibliothèques Qt
-target_link_libraries(EasyImageEditor Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Location)
+# Liaison des bibliothèques
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    Qt5::Core
+    Qt5::Gui
+    Qt5::Widgets
+    Qt5::Location
+    ${OpenCV_LIBS}
+    ${EXIV2_LIBRARIES}
+)
 
-# Lier les bibliothèques OpenCV
-target_link_libraries(EasyImageEditor ${OpenCV_LIBS})
-
-# Lier les bibliothèques Exiv2
-target_link_libraries(EasyImageEditor ${EXIV2_LIBRARIES})
-
-# Lier stdc++fs si vous utilisez GCC
+# Support GCC filesystem
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_link_libraries(EasyImageEditor stdc++fs)
+    target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs)
 endif()
 
-# Configurer le RPATH pour trouver les bibliothèques dans 'lib'
-set(CMAKE_INSTALL_RPATH "\$ORIGIN/../lib")
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-# Installer l'exécutable
-install(TARGETS EasyImageEditor
-        RUNTIME DESTINATION bin)
-
-# Collecter et installer les dépendances à l'exécution
-install(CODE "
-    include(BundleUtilities)
-
-    file(GET_RUNTIME_DEPENDENCIES
-        EXECUTABLES \${CMAKE_INSTALL_PREFIX}/bin/EasyImageEditor
-        RESOLVED_DEPENDENCIES_VAR _deps
-        DIRECTORIES \${Qt5_DIR} \${OpenCV_DIR} \${EXIV2_LIBRARIES}
+# Configuration des plugins Qt statiques
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        Qt5::QWindowsIntegrationPlugin
+        Qt5::QWindowsVistaStylePlugin
     )
+endif()
 
-    foreach(_dep \${_deps})
-        # Vérifier que le fichier existe avant de l'installer
-        if(EXISTS \${_dep})
-            file(INSTALL DESTINATION \${CMAKE_INSTALL_PREFIX}/lib FILES \${_dep})
+# Installation de l'exécutable
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+)
+
+# Installation des bibliothèques Qt
+get_target_property(Qt5_Core_LOCATION Qt5::Core LOCATION)
+get_filename_component(QT_LIB_DIR ${Qt5_Core_LOCATION} DIRECTORY)
+file(GLOB QT_LIBS "${QT_LIB_DIR}/libQt5*.so*")
+install(FILES ${QT_LIBS} DESTINATION lib)
+
+# Installation des dépendances OpenCV
+foreach(lib ${OpenCV_LIBS})
+    if(TARGET ${lib})
+        get_target_property(lib_location ${lib} LOCATION)
+        if(lib_location)
+            install(FILES ${lib_location} DESTINATION lib)
         endif()
-    endforeach()
-")
+    endif()
+endforeach()
 
-# Configuration de CPack
+# Installation des dépendances Exiv2
+foreach(lib ${EXIV2_LIBRARIES})
+    if(IS_ABSOLUTE ${lib})
+        install(FILES ${lib} DESTINATION lib)
+    else()
+        find_library(FULL_LIB_PATH ${lib})
+        if(FULL_LIB_PATH)
+            install(FILES ${FULL_LIB_PATH} DESTINATION lib)
+        endif()
+    endif()
+endforeach()
+
+# Configuration CPack
 set(CPACK_GENERATOR "ZIP")
-set(CPACK_PACKAGE_NAME "EasyImageEditor")
-set(CPACK_PACKAGE_VERSION "1.0.0")
-set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
-set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
+set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Easy Image Editor Application")
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+endif()
+set(CPACK_PACKAGE_INSTALL_DIRECTORY ${PROJECT_NAME})
 
+# Configuration des bibliothèques système
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP FALSE)
+include(InstallRequiredSystemLibraries)
 include(CPack)

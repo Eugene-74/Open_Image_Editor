@@ -202,21 +202,29 @@ void ImageEditor::setImage(ImageData& imageData) {
 }
 
 
-void ImageEditor::nextImage() {
+void ImageEditor::nextImage(int nbr) {
 
     ImagesData& imagesData = data.imagesData;
 
-    imagesData.setImageNumber(imagesData.getImageNumber() + 1);
+    if (imagesData.getCurrentImageData()->getImageHeight() > imagesData.getCurrentImageData()->getImageWidth())
+        createAllThumbnail(imagesData.getCurrentImageData()->getImageName(), imagesData.getCurrentImageData()->getImageHeight());
+    else
+        createAllThumbnail(imagesData.getCurrentImageData()->getImageName(), imagesData.getCurrentImageData()->getImageWidth());
+
+
+
+    imagesData.setImageNumber(imagesData.getImageNumber() + nbr);
 
     setImage(*imagesData.getImageData(imagesData.getImageNumber()));
     reload();
 }
 
-void ImageEditor::previousImage() {
+
+void ImageEditor::previousImage(int nbr) {
 
     ImagesData& imagesData = data.imagesData;
 
-    imagesData.setImageNumber(imagesData.getImageNumber() - 1);
+    imagesData.setImageNumber(imagesData.getImageNumber() - nbr);
 
 
     setImage(*imagesData.getImageData(imagesData.getImageNumber()));
@@ -1041,3 +1049,9 @@ void ImageEditor::validateMetadata() {
 
     imageData->saveMetaData();
 }
+
+// void ImageEditor::removeImageFromCache(const QString& imagePath) {
+//     if (imageCache.find(imagePath) != imageCache.end()) {
+//         imageCache.erase(imagePath);
+//     }
+// }
