@@ -42,14 +42,14 @@ public:
 
 
     // Constructor
-    ImageEditor(Data& a, QWidget* parent = nullptr);
+    ImageEditor(Data dat, QWidget* parent = nullptr);
 
     ~ImageEditor() {}
 
     void reload();
-    void reloadMainImage();
+    // void reloadMainImage();
 
-    void setImage(ImageData& imageData);
+    // void setImage(ImageData* imageData);
 
     void nextImage(int nbr = 1);
     void previousImage(int nbr = 1);
@@ -75,6 +75,9 @@ public:
 
     ClickableLabel* createImageBefore();
     ClickableLabel* createImageNext();
+
+    ClickableLabel* createImageLabel();
+
     void saveImage();
     void deleteImage();
     void unDeleteImage();
@@ -92,14 +95,18 @@ protected:
 
 private:
     bool exifEditor = false;
+    Data data;
 
+    QLineEdit* nameEdit;
     QDateTimeEdit* dateEdit;
     QLineEdit* geoEdit;
     QLineEdit* descriptionEdit;
     QPushButton* validateButton;
 
 
-    QLabel* imageLabel;
+    ClickableLabel* imageLabel;
+
+    // QHBoxLayout* imageLabelLayout;
     QHBoxLayout* mainLayout;
     QHBoxLayout* previewButtonLayout;
     QHBoxLayout* actionButtonLayout;
@@ -111,7 +118,7 @@ private:
     QSize previewSize;
     QSize actionSize;
     QSize screenGeometry;
-    Data data;
+    QSize mainImageSize;
     qreal pixelRatio;
 
     std::vector<ClickableLabel*> previewButtons;

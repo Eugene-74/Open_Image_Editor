@@ -4,9 +4,14 @@
 
 
 
-ImageEditor::ImageEditor(Data& i, QWidget* parent) : QMainWindow(parent), // Initialize the base class
-data(i) {
+ImageEditor::ImageEditor(Data dat, QWidget* parent) : QMainWindow(parent), data(dat) {
     const QList<QScreen*> screens = QGuiApplication::screens();
+
+    // data = dat;
+
+
+    // std::cerr << "imagesData \n\n\n\n" << std::endl;
+    // data.imagesData->print();
 
     QScreen* screen = QGuiApplication::primaryScreen();
     screen = screens[0];
@@ -41,6 +46,8 @@ data(i) {
     }
 
     previewSize = (screenGeometry * 1 / 12);
+    mainImageSize = (screenGeometry * 4 / 6);
+
 
 
 
@@ -90,6 +97,12 @@ data(i) {
     createButtons();
     createPreview();
 
+    std::cerr << "create ::  : " << data.imagesData->get().size() << std::endl;
+
+
+
+    nameEdit = new QLineEdit(this);
+
     // dateEdit = new QLineEdit(this);
     dateEdit = new QDateTimeEdit(this);
     dateEdit->setDisplayFormat("dd/MM/yyyy, HH:mm");
@@ -108,6 +121,8 @@ data(i) {
     connect(validateButton, &QPushButton::clicked, this, &ImageEditor::validateMetadata);
 
     // QVBoxLayout* layout = new QVBoxLayout();
+    infoLayout->addWidget(new QLabel("Name:", this));
+    infoLayout->addWidget(nameEdit);
     infoLayout->addWidget(new QLabel("Date:", this));
     infoLayout->addWidget(dateEdit);
     infoLayout->addWidget(new QLabel("Géolocalisation:", this));
@@ -135,107 +150,116 @@ data(i) {
     // setWindowTitle("EasyImageEditor : Image Editor");
 
 
-    if (data.imagesData.get().size() > 0) {
-        setImage(*data.imagesData.getImageData(data.imagesData.getImageNumber()));
-    }
+    // if (data.imagesData->get().size() > 0) {
+        // setImage(data.imagesData->getImageData(data.imagesData->getImageNumber()));
+    // }
 
+    std::cerr << "create bis ::  : " << data.imagesData->get().size() << std::endl;
 
 
 }
 
 // Définit l'image principale de la fenetre ImageEditor
-void ImageEditor::setImage(ImageData& imageData) {
+// void ImageEditor::setImage(ImageData* imageData) {
 
-    if (data.imagesData.get().size() <= 0) {
-        showInformationMessage(this, "aucune image n'a pour l'instant été charger ! ");
-        return;
-    }
-    std::string imagePath = imageData.getImagePath();
+//     if (data.imagesData->get().size() <= 0) {
+//         showInformationMessage(this, "aucune image n'a pour l'instant été charger ! ");
+//         return;
+//     }
+//     std::string imagePath = imageData->getImagePath();
 
-
-    cv::Mat image = cv::imread(imagePath, cv::IMREAD_UNCHANGED);
-    if (!image.empty()) {
+//     imageLabel = createImageLabel();
 
 
-        Exiv2::ExifData exifData = imageData.getMetaData()->getExifData();
-        if (exifData.empty()) {
-            std::cerr << "No EXIF data found in image!" << std::endl;
-        }
-        else {
+    // cv::Mat image = cv::imread(imagePath, cv::IMREAD_UNCHANGED);
+    // if (!image.empty()) {
 
-            if (exifData["Exif.Image.Orientation"].count() != 0) {
-                int orientation = exifData["Exif.Image.Orientation"].toInt64();
 
-                // Rotate the image based on the EXIF orientation
-                switch (orientation) {
-                case 3:
-                    cv::rotate(image, image, cv::ROTATE_180);
-                    break;
-                case 6:
-                    cv::rotate(image, image, cv::ROTATE_90_CLOCKWISE);
-                    break;
-                case 8:
-                    cv::rotate(image, image, cv::ROTATE_90_COUNTERCLOCKWISE);
-                    break;
-                }
-            }
-        }
-        // Convert the OpenCV image (BGR format) to QImage (RGB format)
-        if (image.channels() == 4) {
-            // Create QImage from OpenCV Mat with alpha channel
-            QImage qImage(image.data, image.cols, image.rows, image.step[0], QImage::Format_ARGB32);
-            // Set the pixmap with scaling
-            imageLabel->setPixmap(QPixmap::fromImage(qImage).scaled(imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        }
-        else {
-            // Handle images without an alpha channel (optional)
-            cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
-            QImage qImage(image.data, image.cols, image.rows, image.step[0], QImage::Format_RGB888);
-            imageLabel->setPixmap(QPixmap::fromImage(qImage).scaled(imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        }
-    }
-    else {
-        imageLabel->setText("Erreur");
-    }
-    reloadMainImage();
+    //     Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
+    //     if (exifData.empty()) {
+    //         std::cerr << "No EXIF data found in image!" << std::endl;
+    //     }
+    //     else {
 
-}
+    //         if (exifData["Exif.Image.Orientation"].count() != 0) {
+    //             int orientation = exifData["Exif.Image.Orientation"].toInt64();
+
+    //             // Rotate the image based on the EXIF orientation
+    //             switch (orientation) {
+    //             case 3:
+    //                 cv::rotate(image, image, cv::ROTATE_180);
+    //                 break;
+    //             case 6:
+    //                 cv::rotate(image, image, cv::ROTATE_90_CLOCKWISE);
+    //                 break;
+    //             case 8:
+    //                 cv::rotate(image, image, cv::ROTATE_90_COUNTERCLOCKWISE);
+    //                 break;
+    //             }
+    //         }
+    //     }
+    //     // Convert the OpenCV image (BGR format) to QImage (RGB format)
+    //     if (image.channels() == 4) {
+    //         // Create QImage from OpenCV Mat with alpha channel
+    //         QImage qImage(image.data, image.cols, image.rows, image.step[0], QImage::Format_ARGB32);
+    //         // Set the pixmap with scaling
+    //         imageLabel->setPixmap(QPixmap::fromImage(qImage).scaled(imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    //     }
+    //     else {
+    //         // Handle images without an alpha channel (optional)
+    //         cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
+    //         QImage qImage(image.data, image.cols, image.rows, image.step[0], QImage::Format_RGB888);
+    //         imageLabel->setPixmap(QPixmap::fromImage(qImage).scaled(imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    //     }
+    // }
+    // else {
+    //     imageLabel->setText("Erreur");
+    // }
+    // reloadMainImage();
+
+// }
 
 
 void ImageEditor::nextImage(int nbr) {
 
-    ImagesData& imagesData = data.imagesData;
+    ImagesData* imagesData = data.imagesData;
 
-    if (imagesData.getCurrentImageData()->getImageHeight() > imagesData.getCurrentImageData()->getImageWidth())
-        createAllThumbnail(imagesData.getCurrentImageData()->getImageName(), imagesData.getCurrentImageData()->getImageHeight());
-    else
-        createAllThumbnail(imagesData.getCurrentImageData()->getImageName(), imagesData.getCurrentImageData()->getImageWidth());
-
+    // if (imagesData.getCurrentImageData()->getImageHeight() > imagesData.getCurrentImageData()->getImageWidth())
+        // createAllThumbnail(imagesData.getCurrentImageData()->getImageName(), imagesData.getCurrentImageData()->getImageHeight());
+    // else
 
 
-    imagesData.setImageNumber(imagesData.getImageNumber() + nbr);
+    std::cerr << imagesData->getCurrentImageData()->getImagePath() << std::endl;
 
-    setImage(*imagesData.getImageData(imagesData.getImageNumber()));
+
+
+    createAllThumbnail(imagesData->getCurrentImageData()->getImagePath(), 1000);
+
+    imagesData->setImageNumber(imagesData->getImageNumber() + nbr);
+
+
+    // setImage(imagesData->getImageData(imagesData->getImageNumber()));
     reload();
+
 }
 
 
 void ImageEditor::previousImage(int nbr) {
 
-    ImagesData& imagesData = data.imagesData;
+    ImagesData& imagesData = *data.imagesData;
 
     imagesData.setImageNumber(imagesData.getImageNumber() - nbr);
 
 
-    setImage(*imagesData.getImageData(imagesData.getImageNumber()));
+    // setImage(imagesData.getImageData(imagesData.getImageNumber()));
     reload();
 }
 
 void ImageEditor::rotateLeft() {
 
-    ImagesData& imagesData = data.imagesData;
+    ImagesData* imagesData = data.imagesData;
 
-    ImageData* imageData = imagesData.getCurrentImageData();
+    ImageData* imageData = imagesData->getCurrentImageData();
     if (!isTurnable(imageData->getImagePath())) {
         return;
     }
@@ -262,7 +286,7 @@ void ImageEditor::rotateLeft() {
 }
 void ImageEditor::rotateRight() {
 
-    ImagesData& imagesData = data.imagesData;
+    ImagesData& imagesData = *data.imagesData;
 
     ImageData* imageData = imagesData.getCurrentImageData();
     if (!isTurnable(imageData->getImagePath())) {
@@ -290,11 +314,12 @@ void ImageEditor::rotateRight() {
 }
 
 void ImageEditor::reload() {
-
-    ImagesData& imagesData = data.imagesData;
+    ImagesData* imagesData = data.imagesData;
 
     updateButtons();
     updatePreview();
+
+
     if (exifEditor) {
         populateMetadataFields();
     }
@@ -307,7 +332,7 @@ void ImageEditor::reload() {
         }
     }
 
-    if (imagesData.get().size() <= 0) {
+    if (imagesData->get().size() <= 0) {
         // TODO reactivate
         showInformationMessage(this, "no image data loaded");
         addSelectedFilesToFolders(this);
@@ -315,48 +340,48 @@ void ImageEditor::reload() {
         return;
     }
 
-    setImage(*imagesData.getCurrentImageData());
+    // setImage(imagesData->getCurrentImageData());
 }
 
-void ImageEditor::reloadMainImage() {
+// void ImageEditor::reloadMainImage() {
 
-    imageLabel->update();
+//     imageLabel->update();
 
-}
+// }
 
 
 
 void ImageEditor::createPreview() {
 
 
-    ImagesData& imagesData = data.imagesData;
+    ImagesData* imagesData = data.imagesData;
 
-    if (imagesData.get().size() <= 0) {
+    if (imagesData->get().size() <= 0) {
         return;
     }
 
 
     std::vector<std::string> imagePaths;
 
-    int currentImageNumber = imagesData.getImageNumber();
-    int totalImages = imagesData.get().size();
+    int currentImageNumber = imagesData->getImageNumber();
+    int totalImages = imagesData->get().size();
 
     int under = 0;
     for (int i = PREVIEW_NBR; i > 0; --i) {
 
         if (currentImageNumber - i >= 0) {
-            imagePaths.push_back(imagesData.getImageData(currentImageNumber - i)->getImagePath());
+            imagePaths.push_back(imagesData->getImageData(currentImageNumber - i)->getImagePath());
             under += 1;
         }
     }
 
-    imagePaths.push_back(imagesData.getCurrentImageData()->getImagePath());
+    imagePaths.push_back(imagesData->getCurrentImageData()->getImagePath());
 
     for (int i = 1; i <= PREVIEW_NBR; ++i) {
 
 
         if (currentImageNumber + i <= totalImages - 1) {
-            imagePaths.push_back(imagesData.getImageData(currentImageNumber + i)->getImagePath());
+            imagePaths.push_back(imagesData->getImageData(currentImageNumber + i)->getImagePath());
         }
     }
 
@@ -365,8 +390,8 @@ void ImageEditor::createPreview() {
     // Créer et ajouter les nouveaux boutons
     for (int i = 0; i < PREVIEW_NBR * 2 + 1; ++i) {
         if (i < imagePaths.size()) {
-            int imageNbr = imagesData.getImageNumber() + i - under;
-            if (imageNbr == imagesData.getImageNumber()) {
+            int imageNbr = imagesData->getImageNumber() + i - under;
+            if (imageNbr == imagesData->getImageNumber()) {
                 ClickableLabel* previewButton = createImagePreview(imagePaths[i], imageNbr);
                 previewButton->background_color = "#b3b3b3";
                 previewButton->updateStyleSheet();
@@ -399,33 +424,33 @@ void ImageEditor::createPreview() {
 
 
 void ImageEditor::updatePreview() {
-    ImagesData& imagesData = data.imagesData;
+    ImagesData* imagesData = data.imagesData;
 
-    if (imagesData.get().size() <= 0) {
+    if (imagesData->get().size() <= 0) {
         return;
     }
 
     std::vector<std::string> imagePaths;
 
-    int currentImageNumber = imagesData.getImageNumber();
-    int totalImages = imagesData.get().size();
+    int currentImageNumber = imagesData->getImageNumber();
+    int totalImages = imagesData->get().size();
 
     int under = 0;
     for (int i = PREVIEW_NBR; i > 0; --i) {
 
         if (currentImageNumber - i >= 0) {
-            imagePaths.push_back(imagesData.getImageData(currentImageNumber - i)->getImagePath());
+            imagePaths.push_back(imagesData->getImageData(currentImageNumber - i)->getImagePath());
             under += 1;
         }
     }
 
-    imagePaths.push_back(imagesData.getCurrentImageData()->getImagePath());
+    imagePaths.push_back(imagesData->getCurrentImageData()->getImagePath());
 
     for (int i = 1; i <= PREVIEW_NBR; ++i) {
 
 
         if (currentImageNumber + i <= totalImages - 1) {
-            imagePaths.push_back(imagesData.getImageData(currentImageNumber + i)->getImagePath());
+            imagePaths.push_back(imagesData->getImageData(currentImageNumber + i)->getImagePath());
         }
     }
 
@@ -434,8 +459,8 @@ void ImageEditor::updatePreview() {
 
     for (int i = 0; i < PREVIEW_NBR * 2 + 1; ++i) {
         if (i < imagePaths.size()) {
-            int imageNbr = imagesData.getImageNumber() + i - under;
-            if (imageNbr == imagesData.getImageNumber()) {
+            int imageNbr = imagesData->getImageNumber() + i - under;
+            if (imageNbr == imagesData->getImageNumber()) {
                 ClickableLabel* previewButtonNew = createImagePreview(imagePaths[i], imageNbr);
                 // TODO choose the color of the current image
                 previewButtonNew->background_color = "#b3b3b3";
@@ -484,24 +509,27 @@ void ImageEditor::createButtons() {
     actionButtonLayout->addWidget(imageSave);
     actionButtonLayout->addWidget(imageEditExif);
 
+    // imageLabelLayout = new QHBoxLayout();
+    // imageLabel->setFixedSize((screenGeometry.width() * 4 / 6), (screenGeometry.height() * 4 / 6));
+    // imageLabelLayout->addWidget(imageLabel);
+    // imageLabel->setAlignment(Qt::AlignCenter);
 
-    imageLabel = new QLabel(this);
 
-    imageLabel->setFixedSize((screenGeometry.width() * 4 / 6), (screenGeometry.height() * 4 / 6));
-    imageLabel->setAlignment(Qt::AlignCenter);
 
     buttonImageBefore = createImageBefore();
     buttonImageNext = createImageNext();
 
+    imageLabel = createImageLabel();
+
     buttonLayout->addWidget(buttonImageBefore);
-    buttonLayout->addWidget(imageLabel, 0, Qt::AlignCenter);
+    buttonLayout->addWidget(imageLabel);
     buttonLayout->addWidget(buttonImageNext);
     buttonLayout->setAlignment(Qt::AlignCenter);
 }
 
 
 void ImageEditor::updateButtons() {
-    if (data.imagesData.get().size() <= 0) {
+    if (data.imagesData->get().size() <= 0) {
         return;
     }
 
@@ -561,23 +589,37 @@ void ImageEditor::updateButtons() {
         }
     }
     if (buttonImageBefore) {
-        if (data.imagesData.getImageNumber() == 0) {
+        if (data.imagesData->getImageNumber() == 0) {
             buttonImageBefore->setDisabled(true);
         }
 
     }
+
+    if (imageLabel) {
+
+        ClickableLabel* imageLabelNew = createImageLabel();
+
+        buttonLayout->replaceWidget(imageLabel, imageLabelNew);
+
+        imageLabel->hide();
+        imageLabel->deleteLater();
+
+        imageLabel = imageLabelNew;
+    }
     if (buttonImageNext) {
-        if (data.imagesData.getImageNumber() == data.imagesData.get().size() - 1) {
+        if (data.imagesData->getImageNumber() == data.imagesData->get().size() - 1) {
             buttonImageNext->setDisabled(true);
         }
 
     }
-    if (data.imagesData.getImageNumber() != 0) {
+
+
+    if (data.imagesData->getImageNumber() != 0) {
         if (!buttonImageBefore->isEnabled())
             buttonImageBefore->setEnabled(true);
     }
 
-    if (data.imagesData.getImageNumber() != data.imagesData.get().size() - 1) {
+    if (data.imagesData->getImageNumber() != data.imagesData->get().size() - 1) {
         if (!buttonImageNext->isEnabled())
             buttonImageNext->setEnabled(true);
     }
@@ -687,13 +729,13 @@ void ImageEditor::clear() {
  */
 ClickableLabel* ImageEditor::createImageDelete() {
 
-    if (data.imagesData.get().size() <= 0) {
+    if (data.imagesData->get().size() <= 0) {
         return nullptr;
     }
 
-    ClickableLabel* imageDelete = new ClickableLabel(":/delete.png", this, actionSize);
+    ClickableLabel* imageDelete = new ClickableLabel(data, ":/delete.png", this, actionSize);
 
-    if (data.isDeleted(data.imagesData.getImageNumber())) {
+    if (data.isDeleted(data.imagesData->getImageNumber())) {
 
         imageDelete->background_color = "#700c13";
         imageDelete->updateStyleSheet();
@@ -713,11 +755,11 @@ ClickableLabel* ImageEditor::createImageDelete() {
 
 ClickableLabel* ImageEditor::createImageSave() {
 
-    if (data.imagesData.get().size() <= 0) {
+    if (data.imagesData->get().size() <= 0) {
         return nullptr;
     }
 
-    ClickableLabel* imageSaveNew = new ClickableLabel(":/save.png", this, actionSize);
+    ClickableLabel* imageSaveNew = new ClickableLabel(data, ":/save.png", this, actionSize);
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() { this->
         saveImage();
@@ -729,13 +771,13 @@ ClickableLabel* ImageEditor::createImageSave() {
 
 ClickableLabel* ImageEditor::createImageRotateRight() {
 
-    if (data.imagesData.get().size() <= 0) {
+    if (data.imagesData->get().size() <= 0) {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateRightNew = new ClickableLabel(":/rotateRight.png", this, actionSize);
+    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ":/rotateRight.png", this, actionSize);
 
-    if (!isTurnable(data.imagesData.getCurrentImageData()->getImagePath())) {
+    if (!isTurnable(data.imagesData->getCurrentImageData()->getImagePath())) {
         imageRotateRightNew->setDisabled(true);
     }
     else {
@@ -752,13 +794,13 @@ ClickableLabel* ImageEditor::createImageRotateRight() {
 
 ClickableLabel* ImageEditor::createImageRotateLeft() {
 
-    if (data.imagesData.get().size() <= 0) {
+    if (data.imagesData->get().size() <= 0) {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateLeftNew = new ClickableLabel(":/rotateLeft.png", this, actionSize);
+    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ":/rotateLeft.png", this, actionSize);
 
-    if (!isTurnable(data.imagesData.getCurrentImageData()->getImagePath())) {
+    if (!isTurnable(data.imagesData->getCurrentImageData()->getImagePath())) {
         imageRotateLeftNew->setDisabled(true);
     }
     else {
@@ -773,11 +815,11 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
 
 
 ClickableLabel* ImageEditor::createImageEditExif() {
-    if (data.imagesData.get().size() <= 0) {
+    if (data.imagesData->get().size() <= 0) {
         return nullptr;
     }
 
-    ClickableLabel* imageEditExifNew = new ClickableLabel(":/editExif.png", this, actionSize);
+    ClickableLabel* imageEditExifNew = new ClickableLabel(data, ":/editExif.png", this, actionSize);
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
         // exifEditor = !exifEditor;
@@ -802,19 +844,19 @@ ClickableLabel* ImageEditor::createImageEditExif() {
 
 ClickableLabel* ImageEditor::createImageBefore() {
 
-    if (data.imagesData.get().size() <= 0) {
+    if (data.imagesData->get().size() <= 0) {
         return nullptr;
     }
 
 
 
 
-    ClickableLabel* buttonImageBeforeNew = new ClickableLabel(":/before.png", this, actionSize);
+    ClickableLabel* buttonImageBeforeNew = new ClickableLabel(data, ":/before.png", this, actionSize);
     // ClickableLabel* buttonImageBeforeNew = new ClickableLabel(":/ressources/before.png", this, actionSize);
 
     buttonImageBeforeNew->setFixedSize(actionSize);
 
-    if (data.imagesData.getImageNumber() == 0) {
+    if (data.imagesData->getImageNumber() == 0) {
         buttonImageBeforeNew->setDisabled(true);
     }
 
@@ -827,13 +869,13 @@ ClickableLabel* ImageEditor::createImageBefore() {
 
 ClickableLabel* ImageEditor::createImageNext() {
 
-    if (data.imagesData.get().size() <= 0) {
+    if (data.imagesData->get().size() <= 0) {
         return nullptr;
     }
 
-    ClickableLabel* buttonImageNextNew = new ClickableLabel(":/next.png", this, actionSize);
+    ClickableLabel* buttonImageNextNew = new ClickableLabel(data, ":/next.png", this, actionSize);
 
-    if (data.imagesData.getImageNumber() == data.imagesData.get().size() - 1) {
+    if (data.imagesData->getImageNumber() == data.imagesData->get().size() - 1) {
         buttonImageNextNew->setDisabled(true);
     }
 
@@ -847,16 +889,16 @@ ClickableLabel* ImageEditor::createImageNext() {
 
 ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int imageNbr) {
 
-    if (data.imagesData.get().size() <= 0) {
+    if (data.imagesData->get().size() <= 0) {
         return nullptr;
     }
 
-    ClickableLabel* previewButton = new ClickableLabel(QString::fromStdString(imagePath), this, previewSize, false);
+    ClickableLabel* previewButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, previewSize, false);
 
 
     connect(previewButton, &ClickableLabel::clicked, [this, imageNbr]() {
-        data.imagesData.setImageNumber(imageNbr);
-        setImage(*data.imagesData.getImageData(data.imagesData.getImageNumber()));
+        data.imagesData->setImageNumber(imageNbr);
+        // setImage(data.imagesData->getImageData(data.imagesData->getImageNumber()));
         reload();
         });
 
@@ -864,9 +906,25 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
     return previewButton;
 }
 
+ClickableLabel* ImageEditor::createImageLabel() {
+
+    if (data.imagesData->get().size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageLabelNew = new ClickableLabel(data, QString::fromStdString(data.imagesData->getCurrentImageData()->getImagePath()), this, mainImageSize, false);
+    connect(imageLabelNew, &ClickableLabel::clicked, [this]() {
+        // TODO zoom to be added
+        });
+
+
+
+    return imageLabelNew;
+}
+
+
 
 void ImageEditor::keyPressEvent(QKeyEvent* event) {
-    // std::cerr << event->key() << std::endl;
     switch (event->key()) {
     case Qt::Key_Left:
         if (event->modifiers() & Qt::ControlModifier) {
@@ -980,24 +1038,24 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
 
 void ImageEditor::saveImage() {
     data.removeDeletedImages();
-    if (data.imagesData.get().size() <= 0) {
+    if (data.imagesData->get().size() <= 0) {
         clear();
     }
-    data.imagesData.saveImagesData(IMAGESDATA_SAVE_DAT_PATH);
+    data.imagesData->saveImagesData(IMAGESDATA_SAVE_DAT_PATH);
 
-    data.imagesData.setImageNumber(0);
+    data.imagesData->setImageNumber(0);
     reload();
 }
 
 
 void ImageEditor::deleteImage() {
-    if (data.isDeleted(data.imagesData.getImageNumber())) {
+    if (data.isDeleted(data.imagesData->getImageNumber())) {
 
-        data.unPreDeleteImage(data.imagesData.getImageNumber());
+        data.unPreDeleteImage(data.imagesData->getImageNumber());
         updateButtons();
     }
     else {
-        data.preDeleteImage(data.imagesData.getImageNumber());
+        data.preDeleteImage(data.imagesData->getImageNumber());
         updateButtons();
 
     }
@@ -1005,14 +1063,16 @@ void ImageEditor::deleteImage() {
 
 
 void ImageEditor::populateMetadataFields() {
-    ImagesData& imagesData = data.imagesData;
-    ImageData* imageData = imagesData.getCurrentImageData();
+    ImagesData* imagesData = data.imagesData;
+    ImageData* imageData = imagesData->getCurrentImageData();
     Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
 
+    nameEdit->clear();
     dateEdit->setDateTime(QDateTime::currentDateTime());
     geoEdit->clear();
     descriptionEdit->clear();
 
+    nameEdit->setText(QString::fromStdString(imageData->getImageName()));
 
     if (exifData["Exif.Image.DateTime"].count() != 0) {
         QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
@@ -1032,8 +1092,8 @@ void ImageEditor::populateMetadataFields() {
 
 
 void ImageEditor::validateMetadata() {
-    ImagesData& imagesData = data.imagesData;
-    ImageData* imageData = imagesData.getCurrentImageData();
+    ImagesData* imagesData = data.imagesData;
+    ImageData* imageData = imagesData->getCurrentImageData();
     MetaData* metaData = imageData->getMetaData();
 
     // metaData->modifyExifValue("Exif.Image.DateTime", dateEdit->text().toStdString());
@@ -1049,9 +1109,3 @@ void ImageEditor::validateMetadata() {
 
     imageData->saveMetaData();
 }
-
-// void ImageEditor::removeImageFromCache(const QString& imagePath) {
-//     if (imageCache.find(imagePath) != imageCache.end()) {
-//         imageCache.erase(imagePath);
-//     }
-// }

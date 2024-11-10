@@ -11,7 +11,7 @@ ImagesData& ImagesData::operator = (const ImagesData& other) {
 
 
 void ImagesData::setImageNumber(int nbr) {
-
+    std::cerr << "nbr : " << nbr << std::endl;
     while (nbr < 0) {
         nbr += 1;
     }
@@ -87,6 +87,22 @@ ImageData* ImagesData::getImageData(int id) {
     // renvoie un pointeur ce qui permet une modification automatique dans ImagesData
 }
 
+ImageData* ImagesData::getImageData(std::string imagePath) {
+
+    auto it = std::find_if(imagesData.begin(), imagesData.end(),
+        [&imagePath](const ImageData& imgD) {
+            return imgD.imagePath == imagePath;
+        });
+
+    if (it != imagesData.end()) {
+        return &(*it);
+    }
+    else {
+        throw std::out_of_range("getImageData :: Image path not found: " + imagePath);
+    }
+}
+
+
 
 
 ImageData* ImagesData::getCurrentImageData() {
@@ -98,7 +114,7 @@ ImageData* ImagesData::getCurrentImageData() {
 
     return &imagesData.at(imageNumber);
 }
-std::vector<ImageData>& ImagesData::get() {
+std::vector<ImageData> ImagesData::get() {
     return imagesData;
 }
 
@@ -139,8 +155,8 @@ void ImagesData::load(std::ifstream& in) {
     in.read(reinterpret_cast<char*>(&imageNumber), sizeof(imageNumber));
 }
 
-ImagesData loadImagesData(std::string savePath) {
-    ImagesData loadedImagesData(std::vector<ImageData>{});
+ImagesData* loadImagesData(std::string savePath) {
+    ImagesData* loadedImagesData = new ImagesData();
 
     // Ouvrir le fichier en mode binaire
     std::ifstream inFile(savePath, std::ios::binary);
@@ -153,7 +169,7 @@ ImagesData loadImagesData(std::string savePath) {
     }
 
     // Charger les données à partir du fichier
-    loadedImagesData.load(inFile);
+    loadedImagesData->load(inFile);
 
     inFile.close(); // Fermer le fichier
 

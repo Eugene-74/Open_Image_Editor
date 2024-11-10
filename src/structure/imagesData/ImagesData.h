@@ -14,9 +14,6 @@ class ImagesData
 {
 public:
     std::vector<ImageData> imagesData;
-
-
-
     int imageNumber;
 
     ImagesData() : imageNumber(0) {}
@@ -48,11 +45,14 @@ public:
     // Permet de recuperer la MetaData de l'ImageData à l'id
     ImageData* getImageData(int id);
 
+    ImageData* getImageData(std::string imagePath);
+
+
     // Permet de recuperer la MetaData de l'ImageData actuellement utilisé
     ImageData* getCurrentImageData();
 
     // Permet de recuperer imagesData
-    std::vector<ImageData>& get();
+    std::vector<ImageData> get();
 
 
     // Permet de sauvegarder ImagesData à partir d'un fichier binaire
@@ -67,4 +67,4 @@ public:
 };
 
 // Permet de charger ImagesData à partir d'un fichier binaire
-ImagesData loadImagesData(std::string savePath);
+ImagesData* loadImagesData(std::string savePath);

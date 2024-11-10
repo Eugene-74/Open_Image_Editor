@@ -5,6 +5,8 @@
 #include <QFileDialog>
 #include <QMouseEvent>
 #include "../../Const.h"
+#include "../../structure/data/Data.h"
+
 
 
 
@@ -12,7 +14,7 @@ class ClickableLabel : public QLabel {
     Q_OBJECT
 
 public:
-    explicit ClickableLabel(const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true);
+    explicit ClickableLabel(Data data, const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true);
 
 signals:
     void clicked();  // Signal émis lors du clic

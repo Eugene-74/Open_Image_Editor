@@ -10,5 +10,5 @@
 #include <string>
 #include <vector>
 
-ImagesData addSelectedFilesToFolders(QWidget* parent);
+ImagesData* addSelectedFilesToFolders(QWidget* parent);
 

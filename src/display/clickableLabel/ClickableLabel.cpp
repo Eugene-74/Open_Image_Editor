@@ -1,99 +1,29 @@
 #include "ClickableLabel.h"
-ClickableLabel::ClickableLabel(const QString& imagePath, QWidget* parent, QSize size, bool setSize)
+ClickableLabel::ClickableLabel(Data data, const QString& imagePath, QWidget* parent, QSize size, bool setSize)
     : QLabel(parent) {
-    // Load image using OpenCV with alpha channel
-    // Check if the resource exists in the Qt resource system
 
-    QFile file(imagePath);
+    QImage qImage = data.loadImage(this, imagePath.toStdString(), size, setSize);
 
-    cv::Mat image;
+    // QImage qImage;
 
-
-    // TODO déplacer pour que ça marche
-    std::map<QString, cv::Mat> imageCache;
-
-
-
-    if (imageCache.find(imagePath) != imageCache.end()) {
-        image = imageCache[imagePath];
-        std::cerr << "image already loaded" << std::endl;
-    }
-    else {
-        std::cerr << "image NOT  already loaded" << std::endl;
-
-        if (file.exists()) {
-
-            // Load image from Qt resources
-            if (file.open(QIODevice::ReadOnly)) {
-                QByteArray imageData = file.readAll();
-                std::vector<uchar> data(imageData.begin(), imageData.end());
-                image = cv::imdecode(data, cv::IMREAD_UNCHANGED);
-            }
-        }
-        else {
-            // Load image from file system
-            image = cv::imread(imagePath.toStdString(), cv::IMREAD_UNCHANGED);
-        }
-
-        if (!image.empty()) {
-            imageCache[imagePath] = image;
-        }
-    }
-
-    if (!image.empty()) {
-
-        // Convert BGR to RGB (if needed) and keep alpha channel
-        if (image.channels() == 4) {
-
-
-            // Create QImage from OpenCV Mat with alpha channel
-            QImage qImage(image.data, image.cols, image.rows, image.step[0], QImage::Format_ARGB32);
-            if (!setSize) {
-                float ratio;
-                if (size.height() / qImage.height() > size.width() / qImage.width()) {
-                    ratio = static_cast<float>(size.width()) / qImage.width();
-                }
-                else {
-                    ratio = static_cast<float>(size.height()) / qImage.height();
-                }
-
-                size.setWidth(qImage.width() * ratio);
-                size.setHeight(qImage.height() * ratio);
-            }
-            this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        }
-        else {
-            // Handle images without an alpha channel (optional)
-            cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
-
-            QImage qImage(image.data, image.cols, image.rows, image.step[0], QImage::Format_RGB888);
-            if (!setSize) {
-                float ratio;
-                if (size.height() / qImage.height() > size.width() / qImage.width()) {
-                    ratio = static_cast<float>(size.width()) / qImage.width();
-                }
-                else {
-                    ratio = static_cast<float>(size.height()) / qImage.height();
-                }
-
-                size.setWidth(qImage.width() * ratio);
-                size.setHeight(qImage.height() * ratio);
-            }
-            this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-        }
-
+    if (!qImage.isNull()) {
+        this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     }
     else {
         // Handle the case where the image is not valid (optional)
         this->setText("Erreur : Image non valide !");
     }
 
-    setFixedSize(size);
+    if (setSize)
+        setFixedSize(size);
+    else {
 
+        QSize scaledSize = qImage.size();
+        scaledSize.scale(size, Qt::KeepAspectRatio);
+        setFixedSize(scaledSize);
+    }
     this->setAlignment(Qt::AlignCenter);
 
-    // Enable mouse tracking
     setMouseTracking(true);
 
     updateStyleSheet();

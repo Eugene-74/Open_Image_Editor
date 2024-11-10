@@ -20,6 +20,3 @@ const QString HOVER_BACKGROUND_COLOR = "#b3b3b3";
 const QString BACKGROUND_COLOR = "transparent";
 
 
-
-// #include <opencv2/opencv.hpp>
-// std::map<QString, cv::Mat>* imageCache;

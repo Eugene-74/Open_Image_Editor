@@ -11,13 +11,13 @@ int main(int argc, char* argv[]) {
     // qputenv("QT_SCALE_FACTOR", "1");
 
 
-    Data data;
-    ImagesData imagesData(std::vector<ImageData>{});
-    ImagesData deletedImagesData(std::vector<ImageData>{});
-    using ImagesData = std::vector<ImageData*>;
+    // Data data;
+    // ImagesData* imagesData = new ImagesData(std::vector<ImageData>{});
+    // ImagesData* deletedImagesData = new ImagesData(std::vector<ImageData>{});
+    // using ImagesData = std::vector<ImageData*>;
 
-    data.imagesData = imagesData;
-    data.deletedImagesData = deletedImagesData;
+    // data.imagesData = imagesData;
+    // data.deletedImagesData = deletedImagesData;
 
 
 
@@ -34,7 +34,8 @@ int main(int argc, char* argv[]) {
 }
 
 // Charges dans un imagesData toutes les données des images dans un dossier et ses sous dossier
-void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData& imagesData) {
+void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData* imagesData) {
+    // imagesData->setImageNumber(0);
     int nbrImage = 0;
     countImagesFromFolder(imagePaths, nbrImage);
     std::cerr << "nombre d'image à charger : " << nbrImage << std::endl;
@@ -42,6 +43,8 @@ void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData& imag
     loadImagesFromFolder(imagePaths, imagePaths, imagesData, nbrImage);
 
     loadImagesMetaData(imagesData);
+
+
 
 }
 
@@ -64,7 +67,7 @@ void countImagesFromFolder(const std::string path, int& nbrImage) {
 }
 
 // Charges concrètement dans un imagesData toutes les données des images dans un dossier et ses sous dossier
-void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData& imagesData, int& nbrImage) {
+void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage) {
     for (const auto& entry : fs::directory_iterator(path)) {
         if (fs::is_regular_file(entry.status())) {
             if (isImage(entry.path())) {
@@ -79,12 +82,11 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
                 Folders folders(fichiers);
 
                 ImageData imageD(entry.path(), folders);
-                imagesData.addImage(imageD);
+                imagesData->addImage(imageD);
+
                 nbrImage -= 1;
                 std::cerr << "Viens de charger : " << entry.path() << std::endl;
                 std::cerr << "Image restante : " << nbrImage << std::endl;
-
-
             }
         }
         else if (fs::is_directory(entry.status())) {
@@ -124,9 +126,9 @@ bool isTurnable(const std::string& path) {
 }
 
 // Charger les meta donnée contenue dans les images
-void loadImagesMetaData(ImagesData& imagesData) {
-    for (int i = 0; i < imagesData.get().size(); ++i) {
-        imagesData.getImageData(i)->loadData();
+void loadImagesMetaData(ImagesData* imagesData) {
+    for (int i = 0; i < imagesData->get().size(); ++i) {
+        imagesData->getImageData(i)->loadData();
     }
 }
 

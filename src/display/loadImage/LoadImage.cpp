@@ -2,9 +2,9 @@
 
 
 // Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
-ImagesData addSelectedFilesToFolders(QWidget* parent) {
+ImagesData* addSelectedFilesToFolders(QWidget* parent) {
     // Data data;
-    ImagesData imagesData(std::vector<ImageData>{});
+    ImagesData* imagesData = new ImagesData();
     fileSelector fileSelector;
 
     QStringList selectedFiles;

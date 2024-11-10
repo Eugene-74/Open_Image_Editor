@@ -17,7 +17,7 @@ public:
     qreal pixelRatio;
     QSize screenGeometry;
 
-    void createImageEditor(Data& data);
+    void createImageEditor(Data data);
     void clearImageEditor();
 
 protected:

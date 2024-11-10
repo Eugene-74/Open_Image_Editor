@@ -10,40 +10,41 @@ void createThumbnails(const std::vector<std::string>& imagePaths) {
 
 void createThumbnail(const std::string& imagePath, const int maxDim) {
     // Load the image using OpenCV
-    cv::Mat image = cv::imread(imagePath);
-    if (image.empty()) {
-        std::cerr << "Error: Could not load image: " << imagePath << std::endl;
-        return;
-    }
 
-    // Calculate the scaling factor to maintain aspect ratio
+    // cv::Mat image = cv::imread(imagePath);
+    // if (image.empty()) {
+    //     std::cerr << "Error: Could not load image: " << imagePath << std::endl;
+    //     return;
+    // }
 
-    double scale = std::min(static_cast<double>(maxDim) / image.cols, static_cast<double>(maxDim) / image.rows);
+    // // Calculate the scaling factor to maintain aspect ratio
 
-    // Resize the image
-    cv::Mat thumbnail;
-    cv::resize(image, thumbnail, cv::Size(), scale, scale);
+    // double scale = std::min(static_cast<double>(maxDim) / image.cols, static_cast<double>(maxDim) / image.rows);
 
-    // Generate the output path for the thumbnail
-    std::hash<std::string> hasher;
-    size_t hashValue = hasher(imagePath);
-    std::string extension = fs::path(imagePath).extension().string();
+    // // Resize the image
+    // cv::Mat thumbnail;
+    // cv::resize(image, thumbnail, cv::Size(), scale, scale);
 
-    std::string outputImage;
-    if (maxDim == 128) {
-        outputImage = THUMBNAIL_PATH + "/normal/" + std::to_string(hashValue) + extension;
-    }
-    else if (maxDim == 256) {
-        outputImage = THUMBNAIL_PATH + "/large/" + std::to_string(hashValue) + extension;
-    }
-    else if (maxDim == 512) {
-        outputImage = THUMBNAIL_PATH + "/x-large/" + std::to_string(hashValue) + extension;
-    }
+    // // Generate the output path for the thumbnail
+    // std::hash<std::string> hasher;
+    // size_t hashValue = hasher(imagePath);
+    // std::string extension = fs::path(imagePath).extension().string();
 
-    // Save the thumbnail image
-    if (!cv::imwrite(outputImage, thumbnail)) {
-        std::cerr << "Error: Could not save thumbnail: " << outputImage << std::endl;
-    }
+    // std::string outputImage;
+    // if (maxDim == 128) {
+    //     outputImage = THUMBNAIL_PATH + "/normal/" + std::to_string(hashValue) + extension;
+    // }
+    // else if (maxDim == 256) {
+    //     outputImage = THUMBNAIL_PATH + "/large/" + std::to_string(hashValue) + extension;
+    // }
+    // else if (maxDim == 512) {
+    //     outputImage = THUMBNAIL_PATH + "/x-large/" + std::to_string(hashValue) + extension;
+    // }
+
+    // // Save the thumbnail image
+    // if (!cv::imwrite(outputImage, thumbnail)) {
+    //     std::cerr << "Error: Could not save thumbnail: " << outputImage << std::endl;
+    // }
 
 }
 void createThumbnailsIfNotExists(const std::vector<std::string>& imagePaths, const int maxDim) {
@@ -99,14 +100,15 @@ bool hasThumbnail(const std::string& imagePath, const int maxDim) {
 }
 
 void createAllThumbnail(const std::string& imagePath, const int size) {
+    std::vector<std::string> imagePaths;
 
     if (size > 128) {
         createThumbnailIfNotExists(imagePath, 128);
     }
-    else if (size > 256) {
+    if (size > 256) {
         createThumbnailIfNotExists(imagePath, 256);
     }
-    else if (size > 512) {
+    if (size > 512) {
         createThumbnailIfNotExists(imagePath, 512);
     }
 }
