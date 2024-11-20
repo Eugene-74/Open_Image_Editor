@@ -13,12 +13,10 @@ InitialWindow::InitialWindow() {
     std::string path = "/home/eugene/Documents/photo trié";
     startLoadingImagesFromFolder(path, data.imagesData);
 
-    // data.imagesData = loadImagesData(IMAGESDATA_SAVE_DAT_PATH);
-    // data.deletedImagesData = loadImagesData(DELETED_IMAGESDATA_SAVE_DAT_PATH);
 
-
-
-
+    // TODO sauvegarde orientation marche pas 
+        // data.imagesData = loadImagesData(IMAGESDATA_SAVE_DAT_PATH);
+        // data.deletedImagesData = loadImagesData(DELETED_IMAGESDATA_SAVE_DAT_PATH);
 
     const QList<QScreen*> screens = QGuiApplication::screens();
     QScreen* screen = QGuiApplication::primaryScreen();

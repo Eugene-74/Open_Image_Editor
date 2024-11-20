@@ -11,7 +11,6 @@ ImagesData& ImagesData::operator = (const ImagesData& other) {
 
 
 void ImagesData::setImageNumber(int nbr) {
-    std::cerr << "nbr : " << nbr << std::endl;
     while (nbr < 0) {
         nbr += 1;
     }
@@ -19,10 +18,6 @@ void ImagesData::setImageNumber(int nbr) {
         nbr -= 1;
     }
 
-
-    // if (nbr < 0 or nbr >= imagesData.size()) {
-    //     imageNumber = 0;
-    // }
     imageNumber = nbr;
 }
 int ImagesData::getImageNumber() {

@@ -10,6 +10,8 @@
 #include <iostream>
 #include <fstream> 
 #include "../../display/box/Box.h"
+// #include "../../functions/thumbnail/Thumbnail.h"
+
 #include <QFileDialog>
 
 
@@ -30,5 +32,22 @@ public:
     void removeDeletedImages();
     bool isDeleted(int imageNbr);
 
-    QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize);
+    QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, bool thumbnail = false);
+
+
+    void rotateImageCache(std::string imagePath, int rotation);
+
+    void createThumbnails(const std::vector<std::string>& imagePaths, const int maxDim);
+    void createThumbnail(const std::string& imagePath, const int maxDim);
+
+
+    void createThumbnailsIfNotExists(const std::vector<std::string>& imagePaths, const int maxDim);
+
+    void createThumbnailIfNotExists(const std::string& imagePath, const int maxDim);
+
+    bool hasThumbnail(const std::string& imagePath, const int maxDim);
+
+    void createAllThumbnail(const std::string& path, const int maxDim);
+
+    std::string getThumbnailPath(const std::string& imagePath, const int size);
 };

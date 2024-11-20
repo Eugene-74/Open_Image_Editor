@@ -1,8 +1,8 @@
 #include "ClickableLabel.h"
-ClickableLabel::ClickableLabel(Data data, const QString& imagePath, QWidget* parent, QSize size, bool setSize)
+ClickableLabel::ClickableLabel(Data data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, bool thumbnail)
     : QLabel(parent) {
 
-    QImage qImage = data.loadImage(this, imagePath.toStdString(), size, setSize);
+    QImage qImage = data.loadImage(this, imagePath.toStdString(), size, setSize, thumbnail);
 
     // QImage qImage;
 
@@ -11,7 +11,7 @@ ClickableLabel::ClickableLabel(Data data, const QString& imagePath, QWidget* par
     }
     else {
         // Handle the case where the image is not valid (optional)
-        this->setText("Erreur : Image non valide !");
+        this->setText("Erreur");
     }
 
     if (setSize)
