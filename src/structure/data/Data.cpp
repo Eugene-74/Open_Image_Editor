@@ -77,29 +77,31 @@ bool Data::isDeleted(int imageNbr) {
 
 QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail) {
 
+    std::cerr << "loadImage" << imagePath << ":" << thumbnail << std::endl;
+
     // Check if the image is in the imageCache
     auto it = imageCache->find(imagePath);
     if (it != imageCache->end()) {
-        std::cerr << "image trouve dans le cache" << std::endl;
-        return it->second;
+        // std::cerr << "image trouve dans le cache" << std::endl;
+        return it->second.image;
     }
 
     it = imageCache->find(getThumbnailPath(imagePath, 512));
     if (it != imageCache->end()) {
-        std::cerr << "image trouve dans le cache" << std::endl;
-        return it->second;
+        // std::cerr << "image trouve dans le cache" << std::endl;
+        return it->second.image;
     }
 
     it = imageCache->find(getThumbnailPath(imagePath, 256));
     if (it != imageCache->end()) {
-        std::cerr << "image trouve dans le cache" << std::endl;
-        return it->second;
+        // std::cerr << "image trouve dans le cache" << std::endl;
+        return it->second.image;
     }
 
     it = imageCache->find(getThumbnailPath(imagePath, 128));
     if (it != imageCache->end()) {
-        std::cerr << "image trouve dans le cache" << std::endl;
-        return it->second;
+        // std::cerr << "image trouve dans le cache" << std::endl;
+        return it->second.image;
     }
 
 
@@ -117,6 +119,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
     else{
         if (thumbnail == 128){
             if (hasThumbnail(imagePath, 128)){
+                std::cerr << "hasThumbnail" << std::endl;
                 imagePathbis = getThumbnailPath(imagePath, 128);
             }
             else{
@@ -158,53 +161,58 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
         if (setSize) {
             image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         }
-        // if (imagePathbis == imagePath){
-        ImageData* imageData = imagesData->getImageData(imagePath);
-        if (imageData != nullptr){
-            Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
-            if (exifData.empty()) {
-            }
-            else {
-                if (exifData["Exif.Image.Orientation"].count() != 0) {
-                    int orientation = exifData["Exif.Image.Orientation"].toInt64();
-                    std::cerr << "orientation : " << orientation << " :: " << imagePath << std::endl;
-                    switch (orientation) {
-                        // case 1:
-                        //     // No transformation needed
-                        //     break;
-                        // case 2:
-                        //     image = image.mirrored(true, false); // Horizontal mirror
-                        //     break;
-                    case 3:
-                        image = image.transformed(QTransform().rotate(180));
-                        break;
-                        // case 4:
-                        //     image = image.mirrored(false, true); // Vertical mirror
-                        //     break;
-                        // case 5:
-                        //     image = image.mirrored(true, false).transformed(QTransform().rotate(90)); // Horizontal mirror + 90 degrees
-                        //     break;
-                    case 6:
-                        image = image.transformed(QTransform().rotate(90));
-                        break;
-                        // case 7:
-                        //     image = image.mirrored(true, false).transformed(QTransform().rotate(-90)); // Horizontal mirror + -90 degrees
-                        //     break;
-                    case 8:
-                        image = image.transformed(QTransform().rotate(-90));
-                        break;
-                    default:
-                        // Unknown orientation, no transformation
-                        break;
+        if (imagePathbis == imagePath){
+            ImageData* imageData = imagesData->getImageData(imagePath);
+            if (imageData != nullptr){
+                std::cerr << "imageData" << std::endl;
+                Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
+                if (exifData.empty()) {
+                    std::cerr << "empty" << std::endl;
+                }
+                else {
+                    std::cerr << "not empty" << std::endl;
+                    if (exifData["Exif.Image.Orientation"].count() != 0) {
+                        int orientation = exifData["Exif.Image.Orientation"].toInt64();
+                        std::cerr << "orientation : " << orientation << " :: " << imagePathbis << std::endl;
+                        switch (orientation) {
+                        case 1:
+                            // No transformation needed
+                            break;
+                        case 2:
+                            image = image.mirrored(true, false); // Horizontal mirror
+                            break;
+                        case 3:
+                            image = image.transformed(QTransform().rotate(180));
+                            break;
+                        case 4:
+                            image = image.mirrored(false, true); // Vertical mirror
+                            break;
+                        case 5:
+                            image = image.mirrored(true, false).transformed(QTransform().rotate(90)); // Horizontal mirror + 90 degrees
+                            break;
+                        case 6:
+                            image = image.transformed(QTransform().rotate(90));
+                            break;
+                        case 7:
+                            image = image.mirrored(true, false).transformed(QTransform().rotate(-90)); // Horizontal mirror + -90 degrees
+                            break;
+                        case 8:
+                            image = image.transformed(QTransform().rotate(-90));
+                            break;
+                        default:
+                            // Unknown orientation, no transformation
+                            break;
+                        }
                     }
                 }
             }
         }
-        // }
     }
 
     // Add the image to the imageCache
-    (*imageCache)[imagePathbis] = image;
+    (*imageCache)[imagePathbis].image = image;
+    (*imageCache)[imagePathbis].imagePath = imagePath;
+
 
 
     return image;
@@ -266,7 +274,14 @@ bool Data::loadInCache(std::string imagePath, bool setSize, QSize size) {
         }
     }
     // Add the image to the imageCache
-    (*imageCache)[imagePath] = image;
+    (*imageCache)[imagePath].image = image;
+    (*imageCache)[imagePath].imagePath = imagePath;
+
+
+    createThumbnailIfNotExists(imagePath, 128);
+    createThumbnailIfNotExists(imagePath, 256);
+    createThumbnailIfNotExists(imagePath, 512);
+
     return true;
 }
 
@@ -277,7 +292,7 @@ bool Data::isInCache(std::string imagePath){
 bool Data::getLoadedImage(std::string imagePath, QImage& image){
     auto it = imageCache->find(imagePath);
     if (it != imageCache->end()) {
-        image = it->second;
+        image = it->second.image;
         return true;
     }
     return false;
@@ -288,11 +303,12 @@ void Data::rotateImageCache(std::string imagePath, int rotation){
     QImage image;
     auto it = imageCache->find(imagePath);
     if (it != imageCache->end()) {
-        image = it->second;
+        image = it->second.image;
         // Perform operations with the found image
     }
     image = image.transformed(QTransform().rotate(rotation));
-    imageCache->operator[](imagePath) = image;
+    imageCache->operator[](imagePath).image = image;
+
 }
 
 void Data::createThumbnails(const std::vector<std::string>& imagePaths, const int maxDim) {
@@ -302,7 +318,7 @@ void Data::createThumbnails(const std::vector<std::string>& imagePaths, const in
 }
 
 void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
-    QImage image = loadImage(nullptr, imagePath, QSize(maxDim, maxDim), false, false);
+    QImage image = loadImage(nullptr, imagePath, QSize(maxDim, maxDim), false);
 
 
     // Calculate the scaling factor to maintain aspect ratio
@@ -409,4 +425,27 @@ std::string Data::getThumbnailPath(const std::string& imagePath, const int size)
         outputImage = THUMBNAIL_PATH + "/x-large/" + std::to_string(hashValue) + extension;
     }
     return outputImage;
+}
+
+bool Data::unloadFromCache(std::string imagePath){
+    if (!imageCache) {
+        std::cerr << "imageCache is not initialized" << std::endl;
+        return false;
+    }
+
+    // std::cerr << "unloading image from cache: " << imagePath << std::endl;
+    auto it = imageCache->find(imagePath);
+
+    // for (const auto& cache : *imageCache) {
+    //     std::cerr << "Image path: " << cache.first << std::endl;
+    // }
+
+    if (it != imageCache->end()) {
+        imageCache->erase(it);
+
+        // std::cerr << "trouvé: " << imageCache->size() << std::endl;
+        return true;
+    }
+    // std::cerr << "non trouvé: " << imagePath << std::endl;
+    return false;
 }

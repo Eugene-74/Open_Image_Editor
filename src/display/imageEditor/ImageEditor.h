@@ -89,10 +89,9 @@ public:
 
     void startImageOpenTimer();
     void stopImageOpenTimer();
-    void restartImageOpenTimer();
 
-
-    // void removeImageFromCache(const QString& imagePath);
+    void checkCache();
+    void checkLoadedImage();
 
 protected:
     void keyPressEvent(QKeyEvent* event) override;
@@ -137,7 +136,9 @@ private:
     ClickableLabel* imageSave;
     ClickableLabel* imageEditExif;
 
-    QTimer* imageOpenTimer = nullptr;
+    QTimer* imageOpenTimer = new QTimer(this);
+    std::vector<QTimer*> imagePreviewOpenTimers = std::vector<QTimer*>();
+
 };
 
 

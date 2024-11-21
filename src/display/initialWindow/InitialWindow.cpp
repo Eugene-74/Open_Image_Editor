@@ -6,7 +6,7 @@ InitialWindow::InitialWindow() {
 
     data.imagesData = new ImagesData();
     data.deletedImagesData = new ImagesData();
-    data.imageCache = new std::map<std::string, QImage>();
+    data.imageCache = new std::map<std::string, QImageAndPath>();
 
 
 

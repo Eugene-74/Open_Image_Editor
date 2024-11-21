@@ -171,3 +171,18 @@ ImagesData* loadImagesData(std::string savePath) {
     return loadedImagesData; // Retourner l'objet chargé
 }
 
+
+int ImagesData::getImageIdByName(std::string imagePath){
+    auto it = std::find_if(imagesData.begin(), imagesData.end(),
+        [&imagePath](const ImageData& imgD) {
+            return imgD.imagePath == imagePath;
+        });
+
+    if (it != imagesData.end()) {
+        return std::distance(imagesData.begin(), it);
+    }
+    else {
+        return -1; // Return -1 if the image is not found
+    }
+}
+

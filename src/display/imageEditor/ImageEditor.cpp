@@ -7,6 +7,10 @@
 ImageEditor::ImageEditor(Data dat, QWidget* parent) : QMainWindow(parent), data(dat) {
     const QList<QScreen*> screens = QGuiApplication::screens();
 
+
+    // initialisation pour les times de preload
+    for (int i = 0; i < PRE_LOAD_RADIUS; i++)
+        imagePreviewOpenTimers.push_back(new QTimer(this));
     // data = dat;
 
 
@@ -818,18 +822,7 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
 
 ClickableLabel* ImageEditor::createImageLabel() {
 
-    if (data.isInCache(data.imagesData->getCurrentImageData()->getImagePath()) != true){
-        if (imageOpenTimer != nullptr){
-            // imageOpenTimer->stop();
-            restartImageOpenTimer();
-            std::cerr << "timer restart" << std::endl;
-        }
-        else {
-            startImageOpenTimer();
-            std::cerr << "timer started" << std::endl;
-        }
-    }
-
+    checkCache();
 
     if (data.imagesData->get().size() <= 0) {
         return nullptr;
@@ -1050,28 +1043,82 @@ void ImageEditor::validateMetadata() {
 
 void ImageEditor::startImageOpenTimer() {
     if (imageOpenTimer) {
+        imageOpenTimer->disconnect();
         imageOpenTimer->stop();
-        imageOpenTimer->deleteLater();
+        // imageOpenTimer->deleteLater();
     }
-
-    imageOpenTimer = new QTimer(this);
+    // imageOpenTimer = new QTimer(this);
 
     // Connectez le signal timeout() à une lambda ou un slot
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
-        // Code à exécuter après 0,2 secondes
         data.loadInCache(data.imagesData->getCurrentImageData()->getImagePath());
+        std::cerr << "load fin de timer" << std::endl;
         restartImageLabel();
+        // updatePreview();
         // Arrêtez et supprimez le imageOpenTimer
         imageOpenTimer->stop();
-        imageOpenTimer->deleteLater();
-        imageOpenTimer = nullptr;
+        // imageOpenTimer->deleteLater();
+        // imageOpenTimer = nullptr;
         });
 
-    // Définissez l'intervalle du imageOpenTimer à 200 millisecondes
-    imageOpenTimer->setInterval(200);
-
-    // Démarrez le imageOpenTimer
+    imageOpenTimer->setInterval(TIME_BEFORE_FULL_QUALITY);
     imageOpenTimer->start();
+
+
+    // precharge les images des alentours
+    for (int i = 0; i < PRE_LOAD_RADIUS; i++){
+
+        if (imagePreviewOpenTimers[i]) {
+            imagePreviewOpenTimers[i]->disconnect();
+            imagePreviewOpenTimers[i]->stop();
+            imagePreviewOpenTimers[i]->deleteLater();
+        }
+        imagePreviewOpenTimers[i] = new QTimer(this);
+
+        connect(imagePreviewOpenTimers[i], &QTimer::timeout, this, [this, i]() {
+
+            int done = 0;
+            if (data.imagesData->getImageNumber() - (i + 1) < data.imagesData->get().size()
+                && data.imagesData->getImageNumber() - (i + 1) >= 0) {
+                if (!data.isInCache(data.imagesData->getImageData(data.imagesData->getImageNumber() - (i + 1))->getImagePath())){
+                    data.loadInCache(data.imagesData->getImageData(data.imagesData->getImageNumber() - (i + 1))->getImagePath());
+                    done += 1;
+
+
+                    data.unloadFromCache(data.getThumbnailPath(data.imagesData->getImageData(data.imagesData->getImageNumber() - (i + 1))->getImagePath(), 128));
+                    data.unloadFromCache(data.getThumbnailPath(data.imagesData->getImageData(data.imagesData->getImageNumber() - (i + 1))->getImagePath(), 256));
+                    data.unloadFromCache(data.getThumbnailPath(data.imagesData->getImageData(data.imagesData->getImageNumber() - (i + 1))->getImagePath(), 512));
+
+                }
+            }
+
+            if (data.imagesData->getImageNumber() + (i + 1) < data.imagesData->get().size()
+                && data.imagesData->getImageNumber() + (i + 1) >= 0){
+                if (!data.isInCache(data.imagesData->getImageData(data.imagesData->getImageNumber() + (i + 1))->getImagePath())){
+                    data.loadInCache(data.imagesData->getImageData(data.imagesData->getImageNumber() + (i + 1))->getImagePath());
+                    done += 1;
+
+                    data.unloadFromCache(data.getThumbnailPath(data.imagesData->getImageData(data.imagesData->getImageNumber() + (i + 1))->getImagePath(), 128));
+                    data.unloadFromCache(data.getThumbnailPath(data.imagesData->getImageData(data.imagesData->getImageNumber() + (i + 1))->getImagePath(), 256));
+                    data.unloadFromCache(data.getThumbnailPath(data.imagesData->getImageData(data.imagesData->getImageNumber() + (i + 1))->getImagePath(), 512));
+
+                }
+            }
+            if (done != 0){
+                updatePreview();
+
+            }
+
+            imagePreviewOpenTimers[i]->stop();
+            imagePreviewOpenTimers[i]->deleteLater();
+            imagePreviewOpenTimers[i] = nullptr;
+            });
+
+        imagePreviewOpenTimers[i]->setInterval(TIME_BEFORE_PRE_LOAD_FULL_QUALITY * (i + 1));
+
+        imagePreviewOpenTimers[i]->start();
+    }
+
 }
 
 void ImageEditor::stopImageOpenTimer() {
@@ -1079,16 +1126,48 @@ void ImageEditor::stopImageOpenTimer() {
         imageOpenTimer->stop();
         imageOpenTimer->deleteLater();
         imageOpenTimer = nullptr;
-        qDebug() << "Timer arrêté avant expiration";
+    }
+    for (int i = 0; i < PRE_LOAD_RADIUS; i++){
+
+        if (imagePreviewOpenTimers[i]) {
+            imagePreviewOpenTimers[i]->stop();
+            imagePreviewOpenTimers[i]->deleteLater();
+            imagePreviewOpenTimers[i] = nullptr;
+        }
     }
 }
 
-void ImageEditor::restartImageOpenTimer() {
-    if (imageOpenTimer) {
-        imageOpenTimer->start(200); // Redémarre le timer avec un intervalle de 200 millisecondes
-        qDebug() << "Timer redémarré";
+
+
+
+void ImageEditor::checkLoadedImage() {
+    for (const auto& cache : *data.imageCache) {
+        const std::string& imagePath = cache.second.imagePath;
+        const std::string& imagePathBis = cache.first;
+
+        // std::cerr << "Loaded image: " << imagePath << std::endl;
+        // std::cerr << "Loaded image: " << imagePathBis << std::endl;
+
+        int imageId = data.imagesData->getImageIdByName(imagePath);
+        if (imageId != -1){
+            // Si l'image est dans le cache et n'est pas une ressource
+            // std::cerr << "Image ID: " << imageId << std::endl;
+            if (std::abs(data.imagesData->imageNumber - imageId) > 2 * PRE_LOAD_RADIUS){
+
+                // int distance = std::abs(data.imagesData->getImageNumber() - imageId);
+
+                // std::cerr << "unload" << imagePath << " : " << imageId << std::endl;
+
+                // cree des sgementation fault
+                // data.unloadFromCache(imagePathBis);
+
+            }
+        }
     }
-    else {
-        startImageOpenTimer(); // Si le timer n'existe pas, démarrez-le
-    }
+}
+
+// permet de verifier si il y a des images a charger ou decharger du cache
+void ImageEditor::checkCache() {
+    startImageOpenTimer();
+    checkLoadedImage();
 }

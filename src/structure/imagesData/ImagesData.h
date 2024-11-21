@@ -64,6 +64,8 @@ public:
     // Charger ImageData à partir d'un fichier binaire
     void load(std::ifstream& in);
 
+    int getImageIdByName(std::string imagePath);
+
 };
 
 // Permet de charger ImagesData à partir d'un fichier binaire

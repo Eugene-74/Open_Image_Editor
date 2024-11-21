@@ -15,12 +15,19 @@
 #include <QFileDialog>
 
 
+class QImageAndPath
+{
+public:
+    QImage image;
+    std::string imagePath;
+};
+
 class Data
 {
 public:
     ImagesData* imagesData;
     ImagesData* deletedImagesData;
-    std::map<std::string, QImage>* imageCache = nullptr;
+    std::map<std::string, QImageAndPath>* imageCache = nullptr;
 
     void preDeleteImage(int imageNbr);
     void unPreDeleteImage(int imageNbr);
@@ -34,6 +41,11 @@ public:
 
     QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0);
     bool loadInCache(std::string imagePath, bool setSize = false, QSize size = QSize(0, 0));
+    bool unloadFromCache(std::string imagePath);
+
+
+    bool isInCache(std::string imagePath);
+    bool getLoadedImage(std::string imagePath, QImage& image);
 
     void rotateImageCache(std::string imagePath, int rotation);
 
@@ -50,7 +62,6 @@ public:
     void createAllThumbnail(const std::string& path, const int maxDim);
 
     std::string getThumbnailPath(const std::string& imagePath, const int size);
-    bool isInCache(std::string imagePath);
-    bool getLoadedImage(std::string imagePath, QImage& image);
 
 };
+

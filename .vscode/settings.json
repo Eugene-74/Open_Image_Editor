@@ -161,7 +161,8 @@
     "qmainwindow": "cpp",
     "qscreen": "cpp",
     "qdatetimeedit": "cpp",
-    "expected": "cpp"
+    "expected": "cpp",
+    "qstring": "cpp"
   },
   "cmake.sourceDirectory": "/home/eugene/Documents/git/Easy_Image_Editor"
 }
