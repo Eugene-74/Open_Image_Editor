@@ -32,8 +32,8 @@ public:
     void removeDeletedImages();
     bool isDeleted(int imageNbr);
 
-    QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, bool thumbnail = false);
-
+    QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0);
+    bool loadInCache(std::string imagePath, bool setSize = false, QSize size = QSize(0, 0));
 
     void rotateImageCache(std::string imagePath, int rotation);
 
@@ -50,4 +50,7 @@ public:
     void createAllThumbnail(const std::string& path, const int maxDim);
 
     std::string getThumbnailPath(const std::string& imagePath, const int size);
+    bool isInCache(std::string imagePath);
+    bool getLoadedImage(std::string imagePath, QImage& image);
+
 };

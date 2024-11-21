@@ -77,6 +77,7 @@ public:
     ClickableLabel* createImageNext();
 
     ClickableLabel* createImageLabel();
+    void restartImageLabel();
 
     void saveImage();
     void deleteImage();
@@ -85,6 +86,10 @@ public:
 
     void populateMetadataFields();
     void validateMetadata();
+
+    void startImageOpenTimer();
+    void stopImageOpenTimer();
+    void restartImageOpenTimer();
 
 
     // void removeImageFromCache(const QString& imagePath);
@@ -132,6 +137,7 @@ private:
     ClickableLabel* imageSave;
     ClickableLabel* imageEditExif;
 
+    QTimer* imageOpenTimer = nullptr;
 };
 
 

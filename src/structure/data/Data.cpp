@@ -75,8 +75,7 @@ bool Data::isDeleted(int imageNbr) {
 }
 
 
-QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, bool thumbnail) {
-
+QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail) {
 
     // Check if the image is in the imageCache
     auto it = imageCache->find(imagePath);
@@ -84,6 +83,25 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
         std::cerr << "image trouve dans le cache" << std::endl;
         return it->second;
     }
+
+    it = imageCache->find(getThumbnailPath(imagePath, 512));
+    if (it != imageCache->end()) {
+        std::cerr << "image trouve dans le cache" << std::endl;
+        return it->second;
+    }
+
+    it = imageCache->find(getThumbnailPath(imagePath, 256));
+    if (it != imageCache->end()) {
+        std::cerr << "image trouve dans le cache" << std::endl;
+        return it->second;
+    }
+
+    it = imageCache->find(getThumbnailPath(imagePath, 128));
+    if (it != imageCache->end()) {
+        std::cerr << "image trouve dans le cache" << std::endl;
+        return it->second;
+    }
+
 
     std::string imagePathbis = imagePath;
 
@@ -97,7 +115,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
 
     }
     else{
-        if (thumbnail){
+        if (thumbnail == 128){
             if (hasThumbnail(imagePath, 128)){
                 imagePathbis = getThumbnailPath(imagePath, 128);
             }
@@ -105,6 +123,28 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
                 createThumbnail(imagePath, 128);
                 createThumbnailIfNotExists(imagePath, 256);
                 createThumbnailIfNotExists(imagePath, 512);
+            }
+        }
+        else  if (thumbnail == 256){
+            if (hasThumbnail(imagePath, 256)){
+                imagePathbis = getThumbnailPath(imagePath, 256);
+            }
+            else{
+                createThumbnailIfNotExists(imagePath, 128);
+                createThumbnail(imagePath, 256);
+                createThumbnailIfNotExists(imagePath, 512);
+
+
+            }
+        }
+        else if (thumbnail == 512){
+            if (hasThumbnail(imagePath, 512)){
+                imagePathbis = getThumbnailPath(imagePath, 512);
+            }
+            else{
+                createThumbnailIfNotExists(imagePath, 128);
+                createThumbnailIfNotExists(imagePath, 256);
+                createThumbnail(imagePath, 512);
 
 
             }
@@ -168,6 +208,79 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
 
 
     return image;
+}
+
+bool Data::loadInCache(std::string imagePath, bool setSize, QSize size) {
+    QImage image;
+    if (isInCache(imagePath)){
+        return true;
+    }
+    image.load(QString::fromStdString(imagePath));
+    if (image.isNull()) {
+        return false;
+    }
+
+    if (setSize) {
+        image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    }
+    // if (imagePathbis == imagePath){
+    ImageData* imageData = imagesData->getImageData(imagePath);
+    if (imageData != nullptr){
+        Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
+        if (exifData.empty()) {
+        }
+        else {
+            if (exifData["Exif.Image.Orientation"].count() != 0) {
+                int orientation = exifData["Exif.Image.Orientation"].toInt64();
+                std::cerr << "orientation : " << orientation << " :: " << imagePath << std::endl;
+                switch (orientation) {
+                    // case 1:
+                    //     // No transformation needed
+                    //     break;
+                    // case 2:
+                    //     image = image.mirrored(true, false); // Horizontal mirror
+                    //     break;
+                case 3:
+                    image = image.transformed(QTransform().rotate(180));
+                    break;
+                    // case 4:
+                    //     image = image.mirrored(false, true); // Vertical mirror
+                    //     break;
+                    // case 5:
+                    //     image = image.mirrored(true, false).transformed(QTransform().rotate(90)); // Horizontal mirror + 90 degrees
+                    //     break;
+                case 6:
+                    image = image.transformed(QTransform().rotate(90));
+                    break;
+                    // case 7:
+                    //     image = image.mirrored(true, false).transformed(QTransform().rotate(-90)); // Horizontal mirror + -90 degrees
+                    //     break;
+                case 8:
+                    image = image.transformed(QTransform().rotate(-90));
+                    break;
+                default:
+                    // Unknown orientation, no transformation
+                    break;
+                }
+            }
+        }
+    }
+    // Add the image to the imageCache
+    (*imageCache)[imagePath] = image;
+    return true;
+}
+
+bool Data::isInCache(std::string imagePath){
+    return imageCache->find(imagePath) != imageCache->end();
+}
+
+bool Data::getLoadedImage(std::string imagePath, QImage& image){
+    auto it = imageCache->find(imagePath);
+    if (it != imageCache->end()) {
+        image = it->second;
+        return true;
+    }
+    return false;
 }
 
 

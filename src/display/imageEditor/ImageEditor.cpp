@@ -501,17 +501,18 @@ void ImageEditor::updateButtons() {
 
     }
 
-    if (imageLabel) {
+    // if (imageLabel) {
 
-        ClickableLabel* imageLabelNew = createImageLabel();
+    //     ClickableLabel* imageLabelNew = createImageLabel();
 
-        buttonLayout->replaceWidget(imageLabel, imageLabelNew);
+    //     buttonLayout->replaceWidget(imageLabel, imageLabelNew);
 
-        imageLabel->hide();
-        imageLabel->deleteLater();
+    //     imageLabel->hide();
+    //     imageLabel->deleteLater();
 
-        imageLabel = imageLabelNew;
-    }
+    //     imageLabel = imageLabelNew;
+    // }
+    restartImageLabel();
     if (buttonImageNext) {
         if (data.imagesData->getImageNumber() == data.imagesData->get().size() - 1) {
             buttonImageNext->setDisabled(true);
@@ -544,10 +545,13 @@ void ImageEditor::updateButtons() {
  */
 void ImageEditor::clear() {
 
+
     std::cerr << imageRotateRight << std::endl;
     std::cerr << imageRotateLeft << std::endl;
     std::cerr << imageDelete << std::endl;
     std::cerr << imageSave << std::endl;
+
+    stopImageOpenTimer();
 
     QTimer::singleShot(100, this, [this]() {
         if (actionButtonLayout) {
@@ -799,7 +803,7 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
         return nullptr;
     }
 
-    ClickableLabel* previewButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, previewSize, false, true);
+    ClickableLabel* previewButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, previewSize, false, 128);
 
 
     connect(previewButton, &ClickableLabel::clicked, [this, imageNbr]() {
@@ -814,11 +818,24 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
 
 ClickableLabel* ImageEditor::createImageLabel() {
 
+    if (data.isInCache(data.imagesData->getCurrentImageData()->getImagePath()) != true){
+        if (imageOpenTimer != nullptr){
+            // imageOpenTimer->stop();
+            restartImageOpenTimer();
+            std::cerr << "timer restart" << std::endl;
+        }
+        else {
+            startImageOpenTimer();
+            std::cerr << "timer started" << std::endl;
+        }
+    }
+
+
     if (data.imagesData->get().size() <= 0) {
         return nullptr;
     }
 
-    ClickableLabel* imageLabelNew = new ClickableLabel(data, QString::fromStdString(data.imagesData->getCurrentImageData()->getImagePath()), this, mainImageSize, false, true);
+    ClickableLabel* imageLabelNew = new ClickableLabel(data, QString::fromStdString(data.imagesData->getCurrentImageData()->getImagePath()), this, mainImageSize, false);
     connect(imageLabelNew, &ClickableLabel::clicked, [this]() {
         // TODO zoom to be added
         });
@@ -828,6 +845,20 @@ ClickableLabel* ImageEditor::createImageLabel() {
     return imageLabelNew;
 }
 
+void ImageEditor::restartImageLabel(){
+
+    if (imageLabel) {
+
+        ClickableLabel* imageLabelNew = createImageLabel();
+
+        buttonLayout->replaceWidget(imageLabel, imageLabelNew);
+
+        imageLabel->hide();
+        imageLabel->deleteLater();
+
+        imageLabel = imageLabelNew;
+    }
+}
 
 
 void ImageEditor::keyPressEvent(QKeyEvent* event) {
@@ -1014,4 +1045,50 @@ void ImageEditor::validateMetadata() {
     metaData->modifyExifValue("Exif.Image.ImageDescription", descriptionEdit->text().toStdString());
 
     imageData->saveMetaData();
+}
+
+
+void ImageEditor::startImageOpenTimer() {
+    if (imageOpenTimer) {
+        imageOpenTimer->stop();
+        imageOpenTimer->deleteLater();
+    }
+
+    imageOpenTimer = new QTimer(this);
+
+    // Connectez le signal timeout() à une lambda ou un slot
+    connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
+        // Code à exécuter après 0,2 secondes
+        data.loadInCache(data.imagesData->getCurrentImageData()->getImagePath());
+        restartImageLabel();
+        // Arrêtez et supprimez le imageOpenTimer
+        imageOpenTimer->stop();
+        imageOpenTimer->deleteLater();
+        imageOpenTimer = nullptr;
+        });
+
+    // Définissez l'intervalle du imageOpenTimer à 200 millisecondes
+    imageOpenTimer->setInterval(200);
+
+    // Démarrez le imageOpenTimer
+    imageOpenTimer->start();
+}
+
+void ImageEditor::stopImageOpenTimer() {
+    if (imageOpenTimer) {
+        imageOpenTimer->stop();
+        imageOpenTimer->deleteLater();
+        imageOpenTimer = nullptr;
+        qDebug() << "Timer arrêté avant expiration";
+    }
+}
+
+void ImageEditor::restartImageOpenTimer() {
+    if (imageOpenTimer) {
+        imageOpenTimer->start(200); // Redémarre le timer avec un intervalle de 200 millisecondes
+        qDebug() << "Timer redémarré";
+    }
+    else {
+        startImageOpenTimer(); // Si le timer n'existe pas, démarrez-le
+    }
 }

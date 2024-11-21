@@ -1,5 +1,5 @@
 #include "ClickableLabel.h"
-ClickableLabel::ClickableLabel(Data data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, bool thumbnail)
+ClickableLabel::ClickableLabel(Data data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail)
     : QLabel(parent) {
 
     QImage qImage = data.loadImage(this, imagePath.toStdString(), size, setSize, thumbnail);
