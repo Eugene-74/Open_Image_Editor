@@ -160,6 +160,8 @@ void ImageEditor::previousImage(int nbr) {
 
 void ImageEditor::rotateLeftJpg() {
 
+    std::cerr << "rotateLeftJpg" << std::endl;
+
     ImagesData* imagesData = data.imagesData;
 
     ImageData* imageData = imagesData->getCurrentImageData();
@@ -168,17 +170,33 @@ void ImageEditor::rotateLeftJpg() {
     }
     int orientation = imageData->getImageOrientation();
 
-    if (orientation == 1) {
+    switch (orientation) {
+    case 1:
         orientation = 8;
-    }
-    else if (orientation == 3) {
+        break;
+    case 2:
+        orientation = 5;
+        break;
+    case 3:
         orientation = 6;
-    }
-    else if (orientation == 8) {
-        orientation = 3;
-    }
-    else {
+        break;
+    case 4:
+        orientation = 7;
+        break;
+    case 5:
+        orientation = 2;
+        break;
+    case 6:
         orientation = 1;
+        break;
+    case 7:
+        orientation = 4;
+        break;
+    case 8:
+        orientation = 3;
+        break;
+    default:
+        break;
     }
     imageData->turnImage(orientation);
 
@@ -203,17 +221,33 @@ void ImageEditor::rotateRightJpg() {
 
     int orientation = imageData->getImageOrientation();
 
-    if (orientation == 1) {
+    switch (orientation) {
+    case 1:
         orientation = 6;
-    }
-    else if (orientation == 3) {
+        break;
+    case 2:
+        orientation = 5;
+        break;
+    case 3:
         orientation = 8;
-    }
-    else if (orientation == 6) {
+        break;
+    case 4:
+        orientation = 7;
+        break;
+    case 5:
+        orientation = 2;
+        break;
+    case 6:
         orientation = 3;
-    }
-    else {
+        break;
+    case 7:
+        orientation = 4;
+        break;
+    case 8:
         orientation = 1;
+        break;
+    default:
+        break;
     }
     imageData->turnImage(orientation);
 
@@ -410,6 +444,10 @@ void ImageEditor::updatePreview() {
 void ImageEditor::createButtons() {
     imageRotateRight = createImageRotateRight();
     imageRotateLeft = createImageRotateLeft();
+
+    imageMirrorUpDown = createImageMirrorUpDown();
+    imageMirrorLeftRight = createImageMirrorLeftRight();
+
     imageDelete = createImageDelete();
     imageSave = createImageSave();
     imageEditExif = createImageEditExif();
@@ -417,16 +455,11 @@ void ImageEditor::createButtons() {
 
     actionButtonLayout->addWidget(imageRotateRight);
     actionButtonLayout->addWidget(imageRotateLeft);
+    actionButtonLayout->addWidget(imageMirrorUpDown);
+    actionButtonLayout->addWidget(imageMirrorLeftRight);
     actionButtonLayout->addWidget(imageDelete);
     actionButtonLayout->addWidget(imageSave);
     actionButtonLayout->addWidget(imageEditExif);
-
-    // imageLabelLayout = new QHBoxLayout();
-    // imageLabel->setFixedSize((screenGeometry.width() * 4 / 6), (screenGeometry.height() * 4 / 6));
-    // imageLabelLayout->addWidget(imageLabel);
-    // imageLabel->setAlignment(Qt::AlignCenter);
-
-
 
     buttonImageBefore = createImageBefore();
     buttonImageNext = createImageNext();
@@ -467,6 +500,31 @@ void ImageEditor::updateButtons() {
 
         imageRotateLeft = imageRotateLeftNew;
     }
+    if (imageMirrorUpDown) {
+
+        ClickableLabel* imageMirrorUpDownNew = createImageMirrorUpDown();
+
+        actionButtonLayout->replaceWidget(imageMirrorUpDown, imageMirrorUpDownNew);
+
+        imageMirrorUpDown->hide();
+        imageMirrorUpDown->deleteLater();
+
+        imageMirrorUpDown = imageMirrorUpDownNew;
+    }
+
+    if (imageMirrorLeftRight) {
+
+        ClickableLabel* imageMirrorLeftRightNew = createImageMirrorLeftRight();
+
+        actionButtonLayout->replaceWidget(imageMirrorLeftRight, imageMirrorLeftRightNew);
+
+        imageMirrorLeftRight->hide();
+        imageMirrorLeftRight->deleteLater();
+
+        imageMirrorLeftRight = imageMirrorLeftRightNew;
+    }
+
+
     if (imageDelete) {
         ClickableLabel* imageDeleteNew = createImageDelete();
 
@@ -507,18 +565,9 @@ void ImageEditor::updateButtons() {
 
     }
 
-    // if (imageLabel) {
 
-    //     ClickableLabel* imageLabelNew = createImageLabel();
-
-    //     buttonLayout->replaceWidget(imageLabel, imageLabelNew);
-
-    //     imageLabel->hide();
-    //     imageLabel->deleteLater();
-
-    //     imageLabel = imageLabelNew;
-    // }
     restartImageLabel();
+
     if (buttonImageNext) {
         if (data.imagesData->getImageNumber() == data.imagesData->get().size() - 1) {
             buttonImageNext->setDisabled(true);
@@ -728,6 +777,58 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
 
     return imageRotateLeftNew;
 }
+
+ClickableLabel* ImageEditor::createImageMirrorUpDown() {
+
+    std::cerr << "createImageMirrorUpDown" << std::endl;
+
+    if (data.imagesData->get().size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ":/mirrorUpDown.png", this, actionSize);
+
+    if (!isMirrorable(data.imagesData->getCurrentImageData()->getImagePath())) {
+        imageMirrorUpDownNew->setDisabled(true);
+    }
+    else {
+        if (!imageMirrorUpDownNew->isEnabled())
+            imageMirrorUpDownNew->setEnabled(true);
+    }
+
+    connect(imageMirrorUpDownNew, &ClickableLabel::clicked, [this]() { this->mirrorUpDown(); });
+
+
+    return imageMirrorUpDownNew;
+}
+
+
+ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
+
+    if (data.imagesData->get().size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ":/mirrorLeftRight.png", this, actionSize);
+
+
+
+    if (!isMirrorable(data.imagesData->getCurrentImageData()->getImagePath())) {
+        imageMirrorLeftRightNew->setDisabled(true);
+        // std::cerr << "disabled" << std::endl;
+    }
+    else {
+        // std::cerr << "enabled" << std::endl;
+        if (!imageMirrorLeftRightNew->isEnabled())
+            imageMirrorLeftRightNew->setEnabled(true);
+    }
+
+    connect(imageMirrorLeftRightNew, &ClickableLabel::clicked, [this]() { this->mirrorLeftRight(); });
+
+    return imageMirrorLeftRightNew;
+}
+
+
 
 
 ClickableLabel* ImageEditor::createImageEditExif() {
@@ -1200,32 +1301,22 @@ void ImageEditor::checkCache() {
 }
 
 void ImageEditor::rotateLeft(){
-    std::string imagePath = data.imagesData->getCurrentImageData()->imagePath;
-    std::string extension = imagePath.substr(imagePath.find_last_of(".") + 1);
-    // std::cerr << "extension \n\n" << extension << std::endl;
-    if (extension == "jpg" || extension == "jpeg" || extension == "JPG" || extension == "JPEG"){
+    std::string extension = data.imagesData->getCurrentImageData()->getImageExtension();
+    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
         rotateLeftJpg();
     }
-    else if (extension == "png" || extension == "PNG"){
+    else if (extension == ".png" || extension == ".PNG"){
         rotateLeftPng();
-    }
-    else{
-        rotateLeftJpg();
     }
 
 }
 void ImageEditor::rotateRight(){
-    std::string imagePath = data.imagesData->getCurrentImageData()->imagePath;
-    std::string extension = imagePath.substr(imagePath.find_last_of(".") + 1);
-    // std::cerr << "extension \n\n" << extension << std::endl;
-    if (extension == "jpg" || extension == "jpeg" || extension == "JPG" || extension == "JPEG"){
+    std::string extension = data.imagesData->getCurrentImageData()->getImageExtension();
+    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
         rotateRightJpg();
     }
-    else if (extension == "png" || extension == "PNG"){
+    else if (extension == ".png" || extension == ".PNG"){
         rotateRightPng();
-    }
-    else{
-        rotateRightJpg();
     }
 }
 
@@ -1253,6 +1344,111 @@ void ImageEditor::rotateRightPng(){
     data.unloadFromCache(data.imagesData->getCurrentImageData()->imagePath);
     data.loadInCache(data.imagesData->getCurrentImageData()->imagePath);
     data.createAllThumbnail(data.imagesData->getCurrentImageData()->imagePath, 512);
+
+    reload();
+}
+
+void ImageEditor::mirrorUpDown(){
+    std::string extension = data.imagesData->getCurrentImageData()->getImageExtension();
+    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
+
+        mirrorUpDownJpg();
+    }
+}
+
+void ImageEditor::mirrorLeftRight(){
+    std::string extension = data.imagesData->getCurrentImageData()->getImageExtension();
+    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
+
+        mirrorLeftRightJpg();
+    }
+}
+
+void ImageEditor::mirrorUpDownJpg(){
+    ImagesData& imagesData = *data.imagesData;
+
+    ImageData* imageData = imagesData.getCurrentImageData();
+    if (!isTurnable(imageData->getImagePath())) {
+        return;
+    }
+
+    int orientation = imageData->getImageOrientation();
+
+    std::cerr << "orientation" << orientation << std::endl;
+    if (orientation == 1) {
+        orientation = 4;
+    }
+    else if (orientation == 3) {
+        orientation = 2;
+    }
+    else if (orientation == 6) {
+        orientation = 5;
+    }
+    else if (orientation == 8) {
+        orientation = 7;
+    }
+    else if (orientation == 2) {
+        orientation = 3;
+    }
+    else if (orientation == 4) {
+        orientation = 1;
+    }
+    else if (orientation == 5) {
+        orientation = 6;
+    }
+    else if (orientation == 7) {
+        orientation = 8;
+    }
+    std::cerr << "orientation" << orientation << std::endl;
+
+    imageData->turnImage(orientation);
+
+    imageData->saveMetaData();
+
+    data.mirrorImageCache(imageData->getImagePath(), true);
+
+    reload();
+}
+
+void ImageEditor::mirrorLeftRightJpg(){
+    ImagesData& imagesData = *data.imagesData;
+
+    ImageData* imageData = imagesData.getCurrentImageData();
+    if (!isTurnable(imageData->getImagePath())) {
+        return;
+    }
+
+    int orientation = imageData->getImageOrientation();
+    if (orientation == 1) {
+        orientation = 2;
+    }
+    else if (orientation == 3) {
+        orientation = 4;
+    }
+    else if (orientation == 6) {
+        orientation = 7;
+    }
+    else if (orientation == 8) {
+        orientation = 5;
+    }
+    else if (orientation == 2) {
+        orientation = 1;
+    }
+    else if (orientation == 4) {
+        orientation = 3;
+    }
+    else if (orientation == 5) {
+        orientation = 8;
+    }
+    else if (orientation == 7) {
+        orientation = 6;
+    }
+    imageData->turnImage(orientation);
+
+    imageData->saveMetaData();
+
+    data.mirrorImageCache(imageData->getImagePath(), false);
+
 
     reload();
 }

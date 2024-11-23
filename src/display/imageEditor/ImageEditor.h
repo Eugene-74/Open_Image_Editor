@@ -63,6 +63,12 @@ public:
     void rotateLeftPng();
     void rotateRightPng();
 
+    void mirrorUpDown();
+    void mirrorLeftRight();
+
+    void mirrorUpDownJpg();
+    void mirrorLeftRightJpg();
+
     void createPreview();
     void updatePreview();
 
@@ -76,6 +82,8 @@ public:
 
     ClickableLabel* createImageRotateRight();
     ClickableLabel* createImageRotateLeft();
+    ClickableLabel* createImageMirrorUpDown();
+    ClickableLabel* createImageMirrorLeftRight();
     ClickableLabel* createImageDelete();
     ClickableLabel* createImageSave();
     ClickableLabel* createImageEditExif();
@@ -139,6 +147,10 @@ private:
 
     ClickableLabel* imageRotateRight;
     ClickableLabel* imageRotateLeft;
+
+    ClickableLabel* imageMirrorUpDown;
+    ClickableLabel* imageMirrorLeftRight;
+
     ClickableLabel* imageDelete;
     ClickableLabel* imageSave;
     ClickableLabel* imageEditExif;

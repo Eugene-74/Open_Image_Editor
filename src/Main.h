@@ -10,6 +10,7 @@
 #include "structure/metaData/MetaData.h"
 #include "structure/imageData/ImageData.h"
 #include "structure/imagesData/ImagesData.h"
+#include "structure/data/Data.h"
 
 
 
@@ -44,6 +45,7 @@
 
 bool isImage(const std::string& cheminFichier);
 bool isTurnable(const std::string& cheminFichier);
+bool isMirrorable(const std::string& path);
 
 
 
