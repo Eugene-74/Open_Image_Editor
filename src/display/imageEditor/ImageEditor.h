@@ -53,8 +53,15 @@ public:
 
     void nextImage(int nbr = 1);
     void previousImage(int nbr = 1);
+
     void rotateLeft();
     void rotateRight();
+
+    void rotateLeftJpg();
+    void rotateRightJpg();
+
+    void rotateLeftPng();
+    void rotateRightPng();
 
     void createPreview();
     void updatePreview();

@@ -158,7 +158,7 @@ void ImageEditor::previousImage(int nbr) {
     reload();
 }
 
-void ImageEditor::rotateLeft() {
+void ImageEditor::rotateLeftJpg() {
 
     ImagesData* imagesData = data.imagesData;
 
@@ -186,11 +186,13 @@ void ImageEditor::rotateLeft() {
 
     data.rotateImageCache(imageData->getImagePath(), -90);
 
+
+
     reload();
 
 
 }
-void ImageEditor::rotateRight() {
+void ImageEditor::rotateRightJpg() {
 
     ImagesData& imagesData = *data.imagesData;
 
@@ -914,24 +916,49 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
             imageRotateLeft->updateStyleSheet();
             rotateLeft();
         }
+        else if (event->modifiers() & Qt::MetaModifier) {
+            imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
+            imageRotateLeft->updateStyleSheet();
+            data.imagesData->imageNumber = data.imagesData->get().size() - 1;
+            reload();
+        }
         else {
             buttonImageBefore->background_color = BACKGROUND_COLOR;
             buttonImageBefore->updateStyleSheet();
             previousImage();
         }
         break;
+    case Qt::Key_Home:
+        imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
+        imageRotateLeft->updateStyleSheet();
+        data.imagesData->imageNumber = 0;
+        reload();
+        break;
+
+
     case Qt::Key_Right:
         if (event->modifiers() & Qt::ControlModifier) {
             imageRotateRight->background_color = BACKGROUND_COLOR;
             imageRotateRight->updateStyleSheet();
             rotateRight();
-
+        }
+        else if (event->modifiers() & Qt::MetaModifier) {
+            imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
+            imageRotateLeft->updateStyleSheet();
+            data.imagesData->imageNumber = data.imagesData->get().size() - 1;
+            reload();
         }
         else {
             buttonImageNext->background_color = BACKGROUND_COLOR;
             buttonImageNext->updateStyleSheet();
             nextImage();
         }
+        break;
+    case Qt::Key_End:
+        imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
+        imageRotateLeft->updateStyleSheet();
+        data.imagesData->imageNumber = data.imagesData->get().size() - 1;
+        reload();
         break;
 
     case Qt::Key_S:
@@ -1170,4 +1197,62 @@ void ImageEditor::checkLoadedImage() {
 void ImageEditor::checkCache() {
     startImageOpenTimer();
     checkLoadedImage();
+}
+
+void ImageEditor::rotateLeft(){
+    std::string imagePath = data.imagesData->getCurrentImageData()->imagePath;
+    std::string extension = imagePath.substr(imagePath.find_last_of(".") + 1);
+    // std::cerr << "extension \n\n" << extension << std::endl;
+    if (extension == "jpg" || extension == "jpeg" || extension == "JPG" || extension == "JPEG"){
+        rotateLeftJpg();
+    }
+    else if (extension == "png" || extension == "PNG"){
+        rotateLeftPng();
+    }
+    else{
+        rotateLeftJpg();
+    }
+
+}
+void ImageEditor::rotateRight(){
+    std::string imagePath = data.imagesData->getCurrentImageData()->imagePath;
+    std::string extension = imagePath.substr(imagePath.find_last_of(".") + 1);
+    // std::cerr << "extension \n\n" << extension << std::endl;
+    if (extension == "jpg" || extension == "jpeg" || extension == "JPG" || extension == "JPEG"){
+        rotateRightJpg();
+    }
+    else if (extension == "png" || extension == "PNG"){
+        rotateRightPng();
+    }
+    else{
+        rotateRightJpg();
+    }
+}
+
+
+void ImageEditor::rotateLeftPng(){
+    QString outputPath = QString::fromStdString(data.imagesData->getCurrentImageData()->imagePath);
+    QImage image = data.loadImage(this, data.imagesData->getCurrentImageData()->imagePath, QSize(0, 0), false);
+    image = image.transformed(QTransform().rotate(-90));
+    if (!image.save(outputPath)) {
+        std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
+    }
+    data.unloadFromCache(data.imagesData->getCurrentImageData()->imagePath);
+    data.loadInCache(data.imagesData->getCurrentImageData()->imagePath);
+    data.createAllThumbnail(data.imagesData->getCurrentImageData()->imagePath, 512);
+    reload();
+
+}
+void ImageEditor::rotateRightPng(){
+    QString outputPath = QString::fromStdString(data.imagesData->getCurrentImageData()->imagePath);
+    QImage image = data.loadImage(this, data.imagesData->getCurrentImageData()->imagePath, QSize(0, 0), false);
+    image = image.transformed(QTransform().rotate(90));
+    if (!image.save(outputPath)) {
+        std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
+    }
+    data.unloadFromCache(data.imagesData->getCurrentImageData()->imagePath);
+    data.loadInCache(data.imagesData->getCurrentImageData()->imagePath);
+    data.createAllThumbnail(data.imagesData->getCurrentImageData()->imagePath, 512);
+
+    reload();
 }

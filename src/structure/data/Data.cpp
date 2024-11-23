@@ -218,9 +218,9 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
     return image;
 }
 
-bool Data::loadInCache(std::string imagePath, bool setSize, QSize size) {
+bool Data::loadInCache(std::string imagePath, bool setSize, QSize size, bool force) {
     QImage image;
-    if (isInCache(imagePath)){
+    if (force && isInCache(imagePath)){
         return true;
     }
     image.load(QString::fromStdString(imagePath));
@@ -397,13 +397,13 @@ void Data::createAllThumbnail(const std::string& imagePath, const int size) {
     std::vector<std::string> imagePaths;
 
     if (size > 128) {
-        createThumbnailIfNotExists(imagePath, 128);
+        createThumbnail(imagePath, 128);
     }
     if (size > 256) {
-        createThumbnailIfNotExists(imagePath, 256);
+        createThumbnail(imagePath, 256);
     }
     if (size > 512) {
-        createThumbnailIfNotExists(imagePath, 512);
+        createThumbnail(imagePath, 512);
     }
 }
 
