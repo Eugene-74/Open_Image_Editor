@@ -445,8 +445,8 @@ void ImageEditor::createButtons() {
     imageRotateRight = createImageRotateRight();
     imageRotateLeft = createImageRotateLeft();
 
-    imageMirrorUpDown = createImageMirrorUpDown();
     imageMirrorLeftRight = createImageMirrorLeftRight();
+    imageMirrorUpDown = createImageMirrorUpDown();
 
     imageDelete = createImageDelete();
     imageSave = createImageSave();
@@ -455,8 +455,8 @@ void ImageEditor::createButtons() {
 
     actionButtonLayout->addWidget(imageRotateRight);
     actionButtonLayout->addWidget(imageRotateLeft);
-    actionButtonLayout->addWidget(imageMirrorUpDown);
     actionButtonLayout->addWidget(imageMirrorLeftRight);
+    actionButtonLayout->addWidget(imageMirrorUpDown);
     actionButtonLayout->addWidget(imageDelete);
     actionButtonLayout->addWidget(imageSave);
     actionButtonLayout->addWidget(imageEditExif);
@@ -500,6 +500,17 @@ void ImageEditor::updateButtons() {
 
         imageRotateLeft = imageRotateLeftNew;
     }
+    if (imageMirrorLeftRight) {
+
+        ClickableLabel* imageMirrorLeftRightNew = createImageMirrorLeftRight();
+
+        actionButtonLayout->replaceWidget(imageMirrorLeftRight, imageMirrorLeftRightNew);
+
+        imageMirrorLeftRight->hide();
+        imageMirrorLeftRight->deleteLater();
+
+        imageMirrorLeftRight = imageMirrorLeftRightNew;
+    }
     if (imageMirrorUpDown) {
 
         ClickableLabel* imageMirrorUpDownNew = createImageMirrorUpDown();
@@ -512,17 +523,6 @@ void ImageEditor::updateButtons() {
         imageMirrorUpDown = imageMirrorUpDownNew;
     }
 
-    if (imageMirrorLeftRight) {
-
-        ClickableLabel* imageMirrorLeftRightNew = createImageMirrorLeftRight();
-
-        actionButtonLayout->replaceWidget(imageMirrorLeftRight, imageMirrorLeftRightNew);
-
-        imageMirrorLeftRight->hide();
-        imageMirrorLeftRight->deleteLater();
-
-        imageMirrorLeftRight = imageMirrorLeftRightNew;
-    }
 
 
     if (imageDelete) {
@@ -967,6 +967,11 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
             buttonImageBefore->updateStyleSheet();
         }
         break;
+    case Qt::Key_End:
+        imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
+        imageRotateLeft->updateStyleSheet();
+        break;
+
     case Qt::Key_Right:
         if (event->modifiers() & Qt::ControlModifier) {
             imageRotateRight->background_color = CLICK_BACKGROUND_COLOR;
@@ -975,6 +980,23 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
         else {
             buttonImageNext->background_color = CLICK_BACKGROUND_COLOR;
             buttonImageNext->updateStyleSheet();
+        }
+        break;
+    case Qt::Key_Home:
+        imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
+        imageRotateLeft->updateStyleSheet();
+        break;
+
+    case Qt::Key_Up:
+        if (event->modifiers() & Qt::ControlModifier) {
+            imageMirrorLeftRight->background_color = CLICK_BACKGROUND_COLOR;
+            imageMirrorLeftRight->updateStyleSheet();
+        }
+        break;
+    case Qt::Key_Down:
+        if (event->modifiers() & Qt::ControlModifier) {
+            imageMirrorUpDown->background_color = CLICK_BACKGROUND_COLOR;
+            imageMirrorUpDown->updateStyleSheet();
         }
         break;
 
@@ -1000,6 +1022,8 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
             imageDelete->updateStyleSheet();
         }
         break;
+
+
 
     default:
         QWidget::keyPressEvent(event); // Call base class implementation for other keys
@@ -1030,7 +1054,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
         }
         break;
     case Qt::Key_Home:
-        imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
+        imageRotateLeft->background_color = BACKGROUND_COLOR;
         imageRotateLeft->updateStyleSheet();
         data.imagesData->imageNumber = 0;
         reload();
@@ -1056,10 +1080,26 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
         }
         break;
     case Qt::Key_End:
-        imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
+        imageRotateLeft->background_color = BACKGROUND_COLOR;
         imageRotateLeft->updateStyleSheet();
         data.imagesData->imageNumber = data.imagesData->get().size() - 1;
         reload();
+        break;
+
+
+    case Qt::Key_Up:
+        if (event->modifiers() & Qt::ControlModifier) {
+            imageMirrorLeftRight->background_color = BACKGROUND_COLOR;
+            imageMirrorLeftRight->updateStyleSheet();
+            mirrorLeftRight();
+        }
+        break;
+    case Qt::Key_Down:
+        if (event->modifiers() & Qt::ControlModifier) {
+            imageMirrorUpDown->background_color = BACKGROUND_COLOR;
+            imageMirrorUpDown->updateStyleSheet();
+            mirrorUpDown();
+        }
         break;
 
     case Qt::Key_S:
