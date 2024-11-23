@@ -6,6 +6,8 @@
 
 #include "../folders/Folders.h"
 #include "../metaData/MetaData.h"
+#include <filesystem>
+namespace fs = std::filesystem;
 
 class ImageData
 {
@@ -48,6 +50,8 @@ public:
     bool operator==(const ImageData& other) const;
 
     std::string getImagePath();
+    std::string getImageExtension();
+
 
 
 

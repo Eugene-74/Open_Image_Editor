@@ -125,6 +125,20 @@ bool isTurnable(const std::string& path) {
     return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
 }
 
+bool isMirrorable(const std::string& path) {
+    // Liste des extensions d'images courantes
+    std::vector<std::string> extensionsImages = { ".jpg", ".jpeg" };
+
+    // Récupération de l'extension du fichier
+    std::string extension = fs::path(path).extension().string();
+
+    // Convertir l'extension en minuscule pour éviter les problèmes de casse
+    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+
+    // Vérifier si l'extension est dans la liste des extensions d'images
+    return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
+}
+
 // Charger les meta donnée contenue dans les images
 void loadImagesMetaData(ImagesData* imagesData) {
     for (int i = 0; i < imagesData->get().size(); ++i) {
