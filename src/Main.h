@@ -23,7 +23,6 @@
 #include "structure/folders/Folders.h"
 
 #include "functions/vector/Vector.h"
-#include "functions/thumbnail/Thumbnail.h"
 #include "display/imageEditor/ImageEditor.h"
 #include "display/initialWindow/InitialWindow.h"
 

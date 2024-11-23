@@ -7,7 +7,7 @@
         <file>delete.png</file>
         <file>save.png</file>
         <file>editExif.png</file>
-
-
+        <file>mirror up down.png</file> 
+        <file>mirror left right.png</file>
     </qresource>
 </RCC>

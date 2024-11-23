@@ -75,7 +75,7 @@ bool Data::isDeleted(int imageNbr) {
 }
 
 
-QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail) {
+QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail, bool rotation) {
 
     std::cerr << "loadImage" << imagePath << ":" << thumbnail << std::endl;
 
@@ -161,7 +161,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
         if (setSize) {
             image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         }
-        if (imagePathbis == imagePath){
+        if (rotation){
             ImageData* imageData = imagesData->getImageData(imagePath);
             if (imageData != nullptr){
                 std::cerr << "imageData" << std::endl;
@@ -173,7 +173,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
                     std::cerr << "not empty" << std::endl;
                     if (exifData["Exif.Image.Orientation"].count() != 0) {
                         int orientation = exifData["Exif.Image.Orientation"].toInt64();
-                        std::cerr << "orientation : " << orientation << " :: " << imagePathbis << std::endl;
+                        // std::cerr << "orientation : " << orientation << " :: " << imagePathbis << std::endl;
                         switch (orientation) {
                         case 1:
                             // No transformation needed
@@ -231,7 +231,6 @@ bool Data::loadInCache(std::string imagePath, bool setSize, QSize size) {
     if (setSize) {
         image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
-    // if (imagePathbis == imagePath){
     ImageData* imageData = imagesData->getImageData(imagePath);
     if (imageData != nullptr){
         Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
@@ -242,32 +241,31 @@ bool Data::loadInCache(std::string imagePath, bool setSize, QSize size) {
                 int orientation = exifData["Exif.Image.Orientation"].toInt64();
                 std::cerr << "orientation : " << orientation << " :: " << imagePath << std::endl;
                 switch (orientation) {
-                    // case 1:
-                    //     // No transformation needed
-                    //     break;
-                    // case 2:
-                    //     image = image.mirrored(true, false); // Horizontal mirror
-                    //     break;
+                case 1:
+                    // No transformation needed
+                    break;
+                case 2:
+                    image = image.mirrored(true, false); // Horizontal mirror
+                    break;
                 case 3:
                     image = image.transformed(QTransform().rotate(180));
                     break;
-                    // case 4:
-                    //     image = image.mirrored(false, true); // Vertical mirror
-                    //     break;
-                    // case 5:
-                    //     image = image.mirrored(true, false).transformed(QTransform().rotate(90)); // Horizontal mirror + 90 degrees
-                    //     break;
+                case 4:
+                    image = image.mirrored(false, true); // Vertical mirror
+                    break;
+                case 5:
+                    image = image.mirrored(true, false).transformed(QTransform().rotate(90)); // Horizontal mirror + 90 degrees
+                    break;
                 case 6:
                     image = image.transformed(QTransform().rotate(90));
                     break;
-                    // case 7:
-                    //     image = image.mirrored(true, false).transformed(QTransform().rotate(-90)); // Horizontal mirror + -90 degrees
-                    //     break;
+                case 7:
+                    image = image.mirrored(true, false).transformed(QTransform().rotate(-90)); // Horizontal mirror + -90 degrees
+                    break;
                 case 8:
                     image = image.transformed(QTransform().rotate(-90));
                     break;
                 default:
-                    // Unknown orientation, no transformation
                     break;
                 }
             }
@@ -318,7 +316,7 @@ void Data::createThumbnails(const std::vector<std::string>& imagePaths, const in
 }
 
 void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
-    QImage image = loadImage(nullptr, imagePath, QSize(maxDim, maxDim), false);
+    QImage image = loadImage(nullptr, imagePath, QSize(maxDim, maxDim), false, 0, false);
 
 
     // Calculate the scaling factor to maintain aspect ratio
