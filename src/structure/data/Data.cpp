@@ -77,7 +77,7 @@ bool Data::isDeleted(int imageNbr) {
 
 QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail, bool rotation) {
 
-    std::cerr << "loadImage" << imagePath << ":" << thumbnail << std::endl;
+    // std::cerr << "loadImage" << imagePath << ":" << thumbnail << std::endl;
 
     // Check if the image is in the imageCache
     auto it = imageCache->find(imagePath);
@@ -119,7 +119,6 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
     else{
         if (thumbnail == 128){
             if (hasThumbnail(imagePath, 128)){
-                std::cerr << "hasThumbnail" << std::endl;
                 imagePathbis = getThumbnailPath(imagePath, 128);
             }
             else{
@@ -164,13 +163,13 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
         if (rotation){
             ImageData* imageData = imagesData->getImageData(imagePath);
             if (imageData != nullptr){
-                std::cerr << "imageData" << std::endl;
+                // std::cerr << "imageData" << std::endl;
                 Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
                 if (exifData.empty()) {
-                    std::cerr << "empty" << std::endl;
+                    // std::cerr << "empty" << std::endl;
                 }
                 else {
-                    std::cerr << "not empty" << std::endl;
+                    // std::cerr << "not empty" << std::endl;
                     if (exifData["Exif.Image.Orientation"].count() != 0) {
                         int orientation = exifData["Exif.Image.Orientation"].toInt64();
                         // std::cerr << "orientation : " << orientation << " :: " << imagePathbis << std::endl;
@@ -239,7 +238,6 @@ bool Data::loadInCache(std::string imagePath, bool setSize, QSize size, bool for
         else {
             if (exifData["Exif.Image.Orientation"].count() != 0) {
                 int orientation = exifData["Exif.Image.Orientation"].toInt64();
-                std::cerr << "orientation : " << orientation << " :: " << imagePath << std::endl;
                 switch (orientation) {
                 case 1:
                     // No transformation needed

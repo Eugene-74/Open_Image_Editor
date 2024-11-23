@@ -780,8 +780,6 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
 
 ClickableLabel* ImageEditor::createImageMirrorUpDown() {
 
-    std::cerr << "createImageMirrorUpDown" << std::endl;
-
     if (data.imagesData->get().size() <= 0) {
         return nullptr;
     }
@@ -1008,6 +1006,8 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
     }
 }
 
+
+
 void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
     switch (event->key()) {
 
@@ -1094,6 +1094,25 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
 }
 
 
+void ImageEditor::wheelEvent(QWheelEvent* event) {
+    int numDegrees = event->angleDelta().y() / 8;
+    int numSteps = numDegrees / 15;
+
+    if (numSteps > 0) {
+        buttonImageBefore->background_color = BACKGROUND_COLOR;
+        buttonImageBefore->updateStyleSheet();
+        previousImage(numSteps);
+    }
+    else if (numSteps < 0) {
+        buttonImageNext->background_color = BACKGROUND_COLOR;
+        buttonImageNext->updateStyleSheet();
+        nextImage(-numSteps);
+    }
+}
+
+
+
+
 void ImageEditor::saveImage() {
     data.removeDeletedImages();
     if (data.imagesData->get().size() <= 0) {
@@ -1173,20 +1192,12 @@ void ImageEditor::startImageOpenTimer() {
     if (imageOpenTimer) {
         imageOpenTimer->disconnect();
         imageOpenTimer->stop();
-        // imageOpenTimer->deleteLater();
     }
-    // imageOpenTimer = new QTimer(this);
 
-    // Connectez le signal timeout() à une lambda ou un slot
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
         data.loadInCache(data.imagesData->getCurrentImageData()->getImagePath());
-        std::cerr << "load fin de timer" << std::endl;
         restartImageLabel();
-        // updatePreview();
-        // Arrêtez et supprimez le imageOpenTimer
         imageOpenTimer->stop();
-        // imageOpenTimer->deleteLater();
-        // imageOpenTimer = nullptr;
         });
 
     imageOpenTimer->setInterval(TIME_BEFORE_FULL_QUALITY);

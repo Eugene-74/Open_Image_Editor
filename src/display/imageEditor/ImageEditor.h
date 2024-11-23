@@ -111,6 +111,7 @@ public:
 protected:
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
 
 private:
     bool exifEditor = false;
