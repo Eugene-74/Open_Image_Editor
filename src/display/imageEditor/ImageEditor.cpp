@@ -1402,16 +1402,21 @@ void ImageEditor::rotateRightPng(){
 void ImageEditor::mirrorUpDown(){
     std::string extension = data.imagesData->getCurrentImageData()->getImageExtension();
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
-
         mirrorUpDownJpg();
+    }
+    else if (extension == ".png" || extension == ".PNG"){
+        mirrorUpDownPng();
     }
 }
 
 void ImageEditor::mirrorLeftRight(){
     std::string extension = data.imagesData->getCurrentImageData()->getImageExtension();
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
-
         mirrorLeftRightJpg();
+    }
+    else if (extension == ".png" || extension == ".PNG"){
+        mirrorLeftRightPng();
+
     }
 }
 
@@ -1500,6 +1505,33 @@ void ImageEditor::mirrorLeftRightJpg(){
 
     data.mirrorImageCache(imageData->getImagePath(), false);
 
+
+    reload();
+}
+
+void ImageEditor::mirrorLeftRightPng(){
+    QString outputPath = QString::fromStdString(data.imagesData->getCurrentImageData()->imagePath);
+    QImage image = data.loadImage(this, data.imagesData->getCurrentImageData()->imagePath, QSize(0, 0), false);
+    image = image.mirrored(true, false);
+    if (!image.save(outputPath)) {
+        std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
+    }
+    data.unloadFromCache(data.imagesData->getCurrentImageData()->imagePath);
+    data.loadInCache(data.imagesData->getCurrentImageData()->imagePath);
+    data.createAllThumbnail(data.imagesData->getCurrentImageData()->imagePath, 512);
+    reload();
+
+}
+void ImageEditor::mirrorUpDownPng(){
+    QString outputPath = QString::fromStdString(data.imagesData->getCurrentImageData()->imagePath);
+    QImage image = data.loadImage(this, data.imagesData->getCurrentImageData()->imagePath, QSize(0, 0), false);
+    image = image.mirrored(false, true);
+    if (!image.save(outputPath)) {
+        std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
+    }
+    data.unloadFromCache(data.imagesData->getCurrentImageData()->imagePath);
+    data.loadInCache(data.imagesData->getCurrentImageData()->imagePath);
+    data.createAllThumbnail(data.imagesData->getCurrentImageData()->imagePath, 512);
 
     reload();
 }

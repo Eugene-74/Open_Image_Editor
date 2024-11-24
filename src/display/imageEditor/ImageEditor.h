@@ -69,6 +69,9 @@ public:
     void mirrorUpDownJpg();
     void mirrorLeftRightJpg();
 
+    void mirrorUpDownPng();
+    void mirrorLeftRightPng();
+
     void createPreview();
     void updatePreview();
 

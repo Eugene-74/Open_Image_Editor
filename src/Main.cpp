@@ -127,7 +127,7 @@ bool isTurnable(const std::string& path) {
 
 bool isMirrorable(const std::string& path) {
     // Liste des extensions d'images courantes
-    std::vector<std::string> extensionsImages = { ".jpg", ".jpeg" };
+    std::vector<std::string> extensionsImages = { ".jpg", ".jpeg",".png" };
 
     // Récupération de l'extension du fichier
     std::string extension = fs::path(path).extension().string();
