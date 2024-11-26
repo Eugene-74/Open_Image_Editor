@@ -5,30 +5,30 @@ namespace fs = std::filesystem;  // Alias pour simplifier le code
 
 void Data::preDeleteImage(int imageNbr) {
     ImageData* imageData;
-    imageData = imagesData->getImageData(imageNbr);
+    imageData = imagesData.getImageData(imageNbr);
 
-    deletedImagesData->addImage(*imageData);
-    std::cerr << "image deleted" << imageNbr << std::endl;
-    deletedImagesData->print();
+    deletedImagesData.addImage(*imageData);
+    std::cerr << "image deleted : " << imageNbr << std::endl;
+    deletedImagesData.print();
 
 }
 void Data::unPreDeleteImage(int imageNbr) {
     ImageData* imageData;
-    imageData = imagesData->getImageData(imageNbr);
+    imageData = imagesData.getImageData(imageNbr);
 
 
-    deletedImagesData->removeImage(*imageData);
+    deletedImagesData.removeImage(*imageData);
 
 }
 
 void Data::revocerDeletedImage(ImageData& imageData) {
-    imagesData->addImage(imageData);
-    deletedImagesData->removeImage(imageData);
+    imagesData.addImage(imageData);
+    deletedImagesData.removeImage(imageData);
 }
 
 void Data::revocerDeletedImage(int imageNbr) {
     ImageData* imageData;
-    imageData = deletedImagesData->getImageData(imageNbr);
+    imageData = deletedImagesData.getImageData(imageNbr);
     revocerDeletedImage(*imageData);
 
     // imagesData.addImage(*imageData);
@@ -39,14 +39,14 @@ void Data::revocerDeletedImage(int imageNbr) {
 // Supprime de imagesData les images dans deletedImagesData
 void Data::removeDeletedImages() {
 
-    for (const auto& deletedImage : deletedImagesData->get()) {
+    for (const auto& deletedImage : deletedImagesData.get()) {
 
         // Find the image in imagesData
-        auto it = std::find(imagesData->get().begin(), imagesData->get().end(), deletedImage);
+        auto it = std::find(imagesData.get().begin(), imagesData.get().end(), deletedImage);
         // If it exists, remove it from imagesData
-        if (it != imagesData->get().end()) {
+        if (it != imagesData.get().end()) {
             // imagesData.removeImage(*imagesData.getImageData(it));
-            imagesData->get().erase(it);
+            imagesData.get().erase(it);
             deletedImage.print();
         }
 
@@ -61,15 +61,19 @@ void Data::removeDeletedImages() {
 bool Data::isDeleted(int imageNbr) {
 
     // Find the image in deletedImagesData
-    auto it = std::find_if(deletedImagesData->get().begin(), deletedImagesData->get().end(),
+
+    std::cerr << "start isDeleted" << std::endl;
+    auto it = std::find_if(deletedImagesData.get().begin(), deletedImagesData.get().end(),
         [imageNbr, this](const ImageData& img) {
-            return img == *imagesData->getImageData(imageNbr);
+            return img == *imagesData.getImageData(imageNbr);
         });
 
-    if (it != deletedImagesData->get().end()) {
-        imagesData->getImageData(imageNbr)->print();
+    if (it != deletedImagesData.get().end()) {
+        // imagesData.getImageData(imageNbr)->print();
+        std::cerr << "end isDeleted TRUE" << std::endl;
         return true;
     }
+    std::cerr << "end isDeleted FALSE" << std::endl;
 
     return false;
 }
@@ -161,7 +165,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
             image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         }
         if (rotation){
-            ImageData* imageData = imagesData->getImageData(imagePath);
+            ImageData* imageData = imagesData.getImageData(imagePath);
             if (imageData != nullptr){
                 // std::cerr << "imageData" << std::endl;
                 Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
@@ -230,7 +234,7 @@ bool Data::loadInCache(std::string imagePath, bool setSize, QSize size, bool for
     if (setSize) {
         image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
-    ImageData* imageData = imagesData->getImageData(imagePath);
+    ImageData* imageData = imagesData.getImageData(imagePath);
     if (imageData != nullptr){
         Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
         if (exifData.empty()) {

@@ -24,8 +24,8 @@ public:
 class Data
 {
 public:
-    ImagesData* imagesData;
-    ImagesData* deletedImagesData;
+    ImagesData imagesData;
+    ImagesData deletedImagesData;
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
 
     void preDeleteImage(int imageNbr);

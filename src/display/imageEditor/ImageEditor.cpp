@@ -4,7 +4,7 @@
 
 
 
-ImageEditor::ImageEditor(Data dat, QWidget* parent) : QMainWindow(parent), data(dat) {
+ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data(dat) {
     const QList<QScreen*> screens = QGuiApplication::screens();
 
 
@@ -149,12 +149,12 @@ ImageEditor::ImageEditor(Data dat, QWidget* parent) : QMainWindow(parent), data(
 }
 
 void ImageEditor::nextImage(int nbr) {
-    data.imagesData->setImageNumber(data.imagesData->getImageNumber() + nbr);
+    data->imagesData.setImageNumber(data->imagesData.getImageNumber() + nbr);
     reload();
 }
 
 void ImageEditor::previousImage(int nbr) {
-    data.imagesData->setImageNumber(data.imagesData->getImageNumber() - nbr);
+    data->imagesData.setImageNumber(data->imagesData.getImageNumber() - nbr);
     reload();
 }
 
@@ -162,7 +162,7 @@ void ImageEditor::rotateLeftJpg() {
 
     std::cerr << "rotateLeftJpg" << std::endl;
 
-    ImagesData* imagesData = data.imagesData;
+    ImagesData* imagesData = &data->imagesData;
 
     ImageData* imageData = imagesData->getCurrentImageData();
     if (!isTurnable(imageData->getImagePath())) {
@@ -202,7 +202,7 @@ void ImageEditor::rotateLeftJpg() {
 
     imageData->saveMetaData();
 
-    data.rotateImageCache(imageData->getImagePath(), -90);
+    data->rotateImageCache(imageData->getImagePath(), -90);
 
 
 
@@ -212,9 +212,9 @@ void ImageEditor::rotateLeftJpg() {
 }
 void ImageEditor::rotateRightJpg() {
 
-    ImagesData& imagesData = *data.imagesData;
+    ImagesData* imagesData = &data->imagesData;
 
-    ImageData* imageData = imagesData.getCurrentImageData();
+    ImageData* imageData = imagesData->getCurrentImageData();
     if (!isTurnable(imageData->getImagePath())) {
         return;
     }
@@ -253,14 +253,14 @@ void ImageEditor::rotateRightJpg() {
 
     imageData->saveMetaData();
 
-    data.rotateImageCache(imageData->getImagePath(), 90);
+    data->rotateImageCache(imageData->getImagePath(), 90);
 
 
     reload();
 }
 
 void ImageEditor::reload() {
-    ImagesData* imagesData = data.imagesData;
+    ImagesData* imagesData = &data->imagesData;
 
     updateButtons();
     updatePreview();
@@ -300,7 +300,7 @@ void ImageEditor::reload() {
 void ImageEditor::createPreview() {
 
 
-    ImagesData* imagesData = data.imagesData;
+    ImagesData* imagesData = &data->imagesData;
 
     if (imagesData->get().size() <= 0) {
         return;
@@ -370,7 +370,7 @@ void ImageEditor::createPreview() {
 
 
 void ImageEditor::updatePreview() {
-    ImagesData* imagesData = data.imagesData;
+    ImagesData* imagesData = &data->imagesData;
 
     if (imagesData->get().size() <= 0) {
         return;
@@ -474,7 +474,7 @@ void ImageEditor::createButtons() {
 
 
 void ImageEditor::updateButtons() {
-    if (data.imagesData->get().size() <= 0) {
+    if (data->imagesData.get().size() <= 0) {
         return;
     }
 
@@ -559,7 +559,7 @@ void ImageEditor::updateButtons() {
         }
     }
     if (buttonImageBefore) {
-        if (data.imagesData->getImageNumber() == 0) {
+        if (data->imagesData.getImageNumber() == 0) {
             buttonImageBefore->setDisabled(true);
         }
 
@@ -569,19 +569,19 @@ void ImageEditor::updateButtons() {
     restartImageLabel();
 
     if (buttonImageNext) {
-        if (data.imagesData->getImageNumber() == data.imagesData->get().size() - 1) {
+        if (data->imagesData.getImageNumber() == data->imagesData.get().size() - 1) {
             buttonImageNext->setDisabled(true);
         }
 
     }
 
 
-    if (data.imagesData->getImageNumber() != 0) {
+    if (data->imagesData.getImageNumber() != 0) {
         if (!buttonImageBefore->isEnabled())
             buttonImageBefore->setEnabled(true);
     }
 
-    if (data.imagesData->getImageNumber() != data.imagesData->get().size() - 1) {
+    if (data->imagesData.getImageNumber() != data->imagesData.get().size() - 1) {
         if (!buttonImageNext->isEnabled())
             buttonImageNext->setEnabled(true);
     }
@@ -692,15 +692,51 @@ void ImageEditor::clear() {
  *
  * @return A pointer to the created ClickableLabel object.
  */
+ // ClickableLabel* ImageEditor::createImageDelete() {
+
+ //     if (data->imagesData.get().size() <= 0) {
+ //         return nullptr;
+ //     }
+
+ //     ClickableLabel* imageDelete = new ClickableLabel(data, ":/delete.png", this, actionSize);
+
+ //     if (data->isDeleted(data->imagesData.getImageNumber())) {
+
+ //         imageDelete->background_color = "#700c13";
+ //         imageDelete->updateStyleSheet();
+ //         connect(imageDelete, &ClickableLabel::clicked, [this, imageDelete]() { this->
+ //             // unDeleteImage();
+ //             data->unPreDeleteImage(data->imagesData.getImageNumber());
+ //         // updateButtons();
+
+ //         std::cerr << "undelete" << std::endl;
+ //             });
+ //     }
+ //     else {
+ //         connect(imageDelete, &ClickableLabel::clicked, [this, imageDelete] { this->
+ //             // deleteImage();
+
+ //             data->preDeleteImage(data->imagesData.getImageNumber());
+ //         std::cerr << "update" << std::endl;
+ //         // elle se rappel elle meme mais pas dans son etat actuel je crois
+ //         // updateButtons();
+ //         std::cerr << "delete" << std::endl;
+ //             });
+
+ //     }
+ //     data->deletedImagesData.print();
+
+ //     return imageDelete;
+ // }
 ClickableLabel* ImageEditor::createImageDelete() {
 
-    if (data.imagesData->get().size() <= 0) {
+    if (data->imagesData.get().size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* imageDelete = new ClickableLabel(data, ":/delete.png", this, actionSize);
 
-    if (data.isDeleted(data.imagesData->getImageNumber())) {
+    if (data->isDeleted(data->imagesData.getImageNumber())) {
 
         imageDelete->background_color = "#700c13";
         imageDelete->updateStyleSheet();
@@ -717,10 +753,9 @@ ClickableLabel* ImageEditor::createImageDelete() {
     return imageDelete;
 }
 
-
 ClickableLabel* ImageEditor::createImageSave() {
 
-    if (data.imagesData->get().size() <= 0) {
+    if (data->imagesData.get().size() <= 0) {
         return nullptr;
     }
 
@@ -736,13 +771,13 @@ ClickableLabel* ImageEditor::createImageSave() {
 
 ClickableLabel* ImageEditor::createImageRotateRight() {
 
-    if (data.imagesData->get().size() <= 0) {
+    if (data->imagesData.get().size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ":/rotateRight.png", this, actionSize);
 
-    if (!isTurnable(data.imagesData->getCurrentImageData()->getImagePath())) {
+    if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageRotateRightNew->setDisabled(true);
     }
     else {
@@ -759,13 +794,13 @@ ClickableLabel* ImageEditor::createImageRotateRight() {
 
 ClickableLabel* ImageEditor::createImageRotateLeft() {
 
-    if (data.imagesData->get().size() <= 0) {
+    if (data->imagesData.get().size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ":/rotateLeft.png", this, actionSize);
 
-    if (!isTurnable(data.imagesData->getCurrentImageData()->getImagePath())) {
+    if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageRotateLeftNew->setDisabled(true);
     }
     else {
@@ -780,13 +815,13 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
 
 ClickableLabel* ImageEditor::createImageMirrorUpDown() {
 
-    if (data.imagesData->get().size() <= 0) {
+    if (data->imagesData.get().size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ":/mirrorUpDown.png", this, actionSize);
 
-    if (!isMirrorable(data.imagesData->getCurrentImageData()->getImagePath())) {
+    if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageMirrorUpDownNew->setDisabled(true);
     }
     else {
@@ -803,7 +838,7 @@ ClickableLabel* ImageEditor::createImageMirrorUpDown() {
 
 ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
 
-    if (data.imagesData->get().size() <= 0) {
+    if (data->imagesData.get().size() <= 0) {
         return nullptr;
     }
 
@@ -811,7 +846,7 @@ ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
 
 
 
-    if (!isMirrorable(data.imagesData->getCurrentImageData()->getImagePath())) {
+    if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageMirrorLeftRightNew->setDisabled(true);
         // std::cerr << "disabled" << std::endl;
     }
@@ -830,7 +865,7 @@ ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
 
 
 ClickableLabel* ImageEditor::createImageEditExif() {
-    if (data.imagesData->get().size() <= 0) {
+    if (data->imagesData.get().size() <= 0) {
         return nullptr;
     }
 
@@ -859,7 +894,7 @@ ClickableLabel* ImageEditor::createImageEditExif() {
 
 ClickableLabel* ImageEditor::createImageBefore() {
 
-    if (data.imagesData->get().size() <= 0) {
+    if (data->imagesData.get().size() <= 0) {
         return nullptr;
     }
 
@@ -871,7 +906,7 @@ ClickableLabel* ImageEditor::createImageBefore() {
 
     buttonImageBeforeNew->setFixedSize(actionSize);
 
-    if (data.imagesData->getImageNumber() == 0) {
+    if (data->imagesData.getImageNumber() == 0) {
         buttonImageBeforeNew->setDisabled(true);
     }
 
@@ -884,13 +919,13 @@ ClickableLabel* ImageEditor::createImageBefore() {
 
 ClickableLabel* ImageEditor::createImageNext() {
 
-    if (data.imagesData->get().size() <= 0) {
+    if (data->imagesData.get().size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* buttonImageNextNew = new ClickableLabel(data, ":/next.png", this, actionSize);
 
-    if (data.imagesData->getImageNumber() == data.imagesData->get().size() - 1) {
+    if (data->imagesData.getImageNumber() == data->imagesData.get().size() - 1) {
         buttonImageNextNew->setDisabled(true);
     }
 
@@ -904,7 +939,7 @@ ClickableLabel* ImageEditor::createImageNext() {
 
 ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int imageNbr) {
 
-    if (data.imagesData->get().size() <= 0) {
+    if (data->imagesData.get().size() <= 0) {
         return nullptr;
     }
 
@@ -912,8 +947,8 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
 
 
     connect(previewButton, &ClickableLabel::clicked, [this, imageNbr]() {
-        data.imagesData->setImageNumber(imageNbr);
-        // setImage(data.imagesData->getImageData(data.imagesData->getImageNumber()));
+        data->imagesData.setImageNumber(imageNbr);
+        // setImage(data.imagesData->getImageData(data->imagesData.getImageNumber()));
         reload();
         });
 
@@ -925,11 +960,11 @@ ClickableLabel* ImageEditor::createImageLabel() {
 
     checkCache();
 
-    if (data.imagesData->get().size() <= 0) {
+    if (data->imagesData.get().size() <= 0) {
         return nullptr;
     }
 
-    ClickableLabel* imageLabelNew = new ClickableLabel(data, QString::fromStdString(data.imagesData->getCurrentImageData()->getImagePath()), this, mainImageSize, false);
+    ClickableLabel* imageLabelNew = new ClickableLabel(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, mainImageSize, false);
     connect(imageLabelNew, &ClickableLabel::clicked, [this]() {
         // TODO zoom to be added
         });
@@ -1044,7 +1079,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
         else if (event->modifiers() & Qt::MetaModifier) {
             imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
             imageRotateLeft->updateStyleSheet();
-            data.imagesData->imageNumber = data.imagesData->get().size() - 1;
+            data->imagesData.imageNumber = data->imagesData.get().size() - 1;
             reload();
         }
         else {
@@ -1056,7 +1091,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
     case Qt::Key_Home:
         imageRotateLeft->background_color = BACKGROUND_COLOR;
         imageRotateLeft->updateStyleSheet();
-        data.imagesData->imageNumber = 0;
+        data->imagesData.imageNumber = 0;
         reload();
         break;
 
@@ -1070,7 +1105,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
         else if (event->modifiers() & Qt::MetaModifier) {
             imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
             imageRotateLeft->updateStyleSheet();
-            data.imagesData->imageNumber = data.imagesData->get().size() - 1;
+            data->imagesData.imageNumber = data->imagesData.get().size() - 1;
             reload();
         }
         else {
@@ -1082,7 +1117,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
     case Qt::Key_End:
         imageRotateLeft->background_color = BACKGROUND_COLOR;
         imageRotateLeft->updateStyleSheet();
-        data.imagesData->imageNumber = data.imagesData->get().size() - 1;
+        data->imagesData.imageNumber = data->imagesData.get().size() - 1;
         reload();
         break;
 
@@ -1154,33 +1189,31 @@ void ImageEditor::wheelEvent(QWheelEvent* event) {
 
 
 void ImageEditor::saveImage() {
-    data.removeDeletedImages();
-    if (data.imagesData->get().size() <= 0) {
+    data->removeDeletedImages();
+    if (data->imagesData.get().size() <= 0) {
         clear();
     }
-    data.imagesData->saveImagesData(IMAGESDATA_SAVE_DAT_PATH);
+    data->imagesData.saveImagesData(IMAGESDATA_SAVE_DAT_PATH);
 
-    data.imagesData->setImageNumber(0);
+    data->imagesData.setImageNumber(0);
     reload();
 }
 
 
 void ImageEditor::deleteImage() {
-    if (data.isDeleted(data.imagesData->getImageNumber())) {
+    // if (data->isDeleted(data->imagesData.getImageNumber())) {
 
-        data.unPreDeleteImage(data.imagesData->getImageNumber());
-        updateButtons();
-    }
-    else {
-        data.preDeleteImage(data.imagesData->getImageNumber());
-        updateButtons();
 
-    }
+    // }
+    // else {
+
+
+    // }
 }
 
 
 void ImageEditor::populateMetadataFields() {
-    ImagesData* imagesData = data.imagesData;
+    ImagesData* imagesData = &data->imagesData;
     ImageData* imageData = imagesData->getCurrentImageData();
     Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
 
@@ -1209,7 +1242,7 @@ void ImageEditor::populateMetadataFields() {
 
 
 void ImageEditor::validateMetadata() {
-    ImagesData* imagesData = data.imagesData;
+    ImagesData* imagesData = &data->imagesData;
     ImageData* imageData = imagesData->getCurrentImageData();
     MetaData* metaData = imageData->getMetaData();
 
@@ -1235,7 +1268,7 @@ void ImageEditor::startImageOpenTimer() {
     }
 
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
-        data.loadInCache(data.imagesData->getCurrentImageData()->getImagePath());
+        data->loadInCache(data->imagesData.getCurrentImageData()->getImagePath());
         restartImageLabel();
         imageOpenTimer->stop();
         });
@@ -1257,29 +1290,29 @@ void ImageEditor::startImageOpenTimer() {
         connect(imagePreviewOpenTimers[i], &QTimer::timeout, this, [this, i]() {
 
             int done = 0;
-            if (data.imagesData->getImageNumber() - (i + 1) < data.imagesData->get().size()
-                && data.imagesData->getImageNumber() - (i + 1) >= 0) {
-                if (!data.isInCache(data.imagesData->getImageData(data.imagesData->getImageNumber() - (i + 1))->getImagePath())){
-                    data.loadInCache(data.imagesData->getImageData(data.imagesData->getImageNumber() - (i + 1))->getImagePath());
+            if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.get().size()
+                && data->imagesData.getImageNumber() - (i + 1) >= 0) {
+                if (!data->isInCache(data->imagesData.getImageData(data->imagesData.getImageNumber() - (i + 1))->getImagePath())){
+                    data->loadInCache(data->imagesData.getImageData(data->imagesData.getImageNumber() - (i + 1))->getImagePath());
                     done += 1;
 
 
-                    data.unloadFromCache(data.getThumbnailPath(data.imagesData->getImageData(data.imagesData->getImageNumber() - (i + 1))->getImagePath(), 128));
-                    data.unloadFromCache(data.getThumbnailPath(data.imagesData->getImageData(data.imagesData->getImageNumber() - (i + 1))->getImagePath(), 256));
-                    data.unloadFromCache(data.getThumbnailPath(data.imagesData->getImageData(data.imagesData->getImageNumber() - (i + 1))->getImagePath(), 512));
+                    data->unloadFromCache(data->getThumbnailPath(data->imagesData.getImageData(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), 128));
+                    data->unloadFromCache(data->getThumbnailPath(data->imagesData.getImageData(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), 256));
+                    data->unloadFromCache(data->getThumbnailPath(data->imagesData.getImageData(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), 512));
 
                 }
             }
 
-            if (data.imagesData->getImageNumber() + (i + 1) < data.imagesData->get().size()
-                && data.imagesData->getImageNumber() + (i + 1) >= 0){
-                if (!data.isInCache(data.imagesData->getImageData(data.imagesData->getImageNumber() + (i + 1))->getImagePath())){
-                    data.loadInCache(data.imagesData->getImageData(data.imagesData->getImageNumber() + (i + 1))->getImagePath());
+            if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.get().size()
+                && data->imagesData.getImageNumber() + (i + 1) >= 0){
+                if (!data->isInCache(data->imagesData.getImageData(data->imagesData.getImageNumber() + (i + 1))->getImagePath())){
+                    data->loadInCache(data->imagesData.getImageData(data->imagesData.getImageNumber() + (i + 1))->getImagePath());
                     done += 1;
 
-                    data.unloadFromCache(data.getThumbnailPath(data.imagesData->getImageData(data.imagesData->getImageNumber() + (i + 1))->getImagePath(), 128));
-                    data.unloadFromCache(data.getThumbnailPath(data.imagesData->getImageData(data.imagesData->getImageNumber() + (i + 1))->getImagePath(), 256));
-                    data.unloadFromCache(data.getThumbnailPath(data.imagesData->getImageData(data.imagesData->getImageNumber() + (i + 1))->getImagePath(), 512));
+                    data->unloadFromCache(data->getThumbnailPath(data->imagesData.getImageData(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), 128));
+                    data->unloadFromCache(data->getThumbnailPath(data->imagesData.getImageData(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), 256));
+                    data->unloadFromCache(data->getThumbnailPath(data->imagesData.getImageData(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), 512));
 
                 }
             }
@@ -1320,20 +1353,20 @@ void ImageEditor::stopImageOpenTimer() {
 
 
 void ImageEditor::checkLoadedImage() {
-    for (const auto& cache : *data.imageCache) {
+    for (const auto& cache : *data->imageCache) {
         const std::string& imagePath = cache.second.imagePath;
         const std::string& imagePathBis = cache.first;
 
         // std::cerr << "Loaded image: " << imagePath << std::endl;
         // std::cerr << "Loaded image: " << imagePathBis << std::endl;
 
-        int imageId = data.imagesData->getImageIdByName(imagePath);
+        int imageId = data->imagesData.getImageIdByName(imagePath);
         if (imageId != -1){
             // Si l'image est dans le cache et n'est pas une ressource
             // std::cerr << "Image ID: " << imageId << std::endl;
-            if (std::abs(data.imagesData->imageNumber - imageId) > 2 * PRE_LOAD_RADIUS){
+            if (std::abs(data->imagesData.imageNumber - imageId) > 2 * PRE_LOAD_RADIUS){
 
-                // int distance = std::abs(data.imagesData->getImageNumber() - imageId);
+                // int distance = std::abs(data->imagesData.getImageNumber() - imageId);
 
                 // std::cerr << "unload" << imagePath << " : " << imageId << std::endl;
 
@@ -1352,7 +1385,7 @@ void ImageEditor::checkCache() {
 }
 
 void ImageEditor::rotateLeft(){
-    std::string extension = data.imagesData->getCurrentImageData()->getImageExtension();
+    std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
         rotateLeftJpg();
     }
@@ -1362,7 +1395,7 @@ void ImageEditor::rotateLeft(){
 
 }
 void ImageEditor::rotateRight(){
-    std::string extension = data.imagesData->getCurrentImageData()->getImageExtension();
+    std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
         rotateRightJpg();
     }
@@ -1373,34 +1406,34 @@ void ImageEditor::rotateRight(){
 
 
 void ImageEditor::rotateLeftPng(){
-    QString outputPath = QString::fromStdString(data.imagesData->getCurrentImageData()->imagePath);
-    QImage image = data.loadImage(this, data.imagesData->getCurrentImageData()->imagePath, QSize(0, 0), false);
+    QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->imagePath);
+    QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->imagePath, QSize(0, 0), false);
     image = image.transformed(QTransform().rotate(-90));
     if (!image.save(outputPath)) {
         std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
     }
-    data.unloadFromCache(data.imagesData->getCurrentImageData()->imagePath);
-    data.loadInCache(data.imagesData->getCurrentImageData()->imagePath);
-    data.createAllThumbnail(data.imagesData->getCurrentImageData()->imagePath, 512);
+    data->unloadFromCache(data->imagesData.getCurrentImageData()->imagePath);
+    data->loadInCache(data->imagesData.getCurrentImageData()->imagePath);
+    data->createAllThumbnail(data->imagesData.getCurrentImageData()->imagePath, 512);
     reload();
 
 }
 void ImageEditor::rotateRightPng(){
-    QString outputPath = QString::fromStdString(data.imagesData->getCurrentImageData()->imagePath);
-    QImage image = data.loadImage(this, data.imagesData->getCurrentImageData()->imagePath, QSize(0, 0), false);
+    QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->imagePath);
+    QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->imagePath, QSize(0, 0), false);
     image = image.transformed(QTransform().rotate(90));
     if (!image.save(outputPath)) {
         std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
     }
-    data.unloadFromCache(data.imagesData->getCurrentImageData()->imagePath);
-    data.loadInCache(data.imagesData->getCurrentImageData()->imagePath);
-    data.createAllThumbnail(data.imagesData->getCurrentImageData()->imagePath, 512);
+    data->unloadFromCache(data->imagesData.getCurrentImageData()->imagePath);
+    data->loadInCache(data->imagesData.getCurrentImageData()->imagePath);
+    data->createAllThumbnail(data->imagesData.getCurrentImageData()->imagePath, 512);
 
     reload();
 }
 
 void ImageEditor::mirrorUpDown(){
-    std::string extension = data.imagesData->getCurrentImageData()->getImageExtension();
+    std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
         mirrorUpDownJpg();
     }
@@ -1410,7 +1443,7 @@ void ImageEditor::mirrorUpDown(){
 }
 
 void ImageEditor::mirrorLeftRight(){
-    std::string extension = data.imagesData->getCurrentImageData()->getImageExtension();
+    std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
         mirrorLeftRightJpg();
     }
@@ -1421,9 +1454,9 @@ void ImageEditor::mirrorLeftRight(){
 }
 
 void ImageEditor::mirrorUpDownJpg(){
-    ImagesData& imagesData = *data.imagesData;
+    ImagesData* imagesData = &data->imagesData;
 
-    ImageData* imageData = imagesData.getCurrentImageData();
+    ImageData* imageData = imagesData->getCurrentImageData();
     if (!isTurnable(imageData->getImagePath())) {
         return;
     }
@@ -1461,15 +1494,15 @@ void ImageEditor::mirrorUpDownJpg(){
 
     imageData->saveMetaData();
 
-    data.mirrorImageCache(imageData->getImagePath(), true);
+    data->mirrorImageCache(imageData->getImagePath(), true);
 
     reload();
 }
 
 void ImageEditor::mirrorLeftRightJpg(){
-    ImagesData& imagesData = *data.imagesData;
+    ImagesData* imagesData = &data->imagesData;
 
-    ImageData* imageData = imagesData.getCurrentImageData();
+    ImageData* imageData = imagesData->getCurrentImageData();
     if (!isTurnable(imageData->getImagePath())) {
         return;
     }
@@ -1503,35 +1536,35 @@ void ImageEditor::mirrorLeftRightJpg(){
 
     imageData->saveMetaData();
 
-    data.mirrorImageCache(imageData->getImagePath(), false);
+    data->mirrorImageCache(imageData->getImagePath(), false);
 
 
     reload();
 }
 
 void ImageEditor::mirrorLeftRightPng(){
-    QString outputPath = QString::fromStdString(data.imagesData->getCurrentImageData()->imagePath);
-    QImage image = data.loadImage(this, data.imagesData->getCurrentImageData()->imagePath, QSize(0, 0), false);
+    QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->imagePath);
+    QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->imagePath, QSize(0, 0), false);
     image = image.mirrored(true, false);
     if (!image.save(outputPath)) {
         std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
     }
-    data.unloadFromCache(data.imagesData->getCurrentImageData()->imagePath);
-    data.loadInCache(data.imagesData->getCurrentImageData()->imagePath);
-    data.createAllThumbnail(data.imagesData->getCurrentImageData()->imagePath, 512);
+    data->unloadFromCache(data->imagesData.getCurrentImageData()->imagePath);
+    data->loadInCache(data->imagesData.getCurrentImageData()->imagePath);
+    data->createAllThumbnail(data->imagesData.getCurrentImageData()->imagePath, 512);
     reload();
 
 }
 void ImageEditor::mirrorUpDownPng(){
-    QString outputPath = QString::fromStdString(data.imagesData->getCurrentImageData()->imagePath);
-    QImage image = data.loadImage(this, data.imagesData->getCurrentImageData()->imagePath, QSize(0, 0), false);
+    QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->imagePath);
+    QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->imagePath, QSize(0, 0), false);
     image = image.mirrored(false, true);
     if (!image.save(outputPath)) {
         std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
     }
-    data.unloadFromCache(data.imagesData->getCurrentImageData()->imagePath);
-    data.loadInCache(data.imagesData->getCurrentImageData()->imagePath);
-    data.createAllThumbnail(data.imagesData->getCurrentImageData()->imagePath, 512);
+    data->unloadFromCache(data->imagesData.getCurrentImageData()->imagePath);
+    data->loadInCache(data->imagesData.getCurrentImageData()->imagePath);
+    data->createAllThumbnail(data->imagesData.getCurrentImageData()->imagePath, 512);
 
     reload();
 }

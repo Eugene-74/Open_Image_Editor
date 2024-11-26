@@ -2,16 +2,18 @@
 
 
 InitialWindow::InitialWindow() {
-    Data data;
+    Data* data = new Data();
 
-    data.imagesData = new ImagesData();
-    data.deletedImagesData = new ImagesData();
-    data.imageCache = new std::map<std::string, QImageAndPath>();
+
+
+    data->imagesData = ImagesData(std::vector<ImageData>{});
+    data->deletedImagesData = ImagesData(std::vector<ImageData>{});
+    data->imageCache = new std::map<std::string, QImageAndPath>();
 
 
 
     std::string path = "/home/eugene/Documents/photo trié";
-    startLoadingImagesFromFolder(path, data.imagesData);
+    startLoadingImagesFromFolder(path, &data->imagesData);
 
 
     // TODO sauvegarde orientation marche pas 
@@ -34,21 +36,22 @@ InitialWindow::InitialWindow() {
     setWindowTitle("EasyImageEditor : Initial Window");
 
 
-    while (data.imagesData->get().size() <= 0) {
+    while (data->imagesData.get().size() <= 0) {
         std::cerr << "No images loaded" << std::endl;
         // demander un fichier a l'utilisateur si aucune images n'est chargé
-        data.imagesData = addSelectedFilesToFolders(this);
+        data->imagesData = addSelectedFilesToFolders(this);
     }
-    data.imagesData->setImageNumber(0);
+    data->imagesData.setImageNumber(0);
 
     createImageEditor(data);
+
 
     // std::cerr << "imagesData 1" << std::endl;
     // data.imagesData->print();
 
 }
 
-void InitialWindow::createImageEditor(Data data) {
+void InitialWindow::createImageEditor(Data* data) {
     ImageEditor* imageEditor = new ImageEditor(data, this);
 
     QVBoxLayout* layout = new QVBoxLayout;

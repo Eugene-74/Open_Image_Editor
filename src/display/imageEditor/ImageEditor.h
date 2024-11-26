@@ -42,7 +42,7 @@ public:
 
 
     // Constructor
-    ImageEditor(Data dat, QWidget* parent = nullptr);
+    ImageEditor(Data* dat, QWidget* parent = nullptr);
 
     ~ImageEditor() {}
 
@@ -118,7 +118,7 @@ protected:
 
 private:
     bool exifEditor = false;
-    Data data;
+    Data* data;
 
     QLineEdit* nameEdit;
     QDateTimeEdit* dateEdit;
