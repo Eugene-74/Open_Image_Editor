@@ -6,11 +6,13 @@ InitialWindow::InitialWindow() {
 
 
 
-    data->imagesData = ImagesData(std::vector<ImageData>{});
-    data->deletedImagesData = ImagesData(std::vector<ImageData>{});
+    ImagesData imagesData(std::vector<ImageData>{});
+    ImagesData deletedImagesData(std::vector<ImageData>{});
     data->imageCache = new std::map<std::string, QImageAndPath>();
 
 
+    data->imagesData = imagesData;
+    data->deletedImagesData = deletedImagesData;
 
     std::string path = "/home/eugene/Documents/photo trié";
     startLoadingImagesFromFolder(path, &data->imagesData);
@@ -18,7 +20,7 @@ InitialWindow::InitialWindow() {
 
     // TODO sauvegarde orientation marche pas 
         // data.imagesData = loadImagesData(IMAGESDATA_SAVE_DAT_PATH);
-        // data.deletedImagesData = loadImagesData(DELETED_IMAGESDATA_SAVE_DAT_PATH);
+    // data->deletedImagesData = loadImagesData(DELETED_IMAGESDATA_SAVE_DAT_PATH);
 
     const QList<QScreen*> screens = QGuiApplication::screens();
     QScreen* screen = QGuiApplication::primaryScreen();
@@ -36,7 +38,7 @@ InitialWindow::InitialWindow() {
     setWindowTitle("EasyImageEditor : Initial Window");
 
 
-    while (data->imagesData.get().size() <= 0) {
+    while (data->imagesData.get()->size() <= 0) {
         std::cerr << "No images loaded" << std::endl;
         // demander un fichier a l'utilisateur si aucune images n'est chargé
         data->imagesData = addSelectedFilesToFolders(this);

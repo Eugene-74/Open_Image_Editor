@@ -109,8 +109,8 @@ ImageData* ImagesData::getCurrentImageData() {
 
     return &imagesData.at(imageNumber);
 }
-std::vector<ImageData> ImagesData::get() {
-    return imagesData;
+std::vector<ImageData>* ImagesData::get() {
+    return &imagesData;
 }
 
 void ImagesData::save(std::ofstream& out) const {
@@ -150,8 +150,8 @@ void ImagesData::load(std::ifstream& in) {
     in.read(reinterpret_cast<char*>(&imageNumber), sizeof(imageNumber));
 }
 
-ImagesData* loadImagesData(std::string savePath) {
-    ImagesData* loadedImagesData = new ImagesData();
+ImagesData loadImagesData(std::string savePath) {
+    ImagesData loadedImagesData;
 
     // Ouvrir le fichier en mode binaire
     std::ifstream inFile(savePath, std::ios::binary);
@@ -164,7 +164,7 @@ ImagesData* loadImagesData(std::string savePath) {
     }
 
     // Charger les données à partir du fichier
-    loadedImagesData->load(inFile);
+    loadedImagesData.load(inFile);
 
     inFile.close(); // Fermer le fichier
 

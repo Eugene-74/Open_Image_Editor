@@ -55,7 +55,7 @@ public:
     ImageData* getCurrentImageData();
 
     // Permet de recuperer imagesData
-    std::vector<ImageData> get();
+    std::vector<ImageData>* get();
 
 
     // Permet de sauvegarder ImagesData à partir d'un fichier binaire
@@ -72,4 +72,4 @@ public:
 };
 
 // Permet de charger ImagesData à partir d'un fichier binaire
-ImagesData* loadImagesData(std::string savePath);
+ImagesData loadImagesData(std::string savePath);

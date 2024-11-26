@@ -139,7 +139,7 @@ bool isMirrorable(const std::string& path) {
 
 // Charger les meta donnée contenue dans les images
 void loadImagesMetaData(ImagesData* imagesData) {
-    for (int i = 0; i < imagesData->get().size(); ++i) {
+    for (int i = 0; i < imagesData->get()->size(); ++i) {
         imagesData->getImageData(i)->loadData();
     }
 }

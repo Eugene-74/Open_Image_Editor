@@ -39,14 +39,14 @@ void Data::revocerDeletedImage(int imageNbr) {
 // Supprime de imagesData les images dans deletedImagesData
 void Data::removeDeletedImages() {
 
-    for (const auto& deletedImage : deletedImagesData.get()) {
+    for (const auto& deletedImage : *deletedImagesData.get()) {
 
         // Find the image in imagesData
-        auto it = std::find(imagesData.get().begin(), imagesData.get().end(), deletedImage);
+        auto it = std::find(imagesData.get()->begin(), imagesData.get()->end(), deletedImage);
         // If it exists, remove it from imagesData
-        if (it != imagesData.get().end()) {
+        if (it != imagesData.get()->end()) {
             // imagesData.removeImage(*imagesData.getImageData(it));
-            imagesData.get().erase(it);
+            imagesData.get()->erase(it);
             deletedImage.print();
         }
 
@@ -62,18 +62,25 @@ bool Data::isDeleted(int imageNbr) {
 
     // Find the image in deletedImagesData
 
-    std::cerr << "start isDeleted" << std::endl;
-    auto it = std::find_if(deletedImagesData.get().begin(), deletedImagesData.get().end(),
-        [imageNbr, this](const ImageData& img) {
-            return img == *imagesData.getImageData(imageNbr);
+    std::cerr << "start" << std::endl;
+
+    std::string imagePath = imagesData.getImageData(imageNbr)->imagePath;
+    std::cerr << "start 1" << std::endl;
+
+    auto it = std::find_if(deletedImagesData.get()->begin(), deletedImagesData.get()->end(),
+        [imagePath, this](const ImageData img) {
+            std::cerr << "middle : " << img.imagePath << " :: " << imagePath << std::endl;
+
+            return img.imagePath == imagePath;
         });
 
-    if (it != deletedImagesData.get().end()) {
-        // imagesData.getImageData(imageNbr)->print();
-        std::cerr << "end isDeleted TRUE" << std::endl;
+    if (it != deletedImagesData.get()->end()) {
+        imagesData.getImageData(imageNbr)->print();
+        std::cerr << "end true : " << imagesData.getImageData(imageNbr)->getImageName() << std::endl;
+
         return true;
     }
-    std::cerr << "end isDeleted FALSE" << std::endl;
+    std::cerr << "end false : " << imagesData.getImageData(imageNbr)->getImageName() << std::endl;
 
     return false;
 }
