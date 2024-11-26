@@ -1196,16 +1196,11 @@ void ImageEditor::saveImage() {
 
 void ImageEditor::deleteImage() {
     if (data->isDeleted(data->imagesData.getImageNumber())) {
-        std::cerr << "un delete" << std::endl;
         data->unPreDeleteImage(data->imagesData.getImageNumber());
-
-        // ImageData* currentImageData = data->imagesData.getCurrentImageData();
-        // data->deletedImagesData.addImage(*currentImageData);
 
         updateButtons();
     }
     else {
-        std::cerr << "delete" << std::endl;
 
         data->preDeleteImage(data->imagesData.getImageNumber());
         updateButtons();
