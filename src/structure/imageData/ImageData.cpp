@@ -11,11 +11,22 @@ ImageData& ImageData::operator=(const ImageData& other) {
 
 void ImageData::print() const {
     std::cerr << "Image : " << imagePath
-        << " fichiers : " << folders.folderName << std::endl;
+        << " fichiers : ";
+    for (const auto& file : folders.files) {
+        std::cerr << " " << file;
+    }
+    std::cerr << " " << std::endl;
 }
 
 std::string ImageData::get() const {
-    return "Image : " + imagePath + " fichiers : " + folders.folderName + "\n";
+    std::string name;
+    name += "Image : " + imagePath + " fichiers : ";
+    for (const auto& file : folders.files) {
+        name += " ";
+        name += file;
+    }
+    name += "\n";
+    return  name;
 }
 MetaData* ImageData::getMetaData() {
     // Débogage pour afficher la taille des métadonnées

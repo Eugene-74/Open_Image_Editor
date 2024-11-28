@@ -95,7 +95,7 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
                     folders = Folders(relativePath.parent_path().string());
 
                 }
-                folders.files.push_back(relativePath.parent_path().string());
+                folders.files.push_back(relativePath.parent_path().filename().string());
 
                 ImageData imageD(entry.path(), folders);
                 imagesData->addImage(imageD);

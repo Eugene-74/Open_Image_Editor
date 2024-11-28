@@ -2,6 +2,8 @@
 
 
 #include <QStringList>
+#include <QFileDialog>
+
 
 class fileSelector {
 public:

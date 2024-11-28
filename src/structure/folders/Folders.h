@@ -6,6 +6,7 @@
 #include "../../functions/vector/Vector.h"
 #include <filesystem>
 #include "../../functions/verification/Verification.h"
+
 class Folders
 {
 public:

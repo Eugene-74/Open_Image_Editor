@@ -450,6 +450,8 @@ void ImageEditor::createButtons() {
 
     imageDelete = createImageDelete();
     imageSave = createImageSave();
+    imageExport = createImageExport();
+
     imageEditExif = createImageEditExif();
 
 
@@ -459,6 +461,8 @@ void ImageEditor::createButtons() {
     actionButtonLayout->addWidget(imageMirrorUpDown);
     actionButtonLayout->addWidget(imageDelete);
     actionButtonLayout->addWidget(imageSave);
+    actionButtonLayout->addWidget(imageExport);
+
     actionButtonLayout->addWidget(imageEditExif);
 
     buttonImageBefore = createImageBefore();
@@ -546,6 +550,16 @@ void ImageEditor::updateButtons() {
 
         imageSave = imageSaveNew;
     }
+    if (imageExport) {
+        ClickableLabel* imageExportNew = createImageExport();
+
+        actionButtonLayout->replaceWidget(imageExport, imageExportNew);
+
+        imageExport->hide();
+        imageExport->deleteLater();
+
+        imageExport = imageExportNew;
+    }
     if (exifEditor) {
         if (imageEditExif) {
             ClickableLabel* imageEditExifNew = createImageEditExif();
@@ -601,10 +615,6 @@ void ImageEditor::updateButtons() {
 void ImageEditor::clear() {
 
 
-    std::cerr << imageRotateRight << std::endl;
-    std::cerr << imageRotateLeft << std::endl;
-    std::cerr << imageDelete << std::endl;
-    std::cerr << imageSave << std::endl;
 
     stopImageOpenTimer();
 
@@ -761,6 +771,22 @@ ClickableLabel* ImageEditor::createImageSave() {
 
 
     return imageSaveNew;
+}
+
+ClickableLabel* ImageEditor::createImageExport() {
+
+    if (data->imagesData.get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageExportNew = new ClickableLabel(data, ":/export.png", this, actionSize);
+
+    connect(imageExportNew, &ClickableLabel::clicked, [this]() { this->
+        exportImage();
+        });
+
+
+    return imageExportNew;
 }
 
 ClickableLabel* ImageEditor::createImageRotateRight() {
@@ -1191,9 +1217,19 @@ void ImageEditor::saveImage() {
     data->deletedImagesData.saveImagesData(DELETED_IMAGESDATA_SAVE_DAT_PATH);
 
 
+
+
+
     data->imagesData.setImageNumber(0);
     reload();
 }
+
+
+void ImageEditor::exportImage() {
+    std::string exportPath = getDirectoryFromUser(this);
+    data->exportImages(exportPath);
+}
+
 
 
 void ImageEditor::deleteImage() {

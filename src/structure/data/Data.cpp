@@ -468,3 +468,54 @@ bool Data::unloadFromCache(std::string imagePath){
     // std::cerr << "non trouvé: " << imagePath << std::endl;
     return false;
 }
+void Data::exportImages(std::string exportPath) {
+
+    copyImages(&rootFolders, exportPath);
+
+}
+
+
+std::vector<std::string> Data::copyImages(Folders* currentFolders, std::string path) const {
+    // std::cerr << "copyImages" << std::endl;
+    // currentFolders->print();
+    std::vector<std::string> images;
+
+
+
+
+    for (Folders& folder : currentFolders->folders) {
+        // std::cerr << "folder : " << folder.folderName << std::endl;
+        std::string folderPath = path + "/" + folder.folderName;
+        if (!fs::exists(folderPath)) {
+            // std::cerr << "creating folder: " << folderPath << std::endl;
+            fs::create_directories(folderPath);
+        }
+        else{
+            // std::cerr << "already here folder: " << folderPath << std::endl;
+
+        }
+        // std::cerr << "folder : " << folder.folderName << std::endl;
+        copyTo(folder.folderName, path);
+
+        std::vector<std::string> folderImages = copyImages(&folder, folderPath);
+        images.insert(images.end(), folderImages.begin(), folderImages.end());
+    }
+    return images;
+
+}
+
+void Data::copyTo(std::string filePath, std::string destinationPath) const{
+
+    for (const auto& imageData : imagesData.imagesData) {
+        // std::cerr << "imageData  : " << std::endl;
+        // imagesData.print();
+
+        for (const auto& file : imageData.folders.files) {
+            if (file == filePath) {
+                // Perform the copy operation here
+
+                fs::copy(imageData.imagePath, destinationPath + "/" + file, fs::copy_options::overwrite_existing);
+            }
+        }
+    }
+}

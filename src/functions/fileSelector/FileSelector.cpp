@@ -1,5 +1,4 @@
 #include "FileSelector.h"
-#include <QFileDialog>
 
 QStringList fileSelector::openFileDialog() {
     QStringList fileNames;

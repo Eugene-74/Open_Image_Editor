@@ -12,3 +12,4 @@
 
 ImagesData addSelectedFilesToFolders(Data* data, QWidget* parent);
 
+std::string getDirectoryFromUser(QWidget* parent);

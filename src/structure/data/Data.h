@@ -10,6 +10,8 @@
 #include <iostream>
 #include <fstream> 
 #include "../../display/box/Box.h"
+#include "../../structure/folders/Folders.h"
+
 
 #include <QFileDialog>
 
@@ -65,6 +67,11 @@ public:
     void createAllThumbnail(const std::string& path, const int maxDim);
 
     std::string getThumbnailPath(const std::string& imagePath, const int size);
+
+    void exportImages(std::string exportPath);
+    std::vector<std::string> copyImages(Folders* currentFolders, std::string path) const;
+    // void copyTo(std::string path);
+    void copyTo(std::string filePath, std::string destinationPath)const;
 
 };
 

@@ -31,6 +31,7 @@
 
 #include "../../Const.h"
 
+#include "../../display/loadImage/LoadImage.h"
 
 
 class ImageEditor : public QMainWindow {
@@ -89,6 +90,8 @@ public:
     ClickableLabel* createImageMirrorLeftRight();
     ClickableLabel* createImageDelete();
     ClickableLabel* createImageSave();
+    ClickableLabel* createImageExport();
+
     ClickableLabel* createImageEditExif();
 
     ClickableLabel* createImageBefore();
@@ -98,6 +101,8 @@ public:
     void restartImageLabel();
 
     void saveImage();
+    void exportImage();
+
     void deleteImage();
     void unDeleteImage();
 
@@ -157,6 +162,8 @@ private:
 
     ClickableLabel* imageDelete;
     ClickableLabel* imageSave;
+    ClickableLabel* imageExport;
+
     ClickableLabel* imageEditExif;
 
     QTimer* imageOpenTimer = new QTimer(this);
