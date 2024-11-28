@@ -60,7 +60,7 @@ void countImagesFromFolder(const std::string path, int& nbrImage) {
     for (const auto& entry : fs::directory_iterator(path)) {
         if (fs::is_regular_file(entry.status())) {
 
-            if (isImage(entry.path())) {
+            if (isImage(entry.path()) || isVideo(entry.path())) {
                 nbrImage += 1;
 
             }
@@ -78,7 +78,7 @@ void countImagesFromFolder(const std::string path, int& nbrImage) {
 void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage) {
     for (const auto& entry : fs::directory_iterator(path)) {
         if (fs::is_regular_file(entry.status())) {
-            if (isImage(entry.path())) {
+            if (isImage(entry.path()) || isVideo(entry.path())) {
 
                 // On ne garde que la partie après "Documents"
                 fs::path relativePath = fs::relative(entry.path(), fs::path(initialPath).parent_path());

@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include "../../Const.h"
 #include "../../structure/data/Data.h"
+#include "../../functions/verification/Verification.h"
 
 
 

@@ -2,26 +2,45 @@
 ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail)
     : QLabel(parent) {
 
-    QImage qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail);
+    // std::cerr << "imagePath" << imagePath.toStdString() << std::endl;
+    if (isImage(imagePath.toStdString())){
 
-    // QImage qImage;
+        QImage qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail);
 
-    if (!qImage.isNull()) {
-        this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        // QImage qImage;
+
+        if (!qImage.isNull()) {
+            this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        }
+        else {
+            // Handle the case where the image is not valid (optional)
+            this->setText("Erreur");
+        }
+        if (setSize)
+            setFixedSize(size);
+        else {
+
+            QSize scaledSize = qImage.size();
+            scaledSize.scale(size, Qt::KeepAspectRatio);
+            setFixedSize(scaledSize);
+        }
     }
-    else {
-        // Handle the case where the image is not valid (optional)
-        this->setText("Erreur");
+    else if (isVideo(imagePath.toStdString())){
+        QMovie* movie = data->loadVideo(this, imagePath.toStdString(), size, true);
+        if (movie != nullptr) {
+            movie->start();
+            this->setMovie(movie);
+        }
+
+        if (setSize)
+            setFixedSize(size);
+        else {
+            QSize scaledSize = size;
+            setFixedSize(scaledSize);
+        }
     }
 
-    if (setSize)
-        setFixedSize(size);
-    else {
 
-        QSize scaledSize = qImage.size();
-        scaledSize.scale(size, Qt::KeepAspectRatio);
-        setFixedSize(scaledSize);
-    }
     this->setAlignment(Qt::AlignCenter);
 
     setMouseTracking(true);

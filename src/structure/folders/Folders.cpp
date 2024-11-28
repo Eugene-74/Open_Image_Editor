@@ -150,7 +150,7 @@ bool getIfExist(Folders* currentFolder, const std::string& path) {
 bool containImage(const std::string& path){
     bool valide = false;
     for (const auto& entry : fs::recursive_directory_iterator(path)) {
-        if (fs::is_regular_file(entry.status()) && isImage(entry.path().filename().string())) {
+        if (fs::is_regular_file(entry.status()) && (isImage(entry.path().filename().string()) || isVideo(entry.path().filename().string()))) {
             return true;
         }
 

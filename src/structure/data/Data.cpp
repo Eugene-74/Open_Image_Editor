@@ -468,3 +468,20 @@ bool Data::unloadFromCache(std::string imagePath){
     // std::cerr << "non trouvé: " << imagePath << std::endl;
     return false;
 }
+
+QMovie* Data::loadVideo(QWidget* parent, std::string videoPath, QSize size, bool rotation){
+
+    QMovie* movie = new QMovie(QString::fromStdString(videoPath));
+    if (movie->isValid()) {
+        if (rotation) {
+            // Apply rotation if needed
+            // Note: QMovie does not support rotation directly, you may need to handle this manually
+        }
+        movie->setScaledSize(size);
+        return movie;
+    }
+    else {
+        delete movie;
+        return nullptr;
+    }
+}

@@ -7,5 +7,7 @@
 
 
 bool isImage(const std::string& cheminFichier);
+bool isVideo(const std::string& cheminFichier);
+
 bool isTurnable(const std::string& cheminFichier);
 bool isMirrorable(const std::string& path);
