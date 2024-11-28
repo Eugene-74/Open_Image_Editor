@@ -15,7 +15,7 @@ InitialWindow::InitialWindow() {
     data->deletedImagesData = deletedImagesData;
 
     std::string path = "/home/eugene/Documents/photo trié";
-    startLoadingImagesFromFolder(path, &data->imagesData);
+    startLoadingImagesFromFolder(data, path, &data->imagesData);
 
 
     // TODO sauvegarde orientation marche pas 
@@ -41,7 +41,7 @@ InitialWindow::InitialWindow() {
     while (data->imagesData.get()->size() <= 0) {
         std::cerr << "No images loaded" << std::endl;
         // demander un fichier a l'utilisateur si aucune images n'est chargé
-        data->imagesData = addSelectedFilesToFolders(this);
+        data->imagesData = addSelectedFilesToFolders(data, this);
     }
     data->imagesData.setImageNumber(0);
 

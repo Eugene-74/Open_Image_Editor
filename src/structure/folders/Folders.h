@@ -4,27 +4,48 @@
 #include <vector>
 #include <fstream>
 #include "../../functions/vector/Vector.h"
+#include <filesystem>
+#include "../../functions/verification/Verification.h"
 class Folders
 {
 public:
-    std::vector<std::string> folders;
+    Folders* parent;
+    std::string folderName;
+    std::vector<Folders> folders;
+    std::vector<std::string> files;
 
     Folders() = default;
 
-    // Constructeur de copie
-    Folders(const Folders& other) : folders(other.folders) {}
+    Folders(std::string f) : folderName(f), parent(nullptr) {}
 
-    // Constructeur qui accepte un std::vector<std::string>
-    Folders(const std::vector<std::string>& f) : folders(f) {}
+
+    Folders(std::string f, Folders* p) : folderName(f), parent(p) {}
+
+    // Constructeur de copie
+    Folders(const Folders& other) : folderName(other.folderName), files(other.files) {}
+
+
     Folders& operator=(const Folders& other);
 
-    void print()const;
-    std::string getFolderList() const;
-    void addFolder(const std::string& folder);
-    std::vector<std::string>  getFolders();
 
     void save(std::ofstream& out) const;
 
     void load(std::ifstream& in);
 
+    void addFolder(std::string name);
+    void addFile(std::string name);
+
+    void print() const;
+
+
+
 };
+
+void addFilesToTree(Folders* root, const std::string& path);
+
+bool createIfNotExist(Folders*& currentFolder, const std::string& path);
+bool getIfExist(Folders* currentFolder, const std::string& path);
+
+void addFiles(Folders* root, const std::string& path);
+
+bool containImage(const std::string& path);

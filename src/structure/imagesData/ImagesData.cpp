@@ -29,7 +29,7 @@ void ImagesData::saveImagesData(std::string savePath) {
     save(outFile);
     outFile.close();
 
-    std::cerr << "ImagesData saved in : " << IMAGESDATA_SAVE_DAT_PATH << std::endl;
+    std::cerr << "ImagesData saved in : " << savePath << std::endl;
 
 
 }
@@ -92,9 +92,10 @@ ImageData* ImagesData::getImageData(std::string imagePath) {
     if (it != imagesData.end()) {
         return &(*it);
     }
-    else {
-        throw std::out_of_range("getImageData :: Image path not found: " + imagePath);
-    }
+    return nullptr;
+    // else {
+    //     throw std::out_of_range("getImageData :: Image path not found: " + imagePath);
+// }
 }
 
 

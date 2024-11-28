@@ -26,6 +26,8 @@ class Data
 public:
     ImagesData imagesData;
     ImagesData deletedImagesData;
+    Folders rootFolders = Folders("/");
+
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
 
     void preDeleteImage(int imageNbr);

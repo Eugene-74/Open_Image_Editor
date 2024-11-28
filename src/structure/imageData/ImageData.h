@@ -25,7 +25,7 @@ public:
         : imagePath(other.imagePath), folders(other.folders), metaData(other.metaData) {
     }
 
-    ImageData(std::string a, const Folders& c) : imagePath(a), folders(c) {}
+    ImageData(std::string a, const Folders c) : imagePath(a), folders(c) {}
 
     // Opérateur d'affectation
     ImageData& operator=(const ImageData& other);

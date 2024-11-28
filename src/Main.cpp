@@ -32,10 +32,16 @@ int main(int argc, char* argv[]) {
 }
 
 // Charges dans un imagesData toutes les données des images dans un dossier et ses sous dossier
-void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData* imagesData) {
+void startLoadingImagesFromFolder(Data* data, const std::string imagePaths, ImagesData* imagesData) {
     // imagesData->setImageNumber(0);
     int nbrImage = 0;
+
+    addFilesToTree(&data->rootFolders, imagePaths);
+
     countImagesFromFolder(imagePaths, nbrImage);
+
+    data->rootFolders.print();
+
     std::cerr << "nombre d'image à charger : " << nbrImage << std::endl;
 
     loadImagesFromFolder(imagePaths, imagePaths, imagesData, nbrImage);
@@ -47,8 +53,10 @@ void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData* imag
 }
 
 // Conte toutes les images dans un dossier et ses sous dossier
+// void countImagesFromFolder(const std::string path, int& nbrImage) {
 void countImagesFromFolder(const std::string path, int& nbrImage) {
 
+    int i = 0;
     for (const auto& entry : fs::directory_iterator(path)) {
         if (fs::is_regular_file(entry.status())) {
 
@@ -58,10 +66,12 @@ void countImagesFromFolder(const std::string path, int& nbrImage) {
             }
         }
         else if (fs::is_directory(entry.status())) {
+
             countImagesFromFolder(entry.path(), nbrImage);
+
+            i += 1;
         }
     }
-    // return nbrImage;
 }
 
 // Charges concrètement dans un imagesData toutes les données des images dans un dossier et ses sous dossier
@@ -73,11 +83,19 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
                 // On ne garde que la partie après "Documents"
                 fs::path relativePath = fs::relative(entry.path(), fs::path(initialPath).parent_path());
 
-                std::vector<std::string> fichiers;
+                // std::vector<std::string> fichiers;
 
-                fichiers = { relativePath };
+                // folders->addFolder(relativePath.parent_path().string());
+                Folders folders;
+                ImageData* imageData = imagesData->getImageData(entry.path());
+                if (imageData != nullptr){
+                    folders = imageData->folders;
+                }
+                else{
+                    folders = Folders(relativePath.parent_path().string());
 
-                Folders folders(fichiers);
+                }
+                folders.files.push_back(relativePath.parent_path().string());
 
                 ImageData imageD(entry.path(), folders);
                 imagesData->addImage(imageD);
@@ -94,48 +112,7 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
     // return imagesData;
 }
 
-// Revoie True si l'extension du fichier correspond à l'extension d'une image
-bool isImage(const std::string& path) {
-    // Liste des extensions d'images courantes
-    std::vector<std::string> extensionsImages = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp",".webp" };
 
-    // Récupération de l'extension du fichier
-    std::string extension = fs::path(path).extension().string();
-
-    // Convertir l'extension en minuscule pour éviter les problèmes de casse
-    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-
-    // Vérifier si l'extension est dans la liste des extensions d'images
-    return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
-}
-
-bool isTurnable(const std::string& path) {
-    // Liste des extensions d'images courantes
-    std::vector<std::string> extensionsImages = { ".jpg", ".jpeg",".png" };
-
-    // Récupération de l'extension du fichier
-    std::string extension = fs::path(path).extension().string();
-
-    // Convertir l'extension en minuscule pour éviter les problèmes de casse
-    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-
-    // Vérifier si l'extension est dans la liste des extensions d'images
-    return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
-}
-
-bool isMirrorable(const std::string& path) {
-    // Liste des extensions d'images courantes
-    std::vector<std::string> extensionsImages = { ".jpg", ".jpeg",".png" };
-
-    // Récupération de l'extension du fichier
-    std::string extension = fs::path(path).extension().string();
-
-    // Convertir l'extension en minuscule pour éviter les problèmes de casse
-    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-
-    // Vérifier si l'extension est dans la liste des extensions d'images
-    return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
-}
 
 // Charger les meta donnée contenue dans les images
 void loadImagesMetaData(ImagesData* imagesData) {

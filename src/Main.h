@@ -24,6 +24,8 @@
 #include "structure/folders/Folders.h"
 
 #include "functions/vector/Vector.h"
+#include "functions/verification/Verification.h"
+
 #include "display/imageEditor/ImageEditor.h"
 #include "display/initialWindow/InitialWindow.h"
 
@@ -43,15 +45,13 @@
 
 
 
-bool isImage(const std::string& cheminFichier);
-bool isTurnable(const std::string& cheminFichier);
-bool isMirrorable(const std::string& path);
 
 
 
+// void countImagesFromFolder(const std::string path, int& nbrImage);
 
 void countImagesFromFolder(const std::string path, int& nbrImage);
 void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage);
-void startLoadingImagesFromFolder(const std::string imagePaths, ImagesData* imagesData);
+void startLoadingImagesFromFolder(Data* data, const std::string imagePaths, ImagesData* imagesData);
 void loadImagesMetaData(ImagesData* imagesData);
 void nextImage(int nbr);

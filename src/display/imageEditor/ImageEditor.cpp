@@ -281,7 +281,7 @@ void ImageEditor::reload() {
     if (imagesData->get()->size() <= 0) {
         // TODO reactivate
         showInformationMessage(this, "no image data loaded");
-        addSelectedFilesToFolders(this);
+        addSelectedFilesToFolders(data, this);
 
         return;
     }
@@ -1188,6 +1188,8 @@ void ImageEditor::saveImage() {
         clear();
     }
     data->imagesData.saveImagesData(IMAGESDATA_SAVE_DAT_PATH);
+    data->deletedImagesData.saveImagesData(DELETED_IMAGESDATA_SAVE_DAT_PATH);
+
 
     data->imagesData.setImageNumber(0);
     reload();
