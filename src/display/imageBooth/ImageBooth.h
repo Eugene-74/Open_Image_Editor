@@ -41,7 +41,7 @@ private:
 
 
 
-    ClickableLabel* createImage(std::string imagePath);
+    ClickableLabel* createImage(std::string imagePath, int nbr);
     void createLine();
     void setImageNumber(int nbr);
 signals:

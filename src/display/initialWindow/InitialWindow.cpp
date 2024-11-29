@@ -57,13 +57,27 @@ InitialWindow::InitialWindow() {
     // imageEditor = new ImageEditor(data, this);
 
     // Set the initial central widget
-    setCentralWidget(imageBooth);
+    // setCentralWidget(imageBooth);
 
-    // Connect signals to slots
+    QVBoxLayout* windowLayout = new QVBoxLayout();
+
     centralWidget = new QWidget(this);
-    layout = new QVBoxLayout;
-    centralWidget->setLayout(layout);
+    centralWidget->setLayout(windowLayout);
     setCentralWidget(centralWidget);
+
+
+    layout = new QVBoxLayout;
+    windowLayout->addLayout(layout);
+
+
+    QHBoxLayout* linkLayout = new QHBoxLayout();
+    linkLayout->addWidget(createImageDiscord());
+    linkLayout->addWidget(createImageGithub());
+    linkLayout->setAlignment(Qt::AlignRight);
+
+    windowLayout->addLayout(linkLayout);
+
+
 
     createImageBooth(data);
     // createImageEditor(data);
@@ -105,12 +119,10 @@ void InitialWindow::createImageBooth(Data* data) {
 
 void InitialWindow::clearImageEditor() {
     imageEditor->clear();
-    // delete imageEditor;
 }
 
 void InitialWindow::clearImageBooth() {
     imageBooth->clear();
-    // delete imageBooth;
 }
 
 
@@ -124,4 +136,34 @@ void InitialWindow::showImageBooth() {
     std::cerr << "showImageBooth" << std::endl;
     clearImageEditor();
     createImageBooth(data);
+}
+
+ClickableLabel* InitialWindow::createImageDiscord() {
+
+    ClickableLabel* imageDiscord = new ClickableLabel(data, ":/discord.png", this, QSize(50, 50), false, 0, true);
+
+
+
+    connect(imageDiscord, &ClickableLabel::clicked, [this]() {
+        QDesktopServices::openUrl(QUrl("https://discord.gg/Q2HhZucmxU"));
+        });
+
+
+    return imageDiscord;
+}
+
+
+
+ClickableLabel* InitialWindow::createImageGithub() {
+
+    ClickableLabel* imageGithub = new ClickableLabel(data, ":/github.png", this, QSize(50, 50), false, 0, true);
+
+
+
+    connect(imageGithub, &ClickableLabel::clicked, [this]() {
+        QDesktopServices::openUrl(QUrl("https://github.com/Eugene-74/Easy_Image_Editor"));
+        });
+
+
+    return imageGithub;
 }

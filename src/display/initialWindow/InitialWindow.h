@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QScreen>
 #include <QVBoxLayout>
+#include <QDesktopServices>
 
 #include "../../structure/imagesData/ImagesData.h"
 #include "../../structure/data/Data.h"
@@ -40,5 +41,9 @@ private:
 private slots:
     void showImageEditor();
     void showImageBooth();
+    ClickableLabel* createImageDiscord();
+    ClickableLabel* createImageGithub();
+
+
 
 };

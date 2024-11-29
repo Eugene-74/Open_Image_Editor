@@ -68,13 +68,13 @@ void ImageBooth::createLine(){
 
             std::string imagePath = data->imagesData.get()->at(imageNumber).imagePath;
             // scrollArea->setWidget(createImage(imagePath));
-            lineLayout->addWidget(createImage(imagePath));
+            lineLayout->addWidget(createImage(imagePath, imageNumber));
             imageNumber += 1;
         }
     }
 }
 
-ClickableLabel* ImageBooth::createImage(std::string imagePath) {
+ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -85,9 +85,8 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath) {
 
 
 
-    connect(imageButton, &ClickableLabel::clicked, [this]() {
-        std::cerr << "fezfz" << std::endl;
-        data->imagesData.setImageNumber(imageNumber - 1);
+    connect(imageButton, &ClickableLabel::clicked, [this, nbr]() {
+        data->imagesData.setImageNumber(nbr - 1);
 
 
         switchToImageEditor();
