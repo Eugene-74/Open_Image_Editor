@@ -5,15 +5,14 @@ InitialWindow::InitialWindow() {
     // Supposons que vous ayez une instance de ImageBooth appelée imageBooth
 
     // TODO connexion a imageEditor pour les action des bouto,s
-    // connect(imageBooth, &ImageBooth::changeToImageEditor, this, &InitialWindow::openImageEditor);
+    // connect(imageBooth, &ImageBooth::changeToImageEditor, this, &InitialWindow::switchToImageBooth);
 
     data = new Data();
-
-
 
     ImagesData imagesData(std::vector<ImageData>{});
     ImagesData deletedImagesData(std::vector<ImageData>{});
     data->imageCache = new std::map<std::string, QImageAndPath>();
+
 
 
     data->imagesData = imagesData;
@@ -53,46 +52,76 @@ InitialWindow::InitialWindow() {
     }
     data->imagesData.setImageNumber(0);
 
-    // createImageBooth(data);
 
-    createImageEditor(data);
+    // imageBooth = new ImageBooth(data, this);
+    // imageEditor = new ImageEditor(data, this);
 
-    // std::cerr << "imagesData 1" << std::endl;
-    // data.imagesData->print();
+    // Set the initial central widget
+    setCentralWidget(imageBooth);
 
+    // Connect signals to slots
+    centralWidget = new QWidget(this);
+    layout = new QVBoxLayout;
+    centralWidget->setLayout(layout);
+    setCentralWidget(centralWidget);
 
+    createImageBooth(data);
+    // createImageEditor(data);
 }
 
 void InitialWindow::createImageEditor(Data* data) {
-    ImageEditor* imageEditor = new ImageEditor(data, this);
+    if (imageEditor) {
+        delete imageEditor;
+    }
 
-    QVBoxLayout* layout = new QVBoxLayout;
+    // pose probleme
+    imageEditor = new ImageEditor(data, this);
+
+    layout->removeWidget(imageBooth);
+
     layout->addWidget(imageEditor);
-    QWidget* centralWidget = new QWidget(this);
-    centralWidget->setLayout(layout);
-    setCentralWidget(centralWidget);
+
     imageEditor->setFocus();
+    // connect(imageEditor, &ImageEditor::switchToImageBooth, this, &InitialWindow::showImageBooth);
+
 }
 
 void InitialWindow::createImageBooth(Data* data) {
+    if (imageBooth) {
+        delete imageBooth;
+    }
 
-    ImageBooth* imageBooth = new ImageBooth(data, this);
 
-    QVBoxLayout* layout = new QVBoxLayout;
+    imageBooth = new ImageBooth(data, this);
+
     layout->addWidget(imageBooth);
-    QWidget* centralWidget = new QWidget(this);
-    centralWidget->setLayout(layout);
-    setCentralWidget(centralWidget);
+
+
     imageBooth->setFocus();
+
+    connect(imageBooth, &ImageBooth::switchToImageEditor, this, &InitialWindow::showImageEditor);
+
 }
 
 void InitialWindow::clearImageEditor() {
-    // imageEditor->clear();
+    imageEditor->clear();
     // delete imageEditor;
 }
 
+void InitialWindow::clearImageBooth() {
+    imageBooth->clear();
+    // delete imageBooth;
+}
 
-void InitialWindow::openImageEditor() {
-    // Code pour créer et afficher la fenêtre imageEditor
+
+void InitialWindow::showImageEditor() {
+    std::cerr << "showImageEditor" << std::endl;
+    clearImageBooth();
     createImageEditor(data);
+}
+
+void InitialWindow::showImageBooth() {
+    std::cerr << "showImageBooth" << std::endl;
+    clearImageEditor();
+    createImageBooth(data);
 }

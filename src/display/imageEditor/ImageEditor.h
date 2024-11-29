@@ -32,6 +32,8 @@
 #include "../../Const.h"
 
 #include "../../display/loadImage/LoadImage.h"
+#include "../../display/initialWindow/InitialWindow.h"
+
 
 
 class ImageEditor : public QMainWindow {
@@ -168,7 +170,8 @@ private:
 
     QTimer* imageOpenTimer = new QTimer(this);
     std::vector<QTimer*> imagePreviewOpenTimers = std::vector<QTimer*>();
-
+signals:
+    void switchToImageBooth();
 };
 
 

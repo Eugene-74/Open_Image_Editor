@@ -9,7 +9,6 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
 
     screenGeometry = data->screenR.size() / data->pixelRatio;
 
-
     // initialisation pour les times de preload
     for (int i = 0; i < PRE_LOAD_RADIUS; i++)
         imagePreviewOpenTimers.push_back(new QTimer(this));
@@ -33,8 +32,6 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
     mainImageSize = (screenGeometry * 4 / 6);
 
 
-
-
     // Créer un widget central
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
@@ -50,10 +47,8 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
 
 
 
-
     QSize actionSizeSet(actionButtonSize, actionButtonSize);
     actionSize = actionSizeSet;
-
 
     editionLayout = new QVBoxLayout();
     editionLayout->setAlignment(Qt::AlignCenter);
@@ -77,11 +72,15 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
     editionLayout->addLayout(previewButtonLayout);
     mainLayout->addLayout(infoLayout);
 
+    std::cerr << "test" << std::endl;
 
     createButtons();
+    std::cerr << "test" << std::endl;
+
     createPreview();
 
 
+    std::cerr << "test" << std::endl;
 
 
     nameEdit = new QLineEdit(this);
@@ -125,6 +124,7 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
             }
         }
     }
+    std::cerr << "test" << std::endl;
 
 }
 
@@ -422,7 +422,11 @@ void ImageEditor::updatePreview() {
 }
 
 void ImageEditor::createButtons() {
+    // std::cerr << "test5" << std::endl;
+
     imageRotateRight = createImageRotateRight();
+    // std::cerr << "test5" << std::endl;
+
     imageRotateLeft = createImageRotateLeft();
 
     imageMirrorLeftRight = createImageMirrorLeftRight();
@@ -433,6 +437,7 @@ void ImageEditor::createButtons() {
     imageExport = createImageExport();
 
     imageEditExif = createImageEditExif();
+    // std::cerr << "test5" << std::endl;
 
 
     actionButtonLayout->addWidget(imageRotateRight);
@@ -454,6 +459,7 @@ void ImageEditor::createButtons() {
     buttonLayout->addWidget(imageLabel);
     buttonLayout->addWidget(buttonImageNext);
     buttonLayout->setAlignment(Qt::AlignCenter);
+    // std::cerr << "test5" << std::endl;
 }
 
 
@@ -770,20 +776,29 @@ ClickableLabel* ImageEditor::createImageExport() {
 }
 
 ClickableLabel* ImageEditor::createImageRotateRight() {
+    // std::cerr << "test6" << std::endl;
 
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
     }
+    // std::cerr << "test6" << std::endl;
 
     ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ":/rotateRight.png", this, actionSize);
+    // std::cerr << "test6" << std::endl;
 
     if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
+        // std::cerr << "test6" << std::endl;
+
         imageRotateRightNew->setDisabled(true);
     }
     else {
+        // std::cerr << "test6" << std::endl;
+
         if (!imageRotateRightNew->isEnabled())
             imageRotateRightNew->setEnabled(true);
     }
+
+    // std::cerr << "test6" << std::endl;
 
     connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() { this->rotateRight(); });
 

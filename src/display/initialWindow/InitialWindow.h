@@ -11,6 +11,9 @@
 #include "../../display/imageBooth/ImageBooth.h"
 
 
+class ImageEditor;
+class ImageBooth;
+
 class InitialWindow : public QMainWindow {
     Q_OBJECT
 
@@ -24,13 +27,18 @@ public:
 
     void createImageEditor(Data* data);
     void clearImageEditor();
+
     void createImageBooth(Data* data);
+    void clearImageBooth();
 
 
-    // private:
-    //     ImageBooth* imageBooth = new ImageBooth(data, this);
-
-public slots:
-    void openImageEditor();
+private:
+    ImageEditor* imageEditor = nullptr;
+    ImageBooth* imageBooth = nullptr;
+    QVBoxLayout* layout;
+    QWidget* centralWidget;
+private slots:
+    void showImageEditor();
+    void showImageBooth();
 
 };

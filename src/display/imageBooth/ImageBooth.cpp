@@ -84,10 +84,14 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath) {
     // ClickableLabel* imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 0);
 
 
+
     connect(imageButton, &ClickableLabel::clicked, [this]() {
         std::cerr << "fezfz" << std::endl;
-        data->imagesData.imageNumber = imageNumber;
-        emit changeToImageEditor();
+        data->imagesData.setImageNumber(imageNumber - 1);
+
+
+        switchToImageEditor();
+
         });
 
 
@@ -103,4 +107,22 @@ void ImageBooth::setImageNumber(int nbr){
     }
 
     imageNumber = nbr;
+}
+void ImageBooth::clear(){
+    std::cerr << "clear" << std::endl;
+    QTimer::singleShot(100, this, [this]() {
+        std::cerr << "clearing" << std::endl;
+
+        // Your code here
+        while (QLayoutItem* item = linesLayout->takeAt(0)) {
+            if (QWidget* widget = item->widget()) {
+                widget->deleteLater();
+                std::cerr << "delete widget" << std::endl;
+            }
+            delete item;
+        }
+        delete scrollArea;
+        scrollArea = nullptr;
+        std::cerr << "clear end" << std::endl;
+        });
 }
