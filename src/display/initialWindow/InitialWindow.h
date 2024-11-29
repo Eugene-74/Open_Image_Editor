@@ -15,6 +15,9 @@ class InitialWindow : public QMainWindow {
     Q_OBJECT
 
 public:
+    Data* data;
+
+
     InitialWindow();
     qreal pixelRatio;
     QSize screenGeometry;
@@ -24,12 +27,10 @@ public:
     void createImageBooth(Data* data);
 
 
-protected:
-    // void resizeEvent(ImagesData& imagesData) override;
+    // private:
+    //     ImageBooth* imageBooth = new ImageBooth(data, this);
 
-private:
-    // Data* data;
-    // ImageEditor* imageEditor; // Déclarer un pointeur vers ImageEditor
-    // ImageEditor imageEditor;
+public slots:
+    void openImageEditor();
 
 };

@@ -2,7 +2,12 @@
 
 
 InitialWindow::InitialWindow() {
-    Data* data = new Data();
+    // Supposons que vous ayez une instance de ImageBooth appelée imageBooth
+
+    // TODO connexion a imageEditor pour les action des bouto,s
+    // connect(imageBooth, &ImageBooth::changeToImageEditor, this, &InitialWindow::openImageEditor);
+
+    data = new Data();
 
 
 
@@ -48,12 +53,13 @@ InitialWindow::InitialWindow() {
     }
     data->imagesData.setImageNumber(0);
 
-    // createImageEditor(data);
     createImageBooth(data);
 
+    // createImageEditor(data);
 
     // std::cerr << "imagesData 1" << std::endl;
     // data.imagesData->print();
+
 
 }
 
@@ -69,6 +75,7 @@ void InitialWindow::createImageEditor(Data* data) {
 }
 
 void InitialWindow::createImageBooth(Data* data) {
+
     ImageBooth* imageBooth = new ImageBooth(data, this);
 
     QVBoxLayout* layout = new QVBoxLayout;
@@ -82,4 +89,10 @@ void InitialWindow::createImageBooth(Data* data) {
 void InitialWindow::clearImageEditor() {
     // imageEditor->clear();
     // delete imageEditor;
+}
+
+
+void InitialWindow::openImageEditor() {
+    // Code pour créer et afficher la fenêtre imageEditor
+    createImageEditor(data);
 }

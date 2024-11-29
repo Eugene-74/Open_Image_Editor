@@ -79,33 +79,57 @@ bool Data::isDeleted(int imageNbr) {
 
     return false;
 }
+QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail, bool rotation, bool square) {
+    if (square){
+        return loadImageSquare(parent, imagePath, size, setSize, thumbnail, rotation);
+
+    }
+    else{
+        return loadImageNormal(parent, imagePath, size, setSize, thumbnail, rotation);
+
+    }
+}
 
 
-QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail, bool rotation) {
+QImage Data::loadImageSquare(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail, bool rotation) {
+    // Calculate the center crop dimensions
+    QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail, rotation);
+    // std::cerr << "imageloaded " << std::endl;
+    int cropSize = std::min(image.width(), image.height());
+    int xOffset = (image.width() - cropSize) / 2;
+    int yOffset = (image.height() - cropSize) / 2;
 
-    // std::cerr << "loadImage" << imagePath << ":" << thumbnail << std::endl;
+    // Crop the image to a square
+    image = image.copy(xOffset, yOffset, cropSize, cropSize);
+    return image;
+}
+QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail, bool rotation) {
+
 
     // Check if the image is in the imageCache
-    auto it = imageCache->find(imagePath);
-    if (it != imageCache->end()) {
+    std::map<std::string, QImageAndPath>* cache = imageCache;
+
+
+    auto it = cache->find(imagePath);
+    if (it != cache->end()) {
         // std::cerr << "image trouve dans le cache" << std::endl;
         return it->second.image;
     }
 
-    it = imageCache->find(getThumbnailPath(imagePath, 512));
-    if (it != imageCache->end()) {
+    it = cache->find(getThumbnailPath(imagePath, 512));
+    if (it != cache->end()) {
         // std::cerr << "image trouve dans le cache" << std::endl;
         return it->second.image;
     }
 
-    it = imageCache->find(getThumbnailPath(imagePath, 256));
-    if (it != imageCache->end()) {
+    it = cache->find(getThumbnailPath(imagePath, 256));
+    if (it != cache->end()) {
         // std::cerr << "image trouve dans le cache" << std::endl;
         return it->second.image;
     }
 
-    it = imageCache->find(getThumbnailPath(imagePath, 128));
-    if (it != imageCache->end()) {
+    it = cache->find(getThumbnailPath(imagePath, 128));
+    if (it != cache->end()) {
         // std::cerr << "image trouve dans le cache" << std::endl;
         return it->second.image;
     }
@@ -160,6 +184,9 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
 
         image.load(QString::fromStdString(imagePathbis));
         if (image.isNull()) {
+
+
+
             return QImage();
         }
 
@@ -215,11 +242,11 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool 
     }
 
     // Add the image to the imageCache
-    (*imageCache)[imagePathbis].image = image;
-    (*imageCache)[imagePathbis].imagePath = imagePath;
 
 
 
+    (*cache)[imagePathbis].image = image;
+    (*cache)[imagePathbis].imagePath = imagePath;
     return image;
 }
 

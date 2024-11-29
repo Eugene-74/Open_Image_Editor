@@ -1,8 +1,11 @@
 #include "ClickableLabel.h"
-ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail)
+ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square)
     : QLabel(parent) {
 
-    QImage qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail);
+
+
+
+    QImage qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail, true, square);
 
     // QImage qImage;
 
