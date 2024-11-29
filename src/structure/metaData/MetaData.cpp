@@ -1,4 +1,5 @@
 #include "MetaData.h"
+#include <fstream>
 
 
 MetaData& MetaData::operator=(const MetaData& other) {

@@ -14,12 +14,15 @@ InitialWindow::InitialWindow() {
     data->imagesData = imagesData;
     data->deletedImagesData = deletedImagesData;
 
+    data->screenR = data->screen->availableGeometry();
+    data->pixelRatio = data->screen->devicePixelRatio();
+
     std::string path = "/home/eugene/Documents/photo trié";
     startLoadingImagesFromFolder(data, path, &data->imagesData);
 
 
     // TODO sauvegarde orientation marche pas 
-        // data.imagesData = loadImagesData(IMAGESDATA_SAVE_DAT_PATH);
+    // data->imagesData = loadImagesData(IMAGESDATA_SAVE_DAT_PATH);
     // data->deletedImagesData = loadImagesData(DELETED_IMAGESDATA_SAVE_DAT_PATH);
 
     const QList<QScreen*> screens = QGuiApplication::screens();
@@ -45,7 +48,8 @@ InitialWindow::InitialWindow() {
     }
     data->imagesData.setImageNumber(0);
 
-    createImageEditor(data);
+    // createImageEditor(data);
+    createImageBooth(data);
 
 
     // std::cerr << "imagesData 1" << std::endl;
@@ -62,6 +66,17 @@ void InitialWindow::createImageEditor(Data* data) {
     centralWidget->setLayout(layout);
     setCentralWidget(centralWidget);
     imageEditor->setFocus();
+}
+
+void InitialWindow::createImageBooth(Data* data) {
+    ImageBooth* imageBooth = new ImageBooth(data, this);
+
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->addWidget(imageBooth);
+    QWidget* centralWidget = new QWidget(this);
+    centralWidget->setLayout(layout);
+    setCentralWidget(centralWidget);
+    imageBooth->setFocus();
 }
 
 void InitialWindow::clearImageEditor() {

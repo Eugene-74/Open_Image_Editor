@@ -30,8 +30,9 @@ public:
     ImagesData deletedImagesData;
     Folders rootFolders = Folders("/");
     QScreen* screen = QGuiApplication::primaryScreen();
-    QRect screenR = screen->availableGeometry();
-    int pixelRatio = screen->devicePixelRatio();
+    QRect screenR;
+    int pixelRatio;
+
 
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
 
