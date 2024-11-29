@@ -69,7 +69,7 @@ public:
     std::string getThumbnailPath(const std::string& imagePath, const int size);
 
     void exportImages(std::string exportPath);
-    std::vector<std::string> copyImages(Folders* currentFolders, std::string path) const;
+    void copyImages(Folders* currentFolders, std::string path) const;
     // void copyTo(std::string path);
     void copyTo(std::string filePath, std::string destinationPath)const;
 

@@ -1205,9 +1205,6 @@ void ImageEditor::wheelEvent(QWheelEvent* event) {
     }
 }
 
-
-
-
 void ImageEditor::saveImage() {
     data->removeDeletedImages();
     if (data->imagesData.get()->size() <= 0) {

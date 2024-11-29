@@ -469,19 +469,11 @@ bool Data::unloadFromCache(std::string imagePath){
     return false;
 }
 void Data::exportImages(std::string exportPath) {
-
     copyImages(&rootFolders, exportPath);
-
 }
 
 
-std::vector<std::string> Data::copyImages(Folders* currentFolders, std::string path) const {
-    // std::cerr << "copyImages" << std::endl;
-    // currentFolders->print();
-    std::vector<std::string> images;
-
-
-
+void Data::copyImages(Folders* currentFolders, std::string path) const {
 
     for (Folders& folder : currentFolders->folders) {
         // std::cerr << "folder : " << folder.folderName << std::endl;
@@ -497,10 +489,8 @@ std::vector<std::string> Data::copyImages(Folders* currentFolders, std::string p
         // std::cerr << "folder : " << folder.folderName << std::endl;
         copyTo(folder.folderName, path);
 
-        std::vector<std::string> folderImages = copyImages(&folder, folderPath);
-        images.insert(images.end(), folderImages.begin(), folderImages.end());
+        copyImages(&folder, folderPath);
     }
-    return images;
 
 }
 
