@@ -3,6 +3,8 @@
 
 ImageBooth::ImageBooth(Data* dat, QWidget* parent) : QMainWindow(parent), data(dat) {
 
+    parent->setWindowTitle("EasyImageEditor : Image Booth Window");
+
     screenGeometry = data->screenR.size() / data->pixelRatio;
     imageSize = QSize(screenGeometry.height() * 5 / 6 * 1 / 10, screenGeometry.height() * 5 / 6 * 1 / 10);
     // ajout des marges

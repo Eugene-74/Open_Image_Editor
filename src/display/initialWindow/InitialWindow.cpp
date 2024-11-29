@@ -53,9 +53,9 @@ InitialWindow::InitialWindow() {
     }
     data->imagesData.setImageNumber(0);
 
-    createImageBooth(data);
+    // createImageBooth(data);
 
-    // createImageEditor(data);
+    createImageEditor(data);
 
     // std::cerr << "imagesData 1" << std::endl;
     // data.imagesData->print();

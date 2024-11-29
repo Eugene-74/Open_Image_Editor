@@ -5,9 +5,9 @@
 
 
 ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data(dat) {
-    const QList<QScreen*> screens = QGuiApplication::screens();
+    parent->setWindowTitle("EasyImageEditor : Image Editor Window");
 
-    screenGeometry = data->screenR.size() / pixelRatio;
+    screenGeometry = data->screenR.size() / data->pixelRatio;
 
 
     // initialisation pour les times de preload
@@ -18,12 +18,12 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
 
 
     if (screenGeometry.width() < screenGeometry.height()) {
-        actionButtonSize = (screenGeometry.width() * 1 / 48) * pixelRatio;
+        actionButtonSize = (screenGeometry.width() * 1 / 48) * data->pixelRatio;
         // actionButtonSize = 32;
 
     }
     else {
-        actionButtonSize = (screenGeometry.height() * 1 / 48) * pixelRatio;
+        actionButtonSize = (screenGeometry.height() * 1 / 48) * data->pixelRatio;
         // actionButtonSize = 32;
 
 
