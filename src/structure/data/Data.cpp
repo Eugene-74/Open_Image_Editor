@@ -474,21 +474,14 @@ void Data::exportImages(std::string exportPath) {
 
 
 void Data::copyImages(Folders* currentFolders, std::string path) const {
-
     for (Folders& folder : currentFolders->folders) {
-        // std::cerr << "folder : " << folder.folderName << std::endl;
         std::string folderPath = path + "/" + folder.folderName;
         if (!fs::exists(folderPath)) {
-            // std::cerr << "creating folder: " << folderPath << std::endl;
             fs::create_directories(folderPath);
         }
         else{
-            // std::cerr << "already here folder: " << folderPath << std::endl;
-
         }
-        // std::cerr << "folder : " << folder.folderName << std::endl;
         copyTo(folder.folderName, path);
-
         copyImages(&folder, folderPath);
     }
 

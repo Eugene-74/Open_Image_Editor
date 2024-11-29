@@ -7,32 +7,12 @@
 ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data(dat) {
     const QList<QScreen*> screens = QGuiApplication::screens();
 
+    screenGeometry = data->screenR.size() / pixelRatio;
+
 
     // initialisation pour les times de preload
     for (int i = 0; i < PRE_LOAD_RADIUS; i++)
         imagePreviewOpenTimers.push_back(new QTimer(this));
-    // data = dat;
-
-
-    // std::cerr << "imagesData \n\n\n\n" << std::endl;
-    // data.imagesData->print();
-
-    QScreen* screen = QGuiApplication::primaryScreen();
-    screen = screens[0];
-
-
-    QRect screenR = screen->availableGeometry();
-
-    // pixelRatio = screen->devicePixelRatio();
-    // pixelRatio = QString(qgetenv("QT_SCALE_FACTOR").constData()).toFloat();
-    pixelRatio = screen->devicePixelRatio();
-
-
-    std::cerr << "ratio : " << pixelRatio << std::endl;
-
-    screenGeometry = screenR.size() / pixelRatio;
-
-    std::cerr << "scree size : " << screenGeometry.width() << " , " << screenGeometry.height() << std::endl;
 
     int actionButtonSize;
 
