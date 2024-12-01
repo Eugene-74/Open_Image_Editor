@@ -5,50 +5,24 @@
 
 
 ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data(dat) {
-    parent->setWindowTitle("EasyImageEditor : Image Editor Window");
-
-    screenGeometry = data->screenR.size() / data->pixelRatio;
+    parent->setWindowTitle(IMAGE_EDITOR_WINDOW_NAME);
 
     // initialisation pour les times de preload
     for (int i = 0; i < PRE_LOAD_RADIUS; i++)
         imagePreviewOpenTimers.push_back(new QTimer(this));
 
-    int actionButtonSize;
-
-
-    if (screenGeometry.width() < screenGeometry.height()) {
-        actionButtonSize = (screenGeometry.width() * 1 / 48) * data->pixelRatio;
-        // actionButtonSize = 32;
-
-    }
-    else {
-        actionButtonSize = (screenGeometry.height() * 1 / 48) * data->pixelRatio;
-        // actionButtonSize = 32;
-
-
-    }
-
-    previewSize = (screenGeometry * 1 / 12);
-    mainImageSize = (screenGeometry * 4 / 6);
-
-
-    // Créer un widget central
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
-
-    // Créer un layout vertical pour toute la fenêtre
     mainLayout = new QHBoxLayout(centralWidget);
-
-    // Ajouter le layout principal au widget parent
-    // parent->setLayout(mainLayout);
-
-    mainLayout->setSpacing(5);  // Espacement entre les widgets
-    mainLayout->setContentsMargins(5, 5, 5, 5); // Marges autour des bords (gauche, haut, droite, bas)
-
+    mainLayout->setSpacing(data->sizes.imagesEditorSizes->mainLayoutSpacing);
+    mainLayout->setContentsMargins(data->sizes.imagesEditorSizes->mainLayoutMargins[0],
+        data->sizes.imagesEditorSizes->mainLayoutMargins[1],
+        data->sizes.imagesEditorSizes->mainLayoutMargins[2],
+        data->sizes.imagesEditorSizes->mainLayoutMargins[3]); // Marges autour des bords (gauche, haut, droite, bas)
 
 
-    QSize actionSizeSet(actionButtonSize, actionButtonSize);
-    actionSize = actionSizeSet;
+    // actionSize = data->sizes.imagesEditorSizes->actionSize;
+
 
     editionLayout = new QVBoxLayout();
     editionLayout->setAlignment(Qt::AlignCenter);
@@ -72,29 +46,22 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
     editionLayout->addLayout(previewButtonLayout);
     mainLayout->addLayout(infoLayout);
 
-    std::cerr << "test" << std::endl;
 
     createButtons();
-    std::cerr << "test" << std::endl;
-
     createPreview();
-
-
-    std::cerr << "test" << std::endl;
 
 
     nameEdit = new QLineEdit(this);
 
-    // dateEdit = new QLineEdit(this);
     dateEdit = new QDateTimeEdit(this);
     dateEdit->setDisplayFormat("dd/MM/yyyy, HH:mm");
     dateEdit->setCalendarPopup(true);
 
     QCalendarWidget* calendarWidget = dateEdit->calendarWidget();
-    calendarWidget->setGridVisible(true); // Afficher une grille
-    calendarWidget->setFirstDayOfWeek(Qt::Monday); // Définir le premier jour de la semaine
-    calendarWidget->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader); // Masquer les en-têtes verticaux
-    calendarWidget->setNavigationBarVisible(true); // Afficher la barre de navigation
+    calendarWidget->setGridVisible(true);
+    calendarWidget->setFirstDayOfWeek(Qt::Monday);
+    calendarWidget->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
+    calendarWidget->setNavigationBarVisible(true);
 
 
     geoEdit = new QLineEdit(this);
@@ -102,7 +69,6 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
     validateButton = new QPushButton("Valider", this);
     connect(validateButton, &QPushButton::clicked, this, &ImageEditor::validateMetadata);
 
-    // QVBoxLayout* layout = new QVBoxLayout();
     infoLayout->addWidget(new QLabel("Name:", this));
     infoLayout->addWidget(nameEdit);
     infoLayout->addWidget(new QLabel("Date:", this));
@@ -124,7 +90,6 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
             }
         }
     }
-    std::cerr << "test" << std::endl;
 
 }
 
@@ -139,8 +104,6 @@ void ImageEditor::previousImage(int nbr) {
 }
 
 void ImageEditor::rotateLeftJpg() {
-
-    std::cerr << "rotateLeftJpg" << std::endl;
 
     ImagesData* imagesData = &data->imagesData;
 

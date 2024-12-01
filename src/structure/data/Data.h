@@ -11,6 +11,8 @@
 #include <fstream> 
 #include "../../display/box/Box.h"
 #include "../../structure/folders/Folders.h"
+#include "../../structure/sizes/Sizes.h"
+
 
 
 #include <QFileDialog>
@@ -29,9 +31,7 @@ public:
     ImagesData imagesData;
     ImagesData deletedImagesData;
     Folders rootFolders = Folders("/");
-    QScreen* screen = QGuiApplication::primaryScreen();
-    QRect screenR;
-    int pixelRatio;
+    Sizes sizes;
 
 
     std::map<std::string, QImageAndPath>* imageCache = nullptr;

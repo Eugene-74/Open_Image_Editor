@@ -18,8 +18,8 @@ InitialWindow::InitialWindow() {
     data->imagesData = imagesData;
     data->deletedImagesData = deletedImagesData;
 
-    data->screenR = data->screen->availableGeometry();
-    data->pixelRatio = data->screen->devicePixelRatio();
+    // data->sizes.screenR = data->sizes.screen->availableGeometry();
+    // data->sizes.pixelRatio = data->sizes.screen->devicePixelRatio();
 
     std::string path = "/home/eugene/Documents/photo trié";
     startLoadingImagesFromFolder(data, path, &data->imagesData);

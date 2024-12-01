@@ -3,9 +3,9 @@
 
 ImageBooth::ImageBooth(Data* dat, QWidget* parent) : QMainWindow(parent), data(dat) {
 
-    parent->setWindowTitle("EasyImageEditor : Image Booth Window");
+    parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
 
-    screenGeometry = data->screenR.size() / data->pixelRatio;
+    screenGeometry = data->sizes.screenR.size() / data->sizes.pixelRatio;
     imageSize = QSize(screenGeometry.height() * 5 / 6 * 1 / 10, screenGeometry.height() * 5 / 6 * 1 / 10);
     // ajout des marges
     int space = 1;
@@ -19,9 +19,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent) : QMainWindow(parent), data(d
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
 
-    // Créer un layout vertical pour toute la fenêtre
     mainLayout = new QHBoxLayout(centralWidget);
-    // std::cerr << "test" << std::endl;
 
     scrollArea = new QScrollArea(centralWidget);
     scrollArea->setWidgetResizable(true);

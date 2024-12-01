@@ -136,20 +136,16 @@ private:
 
     ClickableLabel* imageLabel;
 
-    // QHBoxLayout* imageLabelLayout;
     QHBoxLayout* mainLayout;
     QHBoxLayout* previewButtonLayout;
     QHBoxLayout* actionButtonLayout;
     QHBoxLayout* buttonLayout;
     QVBoxLayout* infoLayout;
     QVBoxLayout* editionLayout;
-    // QHBoxLayout* infoAndButtonLayout;
 
-    QSize previewSize;
-    QSize actionSize;
-    QSize screenGeometry;
-    QSize mainImageSize;
-    qreal pixelRatio;
+    QSize previewSize = data->sizes.imagesEditorSizes->previewSize;
+    QSize actionSize = data->sizes.imagesEditorSizes->actionSize;
+    QSize mainImageSize = data->sizes.imagesEditorSizes->mainImageSize;
 
     std::vector<ClickableLabel*> previewButtons;
 

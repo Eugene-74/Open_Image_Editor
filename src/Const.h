@@ -24,3 +24,7 @@ const QString HOVER_BACKGROUND_COLOR = "#b3b3b3";
 const QString BACKGROUND_COLOR = "transparent";
 
 
+
+const QString IMAGE_EDITOR_WINDOW_NAME = "EasyImageEditor : Image Editor Window";
+const QString IMAGE_BOOTH_WINDOW_NAME = "EasyImageEditor : Image Booth Window";
+
