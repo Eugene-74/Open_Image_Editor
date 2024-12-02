@@ -244,7 +244,7 @@ void ImageEditor::createPreview() {
 
     // initialisation des boutons preview
     for (int i = 0; i < PREVIEW_NBR * 2 + 1; ++i) {
-        ClickableLabel* previewButton = createImagePreview(":/loading.png", 0);
+        ClickableLabel* previewButton = createImagePreview(IMAGE_PATH_LOADING.toStdString(), 0);
         previewButtonLayout->addWidget(previewButton);
         // previewButton->hide();
         previewButtons.push_back(previewButton);
@@ -1010,6 +1010,11 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
             imageDelete->updateStyleSheet();
             deleteImage();
         }
+        break;
+    case Qt::Key_Escape:
+        switchToImageBooth();
+
+
         break;
 
 

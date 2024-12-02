@@ -96,18 +96,23 @@ void InitialWindow::createImageEditor(Data* data) {
 
     imageEditor->setFocus();
 
+    connect(imageEditor, &ImageEditor::switchToImageBooth, this, &InitialWindow::showImageBooth);
+
+
 }
 
 void InitialWindow::createImageBooth(Data* data) {
     if (imageBooth) {
         delete imageBooth;
     }
-
-
+    if (imageEditor){
+        layout->removeWidget(imageEditor);
+    }
     imageBooth = new ImageBooth(data, this);
 
-    layout->addWidget(imageBooth);
 
+
+    layout->addWidget(imageBooth);
 
     imageBooth->setFocus();
 
@@ -134,6 +139,9 @@ void InitialWindow::showImageBooth() {
     clearImageEditor();
     createImageBooth(data);
 }
+
+
+
 
 ClickableLabel* InitialWindow::createImageDiscord() {
 

@@ -5,11 +5,9 @@
 ImageBooth::ImageBooth(Data* dat, QWidget* parent) : QMainWindow(parent), data(dat) {
 
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
-
-    // int space = 1;
-    // int marge = 5;
-
-
+    // for (int i = 0; i < data->sizes.imagesBoothSizes->heightImageNumber * LINE_LOADED; i++){
+        // imageOpenTimers.push_back(new QTimer(this));
+    // }
 
     imageNumber = 0;
 
@@ -38,22 +36,20 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent) : QMainWindow(parent), data(d
         data->sizes.imagesBoothSizes->linesLayoutMargins[3]); // bas
 
 
-
-    // TODO limiter au nombre de lignes a l'ecran +2
-    while (imageNumber < data->imagesData.get()->size()
-        && imageNumber < data->sizes.imagesBoothSizes->widthImageNumber * (data->sizes.imagesBoothSizes->heightImageNumber + 2)) {
+    for (int i = 0; i < data->sizes.imagesBoothSizes->heightImageNumber * LINE_LOADED; i++) {
         createLine();
     }
 
-    connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, [this](int value) {
-        if (value >= scrollArea->verticalScrollBar()->maximum()) {
-            createLine();
-            createLine();
-            createLine();
-            createLine();
 
+    connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, [this](int value) {
+        if (value >= scrollArea->verticalScrollBar()->maximum() - 500) {
+            for (int i = 0; i < data->sizes.imagesBoothSizes->heightImageNumber; i++) {
+                createLine();
+            }
         }
         });
+
+    // startImageOpenTimer();
 
 
 }
@@ -82,12 +78,53 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
     }
-    ClickableLabel* imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 128, true);
+    ClickableLabel* imageButton;
+    if (data->isInCache(imagePath)){
+        imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 0, true);
+    }
+    else if (data->isInCache(data->getThumbnailPath(imagePath, 128))){
+        imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 128, true);
+    }
+    else if (data->hasThumbnail(imagePath, 128)){
+        imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 128, true);
+    }
+    // else if (preload){
+        // imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING, this, imageSize, false, 128, true);
+    // }
+
 
     connect(imageButton, &ClickableLabel::clicked, [this, nbr]() {
         data->imagesData.setImageNumber(nbr);
         switchToImageEditor();
         });
+
+    // std::cerr << "timer " << imagePath << std::endl;
+    // QTimer* timer = new QTimer(this);
+    // connect(timer, &QTimer::timeout, this, [this, imagePath, imageButton, timer]() {
+    //     data->loadInCache(data->getThumbnailPath(imagePath, 128));
+    //     std::cerr << "load image " << imagePath << std::endl;
+
+    //     QImage qImage = data->imageCache->at(data->getThumbnailPath(imagePath, 128)).image;
+    //     QSize size = QSize(100, 100);
+    //     imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    //     // auto it = std::find(imageOpenTimers.begin(), imageOpenTimers.end(), this);
+    //     // if (it != imageOpenTimers.end()) {
+    //     //     imageOpenTimers.erase(it);
+    //     // }
+    //     timer->stop();
+    //     timer->deleteLater();
+
+    //     });
+    // if (data->hasThumbnail(imagePath, 128)){
+    //     timer->setInterval(TIME_BEFORE_LOAD_128 * (nbr + 1));
+    // }
+    // else {
+    //     timer->setInterval(TIME_BEFORE_LOAD * (nbr + 1));
+    // }
+    // timer->start();
+
+    // imageOpenTimers.push_back(timer);
 
 
     return imageButton;
@@ -115,3 +152,37 @@ void ImageBooth::clear(){
         scrollArea = nullptr;
         });
 }
+
+// void ImageBooth::startImageOpenTimer() {
+//     // int i = 0;
+//     for (int i = 0; i < data->sizes.imagesBoothSizes->heightImageNumber * LINE_LOADED; i++){
+
+//         QTimer* imageOpenTimer = imageOpenTimers[i];
+//         // precharge les images des alentours
+//         if (imageOpenTimers[i]) {
+//             imageOpenTimers[i]->disconnect();
+//             imageOpenTimers[i]->stop();
+//             imageOpenTimers[i]->deleteLater();
+//         }
+//         imageOpenTimers[i] = new QTimer(this);
+
+//         connect(imageOpenTimers[i], &QTimer::timeout, this, [this, i]() {
+//             for (int j = 0; j < data->sizes.imagesBoothSizes->widthImageNumber; j++){
+//                 data->loadInCache(data->imagesData.getImageData(i * data->sizes.imagesBoothSizes->widthImageNumber + j)->imagePath);
+//                 std::cerr << "load image " << i * data->sizes.imagesBoothSizes->widthImageNumber + j << std::endl;
+//                 imageNumber = 0;
+//                 createLine(true);
+
+//             }
+
+//             imageOpenTimers[i]->stop();
+//             imageOpenTimers[i]->deleteLater();
+//             imageOpenTimers[i] = nullptr;
+//             });
+
+//         imageOpenTimers[i]->setInterval(TIME_BEFORE_PRE_LOAD_FULL_QUALITY * data->sizes.imagesBoothSizes->widthImageNumber * (i + 1));
+
+//         imageOpenTimers[i]->start();
+//     }
+// }
+
