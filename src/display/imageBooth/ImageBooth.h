@@ -29,15 +29,15 @@ public:
     void clear();
 private:
     Data* data;
-    QSize screenGeometry;
+    // QSize screenGeometry;
     int imageNumber;
     QScrollArea* scrollArea;
 
     QHBoxLayout* mainLayout;
     QVBoxLayout* linesLayout;
 
-    QSize imageSize;
-    QSize realImageSize;
+    QSize imageSize = data->sizes.imagesBoothSizes->imageSize;
+    QSize realImageSize = data->sizes.imagesBoothSizes->realImageSize;
 
 
 

@@ -48,9 +48,19 @@ private:
 class Sizes::ImagesBoothSizes{
 public:
     ImagesBoothSizes(Sizes* parent);
+    QSize imageSize;
+    QSize realImageSize;
+    QSize scrollAreaSize;
+
+    int linesLayoutSpacing = 3;
+    std::vector<int> linesLayoutMargins = { 5,5,5,5 };
+
+    int widthImageNumber;
+    int heightImageNumber;
 
 private:
     Sizes* parentSizes;
+
 };
 
 

@@ -20,7 +20,6 @@ Sizes::ImagesEditorSizes::ImagesEditorSizes(Sizes* parent) : parentSizes(parent)
     }
     else {
         actionSize = QSize((parentSizes->screenGeometry.height() * 1 / 48) * parentSizes->pixelRatio, (parentSizes->screenGeometry.height() * 1 / 48) * parentSizes->pixelRatio);
-
     }
 
     previewSize = (parentSizes->screenGeometry * 1 / 12);
@@ -28,5 +27,27 @@ Sizes::ImagesEditorSizes::ImagesEditorSizes(Sizes* parent) : parentSizes(parent)
 }
 
 Sizes::ImagesBoothSizes::ImagesBoothSizes(Sizes* parent) : parentSizes(parent) {
-    // Accès aux membres de Sizes si nécessaire
+
+
+
+    if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height()) {
+        imageSize = QSize(parentSizes->screenGeometry.width() * 5 / 6 * 1 / 10, parentSizes->screenGeometry.width() * 5 / 6 * 1 / 10);
+
+    }
+    else {
+        imageSize = QSize(parentSizes->screenGeometry.height() * 5 / 6 * 1 / 10, parentSizes->screenGeometry.height() * 5 / 6 * 1 / 10);
+    }
+
+    realImageSize = imageSize + QSize(linesLayoutSpacing, linesLayoutSpacing);
+
+    // TODO calcul pas parfait +10 anormal probablement la barre pour faire défiler
+    scrollAreaSize = QSize(parentSizes->screenGeometry.width() * 5 / 6 + linesLayoutMargins[0] + linesLayoutMargins[2] // marge gauche et droite
+        - (parentSizes->screenGeometry.width() * 5 / 6) % realImageSize.width() + linesLayoutSpacing + 10,
+
+        parentSizes->screenGeometry.height() * 5 / 6 + linesLayoutMargins[1] + linesLayoutMargins[3] // marge haut et bas
+        - (parentSizes->screenGeometry.height() * 5 / 6) % realImageSize.height() + linesLayoutSpacing);
+
+
+    widthImageNumber = scrollAreaSize.width() / realImageSize.width();
+    heightImageNumber = scrollAreaSize.height() / realImageSize.height();
 }

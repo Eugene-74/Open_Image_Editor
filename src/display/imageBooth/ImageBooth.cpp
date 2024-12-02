@@ -1,18 +1,15 @@
 #include "ImageBooth.h"
+#include <QScrollBar>
 
 
 ImageBooth::ImageBooth(Data* dat, QWidget* parent) : QMainWindow(parent), data(dat) {
 
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
 
-    screenGeometry = data->sizes.screenR.size() / data->sizes.pixelRatio;
-    imageSize = QSize(screenGeometry.height() * 5 / 6 * 1 / 10, screenGeometry.height() * 5 / 6 * 1 / 10);
-    // ajout des marges
-    int space = 1;
-    int marge = 5;
+    // int space = 1;
+    // int marge = 5;
 
 
-    realImageSize = imageSize + QSize(space * 2, space * 2);
 
     imageNumber = 0;
 
@@ -23,8 +20,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent) : QMainWindow(parent), data(d
 
     scrollArea = new QScrollArea(centralWidget);
     scrollArea->setWidgetResizable(true);
-
-    scrollArea->setFixedSize(screenGeometry.width() * 5 / 6 + marge * 2 - (screenGeometry.width() * 5 / 6) % realImageSize.width() + space, screenGeometry.height() * 5 / 6 + marge * 2 - (screenGeometry.height() * 5 / 6) % realImageSize.height() + space);
+    scrollArea->setFixedSize(data->sizes.imagesBoothSizes->scrollAreaSize);
 
 
     mainLayout->addWidget(scrollArea);
@@ -32,34 +28,44 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent) : QMainWindow(parent), data(d
 
     QWidget* scrollWidget = new QWidget();
     linesLayout = new QVBoxLayout(scrollWidget);
-    linesLayout->setAlignment(Qt::AlignTop);
-    linesLayout->setSpacing(space);
-    linesLayout->setContentsMargins(marge, marge, marge, marge);
-
-
-
     scrollArea->setWidget(scrollWidget);
 
-    while (imageNumber < data->imagesData.get()->size()) {
+    linesLayout->setAlignment(Qt::AlignTop);
+    linesLayout->setSpacing(data->sizes.imagesBoothSizes->linesLayoutSpacing);
+    linesLayout->setContentsMargins(data->sizes.imagesBoothSizes->linesLayoutMargins[0], // gauche
+        data->sizes.imagesBoothSizes->linesLayoutMargins[1], // haut
+        data->sizes.imagesBoothSizes->linesLayoutMargins[2], // droite 
+        data->sizes.imagesBoothSizes->linesLayoutMargins[3]); // bas
+
+
+
+    // TODO limiter au nombre de lignes a l'ecran +2
+    while (imageNumber < data->imagesData.get()->size()
+        && imageNumber < data->sizes.imagesBoothSizes->widthImageNumber * (data->sizes.imagesBoothSizes->heightImageNumber + 2)) {
         createLine();
     }
 
+    connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, [this](int value) {
+        if (value >= scrollArea->verticalScrollBar()->maximum()) {
+            createLine();
+            createLine();
+            createLine();
+            createLine();
 
+        }
+        });
 
 
 }
 
 void ImageBooth::createLine(){
-    // std::cerr << "createLine" << std::endl;
 
     QHBoxLayout* lineLayout = new QHBoxLayout();
     lineLayout->setAlignment(Qt::AlignLeft);
-    // lineLayout->setContentsMargins(100, 2, 2, 2);
-
 
     linesLayout->addLayout(lineLayout);
 
-    int nbr = scrollArea->geometry().width() / realImageSize.width();
+    int nbr = data->sizes.imagesBoothSizes->widthImageNumber;
 
     for (int i = 0; i < nbr;i++){
         if (imageNumber >= 0 && imageNumber < data->imagesData.get()->size()){
@@ -77,9 +83,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
     }
-    // std::cerr << "create" << std::endl;
     ClickableLabel* imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 128, true);
-    // ClickableLabel* imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 0);
 
 
 

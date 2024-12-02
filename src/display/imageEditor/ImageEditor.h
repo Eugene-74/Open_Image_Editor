@@ -40,19 +40,11 @@ class ImageEditor : public QMainWindow {
     Q_OBJECT
 
 public:
-    // std::map<QString, cv::Mat> imageCache;
-
-
-
-    // Constructor
     ImageEditor(Data* dat, QWidget* parent = nullptr);
 
     ~ImageEditor() {}
 
     void reload();
-    // void reloadMainImage();
-
-    // void setImage(ImageData* imageData);
 
     void nextImage(int nbr = 1);
     void previousImage(int nbr = 1);
@@ -100,7 +92,7 @@ public:
     ClickableLabel* createImageNext();
 
     ClickableLabel* createImageLabel();
-    void restartImageLabel();
+    void reloadImageLabel();
 
     void saveImage();
     void exportImage();

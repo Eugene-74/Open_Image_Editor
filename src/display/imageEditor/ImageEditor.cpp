@@ -228,16 +228,7 @@ void ImageEditor::reload() {
 
         return;
     }
-
-    // setImage(imagesData->getCurrentImageData());
 }
-
-// void ImageEditor::reloadMainImage() {
-
-//     imageLabel->update();
-
-// }
-
 
 
 void ImageEditor::createPreview() {
@@ -385,10 +376,8 @@ void ImageEditor::updatePreview() {
 }
 
 void ImageEditor::createButtons() {
-    // std::cerr << "test5" << std::endl;
 
     imageRotateRight = createImageRotateRight();
-    // std::cerr << "test5" << std::endl;
 
     imageRotateLeft = createImageRotateLeft();
 
@@ -400,8 +389,6 @@ void ImageEditor::createButtons() {
     imageExport = createImageExport();
 
     imageEditExif = createImageEditExif();
-    // std::cerr << "test5" << std::endl;
-
 
     actionButtonLayout->addWidget(imageRotateRight);
     actionButtonLayout->addWidget(imageRotateLeft);
@@ -422,7 +409,6 @@ void ImageEditor::createButtons() {
     buttonLayout->addWidget(imageLabel);
     buttonLayout->addWidget(buttonImageNext);
     buttonLayout->setAlignment(Qt::AlignCenter);
-    // std::cerr << "test5" << std::endl;
 }
 
 
@@ -529,7 +515,7 @@ void ImageEditor::updateButtons() {
     }
 
 
-    restartImageLabel();
+    reloadImageLabel();
 
     if (buttonImageNext) {
         if (data->imagesData.getImageNumber() == data->imagesData.get()->size() - 1) {
@@ -550,17 +536,6 @@ void ImageEditor::updateButtons() {
     }
 }
 
-/**
- * @brief Clears the window by removing and deleting all widgets and layouts.
- *
- * This function performs the following actions:
- * - Logs the current state of image-related actions (rotate right, rotate left, delete, save).
- * - Schedules a single-shot timer to execute the clearing process after 100 milliseconds.
- * - Iterates through the `actionButtonLayout`, `buttonLayout`, and `mainLayout` to:
- *   - Disconnect and hide each widget.
- *   - Delete each widget and layout item.
- *   - Delete the layout itself and set the corresponding pointer to nullptr.
- */
 void ImageEditor::clear() {
 
 
@@ -641,52 +616,6 @@ void ImageEditor::clear() {
 
 
 
-/**
- * @brief Creates a clickable label for pre deleting an image.
- *
- * This function creates a ClickableLabel object that represents a pre delete button for an image.
- * If the image is marked as pre deleted, the background color of the label is set to a specific color
- * and the stylesheet is updated. The label is also connected to a click event that triggers the
- * pre-delete action for the image and updates the buttons.
- *
- * @return A pointer to the created ClickableLabel object.
- */
- // ClickableLabel* ImageEditor::createImageDelete() {
-
- //     if (data->imagesData.get()->size() <= 0) {
- //         return nullptr;
- //     }
-
- //     ClickableLabel* imageDelete = new ClickableLabel(data, ":/delete.png", this, actionSize);
-
- //     if (data->isDeleted(data->imagesData.getImageNumber())) {
-
- //         imageDelete->background_color = "#700c13";
- //         imageDelete->updateStyleSheet();
- //         connect(imageDelete, &ClickableLabel::clicked, [this, imageDelete]() { this->
- //             // unDeleteImage();
- //             data->unPreDeleteImage(data->imagesData.getImageNumber());
- //         // updateButtons();
-
- //         std::cerr << "undelete" << std::endl;
- //             });
- //     }
- //     else {
- //         connect(imageDelete, &ClickableLabel::clicked, [this, imageDelete] { this->
- //             // deleteImage();
-
- //             data->preDeleteImage(data->imagesData.getImageNumber());
- //         std::cerr << "update" << std::endl;
- //         // elle se rappel elle meme mais pas dans son etat actuel je crois
- //         // updateButtons();
- //         std::cerr << "delete" << std::endl;
- //             });
-
- //     }
- //     data->deletedImagesData.print();
-
- //     return imageDelete;
- // }
 ClickableLabel* ImageEditor::createImageDelete() {
 
     if (data->imagesData.get()->size() <= 0) {
@@ -739,29 +668,22 @@ ClickableLabel* ImageEditor::createImageExport() {
 }
 
 ClickableLabel* ImageEditor::createImageRotateRight() {
-    // std::cerr << "test6" << std::endl;
 
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
     }
-    // std::cerr << "test6" << std::endl;
 
     ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ":/rotateRight.png", this, actionSize);
-    // std::cerr << "test6" << std::endl;
 
     if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
-        // std::cerr << "test6" << std::endl;
-
         imageRotateRightNew->setDisabled(true);
     }
     else {
-        // std::cerr << "test6" << std::endl;
 
         if (!imageRotateRightNew->isEnabled())
             imageRotateRightNew->setEnabled(true);
     }
 
-    // std::cerr << "test6" << std::endl;
 
     connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() { this->rotateRight(); });
 
@@ -952,7 +874,7 @@ ClickableLabel* ImageEditor::createImageLabel() {
     return imageLabelNew;
 }
 
-void ImageEditor::restartImageLabel(){
+void ImageEditor::reloadImageLabel(){
 
     if (imageLabel) {
 
@@ -1039,7 +961,7 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
 
 
     default:
-        QWidget::keyPressEvent(event); // Call base class implementation for other keys
+        QWidget::keyPressEvent(event);
     }
 }
 
@@ -1142,7 +1064,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
 
 
     default:
-        QWidget::keyReleaseEvent(event); // Call base class implementation for other keys
+        QWidget::keyReleaseEvent(event);
     }
 }
 
@@ -1258,7 +1180,7 @@ void ImageEditor::startImageOpenTimer() {
 
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
         data->loadInCache(data->imagesData.getCurrentImageData()->getImagePath());
-        restartImageLabel();
+        reloadImageLabel();
         imageOpenTimer->stop();
         });
 
@@ -1367,7 +1289,6 @@ void ImageEditor::checkLoadedImage() {
     }
 }
 
-// permet de verifier si il y a des images a charger ou decharger du cache
 void ImageEditor::checkCache() {
     startImageOpenTimer();
     checkLoadedImage();
