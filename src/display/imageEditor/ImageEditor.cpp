@@ -50,6 +50,7 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
 
     createButtons();
     createPreview();
+    updatePreview();
 
 
     nameEdit = new QLineEdit(this);
@@ -241,63 +242,12 @@ void ImageEditor::createPreview() {
         return;
     }
 
-
-    std::vector<std::string> imagePaths;
-
-    // TODO modifier pour que cela marche peut importe currentImageNumber
-        // int currentImageNumber = imagesData->getImageNumber();
-    int currentImageNumber = 0;
-
-
-    int totalImages = imagesData->get()->size();
-
-    int under = 0;
-    for (int i = PREVIEW_NBR; i > 0; --i) {
-        if (currentImageNumber - i >= 0) {
-            imagePaths.push_back(imagesData->getImageData(currentImageNumber - i)->getImagePath());
-            under += 1;
-        }
-    }
-
-    imagePaths.push_back(imagesData->getCurrentImageData()->getImagePath());
-
-    for (int i = 1; i <= PREVIEW_NBR; ++i) {
-        if (currentImageNumber + i <= totalImages - 1) {
-            imagePaths.push_back(imagesData->getImageData(currentImageNumber + i)->getImagePath());
-        }
-    }
-
-
-
-    // Créer et ajouter les nouveaux boutons
+    // initialisation des boutons preview
     for (int i = 0; i < PREVIEW_NBR * 2 + 1; ++i) {
-        if (i < imagePaths.size()) {
-            int imageNbr = imagesData->getImageNumber() + i - under;
-            if (imageNbr == imagesData->getImageNumber()) {
-                ClickableLabel* previewButton = createImagePreview(imagePaths[i], imageNbr);
-                previewButton->background_color = "#b3b3b3";
-                previewButton->updateStyleSheet();
-
-                previewButtonLayout->addWidget(previewButton);
-
-                previewButtons.push_back(previewButton);
-            }
-            else {
-
-                ClickableLabel* previewButton = createImagePreview(imagePaths[i], imageNbr);
-
-                previewButtonLayout->addWidget(previewButton);
-
-                previewButtons.push_back(previewButton);
-            }
-        }
-        // create all the button but hide 
-        ClickableLabel* previewButton = createImagePreview(imagePaths[0], 0);
+        ClickableLabel* previewButton = createImagePreview(":/loading.png", 0);
         previewButtonLayout->addWidget(previewButton);
-        previewButton->hide();
+        // previewButton->hide();
         previewButtons.push_back(previewButton);
-
-
     }
 
     previewButtonLayout->setAlignment(Qt::AlignCenter);
@@ -839,7 +789,6 @@ ClickableLabel* ImageEditor::createImageNext() {
 
 
 ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int imageNbr) {
-
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
     }
@@ -1265,29 +1214,23 @@ void ImageEditor::stopImageOpenTimer() {
 
 
 void ImageEditor::checkLoadedImage() {
+
+    std::vector<std::string> toUnload;
     for (const auto& cache : *data->imageCache) {
         const std::string& imagePath = cache.second.imagePath;
         const std::string& imagePathBis = cache.first;
 
-        // std::cerr << "Loaded image: " << imagePath << std::endl;
-        // std::cerr << "Loaded image: " << imagePathBis << std::endl;
-
         int imageId = data->imagesData.getImageIdByName(imagePath);
         if (imageId != -1){
-            // Si l'image est dans le cache et n'est pas une ressource
-            // std::cerr << "Image ID: " << imageId << std::endl;
             if (std::abs(data->imagesData.imageNumber - imageId) > 2 * PRE_LOAD_RADIUS){
-
-                int distance = std::abs(data->imagesData.getImageNumber() - imageId);
-
-                std::cerr << "unload" << imagePath << " : " << imageId << std::endl;
-
-                // cree des sgementation fault
-                // data->unloadFromCache(imagePathBis);
-
+                toUnload.push_back(imagePathBis);
             }
         }
     }
+    for (const auto& imagePath : toUnload){
+        data->unloadFromCache(imagePath);
+    }
+
 }
 
 void ImageEditor::checkCache() {

@@ -101,7 +101,7 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
                 imagesData->addImage(imageD);
 
                 nbrImage -= 1;
-                std::cerr << "Viens de charger : " << entry.path() << std::endl;
+                // std::cerr << "Viens de charger : " << entry.path() << std::endl;
                 std::cerr << "Image restante : " << nbrImage << std::endl;
             }
         }

@@ -71,7 +71,6 @@ void ImageBooth::createLine(){
         if (imageNumber >= 0 && imageNumber < data->imagesData.get()->size()){
 
             std::string imagePath = data->imagesData.get()->at(imageNumber).imagePath;
-            // scrollArea->setWidget(createImage(imagePath));
             lineLayout->addWidget(createImage(imagePath, imageNumber));
             imageNumber += 1;
         }

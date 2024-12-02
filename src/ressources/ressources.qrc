@@ -10,9 +10,9 @@
         <file>editExif.png</file>
         <file>mirrorUpDown.png</file> 
         <file>mirrorLeftRight.png</file>
+        <file>loading.png</file>
 
         <file>discord.png</file>
         <file>github.png</file>
-
     </qresource>
 </RCC>

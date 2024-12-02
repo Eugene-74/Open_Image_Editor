@@ -152,6 +152,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                 imagePathbis = getThumbnailPath(imagePath, 128);
             }
             else{
+
                 createThumbnail(imagePath, 128);
                 createThumbnailIfNotExists(imagePath, 256);
                 createThumbnailIfNotExists(imagePath, 512);
@@ -306,7 +307,6 @@ bool Data::loadInCache(std::string imagePath, bool setSize, QSize size, bool for
     (*imageCache)[imagePath].image = image;
     (*imageCache)[imagePath].imagePath = imagePath;
 
-
     createThumbnailIfNotExists(imagePath, 128);
     createThumbnailIfNotExists(imagePath, 256);
     createThumbnailIfNotExists(imagePath, 512);
@@ -402,14 +402,6 @@ void Data::createThumbnailsIfNotExists(const std::vector<std::string>& imagePath
 }
 
 
-/**
- * @brief Creates a thumbnail for the given image if it does not already exist.
- *
- * This function checks if a thumbnail for the specified image exists. If it does not,
- * it creates a new thumbnail.
- *
- * @param imagePath The path to the image file for which the thumbnail should be created.
- */
 void Data::createThumbnailIfNotExists(const std::string& imagePath, const int maxDim) {
     if (!hasThumbnail(imagePath, maxDim)) {
 
@@ -478,21 +470,12 @@ bool Data::unloadFromCache(std::string imagePath){
         std::cerr << "imageCache is not initialized" << std::endl;
         return false;
     }
-
-    // std::cerr << "unloading image from cache: " << imagePath << std::endl;
     auto it = imageCache->find(imagePath);
-
-    // for (const auto& cache : *imageCache) {
-    //     std::cerr << "Image path: " << cache.first << std::endl;
-    // }
 
     if (it != imageCache->end()) {
         imageCache->erase(it);
-
-        // std::cerr << "trouvé: " << imageCache->size() << std::endl;
         return true;
     }
-    // std::cerr << "non trouvé: " << imagePath << std::endl;
     return false;
 }
 void Data::exportImages(std::string exportPath) {
@@ -517,13 +500,8 @@ void Data::copyImages(Folders* currentFolders, std::string path) const {
 void Data::copyTo(std::string filePath, std::string destinationPath) const{
 
     for (const auto& imageData : imagesData.imagesData) {
-        // std::cerr << "imageData  : " << std::endl;
-        // imagesData.print();
-
         for (const auto& file : imageData.folders.files) {
             if (file == filePath) {
-                // Perform the copy operation here
-
                 fs::copy(imageData.imagePath, destinationPath + "/" + file, fs::copy_options::overwrite_existing);
             }
         }

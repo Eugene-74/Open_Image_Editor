@@ -88,7 +88,6 @@ void InitialWindow::createImageEditor(Data* data) {
         delete imageEditor;
     }
 
-    // pose probleme
     imageEditor = new ImageEditor(data, this);
 
     layout->removeWidget(imageBooth);
@@ -96,7 +95,6 @@ void InitialWindow::createImageEditor(Data* data) {
     layout->addWidget(imageEditor);
 
     imageEditor->setFocus();
-    // connect(imageEditor, &ImageEditor::switchToImageBooth, this, &InitialWindow::showImageBooth);
 
 }
 
@@ -127,7 +125,6 @@ void InitialWindow::clearImageBooth() {
 
 
 void InitialWindow::showImageEditor() {
-    std::cerr << "showImageEditor" << std::endl;
     clearImageBooth();
     createImageEditor(data);
 }
