@@ -85,14 +85,9 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     }
     ClickableLabel* imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 128, true);
 
-
-
     connect(imageButton, &ClickableLabel::clicked, [this, nbr]() {
-        data->imagesData.setImageNumber(nbr - 1);
-
-
+        data->imagesData.setImageNumber(nbr);
         switchToImageEditor();
-
         });
 
 

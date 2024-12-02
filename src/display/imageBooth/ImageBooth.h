@@ -29,7 +29,6 @@ public:
     void clear();
 private:
     Data* data;
-    // QSize screenGeometry;
     int imageNumber;
     QScrollArea* scrollArea;
 

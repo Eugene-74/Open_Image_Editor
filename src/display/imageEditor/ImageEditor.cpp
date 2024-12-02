@@ -8,8 +8,9 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
     parent->setWindowTitle(IMAGE_EDITOR_WINDOW_NAME);
 
     // initialisation pour les times de preload
-    for (int i = 0; i < PRE_LOAD_RADIUS; i++)
+    for (int i = 0; i < PRE_LOAD_RADIUS; i++){
         imagePreviewOpenTimers.push_back(new QTimer(this));
+    }
 
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
@@ -243,12 +244,15 @@ void ImageEditor::createPreview() {
 
     std::vector<std::string> imagePaths;
 
-    int currentImageNumber = imagesData->getImageNumber();
+    // TODO modifier pour que cela marche peut importe currentImageNumber
+        // int currentImageNumber = imagesData->getImageNumber();
+    int currentImageNumber = 0;
+
+
     int totalImages = imagesData->get()->size();
 
     int under = 0;
     for (int i = PREVIEW_NBR; i > 0; --i) {
-
         if (currentImageNumber - i >= 0) {
             imagePaths.push_back(imagesData->getImageData(currentImageNumber - i)->getImagePath());
             under += 1;
@@ -258,8 +262,6 @@ void ImageEditor::createPreview() {
     imagePaths.push_back(imagesData->getCurrentImageData()->getImagePath());
 
     for (int i = 1; i <= PREVIEW_NBR; ++i) {
-
-
         if (currentImageNumber + i <= totalImages - 1) {
             imagePaths.push_back(imagesData->getImageData(currentImageNumber + i)->getImagePath());
         }
@@ -281,7 +283,6 @@ void ImageEditor::createPreview() {
                 previewButtons.push_back(previewButton);
             }
             else {
-
 
                 ClickableLabel* previewButton = createImagePreview(imagePaths[i], imageNbr);
 
@@ -1277,12 +1278,12 @@ void ImageEditor::checkLoadedImage() {
             // std::cerr << "Image ID: " << imageId << std::endl;
             if (std::abs(data->imagesData.imageNumber - imageId) > 2 * PRE_LOAD_RADIUS){
 
-                // int distance = std::abs(data->imagesData.getImageNumber() - imageId);
+                int distance = std::abs(data->imagesData.getImageNumber() - imageId);
 
-                // std::cerr << "unload" << imagePath << " : " << imageId << std::endl;
+                std::cerr << "unload" << imagePath << " : " << imageId << std::endl;
 
                 // cree des sgementation fault
-                // data.unloadFromCache(imagePathBis);
+                // data->unloadFromCache(imagePathBis);
 
             }
         }
