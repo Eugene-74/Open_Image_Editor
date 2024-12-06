@@ -62,6 +62,8 @@ void ImageBooth::createLine(){
     linesLayout->addLayout(lineLayout);
 
     int nbr = data->sizes.imagesBoothSizes->widthImageNumber;
+    // int loadedImageNumber = 0;
+
 
     for (int i = 0; i < nbr;i++){
         if (imageNumber >= 0 && imageNumber < data->imagesData.get()->size()){
@@ -74,23 +76,53 @@ void ImageBooth::createLine(){
 }
 
 ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
-
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
     }
     ClickableLabel* imageButton;
     if (data->isInCache(imagePath)){
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 0, true);
+        loadedImageNumber += 1;
+
     }
     else if (data->isInCache(data->getThumbnailPath(imagePath, 128))){
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 128, true);
+        loadedImageNumber += 1;
     }
     else if (data->hasThumbnail(imagePath, 128)){
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 128, true);
+        loadedImageNumber += 1;
     }
-    // else if (preload){
-        // imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING, this, imageSize, false, 128, true);
-    // }
+    else{
+        imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING, this, imageSize, false, 0, true);
+
+        QTimer* timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, this, [this, imagePath, imageButton, timer]() {
+            // data->loadInCache(imagePath);
+            // TODO probleme rotation
+            data->createAllThumbnail(imagePath, 512);
+            std::cerr << "load image " << imagePath << std::endl;
+
+            QImage qImage = data->imageCache->at(imagePath).image;
+
+            int cropSize = std::min(qImage.width(), qImage.height());
+            int xOffset = (qImage.width() - cropSize) / 2;
+            int yOffset = (qImage.height() - cropSize) / 2;
+
+            // Crop the image to a square
+            qImage = qImage.copy(xOffset, yOffset, cropSize, cropSize);
+
+            imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(imageButton->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            timer->stop();
+            timer->deleteLater();
+
+            });
+        // std::cerr << "load image " << TIME_BEFORE_LOAD * (nbr - loadedImageNumber + 1) << std::endl;
+        timer->setInterval(TIME_BEFORE_LOAD * (nbr - loadedImageNumber + 1));
+        timer->start();
+
+        imageOpenTimers.push_back(timer);
+    }
 
 
     connect(imageButton, &ClickableLabel::clicked, [this, nbr]() {
@@ -98,36 +130,19 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         switchToImageEditor();
         });
 
-    // std::cerr << "timer " << imagePath << std::endl;
-    // QTimer* timer = new QTimer(this);
-    // connect(timer, &QTimer::timeout, this, [this, imagePath, imageButton, timer]() {
-    //     data->loadInCache(data->getThumbnailPath(imagePath, 128));
-    //     std::cerr << "load image " << imagePath << std::endl;
-
-    //     QImage qImage = data->imageCache->at(data->getThumbnailPath(imagePath, 128)).image;
-    //     QSize size = QSize(100, 100);
-    //     imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-    //     // auto it = std::find(imageOpenTimers.begin(), imageOpenTimers.end(), this);
-    //     // if (it != imageOpenTimers.end()) {
-    //     //     imageOpenTimers.erase(it);
-    //     // }
-    //     timer->stop();
-    //     timer->deleteLater();
-
-    //     });
-    // if (data->hasThumbnail(imagePath, 128)){
-    //     timer->setInterval(TIME_BEFORE_LOAD_128 * (nbr + 1));
-    // }
-    // else {
-    //     timer->setInterval(TIME_BEFORE_LOAD * (nbr + 1));
-    // }
-    // timer->start();
-
-    // imageOpenTimers.push_back(timer);
 
 
     return imageButton;
+}
+
+void ImageBooth::stopAndDeleteTimers() {
+    for (QTimer* timer : imageOpenTimers) {
+        if (timer) {
+            timer->stop();
+            timer->deleteLater();
+        }
+    }
+    imageOpenTimers.clear();
 }
 
 void ImageBooth::setImageNumber(int nbr){
@@ -141,6 +156,7 @@ void ImageBooth::setImageNumber(int nbr){
     imageNumber = nbr;
 }
 void ImageBooth::clear(){
+    // stopAndDeleteTimers();
     QTimer::singleShot(100, this, [this]() {
         while (QLayoutItem* item = linesLayout->takeAt(0)) {
             if (QWidget* widget = item->widget()) {

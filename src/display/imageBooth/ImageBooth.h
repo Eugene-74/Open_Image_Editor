@@ -30,6 +30,8 @@ public:
 private:
     Data* data;
     int imageNumber;
+    int loadedImageNumber = 0;
+
     QScrollArea* scrollArea;
 
     QHBoxLayout* mainLayout;
@@ -38,13 +40,15 @@ private:
     QSize imageSize = data->sizes.imagesBoothSizes->imageSize;
     QSize realImageSize = data->sizes.imagesBoothSizes->realImageSize;
 
-    // std::vector<QTimer*> imageOpenTimers = std::vector<QTimer*>();
+    std::vector<QTimer*> imageOpenTimers = std::vector<QTimer*>();
 
 
     void createLine();
     ClickableLabel* createImage(std::string imagePath, int nbr);
     void setImageNumber(int nbr);
-    void startImageOpenTimer();
+    // void startImageOpenTimer();
+
+    void stopAndDeleteTimers();
 
 signals:
     void switchToImageEditor();

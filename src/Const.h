@@ -21,8 +21,7 @@ const int TIME_BEFORE_FULL_QUALITY = 200;
 const int TIME_BEFORE_PRE_LOAD_FULL_QUALITY = 300;
 
 const int LINE_LOADED = 2; // fois ou l'on charge un tableau d'image (2 = 2 tableau pres charger)
-const int TIME_BEFORE_LOAD_128 = 30;
-const int TIME_BEFORE_LOAD = 500;
+const int TIME_BEFORE_LOAD = 100;
 
 
 
