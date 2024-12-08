@@ -103,14 +103,8 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             data->createAllThumbnail(imagePath, 512);
             std::cerr << "load image " << imagePath << std::endl;
 
-            QImage qImage = data->imageCache->at(imagePath).image;
+            QImage qImage = data->loadImage(this, imagePath, this->size(), true, 128, true, true);
 
-            int cropSize = std::min(qImage.width(), qImage.height());
-            int xOffset = (qImage.width() - cropSize) / 2;
-            int yOffset = (qImage.height() - cropSize) / 2;
-
-            // Crop the image to a square
-            qImage = qImage.copy(xOffset, yOffset, cropSize, cropSize);
 
             imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(imageButton->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
             timer->stop();

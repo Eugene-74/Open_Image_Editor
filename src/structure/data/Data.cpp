@@ -81,32 +81,33 @@ bool Data::isDeleted(int imageNbr) {
 }
 QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail, bool rotation, bool square) {
     if (square){
-        return loadImageSquare(parent, imagePath, size, setSize, thumbnail, rotation);
-
+        QImage image = loadImageSquare(parent, imagePath, size, setSize, thumbnail);
+        if (rotation){
+            image = rotateQImage(image, imagePath);
+        }
+        return image;
     }
     else{
-        return loadImageNormal(parent, imagePath, size, setSize, thumbnail, rotation);
+        QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail);
+        if (rotation){
+            image = rotateQImage(image, imagePath);
+        }
+        return image;
 
     }
 }
 
 
-QImage Data::loadImageSquare(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail, bool rotation) {
-    // Calculate the center crop dimensions
-    QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail, rotation);
-    // std::cerr << "imageloaded " << std::endl;
+QImage Data::loadImageSquare(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail) {
+    QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail);
     int cropSize = std::min(image.width(), image.height());
     int xOffset = (image.width() - cropSize) / 2;
     int yOffset = (image.height() - cropSize) / 2;
 
-    // Crop the image to a square
     image = image.copy(xOffset, yOffset, cropSize, cropSize);
     return image;
 }
-QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail, bool rotation) {
-
-
-    // Check if the image is in the imageCache
+QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail) {
     std::map<std::string, QImageAndPath>* cache = imageCache;
 
 
@@ -194,52 +195,52 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         if (setSize) {
             image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         }
-        if (rotation){
-            ImageData* imageData = imagesData.getImageData(imagePath);
-            if (imageData != nullptr){
-                // std::cerr << "imageData" << std::endl;
-                Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
-                if (exifData.empty()) {
-                    // std::cerr << "empty" << std::endl;
-                }
-                else {
-                    // std::cerr << "not empty" << std::endl;
-                    if (exifData["Exif.Image.Orientation"].count() != 0) {
-                        int orientation = exifData["Exif.Image.Orientation"].toInt64();
-                        // std::cerr << "orientation : " << orientation << " :: " << imagePathbis << std::endl;
-                        switch (orientation) {
-                        case 1:
-                            // No transformation needed
-                            break;
-                        case 2:
-                            image = image.mirrored(true, false); // Horizontal mirror
-                            break;
-                        case 3:
-                            image = image.transformed(QTransform().rotate(180));
-                            break;
-                        case 4:
-                            image = image.mirrored(false, true); // Vertical mirror
-                            break;
-                        case 5:
-                            image = image.mirrored(true, false).transformed(QTransform().rotate(90)); // Horizontal mirror + 90 degrees
-                            break;
-                        case 6:
-                            image = image.transformed(QTransform().rotate(90));
-                            break;
-                        case 7:
-                            image = image.mirrored(true, false).transformed(QTransform().rotate(-90)); // Horizontal mirror + -90 degrees
-                            break;
-                        case 8:
-                            image = image.transformed(QTransform().rotate(-90));
-                            break;
-                        default:
-                            // Unknown orientation, no transformation
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+        // if (rotation){
+        //     ImageData* imageData = imagesData.getImageData(imagePath);
+        //     if (imageData != nullptr){
+        //         // std::cerr << "imageData" << std::endl;
+        //         Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
+        //         if (exifData.empty()) {
+        //             // std::cerr << "empty" << std::endl;
+        //         }
+        //         else {
+        //             // std::cerr << "not empty" << std::endl;
+        //             if (exifData["Exif.Image.Orientation"].count() != 0) {
+        //                 int orientation = exifData["Exif.Image.Orientation"].toInt64();
+        //                 // std::cerr << "orientation : " << orientation << " :: " << imagePathbis << std::endl;
+        //                 switch (orientation) {
+        //                 case 1:
+        //                     // No transformation needed
+        //                     break;
+        //                 case 2:
+        //                     image = image.mirrored(true, false); // Horizontal mirror
+        //                     break;
+        //                 case 3:
+        //                     image = image.transformed(QTransform().rotate(180));
+        //                     break;
+        //                 case 4:
+        //                     image = image.mirrored(false, true); // Vertical mirror
+        //                     break;
+        //                 case 5:
+        //                     image = image.mirrored(true, false).transformed(QTransform().rotate(90)); // Horizontal mirror + 90 degrees
+        //                     break;
+        //                 case 6:
+        //                     image = image.transformed(QTransform().rotate(90));
+        //                     break;
+        //                 case 7:
+        //                     image = image.mirrored(true, false).transformed(QTransform().rotate(-90)); // Horizontal mirror + -90 degrees
+        //                     break;
+        //                 case 8:
+        //                     image = image.transformed(QTransform().rotate(-90));
+        //                     break;
+        //                 default:
+        //                     // Unknown orientation, no transformation
+        //                     break;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     // Add the image to the imageCache
@@ -264,46 +265,46 @@ bool Data::loadInCache(std::string imagePath, bool setSize, QSize size, bool for
     if (setSize) {
         image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
-    ImageData* imageData = imagesData.getImageData(imagePath);
-    if (imageData != nullptr){
-        Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
-        if (exifData.empty()) {
-        }
-        else {
-            if (exifData["Exif.Image.Orientation"].count() != 0) {
-                int orientation = exifData["Exif.Image.Orientation"].toInt64();
-                switch (orientation) {
-                case 1:
-                    // No transformation needed
-                    break;
-                case 2:
-                    image = image.mirrored(true, false); // Horizontal mirror
-                    break;
-                case 3:
-                    image = image.transformed(QTransform().rotate(180));
-                    break;
-                case 4:
-                    image = image.mirrored(false, true); // Vertical mirror
-                    break;
-                case 5:
-                    image = image.mirrored(true, false).transformed(QTransform().rotate(90)); // Horizontal mirror + 90 degrees
-                    break;
-                case 6:
-                    image = image.transformed(QTransform().rotate(90));
-                    break;
-                case 7:
-                    image = image.mirrored(true, false).transformed(QTransform().rotate(-90)); // Horizontal mirror + -90 degrees
-                    break;
-                case 8:
-                    image = image.transformed(QTransform().rotate(-90));
-                    break;
-                default:
-                    break;
-                }
-            }
-        }
-    }
-    // Add the image to the imageCache
+    // ImageData* imageData = imagesData.getImageData(imagePath);
+    // if (imageData != nullptr){
+    //     Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
+    //     if (exifData.empty()) {
+    //     }
+    //     else {
+    //         if (exifData["Exif.Image.Orientation"].count() != 0) {
+    //             int orientation = exifData["Exif.Image.Orientation"].toInt64();
+    //             switch (orientation) {
+    //             case 1:
+    //                 // No transformation needed
+    //                 break;
+    //             case 2:
+    //                 image = image.mirrored(true, false); // Horizontal mirror
+    //                 break;
+    //             case 3:
+    //                 image = image.transformed(QTransform().rotate(180));
+    //                 break;
+    //             case 4:
+    //                 image = image.mirrored(false, true); // Vertical mirror
+    //                 break;
+    //             case 5:
+    //                 image = image.mirrored(true, false).transformed(QTransform().rotate(90)); // Horizontal mirror + 90 degrees
+    //                 break;
+    //             case 6:
+    //                 image = image.transformed(QTransform().rotate(90));
+    //                 break;
+    //             case 7:
+    //                 image = image.mirrored(true, false).transformed(QTransform().rotate(-90)); // Horizontal mirror + -90 degrees
+    //                 break;
+    //             case 8:
+    //                 image = image.transformed(QTransform().rotate(-90));
+    //                 break;
+    //             default:
+    //                 break;
+    //             }
+// }
+// }
+// }
+// Add the image to the imageCache
     (*imageCache)[imagePath].image = image;
     (*imageCache)[imagePath].imagePath = imagePath;
 
@@ -364,16 +365,13 @@ void Data::createThumbnails(const std::vector<std::string>& imagePaths, const in
 }
 
 void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
-    QImage image = loadImage(nullptr, imagePath, QSize(maxDim, maxDim), false, 0, false);
+    QImage image = loadImageNormal(nullptr, imagePath, QSize(maxDim, maxDim), false, 0);
 
 
-    // Calculate the scaling factor to maintain aspect ratio
     double scale = std::min(static_cast<double>(maxDim) / image.width(), static_cast<double>(maxDim) / image.height());
 
-    // Resize the image
     QImage thumbnail = image.scaled(image.width() * scale, image.height() * scale, Qt::KeepAspectRatio);
 
-    // Generate the output path for the thumbnail
     std::hash<std::string> hasher;
     size_t hashValue = hasher(imagePath);
 
@@ -390,7 +388,6 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
         outputImage = THUMBNAIL_PATH + "/x-large/" + std::to_string(hashValue) + extension;
     }
 
-    // Save the thumbnail image
     if (!thumbnail.save(QString::fromStdString(outputImage))) {
         std::cerr << "Error: Could not save thumbnail: " << outputImage << std::endl;
     }
@@ -506,4 +503,51 @@ void Data::copyTo(std::string filePath, std::string destinationPath) const{
             }
         }
     }
+}
+QImage Data::rotateQImage(QImage image, std::string imagePath){
+    ImageData* imageData = imagesData.getImageData(imagePath);
+    if (imageData != nullptr){
+        // std::cerr << "imageData" << std::endl;
+        Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
+        if (exifData.empty()) {
+            // std::cerr << "empty" << std::endl;
+        }
+        else {
+            // std::cerr << "not empty" << std::endl;
+            if (exifData["Exif.Image.Orientation"].count() != 0) {
+                int orientation = exifData["Exif.Image.Orientation"].toInt64();
+                // std::cerr << "orientation : " << orientation << " :: " << imagePath << std::endl;
+                switch (orientation) {
+                case 1:
+                    // No transformation needed
+                    break;
+                case 2:
+                    image = image.mirrored(true, false); // Horizontal mirror
+                    break;
+                case 3:
+                    image = image.transformed(QTransform().rotate(180));
+                    break;
+                case 4:
+                    image = image.mirrored(false, true); // Vertical mirror
+                    break;
+                case 5:
+                    image = image.mirrored(true, false).transformed(QTransform().rotate(90)); // Horizontal mirror + 90 degrees
+                    break;
+                case 6:
+                    image = image.transformed(QTransform().rotate(90));
+                    break;
+                case 7:
+                    image = image.mirrored(true, false).transformed(QTransform().rotate(-90)); // Horizontal mirror + -90 degrees
+                    break;
+                case 8:
+                    image = image.transformed(QTransform().rotate(-90));
+                    break;
+                default:
+                    // Unknown orientation, no transformation
+                    break;
+                }
+            }
+        }
+    }
+    return image;
 }
