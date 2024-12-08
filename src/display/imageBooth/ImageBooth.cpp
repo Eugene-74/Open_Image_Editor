@@ -98,20 +98,19 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
         QTimer* timer = new QTimer(this);
         connect(timer, &QTimer::timeout, this, [this, imagePath, imageButton, timer]() {
-            // data->loadInCache(imagePath);
-            // TODO probleme rotation
             data->createAllThumbnail(imagePath, 512);
-            std::cerr << "load image " << imagePath << std::endl;
 
             QImage qImage = data->loadImage(this, imagePath, this->size(), true, 128, true, true);
 
 
             imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(imageButton->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            loadedImageNumber += 1;
+
             timer->stop();
             timer->deleteLater();
 
             });
-        // std::cerr << "load image " << TIME_BEFORE_LOAD * (nbr - loadedImageNumber + 1) << std::endl;
+        std::cerr << "load image " << nbr - loadedImageNumber + 1 << std::endl;
         timer->setInterval(TIME_BEFORE_LOAD * (nbr - loadedImageNumber + 1));
         timer->start();
 
