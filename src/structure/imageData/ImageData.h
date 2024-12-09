@@ -35,6 +35,7 @@ public:
     std::string get() const;
 
     MetaData* getMetaData();
+    MetaData getMetaData()const;
 
     std::vector<std::string> getFolders();
 

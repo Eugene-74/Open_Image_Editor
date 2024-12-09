@@ -32,6 +32,10 @@ MetaData* ImageData::getMetaData() {
     // Débogage pour afficher la taille des métadonnées
     return &metaData;
 }
+MetaData ImageData::getMetaData()const {
+    // Débogage pour afficher la taille des métadonnées
+    return metaData;
+}
 
 std::vector<std::string> ImageData::getFolders() {
     return folders.files;

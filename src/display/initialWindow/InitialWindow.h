@@ -32,18 +32,18 @@ public:
     void createImageBooth(Data* data);
     void clearImageBooth();
 
+private slots:
+    void showImageEditor();
+    void showImageBooth();
 
 private:
     ImageEditor* imageEditor = nullptr;
     ImageBooth* imageBooth = nullptr;
     QVBoxLayout* layout;
     QWidget* centralWidget;
-private slots:
-    void showImageEditor();
-    void showImageBooth();
     ClickableLabel* createImageDiscord();
     ClickableLabel* createImageGithub();
+    ClickableLabel* createImageOption();
 
-
-
+    void openOption();
 };

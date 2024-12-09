@@ -73,6 +73,7 @@ InitialWindow::InitialWindow() {
     QHBoxLayout* linkLayout = new QHBoxLayout();
     linkLayout->addWidget(createImageDiscord());
     linkLayout->addWidget(createImageGithub());
+    linkLayout->addWidget(createImageOption());
     linkLayout->setAlignment(Qt::AlignRight);
 
     windowLayout->addLayout(linkLayout);
@@ -171,4 +172,28 @@ ClickableLabel* InitialWindow::createImageGithub() {
 
 
     return imageGithub;
+}
+ClickableLabel* InitialWindow::createImageOption() {
+
+    ClickableLabel* imageOption = new ClickableLabel(data, ":/option.png", this, QSize(50, 50), false, 0, true);
+
+
+
+    connect(imageOption, &ClickableLabel::clicked, [this]() {
+        openOption();
+        });
+
+
+    return imageOption;
+}
+
+void InitialWindow::openOption() {
+    if (data->options.size() == 0){
+        data->options = DEFAULT_OPTIONS;
+    }
+    std::map<std::string, std::string> options = showOptionsDialog(this, "Options", DEFAULT_OPTIONS);
+
+    for (const auto& [key, value] : options) {
+        std::cerr << key << " : " << value << std::endl;
+    }
 }

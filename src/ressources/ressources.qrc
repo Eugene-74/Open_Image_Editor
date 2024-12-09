@@ -14,5 +14,6 @@
 
         <file>discord.png</file>
         <file>github.png</file>
+        <file>option.png</file>
     </qresource>
 </RCC>

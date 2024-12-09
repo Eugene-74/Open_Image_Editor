@@ -475,12 +475,12 @@ bool Data::unloadFromCache(std::string imagePath){
     }
     return false;
 }
-void Data::exportImages(std::string exportPath) {
-    copyImages(&rootFolders, exportPath);
+void Data::exportImages(std::string exportPath, bool dateInName) {
+    copyImages(&rootFolders, exportPath, dateInName);
 }
 
 
-void Data::copyImages(Folders* currentFolders, std::string path) const {
+void Data::copyImages(Folders* currentFolders, std::string path, bool dateInName) const {
     for (Folders& folder : currentFolders->folders) {
         std::string folderPath = path + "/" + folder.folderName;
         if (!fs::exists(folderPath)) {
@@ -488,18 +488,32 @@ void Data::copyImages(Folders* currentFolders, std::string path) const {
         }
         else{
         }
-        copyTo(folder.folderName, path);
-        copyImages(&folder, folderPath);
+        copyTo(folder.folderName, path, dateInName);
+        copyImages(&folder, folderPath, dateInName);
     }
 
 }
 
-void Data::copyTo(std::string filePath, std::string destinationPath) const{
+void Data::copyTo(std::string filePath, std::string destinationPath, bool dateInName) const{
 
     for (const auto& imageData : imagesData.imagesData) {
         for (const auto& file : imageData.folders.files) {
             if (file == filePath) {
-                fs::copy(imageData.imagePath, destinationPath + "/" + file, fs::copy_options::overwrite_existing);
+                std::string destinationFile = destinationPath + "/" + file;
+                if (dateInName) {
+                    Exiv2::ExifData exifData = imageData.getMetaData().getExifData();
+                    if (exifData["Exif.Image.DateTime"].count() != 0) {
+                        std::string date = exifData["Exif.Image.DateTime"].toString();
+                        std::replace(date.begin(), date.end(), ':', '-');
+                        std::replace(date.begin(), date.end(), ' ', '_');
+                        destinationFile = destinationPath + "/" + date + "_" + file;
+                    }
+                    else{
+                        destinationFile = destinationPath + "/" + "no_date" + "_" + file;
+
+                    }
+                }
+                fs::copy(imageData.imagePath, destinationFile, fs::copy_options::overwrite_existing);
             }
         }
     }

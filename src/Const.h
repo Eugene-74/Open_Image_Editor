@@ -2,6 +2,8 @@
 
 #include <string>
 #include <QString>
+#include <QStandardPaths>
+#include "display/box/Box.h"
 
 
 const std::string IMAGESDATA_SAVE_DAT_PATH = "/home/eugene/save.dat";
@@ -35,3 +37,7 @@ const QString IMAGE_EDITOR_WINDOW_NAME = "EasyImageEditor : Image Editor Window"
 const QString IMAGE_BOOTH_WINDOW_NAME = "EasyImageEditor : Image Booth Window";
 
 
+const std::map<std::string, Option> DEFAULT_OPTIONS = {
+    {"thumbnail save path", Option("directory", QStandardPaths::writableLocation(QStandardPaths::CacheLocation).toStdString() + "/thumbnails")}
+    //  {"thumbnail save path", Option("directory", QStandardPaths::writableLocation(QStandardPaths::CacheLocation).toStdString() + "/thumbnails")}
+};

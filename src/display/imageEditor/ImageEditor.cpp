@@ -1058,9 +1058,25 @@ void ImageEditor::saveImage() {
 
 
 void ImageEditor::exportImage() {
-    std::string exportPath = getDirectoryFromUser(this);
-    data->exportImages(exportPath);
+    std::map<std::string, std::string> result;
+    std::map<std::string, Option> map = {
+        {"Export path", Option("directory","test")},
+        {"Date in image Name", Option("bool","false")}
+    };
+    result = showOptionsDialog(this, "export", map);
+    std::string exportPath = result["Export path"];
+    bool dateInName = (result["Date in image Name"] == "true");
+
+    // getDirectoryFromUser(this);
+
+    if (exportPath == ""){
+        std::cerr << "No export path selected" << std::endl;
+        return;
+    }
+
+    data->exportImages(exportPath, dateInName);
 }
+
 
 
 

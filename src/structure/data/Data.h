@@ -15,6 +15,7 @@
 
 
 
+
 #include <QFileDialog>
 
 
@@ -32,6 +33,8 @@ public:
     ImagesData deletedImagesData;
     Folders rootFolders = Folders("/");
     Sizes sizes;
+    std::map<std::string, Option> options;
+
 
 
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
@@ -77,10 +80,10 @@ public:
 
     std::string getThumbnailPath(const std::string& imagePath, const int size);
 
-    void exportImages(std::string exportPath);
-    void copyImages(Folders* currentFolders, std::string path) const;
+    void exportImages(std::string exportPath, bool dateInName);
+    void copyImages(Folders* currentFolders, std::string path, bool dateInName) const;
     // void copyTo(std::string path);
-    void copyTo(std::string filePath, std::string destinationPath)const;
+    void copyTo(std::string filePath, std::string destinationPath, bool dateInName)const;
 
     QImage rotateQImage(QImage image, std::string imagePath);
 
