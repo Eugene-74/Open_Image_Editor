@@ -44,19 +44,19 @@ std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std:
 
         if (option.type == "bool") {
             QCheckBox* checkBox = new QCheckBox();
-            checkBox->setChecked(option.defaultValue == "true");
+            checkBox->setChecked(option.value == "true");
             rowLayout->addWidget(checkBox);
             widgets[key] = checkBox;
         }
         else if (option.type == "text") {
             QLineEdit* lineEdit = new QLineEdit();
-            lineEdit->setText(QString::fromStdString(option.defaultValue));
+            lineEdit->setText(QString::fromStdString(option.value));
             rowLayout->addWidget(lineEdit);
             widgets[key] = lineEdit;
         }
         else if (option.type == "file") {
             QLineEdit* lineEdit = new QLineEdit();
-            lineEdit->setText(QString::fromStdString(option.defaultValue));
+            lineEdit->setText(QString::fromStdString(option.value));
             QPushButton* browseButton = new QPushButton("Browse");
             rowLayout->addWidget(lineEdit);
             rowLayout->addWidget(browseButton);
@@ -71,7 +71,7 @@ std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std:
         }
         else if (option.type == "directory") {
             QLineEdit* lineEdit = new QLineEdit();
-            lineEdit->setText(QString::fromStdString(option.defaultValue));
+            lineEdit->setText(QString::fromStdString(option.value));
             QPushButton* browseButton = new QPushButton("Browse");
             rowLayout->addWidget(lineEdit);
             rowLayout->addWidget(browseButton);

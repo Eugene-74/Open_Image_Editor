@@ -23,16 +23,16 @@ void ImagesData::setImageNumber(int nbr) {
 int ImagesData::getImageNumber() {
     return imageNumber;
 }
-void ImagesData::saveImagesData(std::string savePath) {
-    // Sauvegarder l'objet dans un fichier binaire
-    std::ofstream outFile(savePath, std::ios::binary);
-    save(outFile);
-    outFile.close();
+// void ImagesData::saveImagesData(std::string savePath) {
+//     // Sauvegarder l'objet dans un fichier binaire
+//     std::ofstream outFile(savePath, std::ios::binary);
+//     save(outFile);
+//     outFile.close();
 
-    std::cerr << "ImagesData saved in : " << savePath << std::endl;
+//     std::cerr << "ImagesData saved in : " << savePath << std::endl;
 
 
-}
+// }
 
 void ImagesData::print() const {
     std::cerr << "ImagesData : \n";
@@ -114,63 +114,63 @@ std::vector<ImageData>* ImagesData::get() {
     return &imagesData;
 }
 
-void ImagesData::save(std::ofstream& out) const {
-    // Sauvegarder le nombre d'images
-    size_t imageCount = imagesData.size();
-    out.write(reinterpret_cast<const char*>(&imageCount), sizeof(imageCount));
+// void ImagesData::save(std::ofstream& out) const {
+//     // Sauvegarder le nombre d'images
+//     size_t imageCount = imagesData.size();
+//     out.write(reinterpret_cast<const char*>(&imageCount), sizeof(imageCount));
 
-    // Sauvegarder chaque image
-    for (const auto& image : imagesData) {
-        std::cerr << image.get() << std::endl;
-        image.save(out);
-
-
-    }
+//     // Sauvegarder chaque image
+//     for (const auto& image : imagesData) {
+//         std::cerr << image.get() << std::endl;
+//         image.save(out);
 
 
-    // Sauvegarder imageNumber
-    out.write(reinterpret_cast<const char*>(&imageNumber), sizeof(imageNumber));
+//     }
 
-}
 
-void ImagesData::load(std::ifstream& in) {
-    // Effacer les données existantes
-    imagesData.clear();
+//     // Sauvegarder imageNumber
+//     out.write(reinterpret_cast<const char*>(&imageNumber), sizeof(imageNumber));
 
-    // Lire le nombre d'images
-    size_t imageCount;
-    in.read(reinterpret_cast<char*>(&imageCount), sizeof(imageCount));
+// }
 
-    // Lire chaque image
-    imagesData.resize(imageCount);
-    for (size_t i = 0; i < imageCount; ++i) {
-        imagesData[i].load(in);
-    }
+// void ImagesData::load(std::ifstream& in) {
+//     // Effacer les données existantes
+//     imagesData.clear();
 
-    // Charger imageNumber
-    in.read(reinterpret_cast<char*>(&imageNumber), sizeof(imageNumber));
-}
+//     // Lire le nombre d'images
+//     size_t imageCount;
+//     in.read(reinterpret_cast<char*>(&imageCount), sizeof(imageCount));
 
-ImagesData loadImagesData(std::string savePath) {
-    ImagesData loadedImagesData;
+//     // Lire chaque image
+//     imagesData.resize(imageCount);
+//     for (size_t i = 0; i < imageCount; ++i) {
+//         imagesData[i].load(in);
+//     }
 
-    // Ouvrir le fichier en mode binaire
-    std::ifstream inFile(savePath, std::ios::binary);
+//     // Charger imageNumber
+//     in.read(reinterpret_cast<char*>(&imageNumber), sizeof(imageNumber));
+// }
 
-    // Vérifier si le fichier a été ouvert correctement
-    if (!inFile) {
-        std::cerr << "Erreur : le fichier" << savePath << "n'existe pas ou ne peut pas être ouvert." << std::endl;
-        // Vous pouvez gérer cette situation selon vos besoins
-        return loadedImagesData; // Retourne un objet vide ou lance une exception selon votre logique
-    }
+// ImagesData loadImagesData(std::string savePath) {
+//     ImagesData loadedImagesData;
 
-    // Charger les données à partir du fichier
-    loadedImagesData.load(inFile);
+//     // Ouvrir le fichier en mode binaire
+//     std::ifstream inFile(savePath, std::ios::binary);
 
-    inFile.close(); // Fermer le fichier
+//     // Vérifier si le fichier a été ouvert correctement
+//     if (!inFile) {
+//         std::cerr << "Erreur : le fichier" << savePath << "n'existe pas ou ne peut pas être ouvert." << std::endl;
+//         // Vous pouvez gérer cette situation selon vos besoins
+//         return loadedImagesData; // Retourne un objet vide ou lance une exception selon votre logique
+//     }
 
-    return loadedImagesData; // Retourner l'objet chargé
-}
+//     // Charger les données à partir du fichier
+//     loadedImagesData.load(inFile);
+
+//     inFile.close(); // Fermer le fichier
+
+//     return loadedImagesData; // Retourner l'objet chargé
+// }
 
 
 int ImagesData::getImageIdByName(std::string imagePath){

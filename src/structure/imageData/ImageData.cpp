@@ -84,19 +84,36 @@ std::string ImageData::getImageExtension() {
 
 }
 
+void ImageData::handleExiv2Error(const Exiv2::Error& e) {
+    std::cerr << "Exiv2 error: " << e.what() << std::endl;
+}
 
 void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
-    metaData.setExifData(toAddMetaData);
-    // Sauvegarde après modification des métadonnées
-    saveMetaData();
+    try {
+        metaData.setExifData(toAddMetaData);
+        saveMetaData();
+    }
+    catch (const Exiv2::Error& e) {
+        handleExiv2Error(e);
+    }
 }
 
 void ImageData::loadData() {
-    metaData.loadData(imagePath);
+    try {
+        metaData.loadData(imagePath);
+    }
+    catch (const Exiv2::Error& e) {
+        handleExiv2Error(e);
+    }
 }
 
 void ImageData::saveMetaData() {
-    metaData.saveMetaData(imagePath);
+    try {
+        metaData.saveMetaData(imagePath);
+    }
+    catch (const Exiv2::Error& e) {
+        handleExiv2Error(e);
+    }
 }
 
 int ImageData::getImageWidth() {

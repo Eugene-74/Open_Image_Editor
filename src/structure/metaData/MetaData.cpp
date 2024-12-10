@@ -301,54 +301,96 @@ void displayIptcData(const Exiv2::IptcData& data) {
 }
 
 void MetaData::load(std::ifstream& in) {
-    // Effacer toutes les données EXIF existantes
-    exifMetaData.clear();
+    // Load exifMetaData
+    size_t exifSize;
+    in.read(reinterpret_cast<char*>(&exifSize), sizeof(exifSize));
+    for (size_t i = 0; i < exifSize; ++i) {
+        size_t keySize, valueSize;
+        in.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
+        std::string key(keySize, '\0');
+        in.read(&key[0], keySize);
+        in.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
+        std::string value(valueSize, '\0');
+        in.read(&value[0], valueSize);
+        Exiv2::Exifdatum datum = Exiv2::Exifdatum(Exiv2::ExifKey(key));
+        datum.setValue(value);
+        exifMetaData.add(datum);
+    }
 
-    // Lire le nombre d'entrées EXIF
-    size_t count;
-    in.read(reinterpret_cast<char*>(&count), sizeof(count));
+    // Load xmpMetaData
+    size_t xmpSize;
+    in.read(reinterpret_cast<char*>(&xmpSize), sizeof(xmpSize));
+    for (size_t i = 0; i < xmpSize; ++i) {
+        size_t keySize, valueSize;
+        in.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
+        std::string key(keySize, '\0');
+        in.read(&key[0], keySize);
+        in.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
+        std::string value(valueSize, '\0');
+        in.read(&value[0], valueSize);
+        Exiv2::Xmpdatum datum = Exiv2::Xmpdatum(Exiv2::XmpKey(key));
+        datum.setValue(value);
+        xmpMetaData.add(datum);
+    }
 
-    // Lire chaque entrée EXIF
-    for (size_t i = 0; i < count; ++i) {
-        // Lire la clé de l'entrée
-        size_t keyLength;
-        in.read(reinterpret_cast<char*>(&keyLength), sizeof(keyLength));
-        std::string key(keyLength, '\0');
-        in.read(&key[0], keyLength);
-
-        // Lire la valeur associée
-        size_t valueLength;
-        in.read(reinterpret_cast<char*>(&valueLength), sizeof(valueLength));
-        std::string value(valueLength, '\0');
-        in.read(&value[0], valueLength);
-
-        // Insérer l'entrée dans metaData (la clé et la valeur)
-        Exiv2::ExifKey exifKey(key);
-        // Exiv2::Value::AutoPtr exifValue = Exiv2::Value::create(Exiv2::asciiString);
-        std::unique_ptr<Exiv2::Value> exifValue = Exiv2::Value::create(Exiv2::asciiString);
-        exifValue->read(value);
-        exifMetaData.add(exifKey, exifValue.get());
+    // Load iptcMetaData
+    size_t iptcSize;
+    in.read(reinterpret_cast<char*>(&iptcSize), sizeof(iptcSize));
+    for (size_t i = 0; i < iptcSize; ++i) {
+        size_t keySize, valueSize;
+        in.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
+        std::string key(keySize, '\0');
+        in.read(&key[0], keySize);
+        in.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
+        std::string value(valueSize, '\0');
+        in.read(&value[0], valueSize);
+        Exiv2::Iptcdatum datum = Exiv2::Iptcdatum(Exiv2::IptcKey(key));
+        datum.setValue(value);
+        iptcMetaData.add(datum);
     }
 }
 
 void MetaData::save(std::ofstream& out) const {
-    // Sauvegarder le nombre d'entrées EXIF
-    size_t count = exifMetaData.count();
-    out.write(reinterpret_cast<const char*>(&count), sizeof(count));
+    // Save exifMetaData
+    size_t exifSize = exifMetaData.count();
+    out.write(reinterpret_cast<const char*>(&exifSize), sizeof(exifSize));
+    for (const auto& datum : exifMetaData) {
+        std::string key = datum.key();
+        std::string value = datum.toString();
+        size_t keySize = key.size();
+        size_t valueSize = value.size();
+        out.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
+        out.write(key.c_str(), keySize);
+        out.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
+        out.write(value.c_str(), valueSize);
+    }
 
-    // Pour chaque entrée dans les données EXIF
-    for (const auto& exifEntry : exifMetaData) {
-        // Sauvegarder la clé de l'entrée
-        std::string key = exifEntry.key();
-        size_t keyLength = key.size();
-        out.write(reinterpret_cast<const char*>(&keyLength), sizeof(keyLength));
-        out.write(key.c_str(), keyLength);
+    // Save xmpMetaData
+    size_t xmpSize = xmpMetaData.count();
+    out.write(reinterpret_cast<const char*>(&xmpSize), sizeof(xmpSize));
+    for (const auto& datum : xmpMetaData) {
+        std::string key = datum.key();
+        std::string value = datum.toString();
+        size_t keySize = key.size();
+        size_t valueSize = value.size();
+        out.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
+        out.write(key.c_str(), keySize);
+        out.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
+        out.write(value.c_str(), valueSize);
+    }
 
-        // Sauvegarder les valeurs associées
-        std::string value = exifEntry.toString();
-        size_t valueLength = value.size();
-        out.write(reinterpret_cast<const char*>(&valueLength), sizeof(valueLength));
-        out.write(value.c_str(), valueLength);
+    // Save iptcMetaData
+    size_t iptcSize = iptcMetaData.size();
+    out.write(reinterpret_cast<const char*>(&iptcSize), sizeof(iptcSize));
+    for (const auto& datum : iptcMetaData) {
+        std::string key = datum.key();
+        std::string value = datum.toString();
+        size_t keySize = key.size();
+        size_t valueSize = value.size();
+        out.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
+        out.write(key.c_str(), keySize);
+        out.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
+        out.write(value.c_str(), valueSize);
     }
 }
 

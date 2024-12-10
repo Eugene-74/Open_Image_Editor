@@ -6,16 +6,15 @@
 #include "display/box/Box.h"
 
 
-const std::string IMAGESDATA_SAVE_DAT_PATH = "/home/eugene/save.dat";
-const std::string DELETED_IMAGESDATA_SAVE_DAT_PATH = "/home/eugene/deleted.dat";
+const QString DESCKTOP_PATH = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+const QString DOCUMENTS_PATH = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+const QString PICTURES_PATH = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+const QString HOME_PATH = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+const QString CACHE_PATH = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 
-const std::string THUMBNAIL_PATH = "/home/eugene/.cache/thumbnails";
+
 
 const QString IMAGE_PATH_LOADING = ":/loading.png";
-
-
-// const std::string RESSOURCE = "../src/ressources/";
-
 
 const int PREVIEW_NBR = 3;
 const int PRE_LOAD_RADIUS = 5; // on en precharge 2 de plus comme ça l'utilisateut ne vois meme pas les images charger
@@ -37,7 +36,11 @@ const QString IMAGE_EDITOR_WINDOW_NAME = "EasyImageEditor : Image Editor Window"
 const QString IMAGE_BOOTH_WINDOW_NAME = "EasyImageEditor : Image Booth Window";
 
 
+const std::string THUMBNAIL_PATH_OPTION = "thumbnail save path";
+const std::string IMAGESDATA_SAVE_DATA_PATH = DOCUMENTS_PATH.toStdString() + "/ImageEditorSave/save.dat";
+
+
+
 const std::map<std::string, Option> DEFAULT_OPTIONS = {
-    {"thumbnail save path", Option("directory", QStandardPaths::writableLocation(QStandardPaths::CacheLocation).toStdString() + "/thumbnails")}
-    //  {"thumbnail save path", Option("directory", QStandardPaths::writableLocation(QStandardPaths::CacheLocation).toStdString() + "/thumbnails")}
+    {THUMBNAIL_PATH_OPTION, Option("directory", CACHE_PATH.toStdString() + "/thumbnails")},
 };

@@ -22,12 +22,11 @@ InitialWindow::InitialWindow() {
     // data->sizes.pixelRatio = data->sizes.screen->devicePixelRatio();
 
     std::string path = "/home/eugene/Documents/photo trié";
-    startLoadingImagesFromFolder(data, path, &data->imagesData);
+    // startLoadingImagesFromFolder(data, path, &data->imagesData);
 
 
-    // TODO sauvegarde orientation marche pas 
-    // data->imagesData = loadImagesData(IMAGESDATA_SAVE_DAT_PATH);
-    // data->deletedImagesData = loadImagesData(DELETED_IMAGESDATA_SAVE_DAT_PATH);
+    // TODO sauvegarde orientation marche pas et options nn plus
+    data->loadData();
 
     const QList<QScreen*> screens = QGuiApplication::screens();
     QScreen* screen = QGuiApplication::primaryScreen();
@@ -49,6 +48,8 @@ InitialWindow::InitialWindow() {
         std::cerr << "No images loaded" << std::endl;
         // demander un fichier a l'utilisateur si aucune images n'est chargé
         data->imagesData = addSelectedFilesToFolders(data, this);
+        data->saveData();
+
     }
     data->imagesData.setImageNumber(0);
 

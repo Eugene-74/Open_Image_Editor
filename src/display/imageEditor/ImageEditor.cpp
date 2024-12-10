@@ -1045,11 +1045,7 @@ void ImageEditor::saveImage() {
     if (data->imagesData.get()->size() <= 0) {
         clear();
     }
-    data->imagesData.saveImagesData(IMAGESDATA_SAVE_DAT_PATH);
-    data->deletedImagesData.saveImagesData(DELETED_IMAGESDATA_SAVE_DAT_PATH);
-
-
-
+    data->saveData();
 
 
     data->imagesData.setImageNumber(0);
@@ -1060,8 +1056,8 @@ void ImageEditor::saveImage() {
 void ImageEditor::exportImage() {
     std::map<std::string, std::string> result;
     std::map<std::string, Option> map = {
-        {"Export path", Option("directory","test")},
-        {"Date in image Name", Option("bool","false")}
+        {"Date in image Name", Option("bool","false")},
+        {"Export path", Option("directory", PICTURES_PATH.toStdString())}
     };
     result = showOptionsDialog(this, "export", map);
     std::string exportPath = result["Export path"];

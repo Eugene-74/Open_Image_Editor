@@ -33,7 +33,7 @@ public:
     ImagesData deletedImagesData;
     Folders rootFolders = Folders("/");
     Sizes sizes;
-    std::map<std::string, Option> options;
+    std::map<std::string, Option> options = DEFAULT_OPTIONS;
 
 
 
@@ -87,6 +87,8 @@ public:
 
     QImage rotateQImage(QImage image, std::string imagePath);
 
+    void saveData();
+    void loadData();
 
 };
 

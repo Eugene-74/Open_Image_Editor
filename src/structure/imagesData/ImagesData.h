@@ -58,18 +58,7 @@ public:
     std::vector<ImageData>* get();
 
 
-    // Permet de sauvegarder ImagesData à partir d'un fichier binaire
-    void saveImagesData(std::string savePath);
-
-    // Sauvegarder ImageData entier en binaire
-    void save(std::ofstream& out) const;
-
-    // Charger ImageData à partir d'un fichier binaire
-    void load(std::ifstream& in);
-
     int getImageIdByName(std::string imagePath);
 
 };
 
-// Permet de charger ImagesData à partir d'un fichier binaire
-ImagesData loadImagesData(std::string savePath);

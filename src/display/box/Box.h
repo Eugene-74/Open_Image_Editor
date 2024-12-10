@@ -6,10 +6,11 @@
 
 struct Option {
     std::string type;
-    std::string defaultValue;
+    std::string value;
 
-    Option(const std::string& type, const std::string& defaultValue)
-        : type(type), defaultValue(defaultValue) {
+    Option() = default; // Default constructor
+    Option(const std::string& type, const std::string& value)
+        : type(type), value(value) {
     }
 };
 

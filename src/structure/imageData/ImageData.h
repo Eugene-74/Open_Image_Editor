@@ -78,6 +78,8 @@ public:
 
     void setOrCreateExifData();
 
+    void handleExiv2Error(const Exiv2::Error& e);
+
 };
 
 

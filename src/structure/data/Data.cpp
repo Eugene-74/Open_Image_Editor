@@ -1,4 +1,8 @@
 #include "Data.h"
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <fstream>
 
 namespace fs = std::filesystem;  // Alias pour simplifier le code
 
@@ -379,13 +383,13 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
 
     std::string outputImage;
     if (maxDim == 128) {
-        outputImage = THUMBNAIL_PATH + "/normal/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" + std::to_string(hashValue) + extension;
     }
     else if (maxDim == 256) {
-        outputImage = THUMBNAIL_PATH + "/large/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" + std::to_string(hashValue) + extension;
     }
     else if (maxDim == 512) {
-        outputImage = THUMBNAIL_PATH + "/x-large/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" + std::to_string(hashValue) + extension;
     }
 
     if (!thumbnail.save(QString::fromStdString(outputImage))) {
@@ -417,13 +421,13 @@ bool Data::hasThumbnail(const std::string& imagePath, const int maxDim) {
     std::string outputImage;
 
     if (maxDim == 128) {
-        outputImage = THUMBNAIL_PATH + "/normal/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" + std::to_string(hashValue) + extension;
     }
     else if (maxDim == 256) {
-        outputImage = THUMBNAIL_PATH + "/large/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" + std::to_string(hashValue) + extension;
     }
     else if (maxDim == 512) {
-        outputImage = THUMBNAIL_PATH + "/x-large/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" + std::to_string(hashValue) + extension;
     }
 
     // Check if the thumbnail file exists
@@ -451,13 +455,13 @@ std::string Data::getThumbnailPath(const std::string& imagePath, const int size)
     std::string outputImage;
 
     if (size == 128) {
-        outputImage = THUMBNAIL_PATH + "/normal/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" + std::to_string(hashValue) + extension;
     }
     else if (size == 256) {
-        outputImage = THUMBNAIL_PATH + "/large/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" + std::to_string(hashValue) + extension;
     }
     else if (size == 512) {
-        outputImage = THUMBNAIL_PATH + "/x-large/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" + std::to_string(hashValue) + extension;
     }
     return outputImage;
 }
@@ -564,4 +568,108 @@ QImage Data::rotateQImage(QImage image, std::string imagePath){
         }
     }
     return image;
+}
+
+
+
+
+
+
+void Data::saveData() {
+    std::string filePath = IMAGESDATA_SAVE_DATA_PATH;
+    std::ofstream outFile(filePath, std::ios::binary);
+    if (!outFile) {
+        // Vérifiez si le répertoire parent existe
+        if (!fs::exists(fs::path(filePath).parent_path())) {
+            // Essayez de créer les répertoires nécessaires
+            if (!fs::create_directories(fs::path(filePath).parent_path())) {
+                std::cerr << "Couldn't create directories for save file." << std::endl;
+                return;
+            }
+            else {
+                std::cerr << "Directories created" << std::endl;
+            }
+        }
+
+        // Essayez d'ouvrir le fichier à nouveau après avoir créé les répertoires
+        outFile.open(filePath, std::ios::binary);
+        if (!outFile) {
+            std::cerr << "Couldn't open save file." << std::endl;
+            return;
+        }
+    }
+
+    std::cerr << "Saving data" << std::endl;
+    // Serialize imagesData
+    size_t imagesDataSize = imagesData.get()->size();
+    outFile.write(reinterpret_cast<const char*>(&imagesDataSize), sizeof(imagesDataSize));
+    for (const auto& imageData : *imagesData.get()) {
+        imageData.save(outFile);
+    }
+
+    // Serialize deletedImagesData
+    size_t deletedImagesDataSize = deletedImagesData.get()->size();
+    outFile.write(reinterpret_cast<const char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
+    for (const auto& imageData : *deletedImagesData.get()) {
+        imageData.save(outFile);
+    }
+
+    // Serialize options
+    size_t optionsSize = options.size();
+    outFile.write(reinterpret_cast<const char*>(&optionsSize), sizeof(optionsSize));
+    for (const auto& [key, option] : options) {
+        size_t keySize = key.size();
+        outFile.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
+        outFile.write(key.c_str(), keySize);
+        size_t valueSize = option.value.size();
+        outFile.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
+        outFile.write(option.value.c_str(), valueSize);
+    }
+
+    outFile.close();
+}
+
+void Data::loadData() {
+    std::string filePath = IMAGESDATA_SAVE_DATA_PATH;
+    std::ifstream inFile(filePath, std::ios::binary);
+    if (!inFile) {
+        std::cerr << "Couldn't open load file." << std::endl;
+        return;
+    }
+
+    // Deserialize imagesData
+    size_t imagesDataSize;
+    inFile.read(reinterpret_cast<char*>(&imagesDataSize), sizeof(imagesDataSize));
+    for (size_t i = 0; i < imagesDataSize; ++i) {
+        ImageData imageData;
+        imageData.load(inFile);
+        imagesData.addImage(imageData);
+    }
+
+    // Deserialize deletedImagesData
+    size_t deletedImagesDataSize;
+    inFile.read(reinterpret_cast<char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
+    for (size_t i = 0; i < deletedImagesDataSize; ++i) {
+        ImageData imageData;
+        imageData.load(inFile);
+        deletedImagesData.addImage(imageData);
+    }
+
+    // Deserialize options
+    options.clear();
+    size_t optionsSize;
+    inFile.read(reinterpret_cast<char*>(&optionsSize), sizeof(optionsSize));
+    for (size_t i = 0; i < optionsSize; ++i) {
+        std::string key, value;
+        size_t keySize, valueSize;
+        inFile.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
+        key.resize(keySize);
+        inFile.read(&key[0], keySize);
+        inFile.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
+        value.resize(valueSize);
+        inFile.read(&value[0], valueSize);
+        options[key] = Option("string", value);
+    }
+
+    inFile.close();
 }
