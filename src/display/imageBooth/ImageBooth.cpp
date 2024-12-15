@@ -114,16 +114,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     return imageButton;
 }
 
-void ImageBooth::stopAndDeleteTimers() {
-    for (QTimer* timer : imageOpenTimers) {
-        if (timer) {
-            timer->stop();
-            timer->deleteLater();
-        }
-    }
-    imageOpenTimers.clear();
-}
-
 void ImageBooth::setImageNumber(int nbr){
     while (nbr < 0) {
         nbr += 1;

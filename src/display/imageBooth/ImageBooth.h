@@ -11,7 +11,6 @@
 
 #include "../../structure/data/Data.h"
 #include "../../display/clickableLabel/ClickableLabel.h"
-// #include "../../display/imageEditor/ImageEditor.h"
 #include "../../display/initialWindow/InitialWindow.h"
 
 
@@ -40,15 +39,10 @@ private:
     QSize imageSize = data->sizes.imagesBoothSizes->imageSize;
     QSize realImageSize = data->sizes.imagesBoothSizes->realImageSize;
 
-    std::vector<QTimer*> imageOpenTimers = std::vector<QTimer*>();
-
 
     void createLine();
     ClickableLabel* createImage(std::string imagePath, int nbr);
     void setImageNumber(int nbr);
-    // void startImageOpenTimer();
-
-    void stopAndDeleteTimers();
 
 signals:
     void switchToImageEditor();
