@@ -208,18 +208,27 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 
 
 // Ajoutez une méthode pour charger l'image en cache de manière asynchrone
-void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
-    auto task = [this, imagePath, force, setSize, size, callback]() {
-        loadInCache(imagePath, setSize, size, force);
-        if (callback) {
-            QMetaObject::invokeMethod(QApplication::instance(), callback, Qt::QueuedConnection);
-        }
-        };
+// void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
+//     futures[QString::fromStdString(imagePath)] = QtConcurrent::run([this, imagePath, force, setSize, size, callback]() {
+//         threadPool.enqueue([this, imagePath, force, setSize, size, callback]() {
+//             loadInCache(imagePath, setSize, size, force);
+//             if (callback) {
+//                 QMetaObject::invokeMethod(QApplication::instance(), callback, Qt::QueuedConnection);
+//             }
+//             }).get();
+//         });
+// }
 
-    QFuture<void> future = QtConcurrent::run(task);
-    futures[QString::fromStdString(imagePath)] = future;
+void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
+    futures[QString::fromStdString(imagePath)] = threadPool.enqueue(&Data::loadImageTask, this, imagePath, setSize, size, force, callback);
 }
 
+void Data::loadImageTask(std::string imagePath, bool setSize, QSize size, bool force, std::function<void()> callback) {
+    loadInCache(imagePath, setSize, size, force);
+    if (callback) {
+        QMetaObject::invokeMethod(QApplication::instance(), callback, Qt::QueuedConnection);
+    }
+}
 bool Data::loadInCache(const std::string imagePath, bool setSize, const QSize size, bool force) {
     QImage image;
     if (!force && isInCache(imagePath)) {
@@ -633,8 +642,6 @@ void Data::loadData() {
 
 // annuler les tâches en cours
 void Data::cancelTasks() {
-    for (auto& future : futures) {
-        future.cancel();
-    }
+    threadPool.shutdown();
     futures.clear();
 }

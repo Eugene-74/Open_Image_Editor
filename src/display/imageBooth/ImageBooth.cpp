@@ -5,9 +5,6 @@
 ImageBooth::ImageBooth(Data* dat, QWidget* parent) : QMainWindow(parent), data(dat) {
 
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
-    // for (int i = 0; i < data->sizes.imagesBoothSizes->heightImageNumber * LINE_LOADED; i++){
-        // imageOpenTimers.push_back(new QTimer(this));
-    // }
 
     imageNumber = 0;
 
@@ -43,13 +40,12 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent) : QMainWindow(parent), data(d
 
     connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, [this](int value) {
         if (value >= scrollArea->verticalScrollBar()->maximum() - 500) {
-            for (int i = 0; i < data->sizes.imagesBoothSizes->heightImageNumber; i++) {
-                createLine();
-            }
+            // for (int i = 0; i < data->sizes.imagesBoothSizes->heightImageNumber; i++) {
+            createLine();
+            // }
         }
         });
 
-    // startImageOpenTimer();
 
 
 }
@@ -80,12 +76,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         return nullptr;
     }
     ClickableLabel* imageButton;
-    if (data->isInCache(imagePath)){
-        imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 0, true);
-        loadedImageNumber += 1;
-
-    }
-    else if (data->isInCache(data->getThumbnailPath(imagePath, 128))){
+    if (data->isInCache(data->getThumbnailPath(imagePath, 128))){
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 128, true);
         loadedImageNumber += 1;
     }
@@ -96,25 +87,20 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     else{
         imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING, this, imageSize, false, 0, true);
 
-        QTimer* timer = new QTimer(this);
-        connect(timer, &QTimer::timeout, this, [this, imagePath, imageButton, timer]() {
+        data->loadInCacheAsync(imagePath, [this, imagePath, imageButton]() {
             data->createAllThumbnail(imagePath, 512);
+            data->unloadFromCache(imagePath);
+            data->unloadFromCache(data->getThumbnailPath(imagePath, 256));
+            data->unloadFromCache(data->getThumbnailPath(imagePath, 512));
 
             QImage qImage = data->loadImage(this, imagePath, this->size(), true, 128, true, true);
 
+            QMetaObject::invokeMethod(QApplication::instance(), [imageButton, qImage]() {
+                imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(imageButton->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                }, Qt::QueuedConnection);
 
-            imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(imageButton->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
             loadedImageNumber += 1;
-
-            timer->stop();
-            timer->deleteLater();
-
             });
-        std::cerr << "load image " << nbr - loadedImageNumber + 1 << std::endl;
-        timer->setInterval(TIME_BEFORE_LOAD * (nbr - loadedImageNumber + 1));
-        timer->start();
-
-        imageOpenTimers.push_back(timer);
     }
 
 
@@ -161,37 +147,4 @@ void ImageBooth::clear(){
         scrollArea = nullptr;
         });
 }
-
-// void ImageBooth::startImageOpenTimer() {
-//     // int i = 0;
-//     for (int i = 0; i < data->sizes.imagesBoothSizes->heightImageNumber * LINE_LOADED; i++){
-
-//         QTimer* imageOpenTimer = imageOpenTimers[i];
-//         // precharge les images des alentours
-//         if (imageOpenTimers[i]) {
-//             imageOpenTimers[i]->disconnect();
-//             imageOpenTimers[i]->stop();
-//             imageOpenTimers[i]->deleteLater();
-//         }
-//         imageOpenTimers[i] = new QTimer(this);
-
-//         connect(imageOpenTimers[i], &QTimer::timeout, this, [this, i]() {
-//             for (int j = 0; j < data->sizes.imagesBoothSizes->widthImageNumber; j++){
-//                 data->loadInCache(data->imagesData.getImageData(i * data->sizes.imagesBoothSizes->widthImageNumber + j)->imagePath);
-//                 std::cerr << "load image " << i * data->sizes.imagesBoothSizes->widthImageNumber + j << std::endl;
-//                 imageNumber = 0;
-//                 createLine(true);
-
-//             }
-
-//             imageOpenTimers[i]->stop();
-//             imageOpenTimers[i]->deleteLater();
-//             imageOpenTimers[i] = nullptr;
-//             });
-
-//         imageOpenTimers[i]->setInterval(TIME_BEFORE_PRE_LOAD_FULL_QUALITY * data->sizes.imagesBoothSizes->widthImageNumber * (i + 1));
-
-//         imageOpenTimers[i]->start();
-//     }
-// }
 
