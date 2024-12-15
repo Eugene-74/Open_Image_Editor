@@ -1,7 +1,7 @@
 unset GTK_PATH
 # Créer un répertoire de build et y naviguer
-mkdir build
-cd build
+mkdir buildLinux
+cd buildLinux
 
 # Configurer le projet avec CMake
 cmake ..

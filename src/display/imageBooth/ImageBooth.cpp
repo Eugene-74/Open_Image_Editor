@@ -40,9 +40,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent) : QMainWindow(parent), data(d
 
     connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, [this](int value) {
         if (value >= scrollArea->verticalScrollBar()->maximum() - 500) {
-            // for (int i = 0; i < data->sizes.imagesBoothSizes->heightImageNumber; i++) {
             createLine();
-            // }
         }
         });
 
@@ -58,7 +56,6 @@ void ImageBooth::createLine(){
     linesLayout->addLayout(lineLayout);
 
     int nbr = data->sizes.imagesBoothSizes->widthImageNumber;
-    // int loadedImageNumber = 0;
 
 
     for (int i = 0; i < nbr;i++){

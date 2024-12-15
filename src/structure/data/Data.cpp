@@ -326,6 +326,9 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
         outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" + std::to_string(hashValue) + extension;
     }
 
+    if (!fs::exists(fs::path(outputImage).parent_path())) {
+        fs::create_directories(fs::path(outputImage).parent_path());
+    }
     if (!thumbnail.save(QString::fromStdString(outputImage))) {
         std::cerr << "Error: Could not save thumbnail: " << outputImage << std::endl;
     }

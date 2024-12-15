@@ -6,6 +6,8 @@ Makefile
 
 # Répertoires de build
 build/
+buildLinux/
+
 bin/
 lib/
 
