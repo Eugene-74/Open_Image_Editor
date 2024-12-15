@@ -10,9 +10,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# Configuration Qt statique
-set(Qt5_USE_STATIC_LIBS ON)
-set(Qt5_USE_STATIC_RUNTIME ON)
+# Configuration Qt dynamique
+set(Qt5_USE_STATIC_LIBS OFF)
+set(Qt5_USE_STATIC_RUNTIME OFF)
 
 # Chemin Qt
 find_program(QMAKE_EXECUTABLE NAMES qmake)
@@ -52,6 +52,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Location
     ${OpenCV_LIBS}
     ${EXIV2_LIBRARIES}
+    ${CMAKE_DL_LIBS}  # Ajout de la bibliothèque de chargement dynamique
 )
 
 # Support GCC filesystem
@@ -106,7 +107,7 @@ endforeach()
 set(CPACK_GENERATOR "ZIP")
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Easy Image Editor Application")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Open Image Editor Application")
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
     set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 endif()
