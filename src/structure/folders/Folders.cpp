@@ -12,41 +12,53 @@ Folders& Folders::operator=(const Folders& other) {
 
 
 void Folders::save(std::ofstream& out) const {
-    // Sauvegarder le nom du dossier
+    // Save folder name
     size_t folderNameSize = folderName.size();
     out.write(reinterpret_cast<const char*>(&folderNameSize), sizeof(folderNameSize));
     out.write(folderName.c_str(), folderNameSize);
 
-    // Sauvegarder le nombre de sous-dossiers
+    // Save files
     size_t filesCount = files.size();
     out.write(reinterpret_cast<const char*>(&filesCount), sizeof(filesCount));
-
-    // Sauvegarder chaque sous-dossier
     for (const auto& file : files) {
         size_t fileSize = file.size();
         out.write(reinterpret_cast<const char*>(&fileSize), sizeof(fileSize));
         out.write(file.c_str(), fileSize);
     }
+
+    // Save subfolders
+    size_t foldersCount = folders.size();
+    out.write(reinterpret_cast<const char*>(&foldersCount), sizeof(foldersCount));
+    for (const auto& folder : folders) {
+        folder.save(out);
+    }
 }
 
 void Folders::load(std::ifstream& in) {
-    // Lire le nom du dossier
+    // Load folder name
     size_t folderNameSize;
     in.read(reinterpret_cast<char*>(&folderNameSize), sizeof(folderNameSize));
     folderName.resize(folderNameSize);
     in.read(&folderName[0], folderNameSize);
 
-    // Lire le nombre de sous-dossiers
+    // Load files
     size_t filesCount;
     in.read(reinterpret_cast<char*>(&filesCount), sizeof(filesCount));
-
-    // Lire chaque fichier
     files.resize(filesCount);
     for (auto& file : files) {
         size_t fileSize;
         in.read(reinterpret_cast<char*>(&fileSize), sizeof(fileSize));
         file.resize(fileSize);
         in.read(&file[0], fileSize);
+    }
+
+    // Load subfolders
+    size_t foldersCount;
+    in.read(reinterpret_cast<char*>(&foldersCount), sizeof(foldersCount));
+    folders.resize(foldersCount);
+    for (auto& folder : folders) {
+        folder.load(in);
+        folder.parent = this;
     }
 }
 

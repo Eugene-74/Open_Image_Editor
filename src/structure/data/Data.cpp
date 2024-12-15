@@ -480,30 +480,35 @@ bool Data::unloadFromCache(std::string imagePath){
     return false;
 }
 void Data::exportImages(std::string exportPath, bool dateInName) {
-    copyImages(&rootFolders, exportPath, dateInName);
+    Folders* firstFolder;
+
+    firstFolder = findFirstFolderWithAllImages(imagesData, rootFolders);
+
+    copyImages(firstFolder, exportPath, dateInName);
+
 }
 
-
-void Data::copyImages(Folders* currentFolders, std::string path, bool dateInName) const {
-    for (Folders& folder : currentFolders->folders) {
-        std::string folderPath = path + "/" + folder.folderName;
-        if (!fs::exists(folderPath)) {
-            fs::create_directories(folderPath);
+Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const {
+    for (const auto& folder : currentFolder.folders) {
+        for (ImageData imageData : imagesData.imagesData) {
+            for (Folders folderBis : imageData.folders.files) {
+                if (folderBis.folderName == folder.folderName) {
+                    return const_cast<Folders*>(&currentFolder);
+                }
+            }
         }
-        else{
-        }
-        copyTo(folder.folderName, path, dateInName);
-        copyImages(&folder, folderPath, dateInName);
+        return findFirstFolderWithAllImages(imagesData, folder);
     }
-
+    return const_cast<Folders*>(&currentFolder);
 }
+
 
 void Data::copyTo(std::string filePath, std::string destinationPath, bool dateInName) const{
 
     for (const auto& imageData : imagesData.imagesData) {
         for (const auto& file : imageData.folders.files) {
             if (file == filePath) {
-                std::string destinationFile = destinationPath + "/" + file;
+                std::string destinationFile = destinationPath + "/" + imageData.getImageName();
                 if (dateInName) {
                     Exiv2::ExifData exifData = imageData.getMetaData().getExifData();
                     if (exifData["Exif.Image.DateTime"].count() != 0) {
@@ -572,8 +577,20 @@ QImage Data::rotateQImage(QImage image, std::string imagePath){
 
 
 
-
-
+void Data::copyImages(Folders* currentFolders, std::string folderPath, bool dateInName) {
+    currentFolders->print();
+    for (auto& folder : currentFolders->folders) {
+        folderPath = folderPath + "/" + folder.folderName;
+        std::cerr << "folderPath : " << folderPath << std::endl;
+        if (!fs::exists(folderPath)) {
+            fs::create_directories(folderPath);
+        }
+        copyImages(&folder, folderPath, dateInName);
+    }
+    for (auto& file : currentFolders->folders) {
+        copyTo(file.folderName, folderPath, dateInName);
+    }
+}
 
 void Data::saveData() {
     std::string filePath = IMAGESDATA_SAVE_DATA_PATH;
@@ -626,6 +643,9 @@ void Data::saveData() {
         outFile.write(option.value.c_str(), valueSize);
     }
 
+    // Serialize rootFolders
+    rootFolders.save(outFile);
+
     outFile.close();
 }
 
@@ -670,6 +690,8 @@ void Data::loadData() {
         inFile.read(&value[0], valueSize);
         options[key] = Option("string", value);
     }
+    rootFolders.load(inFile);
+
 
     inFile.close();
 }
