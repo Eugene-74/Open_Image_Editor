@@ -6,12 +6,14 @@
 #include <QFile>
 #include <QSize>
 #include <QResource>
+#include <QtConcurrent/QtConcurrent>
 
 #include <iostream>
 #include <fstream> 
 #include "../../display/box/Box.h"
 #include "../../structure/folders/Folders.h"
 #include "../../structure/sizes/Sizes.h"
+// #include "../../structure/threadPool/ThreadPool.h"
 
 
 
@@ -35,6 +37,8 @@ public:
     Sizes sizes;
     std::map<std::string, Option> options = DEFAULT_OPTIONS;
 
+    // ThreadPool threadPool = ThreadPool(std::thread::hardware_concurrency());
+    QMap<QString, QFuture<void>> futures;
 
 
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
@@ -56,7 +60,10 @@ public:
     QImage loadImageSquare(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0);
 
     bool loadInCache(std::string imagePath, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
+    void loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
+
     bool unloadFromCache(std::string imagePath);
+    bool unloadFromFutures(std::string imagePath);
 
 
     bool isInCache(std::string imagePath);
@@ -91,6 +98,7 @@ public:
     void loadData();
     Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
 
+    void cancelTasks();
 
 };
 

@@ -1146,9 +1146,22 @@ void ImageEditor::startImageOpenTimer() {
     }
 
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
-        data->loadInCache(data->imagesData.getCurrentImageData()->getImagePath());
-        reloadImageLabel();
+
+        data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [this]() { reloadImageLabel(); });
         imageOpenTimer->stop();
+        for (int i = 0; i < PRE_LOAD_RADIUS; i++){
+
+            if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.get()->size()
+                && data->imagesData.getImageNumber() - (i + 1) >= 0) {
+                data->loadInCacheAsync(data->imagesData.getImageData(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr);
+            }
+
+            if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.get()->size()
+                && data->imagesData.getImageNumber() + (i + 1) >= 0){
+                data->loadInCacheAsync(data->imagesData.getImageData(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr);
+            }
+        }
+        // reloadImageLabel();
         });
 
     imageOpenTimer->setInterval(TIME_BEFORE_FULL_QUALITY);
@@ -1156,58 +1169,6 @@ void ImageEditor::startImageOpenTimer() {
 
 
     // precharge les images des alentours
-    for (int i = 0; i < PRE_LOAD_RADIUS; i++){
-
-        if (imagePreviewOpenTimers[i]) {
-            imagePreviewOpenTimers[i]->disconnect();
-            imagePreviewOpenTimers[i]->stop();
-            imagePreviewOpenTimers[i]->deleteLater();
-        }
-        imagePreviewOpenTimers[i] = new QTimer(this);
-
-        connect(imagePreviewOpenTimers[i], &QTimer::timeout, this, [this, i]() {
-
-            int done = 0;
-            if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.get()->size()
-                && data->imagesData.getImageNumber() - (i + 1) >= 0) {
-                if (!data->isInCache(data->imagesData.getImageData(data->imagesData.getImageNumber() - (i + 1))->getImagePath())){
-                    data->loadInCache(data->imagesData.getImageData(data->imagesData.getImageNumber() - (i + 1))->getImagePath());
-                    done += 1;
-
-
-                    data->unloadFromCache(data->getThumbnailPath(data->imagesData.getImageData(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), 128));
-                    data->unloadFromCache(data->getThumbnailPath(data->imagesData.getImageData(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), 256));
-                    data->unloadFromCache(data->getThumbnailPath(data->imagesData.getImageData(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), 512));
-
-                }
-            }
-
-            if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.get()->size()
-                && data->imagesData.getImageNumber() + (i + 1) >= 0){
-                if (!data->isInCache(data->imagesData.getImageData(data->imagesData.getImageNumber() + (i + 1))->getImagePath())){
-                    data->loadInCache(data->imagesData.getImageData(data->imagesData.getImageNumber() + (i + 1))->getImagePath());
-                    done += 1;
-
-                    data->unloadFromCache(data->getThumbnailPath(data->imagesData.getImageData(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), 128));
-                    data->unloadFromCache(data->getThumbnailPath(data->imagesData.getImageData(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), 256));
-                    data->unloadFromCache(data->getThumbnailPath(data->imagesData.getImageData(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), 512));
-
-                }
-            }
-            if (done != 0){
-                updatePreview();
-
-            }
-
-            imagePreviewOpenTimers[i]->stop();
-            imagePreviewOpenTimers[i]->deleteLater();
-            imagePreviewOpenTimers[i] = nullptr;
-            });
-
-        imagePreviewOpenTimers[i]->setInterval(TIME_BEFORE_PRE_LOAD_FULL_QUALITY * (i + 1));
-
-        imagePreviewOpenTimers[i]->start();
-    }
 
 }
 
@@ -1246,6 +1207,8 @@ void ImageEditor::checkLoadedImage() {
     }
     for (const auto& imagePath : toUnload){
         data->unloadFromCache(imagePath);
+        data->unloadFromFutures(imagePath);
+
     }
 
 }

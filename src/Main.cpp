@@ -109,7 +109,6 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
             loadImagesFromFolder(initialPath, entry.path(), imagesData, nbrImage);
         }
     }
-    // return imagesData;
 }
 
 

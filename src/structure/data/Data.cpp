@@ -199,66 +199,30 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         if (setSize) {
             image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         }
-        // if (rotation){
-        //     ImageData* imageData = imagesData.getImageData(imagePath);
-        //     if (imageData != nullptr){
-        //         // std::cerr << "imageData" << std::endl;
-        //         Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
-        //         if (exifData.empty()) {
-        //             // std::cerr << "empty" << std::endl;
-        //         }
-        //         else {
-        //             // std::cerr << "not empty" << std::endl;
-        //             if (exifData["Exif.Image.Orientation"].count() != 0) {
-        //                 int orientation = exifData["Exif.Image.Orientation"].toInt64();
-        //                 // std::cerr << "orientation : " << orientation << " :: " << imagePathbis << std::endl;
-        //                 switch (orientation) {
-        //                 case 1:
-        //                     // No transformation needed
-        //                     break;
-        //                 case 2:
-        //                     image = image.mirrored(true, false); // Horizontal mirror
-        //                     break;
-        //                 case 3:
-        //                     image = image.transformed(QTransform().rotate(180));
-        //                     break;
-        //                 case 4:
-        //                     image = image.mirrored(false, true); // Vertical mirror
-        //                     break;
-        //                 case 5:
-        //                     image = image.mirrored(true, false).transformed(QTransform().rotate(90)); // Horizontal mirror + 90 degrees
-        //                     break;
-        //                 case 6:
-        //                     image = image.transformed(QTransform().rotate(90));
-        //                     break;
-        //                 case 7:
-        //                     image = image.mirrored(true, false).transformed(QTransform().rotate(-90)); // Horizontal mirror + -90 degrees
-        //                     break;
-        //                 case 8:
-        //                     image = image.transformed(QTransform().rotate(-90));
-        //                     break;
-        //                 default:
-        //                     // Unknown orientation, no transformation
-        //                     break;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
     }
-
-    // Add the image to the imageCache
-
-
 
     (*cache)[imagePathbis].image = image;
     (*cache)[imagePathbis].imagePath = imagePath;
     return image;
 }
 
-bool Data::loadInCache(std::string imagePath, bool setSize, QSize size, bool force) {
+
+// Ajoutez une méthode pour charger l'image en cache de manière asynchrone
+void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
+    auto task = [this, imagePath, force, setSize, size, callback]() {
+        loadInCache(imagePath, setSize, size, force);
+        if (callback) {
+            QMetaObject::invokeMethod(QApplication::instance(), callback, Qt::QueuedConnection);
+        }
+        };
+
+    QFuture<void> future = QtConcurrent::run(task);
+    futures[QString::fromStdString(imagePath)] = future;
+}
+
+bool Data::loadInCache(const std::string imagePath, bool setSize, const QSize size, bool force) {
     QImage image;
-    if (force && isInCache(imagePath)){
+    if (!force && isInCache(imagePath)) {
         return true;
     }
     image.load(QString::fromStdString(imagePath));
@@ -269,46 +233,7 @@ bool Data::loadInCache(std::string imagePath, bool setSize, QSize size, bool for
     if (setSize) {
         image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
-    // ImageData* imageData = imagesData.getImageData(imagePath);
-    // if (imageData != nullptr){
-    //     Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
-    //     if (exifData.empty()) {
-    //     }
-    //     else {
-    //         if (exifData["Exif.Image.Orientation"].count() != 0) {
-    //             int orientation = exifData["Exif.Image.Orientation"].toInt64();
-    //             switch (orientation) {
-    //             case 1:
-    //                 // No transformation needed
-    //                 break;
-    //             case 2:
-    //                 image = image.mirrored(true, false); // Horizontal mirror
-    //                 break;
-    //             case 3:
-    //                 image = image.transformed(QTransform().rotate(180));
-    //                 break;
-    //             case 4:
-    //                 image = image.mirrored(false, true); // Vertical mirror
-    //                 break;
-    //             case 5:
-    //                 image = image.mirrored(true, false).transformed(QTransform().rotate(90)); // Horizontal mirror + 90 degrees
-    //                 break;
-    //             case 6:
-    //                 image = image.transformed(QTransform().rotate(90));
-    //                 break;
-    //             case 7:
-    //                 image = image.mirrored(true, false).transformed(QTransform().rotate(-90)); // Horizontal mirror + -90 degrees
-    //                 break;
-    //             case 8:
-    //                 image = image.transformed(QTransform().rotate(-90));
-    //                 break;
-    //             default:
-    //                 break;
-    //             }
-// }
-// }
-// }
-// Add the image to the imageCache
+    // std::cerr << "loaded in cache : " << imagePath << std::endl;
     (*imageCache)[imagePath].image = image;
     (*imageCache)[imagePath].imagePath = imagePath;
 
@@ -475,6 +400,16 @@ bool Data::unloadFromCache(std::string imagePath){
 
     if (it != imageCache->end()) {
         imageCache->erase(it);
+        return true;
+    }
+    return false;
+}
+
+
+bool Data::unloadFromFutures(std::string imagePath) {
+    auto it = futures.find(QString::fromStdString(imagePath));
+    if (it != futures.end()) {
+        futures.erase(it);
         return true;
     }
     return false;
@@ -694,4 +629,12 @@ void Data::loadData() {
 
 
     inFile.close();
+}
+
+// annuler les tâches en cours
+void Data::cancelTasks() {
+    for (auto& future : futures) {
+        future.cancel();
+    }
+    futures.clear();
 }
