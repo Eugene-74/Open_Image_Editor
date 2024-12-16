@@ -79,15 +79,16 @@ public:
     std::string getThumbnailPath(const std::string& imagePath, const int size);
 
     void exportImages(std::string exportPath, bool dateInName);
-    void copyImages(Folders* currentFolders, std::string path, bool dateInName);
-    // void copyTo(std::string path);
-    void copyTo(std::string filePath, std::string destinationPath, bool dateInName) const;
 
-    QImage rotateQImage(QImage image, std::string imagePath);
 
     void saveData();
     void loadData();
-    Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
 
     void cancelTasks();
+private:
+    QImage rotateQImage(QImage image, std::string imagePath);
+
+    Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
+    void copyImages(Folders* currentFolders, std::string path, bool dateInName);
+    void copyTo(std::string filePath, std::string destinationPath, bool dateInName) const;
 };

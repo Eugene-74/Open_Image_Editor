@@ -86,29 +86,29 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     else {
         imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING, this, imageSize,
             false, 0, true);
-        QTimer::singleShot(100, this, [this, imagePath, imageButton]() {
-            data->loadInCacheAsync(imagePath, [this, imagePath, imageButton]() {
-                done += 1;
-                data->createAllThumbnail(imagePath, 512);
-                data->unloadFromCache(imagePath);
-                data->unloadFromCache(data->getThumbnailPath(imagePath, 256));
-                data->unloadFromCache(data->getThumbnailPath(imagePath, 512));
+        // QTimer::singleShot(100, this, [this, imagePath, imageButton]() {
+        data->loadInCacheAsync(imagePath, [this, imagePath, imageButton]() {
+            done += 1;
+            data->createAllThumbnail(imagePath, 512);
+            data->unloadFromCache(imagePath);
+            data->unloadFromCache(data->getThumbnailPath(imagePath, 256));
+            data->unloadFromCache(data->getThumbnailPath(imagePath, 512));
 
-                QImage qImage = data->loadImage(this, imagePath, this->size(), true,
-                    128, true, true);
+            QImage qImage = data->loadImage(this, imagePath, this->size(), true,
+                128, true, true);
 
-                QMetaObject::invokeMethod(
-                    QApplication::instance(),
-                    [imageButton, qImage]() {
-                        imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(
-                            imageButton->size(), Qt::KeepAspectRatio,
-                            Qt::SmoothTransformation));
-                    },
-                    Qt::QueuedConnection);
+            QMetaObject::invokeMethod(
+                QApplication::instance(),
+                [imageButton, qImage]() {
+                    imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(
+                        imageButton->size(), Qt::KeepAspectRatio,
+                        Qt::SmoothTransformation));
+                },
+                Qt::QueuedConnection);
 
-                loadedImageNumber += 1;
-                });
+            loadedImageNumber += 1;
             });
+        // });
     }
 
     connect(imageButton, &ClickableLabel::clicked, [this, nbr]() {
