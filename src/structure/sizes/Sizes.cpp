@@ -32,10 +32,8 @@ Sizes::ImagesEditorSizes::ImagesEditorSizes(Sizes* parent) : parentSizes(parent)
         - QSize(mainLayoutMargins[0] + mainLayoutMargins[2],
             mainLayoutMargins[1] + mainLayoutMargins[3])
         - QSize(mainLayoutSpacing * 0, mainLayoutSpacing * 2)
-
         // TODO pk 100 ???
-        - QSize(0, 100)
-        ;
+        - QSize(0, 100);
 }
 
 Sizes::ImagesBoothSizes::ImagesBoothSizes(Sizes* parent) : parentSizes(parent) {
