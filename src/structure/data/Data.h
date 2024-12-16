@@ -33,7 +33,7 @@ public:
     Sizes sizes;
     std::map<std::string, Option> options = DEFAULT_OPTIONS;
 
-    ThreadPool threadPool = ThreadPool(std::thread::hardware_concurrency()div 2);
+    ThreadPool threadPool = ThreadPool(std::thread::hardware_concurrency() / 2);
     std::map<QString, std::future<void>> futures;
 
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
