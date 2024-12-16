@@ -10,7 +10,6 @@ int main(int argc, char* argv[]) {
 
     QApplication app(argc, argv);
 
-
     InitialWindow window;
 
     window.showMaximized();
@@ -69,10 +68,10 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
 
                 Folders folders;
                 ImageData* imageData = imagesData->getImageData(entry.path());
-                if (imageData != nullptr){
+                if (imageData != nullptr) {
                     folders = imageData->folders;
                 }
-                else{
+                else {
                     folders = Folders(relativePath.parent_path().string());
 
                 }

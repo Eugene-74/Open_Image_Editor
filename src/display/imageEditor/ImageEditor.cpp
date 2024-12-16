@@ -7,10 +7,6 @@
 ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_EDITOR_WINDOW_NAME);
 
-    // initialisation pour les times de preload
-    for (int i = 0; i < PRE_LOAD_RADIUS; i++){
-        imagePreviewOpenTimers.push_back(new QTimer(this));
-    }
 
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
@@ -22,7 +18,6 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
         data->sizes.imagesEditorSizes->mainLayoutMargins[3]); // Marges autour des bords (gauche, haut, droite, bas)
 
 
-    // actionSize = data->sizes.imagesEditorSizes->actionSize;
 
 
     editionLayout = new QVBoxLayout();
@@ -489,9 +484,7 @@ void ImageEditor::updateButtons() {
 
 void ImageEditor::clear() {
 
-
-
-    stopImageOpenTimer();
+    stopImageOpen();
 
     QTimer::singleShot(100, this, [this]() {
         if (actionButtonLayout) {
@@ -824,7 +817,7 @@ ClickableLabel* ImageEditor::createImageLabel() {
     return imageLabelNew;
 }
 
-void ImageEditor::reloadImageLabel(){
+void ImageEditor::reloadImageLabel() {
 
     if (imageLabel) {
 
@@ -1065,7 +1058,7 @@ void ImageEditor::exportImage() {
 
     // getDirectoryFromUser(this);
 
-    if (exportPath == ""){
+    if (exportPath == "") {
         std::cerr << "No export path selected" << std::endl;
         return;
     }
@@ -1139,7 +1132,7 @@ void ImageEditor::validateMetadata() {
 }
 
 
-void ImageEditor::startImageOpenTimer() {
+void ImageEditor::startImageOpen() {
     if (imageOpenTimer) {
         imageOpenTimer->disconnect();
         imageOpenTimer->stop();
@@ -1149,7 +1142,7 @@ void ImageEditor::startImageOpenTimer() {
 
         data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [this]() { reloadImageLabel(); });
         imageOpenTimer->stop();
-        for (int i = 0; i < PRE_LOAD_RADIUS; i++){
+        for (int i = 0; i < PRE_LOAD_RADIUS; i++) {
 
             if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.get()->size()
                 && data->imagesData.getImageNumber() - (i + 1) >= 0) {
@@ -1157,38 +1150,25 @@ void ImageEditor::startImageOpenTimer() {
             }
 
             if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.get()->size()
-                && data->imagesData.getImageNumber() + (i + 1) >= 0){
+                && data->imagesData.getImageNumber() + (i + 1) >= 0) {
                 data->loadInCacheAsync(data->imagesData.getImageData(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr);
             }
         }
-        // reloadImageLabel();
         });
 
     imageOpenTimer->setInterval(TIME_BEFORE_FULL_QUALITY);
     imageOpenTimer->start();
 
 
-    // precharge les images des alentours
-
 }
 
-void ImageEditor::stopImageOpenTimer() {
+
+void ImageEditor::stopImageOpen() {
     if (imageOpenTimer) {
+        imageOpenTimer->disconnect();
         imageOpenTimer->stop();
-        imageOpenTimer->deleteLater();
-        imageOpenTimer = nullptr;
-    }
-    for (int i = 0; i < PRE_LOAD_RADIUS; i++){
-
-        if (imagePreviewOpenTimers[i]) {
-            imagePreviewOpenTimers[i]->stop();
-            imagePreviewOpenTimers[i]->deleteLater();
-            imagePreviewOpenTimers[i] = nullptr;
-        }
     }
 }
-
-
 
 
 void ImageEditor::checkLoadedImage() {
@@ -1199,13 +1179,13 @@ void ImageEditor::checkLoadedImage() {
         const std::string& imagePathBis = cache.first;
 
         int imageId = data->imagesData.getImageIdByName(imagePath);
-        if (imageId != -1){
-            if (std::abs(data->imagesData.imageNumber - imageId) > 2 * PRE_LOAD_RADIUS){
+        if (imageId != -1) {
+            if (std::abs(data->imagesData.imageNumber - imageId) > 2 * PRE_LOAD_RADIUS) {
                 toUnload.push_back(imagePathBis);
             }
         }
     }
-    for (const auto& imagePath : toUnload){
+    for (const auto& imagePath : toUnload) {
         data->unloadFromCache(imagePath);
         data->unloadFromFutures(imagePath);
 
@@ -1214,32 +1194,32 @@ void ImageEditor::checkLoadedImage() {
 }
 
 void ImageEditor::checkCache() {
-    startImageOpenTimer();
+    startImageOpen();
     checkLoadedImage();
 }
 
-void ImageEditor::rotateLeft(){
+void ImageEditor::rotateLeft() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
-    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
+    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         rotateLeftJpg();
     }
-    else if (extension == ".png" || extension == ".PNG"){
+    else if (extension == ".png" || extension == ".PNG") {
         rotateLeftPng();
     }
 
 }
-void ImageEditor::rotateRight(){
+void ImageEditor::rotateRight() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
-    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
+    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         rotateRightJpg();
     }
-    else if (extension == ".png" || extension == ".PNG"){
+    else if (extension == ".png" || extension == ".PNG") {
         rotateRightPng();
     }
 }
 
 
-void ImageEditor::rotateLeftPng(){
+void ImageEditor::rotateLeftPng() {
     QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->imagePath);
     QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->imagePath, QSize(0, 0), false);
     image = image.transformed(QTransform().rotate(-90));
@@ -1252,7 +1232,7 @@ void ImageEditor::rotateLeftPng(){
     reload();
 
 }
-void ImageEditor::rotateRightPng(){
+void ImageEditor::rotateRightPng() {
     QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->imagePath);
     QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->imagePath, QSize(0, 0), false);
     image = image.transformed(QTransform().rotate(90));
@@ -1266,28 +1246,28 @@ void ImageEditor::rotateRightPng(){
     reload();
 }
 
-void ImageEditor::mirrorUpDown(){
+void ImageEditor::mirrorUpDown() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
-    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
+    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         mirrorUpDownJpg();
     }
-    else if (extension == ".png" || extension == ".PNG"){
+    else if (extension == ".png" || extension == ".PNG") {
         mirrorUpDownPng();
     }
 }
 
-void ImageEditor::mirrorLeftRight(){
+void ImageEditor::mirrorLeftRight() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
-    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG"){
+    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         mirrorLeftRightJpg();
     }
-    else if (extension == ".png" || extension == ".PNG"){
+    else if (extension == ".png" || extension == ".PNG") {
         mirrorLeftRightPng();
 
     }
 }
 
-void ImageEditor::mirrorUpDownJpg(){
+void ImageEditor::mirrorUpDownJpg() {
     ImagesData* imagesData = &data->imagesData;
 
     ImageData* imageData = imagesData->getCurrentImageData();
@@ -1333,7 +1313,7 @@ void ImageEditor::mirrorUpDownJpg(){
     reload();
 }
 
-void ImageEditor::mirrorLeftRightJpg(){
+void ImageEditor::mirrorLeftRightJpg() {
     ImagesData* imagesData = &data->imagesData;
 
     ImageData* imageData = imagesData->getCurrentImageData();
@@ -1376,7 +1356,7 @@ void ImageEditor::mirrorLeftRightJpg(){
     reload();
 }
 
-void ImageEditor::mirrorLeftRightPng(){
+void ImageEditor::mirrorLeftRightPng() {
     QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->imagePath);
     QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->imagePath, QSize(0, 0), false);
     image = image.mirrored(true, false);
@@ -1389,7 +1369,7 @@ void ImageEditor::mirrorLeftRightPng(){
     reload();
 
 }
-void ImageEditor::mirrorUpDownPng(){
+void ImageEditor::mirrorUpDownPng() {
     QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->imagePath);
     QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->imagePath, QSize(0, 0), false);
     image = image.mirrored(false, true);

@@ -18,7 +18,7 @@ const QString IMAGE_PATH_LOADING = ":/loading.png";
 
 const int PREVIEW_NBR = 3;
 const int PRE_LOAD_RADIUS = 5; // on en precharge 2 de plus comme ça l'utilisateut ne vois meme pas les images charger
-const int TIME_BEFORE_FULL_QUALITY = 200;
+const int TIME_BEFORE_FULL_QUALITY = 100;
 // const int TIME_BEFORE_PRE_LOAD_FULL_QUALITY = 300;
 
 const int LINE_LOADED = 2; // fois ou l'on charge un tableau d'image (2 = 2 tableau pres charger)

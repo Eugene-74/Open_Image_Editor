@@ -1,11 +1,11 @@
 #include "Data.h"
+
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonArray>
 #include <fstream>
 
 namespace fs = std::filesystem;  // Alias pour simplifier le code
-
 
 void Data::preDeleteImage(int imageNbr) {
     ImageData* imageData;
@@ -14,15 +14,12 @@ void Data::preDeleteImage(int imageNbr) {
     deletedImagesData.addImage(*imageData);
     std::cerr << "image deleted : " << imageNbr << std::endl;
     deletedImagesData.print();
-
 }
 void Data::unPreDeleteImage(int imageNbr) {
     ImageData* imageData;
     imageData = imagesData.getImageData(imageNbr);
 
-
     deletedImagesData.removeImage(*imageData);
-
 }
 
 void Data::revocerDeletedImage(ImageData& imageData) {
@@ -35,43 +32,35 @@ void Data::revocerDeletedImage(int imageNbr) {
     imageData = deletedImagesData.getImageData(imageNbr);
     revocerDeletedImage(*imageData);
 
-    // imagesData.addImage(*imageData);
-    // deletedImagesData.removeImage(*imageData);
-
+    imagesData.addImage(*imageData);
+    deletedImagesData.removeImage(*imageData);
 }
 
 // Supprime de imagesData les images dans deletedImagesData
 void Data::removeDeletedImages() {
-
     for (const auto& deletedImage : *deletedImagesData.get()) {
-
         // Find the image in imagesData
-        auto it = std::find(imagesData.get()->begin(), imagesData.get()->end(), deletedImage);
+        auto it = std::find(imagesData.get()->begin(), imagesData.get()->end(),
+            deletedImage);
         // If it exists, remove it from imagesData
         if (it != imagesData.get()->end()) {
             // imagesData.removeImage(*imagesData.getImageData(it));
             imagesData.get()->erase(it);
             deletedImage.print();
         }
-
     }
 
     std::cerr << "All images deleted" << std::endl;
-
-
 }
 
-
 bool Data::isDeleted(int imageNbr) {
-
     // Find the image in deletedImagesData
-
 
     std::string imagePath = imagesData.getImageData(imageNbr)->imagePath;
 
-    auto it = std::find_if(deletedImagesData.get()->begin(), deletedImagesData.get()->end(),
+    auto it = std::find_if(deletedImagesData.get()->begin(),
+        deletedImagesData.get()->end(),
         [imagePath, this](const ImageData img) {
-
             return img.imagePath == imagePath;
         });
 
@@ -83,26 +72,27 @@ bool Data::isDeleted(int imageNbr) {
 
     return false;
 }
-QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail, bool rotation, bool square) {
-    if (square){
+QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
+    bool setSize, int thumbnail, bool rotation,
+    bool square) {
+    if (square) {
         QImage image = loadImageSquare(parent, imagePath, size, setSize, thumbnail);
-        if (rotation){
+        if (rotation) {
             image = rotateQImage(image, imagePath);
         }
         return image;
     }
-    else{
+    else {
         QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail);
-        if (rotation){
+        if (rotation) {
             image = rotateQImage(image, imagePath);
         }
         return image;
-
     }
 }
 
-
-QImage Data::loadImageSquare(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail) {
+QImage Data::loadImageSquare(QWidget* parent, std::string imagePath, QSize size,
+    bool setSize, int thumbnail) {
     QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail);
     int cropSize = std::min(image.width(), image.height());
     int xOffset = (image.width() - cropSize) / 2;
@@ -111,9 +101,9 @@ QImage Data::loadImageSquare(QWidget* parent, std::string imagePath, QSize size,
     image = image.copy(xOffset, yOffset, cropSize, cropSize);
     return image;
 }
-QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail) {
+QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
+    bool setSize, int thumbnail) {
     std::map<std::string, QImageAndPath>* cache = imageCache;
-
 
     auto it = cache->find(imagePath);
     if (it != cache->end()) {
@@ -139,60 +129,49 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         return it->second.image;
     }
 
-
     std::string imagePathbis = imagePath;
-
 
     QResource ressource(QString::fromStdString(imagePath));
 
     QImage image;
 
-    if (ressource.isValid()){
+    if (ressource.isValid()) {
         image.load(QString::fromStdString(imagePathbis));
-
     }
-    else{
-        if (thumbnail == 128){
-            if (hasThumbnail(imagePath, 128)){
+    else {
+        if (thumbnail == 128) {
+            if (hasThumbnail(imagePath, 128)) {
                 imagePathbis = getThumbnailPath(imagePath, 128);
             }
-            else{
-
+            else {
                 createThumbnail(imagePath, 128);
                 createThumbnailIfNotExists(imagePath, 256);
                 createThumbnailIfNotExists(imagePath, 512);
             }
         }
-        else  if (thumbnail == 256){
-            if (hasThumbnail(imagePath, 256)){
+        else if (thumbnail == 256) {
+            if (hasThumbnail(imagePath, 256)) {
                 imagePathbis = getThumbnailPath(imagePath, 256);
             }
-            else{
+            else {
                 createThumbnailIfNotExists(imagePath, 128);
                 createThumbnail(imagePath, 256);
                 createThumbnailIfNotExists(imagePath, 512);
-
-
             }
         }
-        else if (thumbnail == 512){
-            if (hasThumbnail(imagePath, 512)){
+        else if (thumbnail == 512) {
+            if (hasThumbnail(imagePath, 512)) {
                 imagePathbis = getThumbnailPath(imagePath, 512);
             }
-            else{
+            else {
                 createThumbnailIfNotExists(imagePath, 128);
                 createThumbnailIfNotExists(imagePath, 256);
                 createThumbnail(imagePath, 512);
-
-
             }
         }
 
         image.load(QString::fromStdString(imagePathbis));
         if (image.isNull()) {
-
-
-
             return QImage();
         }
 
@@ -206,30 +185,23 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     return image;
 }
 
-
-// Ajoutez une méthode pour charger l'image en cache de manière asynchrone
-// void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
-//     futures[QString::fromStdString(imagePath)] = QtConcurrent::run([this, imagePath, force, setSize, size, callback]() {
-//         threadPool.enqueue([this, imagePath, force, setSize, size, callback]() {
-//             loadInCache(imagePath, setSize, size, force);
-//             if (callback) {
-//                 QMetaObject::invokeMethod(QApplication::instance(), callback, Qt::QueuedConnection);
-//             }
-//             }).get();
-//         });
-// }
-
-void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
-    futures[QString::fromStdString(imagePath)] = threadPool.enqueue(&Data::loadImageTask, this, imagePath, setSize, size, force, callback);
+void Data::loadInCacheAsync(std::string imagePath,
+    std::function<void()> callback, bool setSize,
+    QSize size, bool force) {
+    futures[QString::fromStdString(imagePath)] = threadPool.enqueue(
+        &Data::loadImageTask, this, imagePath, setSize, size, force, callback);
 }
 
-void Data::loadImageTask(std::string imagePath, bool setSize, QSize size, bool force, std::function<void()> callback) {
+void Data::loadImageTask(std::string imagePath, bool setSize, QSize size,
+    bool force, std::function<void()> callback) {
     loadInCache(imagePath, setSize, size, force);
     if (callback) {
-        QMetaObject::invokeMethod(QApplication::instance(), callback, Qt::QueuedConnection);
+        QMetaObject::invokeMethod(QApplication::instance(), callback,
+            Qt::QueuedConnection);
     }
 }
-bool Data::loadInCache(const std::string imagePath, bool setSize, const QSize size, bool force) {
+bool Data::loadInCache(const std::string imagePath, bool setSize,
+    const QSize size, bool force) {
     QImage image;
     if (!force && isInCache(imagePath)) {
         return true;
@@ -253,11 +225,11 @@ bool Data::loadInCache(const std::string imagePath, bool setSize, const QSize si
     return true;
 }
 
-bool Data::isInCache(std::string imagePath){
+bool Data::isInCache(std::string imagePath) {
     return imageCache->find(imagePath) != imageCache->end();
 }
 
-bool Data::getLoadedImage(std::string imagePath, QImage& image){
+bool Data::getLoadedImage(std::string imagePath, QImage& image) {
     auto it = imageCache->find(imagePath);
     if (it != imageCache->end()) {
         image = it->second.image;
@@ -266,8 +238,7 @@ bool Data::getLoadedImage(std::string imagePath, QImage& image){
     return false;
 }
 
-
-void Data::rotateImageCache(std::string imagePath, int rotation){
+void Data::rotateImageCache(std::string imagePath, int rotation) {
     QImage image;
     auto it = imageCache->find(imagePath);
     if (it != imageCache->end()) {
@@ -276,39 +247,40 @@ void Data::rotateImageCache(std::string imagePath, int rotation){
     }
     image = image.transformed(QTransform().rotate(rotation));
     imageCache->operator[](imagePath).image = image;
-
 }
 
-void Data::mirrorImageCache(std::string imagePath, int upDown){
+void Data::mirrorImageCache(std::string imagePath, int upDown) {
     QImage image;
     auto it = imageCache->find(imagePath);
     if (it != imageCache->end()) {
         image = it->second.image;
         // Perform operations with the found image
     }
-    if (upDown == true){
+    if (upDown == true) {
         image = image.mirrored(false, true);
     }
-    else if (upDown == false){
+    else if (upDown == false) {
         image = image.mirrored(true, false);
     }
     imageCache->operator[](imagePath).image = image;
-
 }
 
-void Data::createThumbnails(const std::vector<std::string>& imagePaths, const int maxDim) {
+void Data::createThumbnails(const std::vector<std::string>& imagePaths,
+    const int maxDim) {
     for (const auto& imagePath : imagePaths) {
         createThumbnail(imagePath, maxDim);
     }
 }
 
 void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
-    QImage image = loadImageNormal(nullptr, imagePath, QSize(maxDim, maxDim), false, 0);
+    QImage image =
+        loadImageNormal(nullptr, imagePath, QSize(maxDim, maxDim), false, 0);
 
+    double scale = std::min(static_cast<double>(maxDim) / image.width(),
+        static_cast<double>(maxDim) / image.height());
 
-    double scale = std::min(static_cast<double>(maxDim) / image.width(), static_cast<double>(maxDim) / image.height());
-
-    QImage thumbnail = image.scaled(image.width() * scale, image.height() * scale, Qt::KeepAspectRatio);
+    QImage thumbnail = image.scaled(image.width() * scale, image.height() * scale,
+        Qt::KeepAspectRatio);
 
     std::hash<std::string> hasher;
     size_t hashValue = hasher(imagePath);
@@ -317,54 +289,61 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
 
     std::string outputImage;
     if (maxDim == 128) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" +
+            std::to_string(hashValue) + extension;
     }
     else if (maxDim == 256) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" +
+            std::to_string(hashValue) + extension;
     }
     else if (maxDim == 512) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" +
+            std::to_string(hashValue) + extension;
     }
 
     if (!fs::exists(fs::path(outputImage).parent_path())) {
         fs::create_directories(fs::path(outputImage).parent_path());
     }
     if (!thumbnail.save(QString::fromStdString(outputImage))) {
-        std::cerr << "Error: Could not save thumbnail: " << outputImage << std::endl;
+        std::cerr << "Error: Could not save thumbnail: " << outputImage
+            << std::endl;
     }
 }
-void Data::createThumbnailsIfNotExists(const std::vector<std::string>& imagePaths, const int maxDim) {
+void Data::createThumbnailsIfNotExists(
+    const std::vector<std::string>& imagePaths, const int maxDim) {
     for (const auto& imagePath : imagePaths) {
         createThumbnailIfNotExists(imagePath, maxDim);
     }
 }
 
-
-void Data::createThumbnailIfNotExists(const std::string& imagePath, const int maxDim) {
+void Data::createThumbnailIfNotExists(const std::string& imagePath,
+    const int maxDim) {
     if (!hasThumbnail(imagePath, maxDim)) {
-
         // std::cout << "creating Thumbnail for: " << imagePath << std::endl;
         createThumbnail(imagePath, maxDim);
     }
     else {
-        // std::cout << "Thumbnail already exists for: " << maxDim << " : " << imagePath << std::endl;
+        // std::cout << "Thumbnail already exists for: " << maxDim << " : " <<
+        // imagePath << std::endl;
     }
 }
 bool Data::hasThumbnail(const std::string& imagePath, const int maxDim) {
-
     std::hash<std::string> hasher;
     size_t hashValue = hasher(imagePath);
     std::string extension = fs::path(imagePath).extension().string();
     std::string outputImage;
 
     if (maxDim == 128) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" +
+            std::to_string(hashValue) + extension;
     }
     else if (maxDim == 256) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" +
+            std::to_string(hashValue) + extension;
     }
     else if (maxDim == 512) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" +
+            std::to_string(hashValue) + extension;
     }
 
     // Check if the thumbnail file exists
@@ -385,25 +364,29 @@ void Data::createAllThumbnail(const std::string& imagePath, const int size) {
     }
 }
 
-std::string Data::getThumbnailPath(const std::string& imagePath, const int size){
+std::string Data::getThumbnailPath(const std::string& imagePath,
+    const int size) {
     std::hash<std::string> hasher;
     size_t hashValue = hasher(imagePath);
     std::string extension = fs::path(imagePath).extension().string();
     std::string outputImage;
 
     if (size == 128) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" +
+            std::to_string(hashValue) + extension;
     }
     else if (size == 256) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" +
+            std::to_string(hashValue) + extension;
     }
     else if (size == 512) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" + std::to_string(hashValue) + extension;
+        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" +
+            std::to_string(hashValue) + extension;
     }
     return outputImage;
 }
 
-bool Data::unloadFromCache(std::string imagePath){
+bool Data::unloadFromCache(std::string imagePath) {
     if (!imageCache) {
         std::cerr << "imageCache is not initialized" << std::endl;
         return false;
@@ -416,7 +399,6 @@ bool Data::unloadFromCache(std::string imagePath){
     }
     return false;
 }
-
 
 bool Data::unloadFromFutures(std::string imagePath) {
     auto it = futures.find(QString::fromStdString(imagePath));
@@ -432,10 +414,10 @@ void Data::exportImages(std::string exportPath, bool dateInName) {
     firstFolder = findFirstFolderWithAllImages(imagesData, rootFolders);
 
     copyImages(firstFolder, exportPath, dateInName);
-
 }
 
-Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const {
+Folders* Data::findFirstFolderWithAllImages(
+    const ImagesData& imagesData, const Folders& currentFolder) const {
     for (const auto& folder : currentFolder.folders) {
         for (ImageData imageData : imagesData.imagesData) {
             for (Folders folderBis : imageData.folders.files) {
@@ -449,13 +431,13 @@ Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const 
     return const_cast<Folders*>(&currentFolder);
 }
 
-
-void Data::copyTo(std::string filePath, std::string destinationPath, bool dateInName) const{
-
+void Data::copyTo(std::string filePath, std::string destinationPath,
+    bool dateInName) const {
     for (const auto& imageData : imagesData.imagesData) {
         for (const auto& file : imageData.folders.files) {
             if (file == filePath) {
-                std::string destinationFile = destinationPath + "/" + imageData.getImageName();
+                std::string destinationFile =
+                    destinationPath + "/" + imageData.getImageName();
                 if (dateInName) {
                     Exiv2::ExifData exifData = imageData.getMetaData().getExifData();
                     if (exifData["Exif.Image.DateTime"].count() != 0) {
@@ -464,19 +446,19 @@ void Data::copyTo(std::string filePath, std::string destinationPath, bool dateIn
                         std::replace(date.begin(), date.end(), ' ', '_');
                         destinationFile = destinationPath + "/" + date + "_" + file;
                     }
-                    else{
+                    else {
                         destinationFile = destinationPath + "/" + "no_date" + "_" + file;
-
                     }
                 }
-                fs::copy(imageData.imagePath, destinationFile, fs::copy_options::overwrite_existing);
+                fs::copy(imageData.imagePath, destinationFile,
+                    fs::copy_options::overwrite_existing);
             }
         }
     }
 }
-QImage Data::rotateQImage(QImage image, std::string imagePath){
+QImage Data::rotateQImage(QImage image, std::string imagePath) {
     ImageData* imageData = imagesData.getImageData(imagePath);
-    if (imageData != nullptr){
+    if (imageData != nullptr) {
         // std::cerr << "imageData" << std::endl;
         Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
         if (exifData.empty()) {
@@ -486,28 +468,33 @@ QImage Data::rotateQImage(QImage image, std::string imagePath){
             // std::cerr << "not empty" << std::endl;
             if (exifData["Exif.Image.Orientation"].count() != 0) {
                 int orientation = exifData["Exif.Image.Orientation"].toInt64();
-                // std::cerr << "orientation : " << orientation << " :: " << imagePath << std::endl;
+                // std::cerr << "orientation : " << orientation << " :: " << imagePath
+                // << std::endl;
                 switch (orientation) {
                 case 1:
                     // No transformation needed
                     break;
                 case 2:
-                    image = image.mirrored(true, false); // Horizontal mirror
+                    image = image.mirrored(true, false);  // Horizontal mirror
                     break;
                 case 3:
                     image = image.transformed(QTransform().rotate(180));
                     break;
                 case 4:
-                    image = image.mirrored(false, true); // Vertical mirror
+                    image = image.mirrored(false, true);  // Vertical mirror
                     break;
                 case 5:
-                    image = image.mirrored(true, false).transformed(QTransform().rotate(90)); // Horizontal mirror + 90 degrees
+                    image = image.mirrored(true, false)
+                        .transformed(QTransform().rotate(
+                            90));  // Horizontal mirror + 90 degrees
                     break;
                 case 6:
                     image = image.transformed(QTransform().rotate(90));
                     break;
                 case 7:
-                    image = image.mirrored(true, false).transformed(QTransform().rotate(-90)); // Horizontal mirror + -90 degrees
+                    image = image.mirrored(true, false)
+                        .transformed(QTransform().rotate(
+                            -90));  // Horizontal mirror + -90 degrees
                     break;
                 case 8:
                     image = image.transformed(QTransform().rotate(-90));
@@ -522,9 +509,8 @@ QImage Data::rotateQImage(QImage image, std::string imagePath){
     return image;
 }
 
-
-
-void Data::copyImages(Folders* currentFolders, std::string folderPath, bool dateInName) {
+void Data::copyImages(Folders* currentFolders, std::string folderPath,
+    bool dateInName) {
     currentFolders->print();
     for (auto& folder : currentFolders->folders) {
         folderPath = folderPath + "/" + folder.folderName;
@@ -566,21 +552,24 @@ void Data::saveData() {
     std::cerr << "Saving data" << std::endl;
     // Serialize imagesData
     size_t imagesDataSize = imagesData.get()->size();
-    outFile.write(reinterpret_cast<const char*>(&imagesDataSize), sizeof(imagesDataSize));
+    outFile.write(reinterpret_cast<const char*>(&imagesDataSize),
+        sizeof(imagesDataSize));
     for (const auto& imageData : *imagesData.get()) {
         imageData.save(outFile);
     }
 
     // Serialize deletedImagesData
     size_t deletedImagesDataSize = deletedImagesData.get()->size();
-    outFile.write(reinterpret_cast<const char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
+    outFile.write(reinterpret_cast<const char*>(&deletedImagesDataSize),
+        sizeof(deletedImagesDataSize));
     for (const auto& imageData : *deletedImagesData.get()) {
         imageData.save(outFile);
     }
 
     // Serialize options
     size_t optionsSize = options.size();
-    outFile.write(reinterpret_cast<const char*>(&optionsSize), sizeof(optionsSize));
+    outFile.write(reinterpret_cast<const char*>(&optionsSize),
+        sizeof(optionsSize));
     for (const auto& [key, option] : options) {
         size_t keySize = key.size();
         outFile.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
@@ -615,7 +604,8 @@ void Data::loadData() {
 
     // Deserialize deletedImagesData
     size_t deletedImagesDataSize;
-    inFile.read(reinterpret_cast<char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
+    inFile.read(reinterpret_cast<char*>(&deletedImagesDataSize),
+        sizeof(deletedImagesDataSize));
     for (size_t i = 0; i < deletedImagesDataSize; ++i) {
         ImageData imageData;
         imageData.load(inFile);
@@ -639,11 +629,9 @@ void Data::loadData() {
     }
     rootFolders.load(inFile);
 
-
     inFile.close();
 }
 
-// annuler les tâches en cours
 void Data::cancelTasks() {
     threadPool.shutdown();
     futures.clear();

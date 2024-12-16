@@ -21,16 +21,13 @@
 #include <QCalendarWidget>
 
 
-
-// #include "../../Main.h"
 #include "../../structure/imagesData/ImagesData.h"
-#include "../../display/loadImage/LoadImage.h"
 #include "../../structure/data/Data.h"
-#include "../../display/box/Box.h"
-#include "../../display/clickableLabel/ClickableLabel.h"
 
 #include "../../Const.h"
 
+#include "../../display/clickableLabel/ClickableLabel.h"
+#include "../../display/box/Box.h"
 #include "../../display/loadImage/LoadImage.h"
 #include "../../display/initialWindow/InitialWindow.h"
 
@@ -104,8 +101,8 @@ public:
     void populateMetadataFields();
     void validateMetadata();
 
-    void startImageOpenTimer();
-    void stopImageOpenTimer();
+    void startImageOpen();
+    void stopImageOpen();
 
     void checkCache();
     void checkLoadedImage();
@@ -157,7 +154,6 @@ private:
     ClickableLabel* imageEditExif;
 
     QTimer* imageOpenTimer = new QTimer(this);
-    std::vector<QTimer*> imagePreviewOpenTimers = std::vector<QTimer*>();
 signals:
     void switchToImageBooth();
 };

@@ -9,17 +9,13 @@
 #include <QtConcurrent/QtConcurrent>
 
 #include <iostream>
-#include <fstream> 
+#include <fstream>
 #include "../../display/box/Box.h"
 #include "../../structure/folders/Folders.h"
 #include "../../structure/sizes/Sizes.h"
 #include "../../structure/threadPool/ThreadPool.h"
 
-
-
-
 #include <QFileDialog>
-
 
 class QImageAndPath
 {
@@ -37,18 +33,13 @@ public:
     Sizes sizes;
     std::map<std::string, Option> options = DEFAULT_OPTIONS;
 
-    ThreadPool threadPool = ThreadPool(std::thread::hardware_concurrency() - 1);
-    // QMap<QString, QFuture<void>> futures;
+    ThreadPool threadPool = ThreadPool(std::thread::hardware_concurrency());
     std::map<QString, std::future<void>> futures;
-
 
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
 
-
-
     void preDeleteImage(int imageNbr);
     void unPreDeleteImage(int imageNbr);
-
 
     void revocerDeletedImage(int imageNbr);
     void revocerDeletedImage(ImageData& imageData);
@@ -68,17 +59,14 @@ public:
     bool unloadFromCache(std::string imagePath);
     bool unloadFromFutures(std::string imagePath);
 
-
     bool isInCache(std::string imagePath);
     bool getLoadedImage(std::string imagePath, QImage& image);
 
     void rotateImageCache(std::string imagePath, int rotation);
     void mirrorImageCache(std::string imagePath, int upDown);
 
-
     void createThumbnails(const std::vector<std::string>& imagePaths, const int maxDim);
     void createThumbnail(const std::string& imagePath, const int maxDim);
-
 
     void createThumbnailsIfNotExists(const std::vector<std::string>& imagePaths, const int maxDim);
 
@@ -93,7 +81,7 @@ public:
     void exportImages(std::string exportPath, bool dateInName);
     void copyImages(Folders* currentFolders, std::string path, bool dateInName);
     // void copyTo(std::string path);
-    void copyTo(std::string filePath, std::string destinationPath, bool dateInName)const;
+    void copyTo(std::string filePath, std::string destinationPath, bool dateInName) const;
 
     QImage rotateQImage(QImage image, std::string imagePath);
 
@@ -102,7 +90,4 @@ public:
     Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
 
     void cancelTasks();
-
 };
-
-

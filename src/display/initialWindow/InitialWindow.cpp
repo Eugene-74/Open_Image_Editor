@@ -107,7 +107,7 @@ void InitialWindow::createImageBooth(Data* data) {
     if (imageBooth) {
         delete imageBooth;
     }
-    if (imageEditor){
+    if (imageEditor) {
         layout->removeWidget(imageEditor);
     }
     imageBooth = new ImageBooth(data, this);
@@ -132,6 +132,7 @@ void InitialWindow::clearImageBooth() {
 
 
 void InitialWindow::showImageEditor() {
+    // data->cancelTasks();
     clearImageBooth();
     createImageEditor(data);
 }
@@ -189,7 +190,7 @@ ClickableLabel* InitialWindow::createImageOption() {
 }
 
 void InitialWindow::openOption() {
-    if (data->options.size() == 0){
+    if (data->options.size() == 0) {
         data->options = DEFAULT_OPTIONS;
     }
     std::map<std::string, std::string> options = showOptionsDialog(this, "Options", DEFAULT_OPTIONS);
