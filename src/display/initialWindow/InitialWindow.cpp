@@ -148,7 +148,7 @@ void InitialWindow::showImageBooth() {
 
 ClickableLabel* InitialWindow::createImageDiscord() {
 
-    ClickableLabel* imageDiscord = new ClickableLabel(data, ":/discord.png", this, QSize(50, 50), false, 0, true);
+    ClickableLabel* imageDiscord = new ClickableLabel(data, ":/discord.png", this, QSize(data->sizes.linkButtons.width() / 2, data->sizes.linkButtons.height()), false, 0, true);
 
 
 
@@ -164,7 +164,7 @@ ClickableLabel* InitialWindow::createImageDiscord() {
 
 ClickableLabel* InitialWindow::createImageGithub() {
 
-    ClickableLabel* imageGithub = new ClickableLabel(data, ":/github.png", this, QSize(50, 50), false, 0, true);
+    ClickableLabel* imageGithub = new ClickableLabel(data, ":/github.png", this, QSize(data->sizes.linkButtons.width() / 2, data->sizes.linkButtons.height()), false, 0, true);
 
 
 

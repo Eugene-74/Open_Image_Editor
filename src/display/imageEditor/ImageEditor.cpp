@@ -350,6 +350,7 @@ void ImageEditor::createButtons() {
     buttonImageNext = createImageNext();
 
     imageLabel = createImageLabel();
+    checkCache();
 
     buttonLayout->addWidget(buttonImageBefore);
     buttonLayout->addWidget(imageLabel);
@@ -462,6 +463,7 @@ void ImageEditor::updateButtons() {
 
 
     reloadImageLabel();
+    checkCache();
 
     if (buttonImageNext) {
         if (data->imagesData.getImageNumber() == data->imagesData.get()->size() - 1) {
@@ -550,15 +552,89 @@ void ImageEditor::clear() {
             mainLayout = nullptr;
         }
         });
-
-
-
-
 }
 
 
 
 
+void ImageEditor::hide() {
+    stopImageOpen();
+
+    if (actionButtonLayout) {
+        for (int i = 0; i < actionButtonLayout->count(); ++i) {
+            QLayoutItem* item = actionButtonLayout->itemAt(i);
+            if (item && item->widget()) {
+                item->widget()->hide();
+            }
+        }
+    }
+
+    if (previewButtonLayout) {
+        for (int i = 0; i < previewButtonLayout->count(); ++i) {
+            QLayoutItem* item = previewButtonLayout->itemAt(i);
+            if (item && item->widget()) {
+                item->widget()->hide();
+            }
+        }
+    }
+
+    if (buttonLayout) {
+        for (int i = 0; i < buttonLayout->count(); ++i) {
+            QLayoutItem* item = buttonLayout->itemAt(i);
+            if (item && item->widget()) {
+                item->widget()->hide();
+            }
+        }
+    }
+
+    if (mainLayout) {
+        for (int i = 0; i < mainLayout->count(); ++i) {
+            QLayoutItem* item = mainLayout->itemAt(i);
+            if (item && item->widget()) {
+                item->widget()->hide();
+            }
+        }
+    }
+}
+
+
+void ImageEditor::unHide() {
+    if (actionButtonLayout) {
+        for (int i = 0; i < actionButtonLayout->count(); ++i) {
+            QLayoutItem* item = actionButtonLayout->itemAt(i);
+            if (item && item->widget()) {
+                item->widget()->show();
+            }
+        }
+    }
+
+    if (previewButtonLayout) {
+        for (int i = 0; i < previewButtonLayout->count(); ++i) {
+            QLayoutItem* item = previewButtonLayout->itemAt(i);
+            if (item && item->widget()) {
+                item->widget()->show();
+            }
+        }
+    }
+
+    if (buttonLayout) {
+        for (int i = 0; i < buttonLayout->count(); ++i) {
+            QLayoutItem* item = buttonLayout->itemAt(i);
+            if (item && item->widget()) {
+                item->widget()->show();
+            }
+        }
+    }
+
+    if (mainLayout) {
+        for (int i = 0; i < mainLayout->count(); ++i) {
+            QLayoutItem* item = mainLayout->itemAt(i);
+            if (item && item->widget()) {
+                item->widget()->show();
+            }
+        }
+    }
+}
 
 ClickableLabel* ImageEditor::createImageDelete() {
 
@@ -800,17 +876,15 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
 }
 
 ClickableLabel* ImageEditor::createImageLabel() {
-
-    checkCache();
-
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* imageLabelNew = new ClickableLabel(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, mainImageSize, false);
     connect(imageLabelNew, &ClickableLabel::clicked, [this]() {
-        // TODO zoom to be added
+        openBigImageLabel();
         });
+
 
 
 
@@ -1139,8 +1213,9 @@ void ImageEditor::startImageOpen() {
     }
 
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
-
-        data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [this]() { reloadImageLabel(); });
+        data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [this]() {
+            reloadImageLabel();
+            });
         imageOpenTimer->stop();
         for (int i = 0; i < PRE_LOAD_RADIUS; i++) {
 
@@ -1381,4 +1456,32 @@ void ImageEditor::mirrorUpDownPng() {
     data->createAllThumbnail(data->imagesData.getCurrentImageData()->imagePath, 512);
 
     reload();
+}
+
+
+void ImageEditor::openBigImageLabel() {
+    std::cerr << "openBigImageLabel" << std::endl;
+    hide();
+    // clear();
+
+    ClickableLabel* bigImageLabel = new ClickableLabel(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes.imagesEditorSizes->bigImage), false);
+    std::cerr << "openBigImageLabel" << (QSize(0, data->sizes.linkButtons.height())).height() << " : " << (QSize(0, data->sizes.linkButtons.height())).width() << std::endl;
+    mainLayout->addWidget(bigImageLabel);
+
+    connect(bigImageLabel, &ClickableLabel::clicked, [this, bigImageLabel]() {
+        std::cerr << "closeBigImageLabel" << std::endl;
+
+        mainLayout->removeWidget(bigImageLabel);
+
+        bigImageLabel->hide();
+        bigImageLabel->deleteLater();
+
+        unHide();
+
+        updateButtons();
+        updatePreview();
+
+        });
+
+
 }

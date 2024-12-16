@@ -6,6 +6,8 @@ Sizes::Sizes() {
     screenR = screen->availableGeometry();
     pixelRatio = screen->devicePixelRatio();
     screenGeometry = screenR.size() / pixelRatio;
+    linkButtons = QSize(screenGeometry.width() * 1 / 20 * 2, screenGeometry.height() * 1 / 20);
+
 
     // Création des instances des classes imbriquées en passant 'this'
     imagesEditorSizes = new ImagesEditorSizes(this);
@@ -24,6 +26,16 @@ Sizes::ImagesEditorSizes::ImagesEditorSizes(Sizes* parent) : parentSizes(parent)
 
     previewSize = (parentSizes->screenGeometry * 1 / 12);
     mainImageSize = (parentSizes->screenGeometry * 4 / 6);
+
+    bigImage = parent->screenGeometry
+        - parent->linkButtons
+        - QSize(mainLayoutMargins[0] + mainLayoutMargins[2],
+            mainLayoutMargins[1] + mainLayoutMargins[3])
+        - QSize(mainLayoutSpacing * 0, mainLayoutSpacing * 2)
+
+        // TODO pk 100 ???
+        - QSize(0, 100)
+        ;
 }
 
 Sizes::ImagesBoothSizes::ImagesBoothSizes(Sizes* parent) : parentSizes(parent) {

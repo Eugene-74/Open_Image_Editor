@@ -14,6 +14,7 @@ public:
     QRect screenR;
     int pixelRatio;
     QSize screenGeometry;
+    QSize linkButtons;
 
 
 
@@ -28,7 +29,7 @@ public:
 
 
 
-class Sizes::ImagesEditorSizes{
+class Sizes::ImagesEditorSizes {
 public:
     ImagesEditorSizes(Sizes* parent);
 
@@ -39,13 +40,16 @@ public:
     int mainLayoutSpacing = 5;
     std::vector<int> mainLayoutMargins = { 5,5,5,5 };
 
+    QSize bigImage;
+
+
 
 private:
     Sizes* parentSizes;
 
 };
 
-class Sizes::ImagesBoothSizes{
+class Sizes::ImagesBoothSizes {
 public:
     ImagesBoothSizes(Sizes* parent);
     QSize imageSize;

@@ -48,6 +48,9 @@ protected:
     void wheelEvent(QWheelEvent* event) override;
 
 private:
+    void hide();
+    void unHide();
+
     void reload();
 
     void nextImage(int nbr = 1);
@@ -77,6 +80,8 @@ private:
     void createButtons();
     void updateButtons();
 
+    // void createBigImage();
+
     void reloadImageLabel();
 
     void saveImage();
@@ -84,7 +89,6 @@ private:
 
     void deleteImage();
     void unDeleteImage();
-
 
     void populateMetadataFields();
     void validateMetadata();
@@ -112,6 +116,9 @@ private:
 
     ClickableLabel* createImageLabel();
 
+    void openBigImageLabel();
+
+
     bool exifEditor = false;
     Data* data;
 
@@ -123,6 +130,8 @@ private:
 
 
     ClickableLabel* imageLabel;
+    ClickableLabel* bigImageLabel;
+
 
     QHBoxLayout* mainLayout;
     QHBoxLayout* previewButtonLayout;
@@ -153,6 +162,8 @@ private:
     ClickableLabel* imageEditExif;
 
     QTimer* imageOpenTimer = new QTimer(this);
+
+    bool bigImage = false;
 signals:
     void switchToImageBooth();
 };
