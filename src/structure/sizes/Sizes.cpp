@@ -31,11 +31,11 @@ Sizes::ImagesBoothSizes::ImagesBoothSizes(Sizes* parent) : parentSizes(parent) {
 
 
     if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height()) {
-        imageSize = QSize(parentSizes->screenGeometry.width() * 5 / 6 * 1 / 5, parentSizes->screenGeometry.width() * 5 / 6 * 1 / 5);
+        imageSize = QSize(parentSizes->screenGeometry.width() * 5 / 6 * 1 / 10, parentSizes->screenGeometry.width() * 5 / 6 * 1 / 10);
 
     }
     else {
-        imageSize = QSize(parentSizes->screenGeometry.height() * 5 / 6 * 1 / 5, parentSizes->screenGeometry.height() * 5 / 6 * 1 / 5);
+        imageSize = QSize(parentSizes->screenGeometry.height() * 5 / 6 * 1 / 10, parentSizes->screenGeometry.height() * 5 / 6 * 1 / 10);
     }
 
     realImageSize = imageSize + QSize(linesLayoutSpacing, linesLayoutSpacing);

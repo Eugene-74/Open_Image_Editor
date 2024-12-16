@@ -1,9 +1,9 @@
 #include "ImageBooth.h"
+
 #include <QScrollBar>
 
-ImageBooth::ImageBooth(Data* dat, QWidget* parent) : QMainWindow(parent), data(dat)
-{
-
+ImageBooth::ImageBooth(Data* dat, QWidget* parent)
+    : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
 
     imageNumber = 0;
@@ -25,26 +25,33 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent) : QMainWindow(parent), data(d
 
     linesLayout->setAlignment(Qt::AlignTop);
     linesLayout->setSpacing(data->sizes.imagesBoothSizes->linesLayoutSpacing);
-    linesLayout->setContentsMargins(data->sizes.imagesBoothSizes->linesLayoutMargins[0],  // gauche
-        data->sizes.imagesBoothSizes->linesLayoutMargins[1],  // haut
-        data->sizes.imagesBoothSizes->linesLayoutMargins[2],  // droite
-        data->sizes.imagesBoothSizes->linesLayoutMargins[3]); // bas
+    linesLayout->setContentsMargins(
+        data->sizes.imagesBoothSizes->linesLayoutMargins[0],   // gauche
+        data->sizes.imagesBoothSizes->linesLayoutMargins[1],   // haut
+        data->sizes.imagesBoothSizes->linesLayoutMargins[2],   // droite
+        data->sizes.imagesBoothSizes->linesLayoutMargins[3]);  // bas
+    auto start = std::chrono::high_resolution_clock::now();
 
-    for (int i = 0; i < data->sizes.imagesBoothSizes->heightImageNumber * LINE_LOADED; i++)
-    {
+    for (int i = 0;
+        i < data->sizes.imagesBoothSizes->heightImageNumber * LINE_LOADED; i++) {
         createLine();
     }
 
-    connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, [this](int value)
-        {
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "Execution time: " << duration.count() << " seconds pour " <<
+        data->sizes.imagesBoothSizes->heightImageNumber * LINE_LOADED * data->sizes.imagesBoothSizes->widthImageNumber << " images"
+        << std::endl;
+
+    connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged,
+        [this](int value) {
             if (value >= scrollArea->verticalScrollBar()->maximum() - 500) {
                 createLine();
-            } });
+            }
+        });
 }
 
-void ImageBooth::createLine()
-{
-
+void ImageBooth::createLine() {
     QHBoxLayout* lineLayout = new QHBoxLayout();
     lineLayout->setAlignment(Qt::AlignLeft);
 
@@ -52,11 +59,8 @@ void ImageBooth::createLine()
 
     int nbr = data->sizes.imagesBoothSizes->widthImageNumber;
 
-    for (int i = 0; i < nbr; i++)
-    {
-        if (imageNumber >= 0 && imageNumber < data->imagesData.get()->size())
-        {
-
+    for (int i = 0; i < nbr; i++) {
+        if (imageNumber >= 0 && imageNumber < data->imagesData.get()->size()) {
             std::string imagePath = data->imagesData.get()->at(imageNumber).imagePath;
             lineLayout->addWidget(createImage(imagePath, imageNumber));
             imageNumber += 1;
@@ -64,77 +68,77 @@ void ImageBooth::createLine()
     }
 }
 
-ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr)
-{
-    if (data->imagesData.get()->size() <= 0)
-    {
+ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
+    if (data->imagesData.get()->size() <= 0) {
         return nullptr;
     }
     ClickableLabel* imageButton;
-    if (data->isInCache(data->getThumbnailPath(imagePath, 128)))
-    {
-        imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 128, true);
+    if (data->isInCache(data->getThumbnailPath(imagePath, 128))) {
+        imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
+            this, imageSize, false, 128, true);
         loadedImageNumber += 1;
     }
-    else if (data->hasThumbnail(imagePath, 128))
-    {
-        imageButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, imageSize, false, 128, true);
+    else if (data->hasThumbnail(imagePath, 128)) {
+        imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
+            this, imageSize, false, 128, true);
         loadedImageNumber += 1;
     }
-    else
-    {
-        imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING, this, imageSize, false, 0, true);
+    else {
+        imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING, this, imageSize,
+            false, 0, true);
         QTimer::singleShot(100, this, [this, imagePath, imageButton]() {
             data->loadInCacheAsync(imagePath, [this, imagePath, imageButton]() {
-
                 done += 1;
                 data->createAllThumbnail(imagePath, 512);
                 data->unloadFromCache(imagePath);
                 data->unloadFromCache(data->getThumbnailPath(imagePath, 256));
                 data->unloadFromCache(data->getThumbnailPath(imagePath, 512));
 
-                QImage qImage = data->loadImage(this, imagePath, this->size(), true, 128, true, true);
+                QImage qImage = data->loadImage(this, imagePath, this->size(), true,
+                    128, true, true);
 
-                QMetaObject::invokeMethod(QApplication::instance(), [imageButton, qImage]() {
-                    imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(imageButton->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-                    }, Qt::QueuedConnection);
+                QMetaObject::invokeMethod(
+                    QApplication::instance(),
+                    [imageButton, qImage]() {
+                        imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(
+                            imageButton->size(), Qt::KeepAspectRatio,
+                            Qt::SmoothTransformation));
+                    },
+                    Qt::QueuedConnection);
 
-                loadedImageNumber += 1; });
+                loadedImageNumber += 1;
+                });
             });
     }
 
-    connect(imageButton, &ClickableLabel::clicked, [this, nbr]()
-        {
-            data->imagesData.setImageNumber(nbr);
-            switchToImageEditor(); });
+    connect(imageButton, &ClickableLabel::clicked, [this, nbr]() {
+        data->imagesData.setImageNumber(nbr);
+        switchToImageEditor();
+        });
 
     return imageButton;
 }
 
-void ImageBooth::setImageNumber(int nbr)
-{
-    while (nbr < 0)
-    {
+void ImageBooth::setImageNumber(int nbr) {
+    while (nbr < 0) {
         nbr += 1;
     }
-    while (nbr >= data->imagesData.get()->size())
-    {
+    while (nbr >= data->imagesData.get()->size()) {
         nbr -= 1;
     }
 
     imageNumber = nbr;
 }
-void ImageBooth::clear()
-{
+void ImageBooth::clear() {
     // stopAndDeleteTimers();
-    QTimer::singleShot(100, this, [this]()
-        {
-            while (QLayoutItem* item = linesLayout->takeAt(0)) {
-                if (QWidget* widget = item->widget()) {
-                    widget->deleteLater();
-                }
-                delete item;
+    QTimer::singleShot(100, this, [this]() {
+        while (QLayoutItem* item = linesLayout->takeAt(0)) {
+            if (QWidget* widget = item->widget()) {
+                widget->deleteLater();
             }
-            delete scrollArea;
-            scrollArea = nullptr; });
+            delete item;
+        }
+        delete scrollArea;
+        scrollArea = nullptr;
+        });
 }

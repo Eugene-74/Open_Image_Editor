@@ -38,9 +38,16 @@ class ImageEditor : public QMainWindow {
 
 public:
     ImageEditor(Data* dat, QWidget* parent = nullptr);
-
     ~ImageEditor() {}
 
+    void clear();
+
+protected:
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
+
+private:
     void reload();
 
     void nextImage(int nbr = 1);
@@ -70,25 +77,6 @@ public:
     void createButtons();
     void updateButtons();
 
-    void clear();
-
-    ClickableLabel* createImagePreview(std::string imagePath, int imageNbr);
-
-
-    ClickableLabel* createImageRotateRight();
-    ClickableLabel* createImageRotateLeft();
-    ClickableLabel* createImageMirrorUpDown();
-    ClickableLabel* createImageMirrorLeftRight();
-    ClickableLabel* createImageDelete();
-    ClickableLabel* createImageSave();
-    ClickableLabel* createImageExport();
-
-    ClickableLabel* createImageEditExif();
-
-    ClickableLabel* createImageBefore();
-    ClickableLabel* createImageNext();
-
-    ClickableLabel* createImageLabel();
     void reloadImageLabel();
 
     void saveImage();
@@ -107,12 +95,23 @@ public:
     void checkCache();
     void checkLoadedImage();
 
-protected:
-    void keyPressEvent(QKeyEvent* event) override;
-    void keyReleaseEvent(QKeyEvent* event) override;
-    void wheelEvent(QWheelEvent* event) override;
+    ClickableLabel* createImagePreview(std::string imagePath, int imageNbr);
 
-private:
+    ClickableLabel* createImageRotateRight();
+    ClickableLabel* createImageRotateLeft();
+    ClickableLabel* createImageMirrorUpDown();
+    ClickableLabel* createImageMirrorLeftRight();
+    ClickableLabel* createImageDelete();
+    ClickableLabel* createImageSave();
+    ClickableLabel* createImageExport();
+
+    ClickableLabel* createImageEditExif();
+
+    ClickableLabel* createImageBefore();
+    ClickableLabel* createImageNext();
+
+    ClickableLabel* createImageLabel();
+
     bool exifEditor = false;
     Data* data;
 
