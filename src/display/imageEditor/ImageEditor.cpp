@@ -901,6 +901,9 @@ void ImageEditor::reloadImageLabel() {
 
 
 void ImageEditor::keyPressEvent(QKeyEvent* event) {
+    if (bigImage) {
+        return;
+    }
     switch (event->key()) {
     case Qt::Key_Left:
         if (event->modifiers() & Qt::ControlModifier) {
@@ -968,8 +971,6 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
         }
         break;
 
-
-
     default:
         QWidget::keyPressEvent(event);
     }
@@ -978,6 +979,9 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
 
 
 void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
+    if (bigImage) {
+        return;
+    }
     switch (event->key()) {
 
     case Qt::Key_Left:
@@ -1446,17 +1450,13 @@ void ImageEditor::mirrorUpDownPng() {
 
 
 void ImageEditor::openBigImageLabel() {
-    std::cerr << "openBigImageLabel" << std::endl;
+    bigImage = true;
     hide();
-    // clear();
 
     ClickableLabel* bigImageLabel = new ClickableLabel(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes.imagesEditorSizes->bigImage), false);
-    std::cerr << "openBigImageLabel" << (QSize(0, data->sizes.linkButtons.height())).height() << " : " << (QSize(0, data->sizes.linkButtons.height())).width() << std::endl;
     mainLayout->addWidget(bigImageLabel);
 
     connect(bigImageLabel, &ClickableLabel::clicked, [this, bigImageLabel]() {
-        std::cerr << "closeBigImageLabel" << std::endl;
-
         mainLayout->removeWidget(bigImageLabel);
 
         bigImageLabel->hide();
@@ -1466,6 +1466,8 @@ void ImageEditor::openBigImageLabel() {
 
         updateButtons();
         updatePreview();
+
+        bigImage = false;
 
         });
 
