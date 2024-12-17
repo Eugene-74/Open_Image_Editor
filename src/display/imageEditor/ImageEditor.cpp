@@ -142,10 +142,6 @@ void ImageEditor::rotateLeftJpg() {
 
     imageData->saveMetaData();
 
-    data->rotateImageCache(imageData->getImagePath(), -90);
-
-
-
     reload();
 
 
@@ -192,9 +188,6 @@ void ImageEditor::rotateRightJpg() {
     imageData->turnImage(orientation);
 
     imageData->saveMetaData();
-
-    data->rotateImageCache(imageData->getImagePath(), 90);
-
 
     reload();
 }
@@ -1383,8 +1376,6 @@ void ImageEditor::mirrorUpDownJpg() {
 
     imageData->saveMetaData();
 
-    data->mirrorImageCache(imageData->getImagePath(), true);
-
     reload();
 }
 
@@ -1424,9 +1415,6 @@ void ImageEditor::mirrorLeftRightJpg() {
     imageData->turnImage(orientation);
 
     imageData->saveMetaData();
-
-    data->mirrorImageCache(imageData->getImagePath(), false);
-
 
     reload();
 }

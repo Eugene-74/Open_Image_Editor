@@ -56,9 +56,6 @@ public:
     bool isInCache(std::string imagePath);
     bool getLoadedImage(std::string imagePath, QImage& image);
 
-    void rotateImageCache(std::string imagePath, int rotation);
-    void mirrorImageCache(std::string imagePath, int upDown);
-
     void createThumbnails(const std::vector<std::string>& imagePaths, const int maxDim);
     void createThumbnail(const std::string& imagePath, const int maxDim);
 

@@ -238,33 +238,6 @@ bool Data::getLoadedImage(std::string imagePath, QImage& image) {
     return false;
 }
 
-void Data::rotateImageCache(std::string imagePath, int rotation) {
-    QImage image;
-    auto it = imageCache->find(imagePath);
-    if (it != imageCache->end()) {
-        image = it->second.image;
-        // Perform operations with the found image
-    }
-    image = image.transformed(QTransform().rotate(rotation));
-    imageCache->operator[](imagePath).image = image;
-}
-
-void Data::mirrorImageCache(std::string imagePath, int upDown) {
-    QImage image;
-    auto it = imageCache->find(imagePath);
-    if (it != imageCache->end()) {
-        image = it->second.image;
-        // Perform operations with the found image
-    }
-    if (upDown == true) {
-        image = image.mirrored(false, true);
-    }
-    else if (upDown == false) {
-        image = image.mirrored(true, false);
-    }
-    imageCache->operator[](imagePath).image = image;
-}
-
 void Data::createThumbnails(const std::vector<std::string>& imagePaths,
     const int maxDim) {
     for (const auto& imagePath : imagePaths) {
