@@ -76,7 +76,6 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
     infoLayout->addWidget(descriptionEdit);
     infoLayout->addWidget(validateButton);
     if (exifEditor) {
-
         populateMetadataFields();
     }
     else {
@@ -873,6 +872,8 @@ ClickableLabel* ImageEditor::createImageLabel() {
 
     ClickableLabel* imageLabelNew = new ClickableLabel(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, mainImageSize, false);
 
+    imageLabelNew->setFixedSize(mainImageSize);
+
     connect(imageLabelNew, &ClickableLabel::clicked, [this]() {
         openBigImageLabel();
         });
@@ -1463,9 +1464,23 @@ void ImageEditor::openBigImageLabel() {
     hide();
 
     ClickableLabel* bigImageLabel = new ClickableLabel(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes.imagesEditorSizes->bigImage), false);
+    bigImageLabel->setFixedSize(data->sizes.imagesEditorSizes->bigImage);
+
     mainLayout->addWidget(bigImageLabel);
 
-    connect(bigImageLabel, &ClickableLabel::clicked, [this, bigImageLabel]() {
+    bool oldExifEditor = exifEditor;
+
+    exifEditor = false;
+    for (int i = 0; i < infoLayout->count(); ++i) {
+        QWidget* widget = infoLayout->itemAt(i)->widget();
+        if (widget) {
+            widget->hide();
+        }
+    }
+
+    connect(bigImageLabel, &ClickableLabel::clicked, [this, bigImageLabel, oldExifEditor]() {
+        bigImage = false;
+
         mainLayout->removeWidget(bigImageLabel);
 
         bigImageLabel->hide();
@@ -1473,12 +1488,18 @@ void ImageEditor::openBigImageLabel() {
 
         unHide();
 
-        updateButtons();
-        updatePreview();
+        exifEditor = oldExifEditor;
+        for (int i = 0; i < infoLayout->count(); ++i) {
+            QWidget* widget = infoLayout->itemAt(i)->widget();
+            if (widget) {
+                widget->setHidden(false);
+            }
+        }
 
-        bigImage = false;
+        reload();
+
+
 
         });
-
 
 }
