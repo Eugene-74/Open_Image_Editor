@@ -1345,7 +1345,6 @@ void ImageEditor::mirrorUpDownJpg() {
 
     int orientation = imageData->getImageOrientation();
 
-    std::cerr << "orientation" << orientation << std::endl;
     if (orientation == 1) {
         orientation = 4;
     }
@@ -1370,7 +1369,6 @@ void ImageEditor::mirrorUpDownJpg() {
     else if (orientation == 7) {
         orientation = 8;
     }
-    std::cerr << "orientation" << orientation << std::endl;
 
     imageData->turnImage(orientation);
 

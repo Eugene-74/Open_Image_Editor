@@ -432,17 +432,12 @@ void Data::copyTo(std::string filePath, std::string destinationPath,
 QImage Data::rotateQImage(QImage image, std::string imagePath) {
     ImageData* imageData = imagesData.getImageData(imagePath);
     if (imageData != nullptr) {
-        // std::cerr << "imageData" << std::endl;
         Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
         if (exifData.empty()) {
-            // std::cerr << "empty" << std::endl;
         }
         else {
-            // std::cerr << "not empty" << std::endl;
             if (exifData["Exif.Image.Orientation"].count() != 0) {
                 int orientation = exifData["Exif.Image.Orientation"].toInt64();
-                // std::cerr << "orientation : " << orientation << " :: " << imagePath
-                // << std::endl;
                 switch (orientation) {
                 case 1:
                     // No transformation needed
@@ -473,7 +468,6 @@ QImage Data::rotateQImage(QImage image, std::string imagePath) {
                     image = image.transformed(QTransform().rotate(-90));
                     break;
                 default:
-                    // Unknown orientation, no transformation
                     break;
                 }
             }
