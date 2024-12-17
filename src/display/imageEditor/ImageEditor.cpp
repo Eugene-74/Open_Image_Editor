@@ -213,8 +213,8 @@ void ImageEditor::reload() {
 
     if (imagesData->get()->size() <= 0) {
         showInformationMessage(this, "no image data loaded");
-        addSelectedFilesToFolders(data, this);
-
+        data->imagesData = addSelectedFilesToFolders(data, this);
+        data->saveData();
         return;
     }
 }
@@ -872,6 +872,7 @@ ClickableLabel* ImageEditor::createImageLabel() {
     }
 
     ClickableLabel* imageLabelNew = new ClickableLabel(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, mainImageSize, false);
+
     connect(imageLabelNew, &ClickableLabel::clicked, [this]() {
         openBigImageLabel();
         });

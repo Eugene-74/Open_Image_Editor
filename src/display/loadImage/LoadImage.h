@@ -19,6 +19,11 @@ void countImagesFromFolder(const std::string path, int& nbrImage);
 void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage);
 void loadImagesMetaData(ImagesData* imagesData);
 
+
+std::string mapJsonKeyToExifKey(const std::string& jsonKey);
+
+void loadImagesMetaDataOfGoogle(ImagesData* imagesData);
+
 std::map<std::string, std::string> openJsonFile(std::string filePath);
 std::string readFile(const std::string& filePath);
 std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString);

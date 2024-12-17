@@ -51,6 +51,8 @@ void startLoadingImagesFromFolder(Data* data, const std::string imagePaths, Imag
 
     loadImagesMetaData(imagesData);
 
+    loadImagesMetaDataOfGoogle(imagesData);
+
 
 
 }
@@ -66,37 +68,35 @@ std::string readFile(const std::string& filePath) {
     return buffer.str();
 }
 
+
+// std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString) {
+
 std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString) {
-    std::map<std::string, std::string> jsonMap;
-    size_t pos = 0;
+    std::map<std::string, std::string> resultMap;
+    std::string key, value;
+    std::istringstream jsonStream(jsonString);
+    char ch;
 
-    while ((pos = jsonString.find("{", pos)) != std::string::npos) {
-        size_t endPos = jsonString.find("}", pos);
-        std::string jsonObject = jsonString.substr(pos, endPos - pos + 1);
-
-        size_t keyPos = 0;
-        while ((keyPos = jsonObject.find("\"", keyPos)) != std::string::npos) {
-            size_t keyEnd = jsonObject.find("\"", keyPos + 1);
-            std::string key = jsonObject.substr(keyPos + 1, keyEnd - keyPos - 1);
-
-            size_t valuePos = jsonObject.find(":", keyEnd) + 1;
-            size_t valueEnd = jsonObject.find(",", valuePos);
-            if (valueEnd == std::string::npos) {
-                valueEnd = jsonObject.find("}", valuePos);
+    while (jsonStream >> ch) {
+        if (ch == '"') {
+            std::getline(jsonStream, key, '"');
+            jsonStream >> ch; // skip ':'
+            jsonStream >> ch; // skip space or '"'
+            if (ch == '"') {
+                std::getline(jsonStream, value, '"');
             }
-            std::string value = jsonObject.substr(valuePos, valueEnd - valuePos);
-            value.erase(remove_if(value.begin(), value.end(), isspace), value.end());
-
-            jsonMap[key] = value;
-
-            keyPos = keyEnd + 1;
+            else {
+                jsonStream.putback(ch);
+                std::getline(jsonStream, value, ',');
+                value.pop_back(); // remove trailing comma
+            }
+            resultMap[key] = value;
         }
-
-        pos = endPos + 1;
     }
 
-    return jsonMap;
+    return resultMap;
 }
+// }
 
 
 std::map<std::string, std::string> openJsonFile(std::string filePath) {
@@ -175,14 +175,42 @@ void loadImagesMetaDataOfGoogle(ImagesData* imagesData) {
 
             for (const auto& [key, value] : jsonMap) {
                 std::cerr << key << " : " << value << std::endl;
-                // if (key.find("Exif") != std::string::npos) {
-                //     imageData->metaData.modifyExifValue(key, value);
-                // } else if (key.find("Xmp") != std::string::npos) {
-                //     imageData->metaData.modifyXmpValue(key, value);
-                // } else if (key.find("Iptc") != std::string::npos) {
-                //     imageData->metaData.modifyIptcValue(key, value);
-                // }
+                if (!key.empty() && !value.empty()) {
+                    std::string exifKey = mapJsonKeyToExifKey(key);
+                    if (exifKey != "") {
+                        imageData->metaData.modifyExifValue(exifKey, value);
+                    }
+                }
             }
         }
+        else {
+            displayExifData(imageData->metaData.exifMetaData);
+
+        }
     }
+}
+
+std::string mapJsonKeyToExifKey(const std::string& jsonKey) {
+    static const std::map<std::string, std::string> keyMap = {
+        // TODO mettre tous les nécessaires
+        // {"title", "Exif.Image.ImageDescription"}, // inutile
+        {"description", "Exif.Image.ImageDescription"},
+        {"photoTakenTime.timestamp", "Exif.Photo.DateTimeOriginal"},
+        {"geoData.latitude", "Exif.GPSInfo.GPSLatitude"},
+        {"geoData.longitude", "Exif.GPSInfo.GPSLongitude"},
+        {"geoData.altitude", "Exif.GPSInfo.GPSAltitude"},
+        {"googlePhotosOrigin.mobileUpload.deviceModel", "Exif.Image.Model"},
+        {"googlePhotosOrigin.mobileUpload.deviceType", "Exif.Image.Make"},
+        {"googlePhotosOrigin.mobileUpload.deviceSoftwareVersion", "Exif.Image.Software"}
+    };
+
+
+    std::string lowerJsonKey = jsonKey;
+    std::transform(lowerJsonKey.begin(), lowerJsonKey.end(), lowerJsonKey.begin(), ::tolower);
+
+    auto it = keyMap.find(lowerJsonKey);
+    if (it != keyMap.end()) {
+        return it->second;
+    }
+    return "";
 }
