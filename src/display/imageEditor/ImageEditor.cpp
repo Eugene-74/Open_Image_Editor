@@ -1104,7 +1104,14 @@ void ImageEditor::wheelEvent(QWheelEvent* event) {
     }
 }
 
+
 void ImageEditor::saveImage() {
+    int id = data->imagesData.imageNumber;
+    for (int i = 0; i <= data->imagesData.imageNumber; ++i) {
+        if (data->isDeleted(i)) {
+            id--;
+        }
+    }
     data->removeDeletedImages();
     if (data->imagesData.get()->size() <= 0) {
         clear();
@@ -1112,7 +1119,7 @@ void ImageEditor::saveImage() {
     data->saveData();
 
 
-    data->imagesData.setImageNumber(0);
+    data->imagesData.setImageNumber(id);
     reload();
 }
 
