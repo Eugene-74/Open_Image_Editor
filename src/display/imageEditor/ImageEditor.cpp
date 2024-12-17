@@ -1089,6 +1089,9 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
 
 
 void ImageEditor::wheelEvent(QWheelEvent* event) {
+    if (bigImage) {
+        return;
+    }
     int numDegrees = event->angleDelta().y() / 8;
     int numSteps = numDegrees / 15;
 

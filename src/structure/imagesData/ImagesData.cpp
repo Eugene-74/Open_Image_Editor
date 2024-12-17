@@ -73,7 +73,6 @@ ImageData* ImagesData::getImageData(int id) {
 
 
     if (id < 0 || id >= imagesData.size()) {
-        // return nullptr;
 
         throw std::out_of_range("getImageData :: Index hors limites" + std::to_string(id));
     }
@@ -93,9 +92,6 @@ ImageData* ImagesData::getImageData(std::string imagePath) {
         return &(*it);
     }
     return nullptr;
-    // else {
-    //     throw std::out_of_range("getImageData :: Image path not found: " + imagePath);
-// }
 }
 
 
@@ -114,66 +110,8 @@ std::vector<ImageData>* ImagesData::get() {
     return &imagesData;
 }
 
-// void ImagesData::save(std::ofstream& out) const {
-//     // Sauvegarder le nombre d'images
-//     size_t imageCount = imagesData.size();
-//     out.write(reinterpret_cast<const char*>(&imageCount), sizeof(imageCount));
 
-//     // Sauvegarder chaque image
-//     for (const auto& image : imagesData) {
-//         std::cerr << image.get() << std::endl;
-//         image.save(out);
-
-
-//     }
-
-
-//     // Sauvegarder imageNumber
-//     out.write(reinterpret_cast<const char*>(&imageNumber), sizeof(imageNumber));
-
-// }
-
-// void ImagesData::load(std::ifstream& in) {
-//     // Effacer les données existantes
-//     imagesData.clear();
-
-//     // Lire le nombre d'images
-//     size_t imageCount;
-//     in.read(reinterpret_cast<char*>(&imageCount), sizeof(imageCount));
-
-//     // Lire chaque image
-//     imagesData.resize(imageCount);
-//     for (size_t i = 0; i < imageCount; ++i) {
-//         imagesData[i].load(in);
-//     }
-
-//     // Charger imageNumber
-//     in.read(reinterpret_cast<char*>(&imageNumber), sizeof(imageNumber));
-// }
-
-// ImagesData loadImagesData(std::string savePath) {
-//     ImagesData loadedImagesData;
-
-//     // Ouvrir le fichier en mode binaire
-//     std::ifstream inFile(savePath, std::ios::binary);
-
-//     // Vérifier si le fichier a été ouvert correctement
-//     if (!inFile) {
-//         std::cerr << "Erreur : le fichier" << savePath << "n'existe pas ou ne peut pas être ouvert." << std::endl;
-//         // Vous pouvez gérer cette situation selon vos besoins
-//         return loadedImagesData; // Retourne un objet vide ou lance une exception selon votre logique
-//     }
-
-//     // Charger les données à partir du fichier
-//     loadedImagesData.load(inFile);
-
-//     inFile.close(); // Fermer le fichier
-
-//     return loadedImagesData; // Retourner l'objet chargé
-// }
-
-
-int ImagesData::getImageIdByName(std::string imagePath){
+int ImagesData::getImageIdByName(std::string imagePath) {
     auto it = std::find_if(imagesData.begin(), imagesData.end(),
         [&imagePath](const ImageData& imgD) {
             return imgD.imagePath == imagePath;
