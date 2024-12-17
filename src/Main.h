@@ -41,17 +41,3 @@
 
 #include <QFileDialog>
 #include <chrono>
-
-
-
-
-
-
-
-// void countImagesFromFolder(const std::string path, int& nbrImage);
-
-void countImagesFromFolder(const std::string path, int& nbrImage);
-void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage);
-void startLoadingImagesFromFolder(Data* data, const std::string imagePaths, ImagesData* imagesData);
-void loadImagesMetaData(ImagesData* imagesData);
-void nextImage(int nbr);

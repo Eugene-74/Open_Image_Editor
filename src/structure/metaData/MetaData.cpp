@@ -179,6 +179,7 @@ void MetaData::loadData(const std::string& imagePath) {
         // Charger l'image
         std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(imagePath);
         image->readMetadata();
+
         exifMetaData = image->exifData();
         xmpMetaData = image->xmpData();
         iptcMetaData = image->iptcData();

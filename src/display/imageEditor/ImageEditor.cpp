@@ -212,7 +212,6 @@ void ImageEditor::reload() {
     }
 
     if (imagesData->get()->size() <= 0) {
-        // TODO reactivate
         showInformationMessage(this, "no image data loaded");
         addSelectedFilesToFolders(data, this);
 
@@ -281,7 +280,6 @@ void ImageEditor::updatePreview() {
             int imageNbr = imagesData->getImageNumber() + i - under;
             if (imageNbr == imagesData->getImageNumber()) {
                 ClickableLabel* previewButtonNew = createImagePreview(imagePaths[i], imageNbr);
-                // TODO choose the color of the current image
                 previewButtonNew->background_color = "#b3b3b3";
                 previewButtonNew->updateStyleSheet();
 

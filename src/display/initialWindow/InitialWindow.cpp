@@ -2,11 +2,6 @@
 
 
 InitialWindow::InitialWindow() {
-    // Supposons que vous ayez une instance de ImageBooth appelée imageBooth
-
-    // TODO connexion a imageEditor pour les action des bouto,s
-    // connect(imageBooth, &ImageBooth::changeToImageEditor, this, &InitialWindow::switchToImageBooth);
-
     data = new Data();
 
     ImagesData imagesData(std::vector<ImageData>{});
@@ -18,14 +13,9 @@ InitialWindow::InitialWindow() {
     data->imagesData = imagesData;
     data->deletedImagesData = deletedImagesData;
 
-    // data->sizes.screenR = data->sizes.screen->availableGeometry();
-    // data->sizes.pixelRatio = data->sizes.screen->devicePixelRatio();
-
     std::string path = "/home/eugene/Documents/photo trié";
-    // startLoadingImagesFromFolder(data, path, &data->imagesData);
 
 
-    // TODO sauvegarde orientation marche pas et options nn plus
     data->loadData();
 
     const QList<QScreen*> screens = QGuiApplication::screens();
