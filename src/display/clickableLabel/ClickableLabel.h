@@ -17,7 +17,8 @@ public:
     explicit ClickableLabel(Data* data, const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false);
 
 signals:
-    void clicked();  // Signal émis lors du clic
+    void clicked();
+    void leftClicked();
 
 protected:
     void enterEvent(QEvent* event) override;

@@ -865,16 +865,16 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
     return previewButton;
 }
 
-ClickableLabel* ImageEditor::createImageLabel() {
+MainImage* ImageEditor::createImageLabel() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
     }
 
-    ClickableLabel* imageLabelNew = new ClickableLabel(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, mainImageSize, false);
+    MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, mainImageSize, false);
 
     imageLabelNew->setFixedSize(mainImageSize);
 
-    connect(imageLabelNew, &ClickableLabel::clicked, [this]() {
+    connect(imageLabelNew, &MainImage::clicked, [this]() {
         openBigImageLabel();
         });
 
@@ -888,7 +888,7 @@ void ImageEditor::reloadImageLabel() {
 
     if (imageLabel) {
 
-        ClickableLabel* imageLabelNew = createImageLabel();
+        MainImage* imageLabelNew = createImageLabel();
 
         buttonLayout->replaceWidget(imageLabel, imageLabelNew);
 
@@ -1463,7 +1463,7 @@ void ImageEditor::openBigImageLabel() {
     bigImage = true;
     hide();
 
-    ClickableLabel* bigImageLabel = new ClickableLabel(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes.imagesEditorSizes->bigImage), false);
+    MainImage* bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes.imagesEditorSizes->bigImage), false);
     bigImageLabel->setFixedSize(data->sizes.imagesEditorSizes->bigImage);
 
     mainLayout->addWidget(bigImageLabel);
@@ -1478,28 +1478,29 @@ void ImageEditor::openBigImageLabel() {
         }
     }
 
-    connect(bigImageLabel, &ClickableLabel::clicked, [this, bigImageLabel, oldExifEditor]() {
-        bigImage = false;
-
-        mainLayout->removeWidget(bigImageLabel);
-
-        bigImageLabel->hide();
-        bigImageLabel->deleteLater();
-
-        unHide();
-
-        exifEditor = oldExifEditor;
-        for (int i = 0; i < infoLayout->count(); ++i) {
-            QWidget* widget = infoLayout->itemAt(i)->widget();
-            if (widget) {
-                widget->setHidden(false);
-            }
-        }
-
-        reload();
-
-
-
+    connect(bigImageLabel, &MainImage::clicked, [this, bigImageLabel, oldExifEditor]() {
+        closeBigImageLabel(bigImageLabel, oldExifEditor);
         });
 
+}
+
+void ImageEditor::closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEditor) {
+    bigImage = false;
+
+    mainLayout->removeWidget(bigImageLabel);
+
+    bigImageLabel->hide();
+    bigImageLabel->deleteLater();
+
+    unHide();
+
+    exifEditor = oldExifEditor;
+    for (int i = 0; i < infoLayout->count(); ++i) {
+        QWidget* widget = infoLayout->itemAt(i)->widget();
+        if (widget) {
+            widget->setHidden(false);
+        }
+    }
+
+    reload();
 }

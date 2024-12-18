@@ -27,6 +27,7 @@
 #include "../../Const.h"
 
 #include "../../display/clickableLabel/ClickableLabel.h"
+#include "../../display/mainImage/MainImage.h"
 #include "../../display/box/Box.h"
 #include "../../display/loadImage/LoadImage.h"
 #include "../../display/initialWindow/InitialWindow.h"
@@ -114,9 +115,11 @@ private:
     ClickableLabel* createImageBefore();
     ClickableLabel* createImageNext();
 
-    ClickableLabel* createImageLabel();
+    MainImage* createImageLabel();
 
     void openBigImageLabel();
+    void closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEditor);
+
 
 
     bool exifEditor = false;
@@ -129,7 +132,7 @@ private:
     QPushButton* validateButton;
 
 
-    ClickableLabel* imageLabel;
+    MainImage* imageLabel;
     ClickableLabel* bigImageLabel;
 
 

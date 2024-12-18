@@ -1,5 +1,6 @@
-#include "ClickableLabel.h"
-ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square)
+#include "MainImage.h"
+
+MainImage::MainImage(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square)
     : QLabel(parent) {
 
     QImage qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail, true, square);
@@ -27,38 +28,9 @@ ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QWidget* pa
 
 }
 
-void ClickableLabel::enterEvent(QEvent* event) {
-    QLabel::enterEvent(event);
-}
 
-void ClickableLabel::leaveEvent(QEvent* event) {
-    QLabel::leaveEvent(event);
-}
 
-void ClickableLabel::mousePressEvent(QMouseEvent* event) {
-
-    if (event->button() == Qt::LeftButton) {
-
-        hover_background_color = CLICK_BACKGROUND_COLOR;
-
-        updateStyleSheet();
-
-    }
-    QLabel::mousePressEvent(event);
-
-}
-
-void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
-    emit clicked();
-    if (event->button() == Qt::LeftButton) {
-        emit leftClicked();
-        hover_background_color = HOVER_BACKGROUND_COLOR;
-        updateStyleSheet();
-    }
-    QLabel::mouseReleaseEvent(event);
-}
-
-void ClickableLabel::updateStyleSheet() {
+void MainImage::updateStyleSheet() {
     QString styleSheet = QString(R"(
         QLabel {
             border: %1px solid %3;
@@ -76,4 +48,36 @@ void ClickableLabel::updateStyleSheet() {
         }
     )").arg(border).arg(border_radius).arg(border_color).arg(hover_border_color).arg(background_color).arg(hover_background_color);
     this->setStyleSheet(styleSheet);
+}
+
+void MainImage::enterEvent(QEvent* event) {
+    QLabel::enterEvent(event);
+}
+
+void MainImage::leaveEvent(QEvent* event) {
+    QLabel::leaveEvent(event);
+}
+
+void MainImage::mousePressEvent(QMouseEvent* event) {
+
+    if (event->button() == Qt::LeftButton) {
+
+        hover_background_color = CLICK_BACKGROUND_COLOR;
+
+        updateStyleSheet();
+
+    }
+    QLabel::mousePressEvent(event);
+
+}
+
+void MainImage::mouseReleaseEvent(QMouseEvent* event) {
+    emit clicked();
+    if (event->button() == Qt::LeftButton) {
+        emit leftClicked();
+
+        hover_background_color = HOVER_BACKGROUND_COLOR;
+        updateStyleSheet();
+    }
+    QLabel::mouseReleaseEvent(event);
 }
