@@ -1,2 +1,10 @@
 BasedOnStyle: Google
-BreakBeforeBraces: Attach
+BraceWrapping:
+  AfterControlStatement: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false

@@ -4,6 +4,8 @@
 // #include <opencv2/opencv.hpp>
 // #include <QFileDialog>
 #include <QMouseEvent>
+#include <QPainter>
+
 #include "../../Const.h"
 #include "../../structure/data/Data.h"
 
@@ -17,6 +19,7 @@ public:
 signals:
     void clicked();
     void leftClicked();
+    void ctrlLeftClicked();
 
 
 protected:
@@ -25,8 +28,8 @@ protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
 
-
-
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void paintEvent(QPaintEvent* event) override;
 
 
 private:
@@ -35,6 +38,20 @@ private:
 
     int border = 0;
     int border_radius = 5;
+
+    QImage qImage;
+    bool cropping;
+    bool drawingRectangle = false;
+
+    QPoint cropStart = QPoint(-1, -1);
+    QPoint cropEnd = QPoint(-1, -1);
+
+    // QPoint startPoint;
+    // QPoint endPoint;
+
+    void cropImage();
+
+
 
 public:
     void updateStyleSheet();

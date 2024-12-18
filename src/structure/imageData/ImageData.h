@@ -15,6 +15,7 @@ public:
     std::string imagePath;
     Folders folders;
     MetaData metaData;
+    std::vector<QSize> cropSizes;
 
     // ImageData& operator=(const ImageData& other);
 

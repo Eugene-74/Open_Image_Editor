@@ -874,7 +874,7 @@ MainImage* ImageEditor::createImageLabel() {
 
     imageLabelNew->setFixedSize(mainImageSize);
 
-    connect(imageLabelNew, &MainImage::clicked, [this]() {
+    connect(imageLabelNew, &MainImage::leftClicked, [this]() {
         openBigImageLabel();
         });
 
@@ -1478,7 +1478,7 @@ void ImageEditor::openBigImageLabel() {
         }
     }
 
-    connect(bigImageLabel, &MainImage::clicked, [this, bigImageLabel, oldExifEditor]() {
+    connect(bigImageLabel, &MainImage::leftClicked, [this, bigImageLabel, oldExifEditor]() {
         closeBigImageLabel(bigImageLabel, oldExifEditor);
         });
 
