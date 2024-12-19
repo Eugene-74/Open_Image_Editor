@@ -556,6 +556,8 @@ void Data::saveData() {
         outFile.write(option.value.c_str(), valueSize);
     }
 
+
+
     // Serialize rootFolders
     rootFolders.save(outFile);
 

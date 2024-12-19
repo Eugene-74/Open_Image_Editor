@@ -142,14 +142,23 @@ void ImageData::setOrCreateExifData() {
 
 
 
+// Sauvegarde
 void ImageData::save(std::ofstream& out) const {
     size_t pathLength = imagePath.size();
     out.write(reinterpret_cast<const char*>(&pathLength), sizeof(pathLength));
     out.write(imagePath.c_str(), pathLength);
     folders.save(out);
     metaData.save(out);
+    size_t cropSizesSize = cropSizes.size();
+    out.write(reinterpret_cast<const char*>(&cropSizesSize), sizeof(cropSizesSize));
+    for (const auto& cropSize : cropSizes) {
+        size_t innerSize = cropSize.size();
+        out.write(reinterpret_cast<const char*>(&innerSize), sizeof(innerSize));
+        out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
+    }
 }
 
+// Chargement
 void ImageData::load(std::ifstream& in) {
     size_t pathLength;
     in.read(reinterpret_cast<char*>(&pathLength), sizeof(pathLength));
@@ -157,5 +166,14 @@ void ImageData::load(std::ifstream& in) {
     in.read(&imagePath[0], pathLength);
     folders.load(in);
     metaData.load(in);
-}
 
+    size_t cropSizesSize;
+    in.read(reinterpret_cast<char*>(&cropSizesSize), sizeof(cropSizesSize));
+    cropSizes.resize(cropSizesSize);
+    for (auto& cropSize : cropSizes) {
+        size_t innerSize;
+        in.read(reinterpret_cast<char*>(&innerSize), sizeof(innerSize));
+        cropSize.resize(innerSize);
+        in.read(reinterpret_cast<char*>(cropSize.data()), innerSize * sizeof(QPoint));
+    }
+}
