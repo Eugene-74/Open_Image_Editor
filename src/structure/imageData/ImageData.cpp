@@ -140,9 +140,6 @@ void ImageData::setOrCreateExifData() {
 }
 
 
-
-
-// Sauvegarde
 void ImageData::save(std::ofstream& out) const {
     size_t pathLength = imagePath.size();
     out.write(reinterpret_cast<const char*>(&pathLength), sizeof(pathLength));
@@ -158,7 +155,6 @@ void ImageData::save(std::ofstream& out) const {
     }
 }
 
-// Chargement
 void ImageData::load(std::ifstream& in) {
     size_t pathLength;
     in.read(reinterpret_cast<char*>(&pathLength), sizeof(pathLength));
