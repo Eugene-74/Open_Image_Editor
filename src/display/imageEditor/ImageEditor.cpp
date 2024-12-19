@@ -908,7 +908,9 @@ MainImage* ImageEditor::createImageLabel() {
         openBigImageLabel();
         });
 
-
+    connect(imageLabelNew, &MainImage::imageCropted, [this]() {
+        updatePreview();
+        });
 
 
     return imageLabelNew;
@@ -1485,6 +1487,7 @@ void ImageEditor::openBigImageLabel() {
     connect(bigImageLabel, &MainImage::leftClicked, [this, bigImageLabel, oldExifEditor]() {
         closeBigImageLabel(bigImageLabel, oldExifEditor);
         });
+
 
 }
 

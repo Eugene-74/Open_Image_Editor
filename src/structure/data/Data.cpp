@@ -83,7 +83,6 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
         if (imageId != -1) {
             ImageData* imageData = imagesData.getImageData(imagePath);
             if (imageData != nullptr && !imageData->cropSizes.empty()) {
-                std::cerr << "open crop image" << std::endl;
 
                 std::vector<QPoint> cropPoints = imageData->cropSizes.back();
                 if (cropPoints.size() == 2) {

@@ -21,6 +21,7 @@ signals:
     void clicked();
     void leftClicked();
     void ctrlLeftClicked();
+    void imageCropted();
 
 
 protected:

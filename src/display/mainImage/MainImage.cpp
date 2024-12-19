@@ -177,9 +177,11 @@ void MainImage::cropImage() {
         std::vector<QPoint> adjustedCropPoints = adjustPointsForOrientation(cropPoints, orientation, qImageReel.size());
 
         data->imagesData.getCurrentImageData()->cropSizes.push_back(adjustedCropPoints);
+        imageCropted();
     } else {
         std::cerr << "Erreur : data ou getCurrentImageData() est nul" << std::endl;
     }
+
 }
 
 
@@ -203,8 +205,6 @@ void MainImage::mouseMoveEvent(QMouseEvent* event) {
 
 std::vector<QPoint> MainImage::adjustPointsForOrientation(const std::vector<QPoint>& points, int orientation, QSize imageSize) {
     std::vector<QPoint> adjustedPoints;
-
-
 
     int W = imageSize.width();
     int H = imageSize.height();
