@@ -77,13 +77,11 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
             this, imageSize, false, 128, true);
         loadedImageNumber += 1;
-    }
-    else if (data->hasThumbnail(imagePath, 128)) {
+    } else if (data->hasThumbnail(imagePath, 128)) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
             this, imageSize, false, 128, true);
         loadedImageNumber += 1;
-    }
-    else {
+    } else {
         imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING, this, imageSize,
             false, 0, true);
         // QTimer::singleShot(100, this, [this, imagePath, imageButton]() {

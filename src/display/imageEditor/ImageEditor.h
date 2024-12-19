@@ -135,7 +135,7 @@ private:
     MainImage* imageLabel;
     ClickableLabel* bigImageLabel;
 
-
+    QLayout* imageLabelLayout;
     QHBoxLayout* mainLayout;
     QHBoxLayout* previewButtonLayout;
     QHBoxLayout* actionButtonLayout;

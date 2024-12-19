@@ -19,6 +19,9 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
 
 
 
+    imageLabelLayout = new QVBoxLayout();
+    imageLabelLayout->setAlignment(Qt::AlignCenter);
+
 
     editionLayout = new QVBoxLayout();
     editionLayout->setAlignment(Qt::AlignCenter);
@@ -335,17 +338,14 @@ void ImageEditor::createButtons() {
     buttonImageBefore = createImageBefore();
     buttonImageNext = createImageNext();
 
-    // TODO revoir un peu
-    QLayout* imageLabelLayout = new QVBoxLayout();
     imageLabel = createImageLabel();
-
     imageLabelLayout->addWidget(imageLabel);
-    // imageLabel->setFixedSize(data->sizes.imagesEditorSizes->mainImageSize);
+
+
     checkCache();
 
     buttonLayout->addWidget(buttonImageBefore);
     buttonLayout->addLayout(imageLabelLayout);
-    // buttonLayout->addWidget(imageLabel);
     buttonLayout->addWidget(buttonImageNext);
     buttonLayout->setAlignment(Qt::AlignCenter);
 }
@@ -481,6 +481,22 @@ void ImageEditor::clear() {
     stopImageOpen();
 
     QTimer::singleShot(100, this, [this]() {
+
+        if (imageLabelLayout) {
+            QLayoutItem* item;
+            while ((item = imageLabelLayout->takeAt(0)) != nullptr) {
+                if (item->widget()) {
+                    item->widget()->disconnect();
+                    item->widget()->hide();
+                    item->widget()->deleteLater();
+                }
+                delete item;
+
+            }
+            delete imageLabelLayout;
+            imageLabelLayout = nullptr;
+        }
+
         if (actionButtonLayout) {
             QLayoutItem* item;
             while ((item = actionButtonLayout->takeAt(0)) != nullptr) {
@@ -552,6 +568,15 @@ void ImageEditor::clear() {
 void ImageEditor::hide() {
     stopImageOpen();
 
+    if (imageLabelLayout) {
+        for (int i = 0; i < imageLabelLayout->count(); ++i) {
+            QLayoutItem* item = imageLabelLayout->itemAt(i);
+            if (item && item->widget()) {
+                item->widget()->hide();
+            }
+        }
+    }
+
     if (actionButtonLayout) {
         for (int i = 0; i < actionButtonLayout->count(); ++i) {
             QLayoutItem* item = actionButtonLayout->itemAt(i);
@@ -591,6 +616,15 @@ void ImageEditor::hide() {
 
 
 void ImageEditor::unHide() {
+
+    if (imageLabelLayout) {
+        for (int i = 0; i < imageLabelLayout->count(); ++i) {
+            QLayoutItem* item = imageLabelLayout->itemAt(i);
+            if (item && item->widget()) {
+                item->widget()->show();
+            }
+        }
+    }
     if (actionButtonLayout) {
         for (int i = 0; i < actionButtonLayout->count(); ++i) {
             QLayoutItem* item = actionButtonLayout->itemAt(i);
@@ -869,7 +903,6 @@ MainImage* ImageEditor::createImageLabel() {
 
     MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, mainImageSize, false);
 
-    // imageLabelNew->setFixedSize(mainImageSize);
 
     connect(imageLabelNew, &MainImage::leftClicked, [this]() {
         openBigImageLabel();

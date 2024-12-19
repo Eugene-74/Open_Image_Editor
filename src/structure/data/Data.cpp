@@ -75,14 +75,9 @@ bool Data::isDeleted(int imageNbr) {
 QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     bool setSize, int thumbnail, bool rotation,
     bool square, bool crop) {
-    QImage image;
-    if (square) {
-        image = loadImageSquare(parent, imagePath, size, setSize, thumbnail);
-    } else {
-        image = loadImageNormal(parent, imagePath, size, setSize, thumbnail);
+    QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail);
 
 
-    }
     if (crop){
         int imageId = imagesData.getImageIdByName(imagePath);
         if (imageId != -1) {
@@ -108,22 +103,30 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
             }
         }
     }
+    if (square){
+
+        int cropSize = std::min(image.width(), image.height());
+        int xOffset = (image.width() - cropSize) / 2;
+        int yOffset = (image.height() - cropSize) / 2;
+
+        image = image.copy(xOffset, yOffset, cropSize, cropSize);
+    }
     if (rotation) {
         image = rotateQImage(image, imagePath);
     }
     return image;
 }
 
-QImage Data::loadImageSquare(QWidget* parent, std::string imagePath, QSize size,
-    bool setSize, int thumbnail) {
-    QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail);
-    int cropSize = std::min(image.width(), image.height());
-    int xOffset = (image.width() - cropSize) / 2;
-    int yOffset = (image.height() - cropSize) / 2;
+// QImage Data::loadImageSquare(QWidget* parent, std::string imagePath, QSize size,
+//     bool setSize, int thumbnail) {
+//     QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail);
+//     int cropSize = std::min(image.width(), image.height());
+//     int xOffset = (image.width() - cropSize) / 2;
+//     int yOffset = (image.height() - cropSize) / 2;
 
-    image = image.copy(xOffset, yOffset, cropSize, cropSize);
-    return image;
-}
+//     image = image.copy(xOffset, yOffset, cropSize, cropSize);
+//     return image;
+// }
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     bool setSize, int thumbnail) {
     std::map<std::string, QImageAndPath>* cache = imageCache;

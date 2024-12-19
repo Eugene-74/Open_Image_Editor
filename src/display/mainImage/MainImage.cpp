@@ -60,14 +60,14 @@ void MainImage::leaveEvent(QEvent* event) {
 void MainImage::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-            emit ctrlLeftClicked();
-
+            if (!drawingRectangle){
+                emit ctrlLeftClicked();
+            }
         } else {
             if (cropping) {
 
             } else {
                 emit leftClicked();
-
                 hover_background_color = CLICK_BACKGROUND_COLOR;
                 updateStyleSheet();
             }
@@ -77,31 +77,35 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
 
 
 void MainImage::mouseReleaseEvent(QMouseEvent* event) {
-    emit clicked();
+    if (!drawingRectangle){
+        emit clicked();
+    }
     if (event->button() == Qt::LeftButton) {
         if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-            emit ctrlLeftClicked();
-
-            std::cerr << "start cropping" << std::endl;
+            if (!drawingRectangle){
+                emit ctrlLeftClicked();
+            }
             cropping = true;
         } else {
             if (cropping) {
+
                 if (cropStart == QPoint(-1, -1)) {
                     cropStart = event->pos();
 
                     drawingRectangle = true;
                 } else {
-                    std::cerr << "end cropping" << std::endl;
-                    cropEnd = event->pos();
+                    if (drawingRectangle){
+                        cropEnd = event->pos();
 
-                    // cropEnd = event->pos();
-                    drawingRectangle = false;
-                    cropImage();
-
+                        drawingRectangle = false;
+                        cropImage();
+                        cropping = false;
+                    }
                 }
             } else {
-                emit leftClicked();
-
+                if (!drawingRectangle){
+                    emit leftClicked();
+                }
                 hover_background_color = HOVER_BACKGROUND_COLOR;
                 updateStyleSheet();
             }
