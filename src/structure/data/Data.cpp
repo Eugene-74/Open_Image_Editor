@@ -74,21 +74,44 @@ bool Data::isDeleted(int imageNbr) {
 }
 QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     bool setSize, int thumbnail, bool rotation,
-    bool square) {
+    bool square, bool crop) {
+    QImage image;
     if (square) {
-        QImage image = loadImageSquare(parent, imagePath, size, setSize, thumbnail);
-        if (rotation) {
-            image = rotateQImage(image, imagePath);
-        }
-        return image;
+        image = loadImageSquare(parent, imagePath, size, setSize, thumbnail);
+    } else {
+        image = loadImageNormal(parent, imagePath, size, setSize, thumbnail);
+
+
     }
-    else {
-        QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail);
-        if (rotation) {
-            image = rotateQImage(image, imagePath);
+    if (crop){
+        int imageId = imagesData.getImageIdByName(imagePath);
+        if (imageId != -1) {
+            ImageData* imageData = imagesData.getImageData(imagePath);
+            if (imageData != nullptr && !imageData->cropSizes.empty()) {
+                std::cerr << "open crop image" << std::endl;
+
+                std::vector<QPoint> cropPoints = imageData->cropSizes.back();
+                if (cropPoints.size() == 2) {
+                    QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
+
+                    // Vérifier que le rectangle de découpe est dans les limites de l'image
+                    QRect imageRect(0, 0, image.width(), image.height());
+                    cropRect = cropRect.intersected(imageRect);
+
+                    if (cropRect.isValid() && !image.isNull()) {
+                        // Découper l'image en utilisant le rectangle de découpe
+                        QImage croppedImage = image.copy(cropRect);
+
+                        image = croppedImage;
+                    }
+                }
+            }
         }
-        return image;
     }
+    if (rotation) {
+        image = rotateQImage(image, imagePath);
+    }
+    return image;
 }
 
 QImage Data::loadImageSquare(QWidget* parent, std::string imagePath, QSize size,
@@ -137,33 +160,27 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 
     if (ressource.isValid()) {
         image.load(QString::fromStdString(imagePathbis));
-    }
-    else {
+    } else {
         if (thumbnail == 128) {
             if (hasThumbnail(imagePath, 128)) {
                 imagePathbis = getThumbnailPath(imagePath, 128);
-            }
-            else {
+            } else {
                 createThumbnail(imagePath, 128);
                 createThumbnailIfNotExists(imagePath, 256);
                 createThumbnailIfNotExists(imagePath, 512);
             }
-        }
-        else if (thumbnail == 256) {
+        } else if (thumbnail == 256) {
             if (hasThumbnail(imagePath, 256)) {
                 imagePathbis = getThumbnailPath(imagePath, 256);
-            }
-            else {
+            } else {
                 createThumbnailIfNotExists(imagePath, 128);
                 createThumbnail(imagePath, 256);
                 createThumbnailIfNotExists(imagePath, 512);
             }
-        }
-        else if (thumbnail == 512) {
+        } else if (thumbnail == 512) {
             if (hasThumbnail(imagePath, 512)) {
                 imagePathbis = getThumbnailPath(imagePath, 512);
-            }
-            else {
+            } else {
                 createThumbnailIfNotExists(imagePath, 128);
                 createThumbnailIfNotExists(imagePath, 256);
                 createThumbnail(imagePath, 512);
@@ -264,12 +281,10 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
     if (maxDim == 128) {
         outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" +
             std::to_string(hashValue) + extension;
-    }
-    else if (maxDim == 256) {
+    } else if (maxDim == 256) {
         outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" +
             std::to_string(hashValue) + extension;
-    }
-    else if (maxDim == 512) {
+    } else if (maxDim == 512) {
         outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" +
             std::to_string(hashValue) + extension;
     }
@@ -294,8 +309,7 @@ void Data::createThumbnailIfNotExists(const std::string& imagePath,
     if (!hasThumbnail(imagePath, maxDim)) {
         // std::cout << "creating Thumbnail for: " << imagePath << std::endl;
         createThumbnail(imagePath, maxDim);
-    }
-    else {
+    } else {
         // std::cout << "Thumbnail already exists for: " << maxDim << " : " <<
         // imagePath << std::endl;
     }
@@ -309,12 +323,10 @@ bool Data::hasThumbnail(const std::string& imagePath, const int maxDim) {
     if (maxDim == 128) {
         outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" +
             std::to_string(hashValue) + extension;
-    }
-    else if (maxDim == 256) {
+    } else if (maxDim == 256) {
         outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" +
             std::to_string(hashValue) + extension;
-    }
-    else if (maxDim == 512) {
+    } else if (maxDim == 512) {
         outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" +
             std::to_string(hashValue) + extension;
     }
@@ -347,12 +359,10 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
     if (size == 128) {
         outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" +
             std::to_string(hashValue) + extension;
-    }
-    else if (size == 256) {
+    } else if (size == 256) {
         outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" +
             std::to_string(hashValue) + extension;
-    }
-    else if (size == 512) {
+    } else if (size == 512) {
         outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" +
             std::to_string(hashValue) + extension;
     }
@@ -418,8 +428,7 @@ void Data::copyTo(std::string filePath, std::string destinationPath,
                         std::replace(date.begin(), date.end(), ':', '-');
                         std::replace(date.begin(), date.end(), ' ', '_');
                         destinationFile = destinationPath + "/" + date + "_" + file;
-                    }
-                    else {
+                    } else {
                         destinationFile = destinationPath + "/" + "no_date" + "_" + file;
                     }
                 }
@@ -434,8 +443,7 @@ QImage Data::rotateQImage(QImage image, std::string imagePath) {
     if (imageData != nullptr) {
         Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
         if (exifData.empty()) {
-        }
-        else {
+        } else {
             if (exifData["Exif.Image.Orientation"].count() != 0) {
                 int orientation = exifData["Exif.Image.Orientation"].toInt64();
                 switch (orientation) {
@@ -502,8 +510,7 @@ void Data::saveData() {
             if (!fs::create_directories(fs::path(filePath).parent_path())) {
                 std::cerr << "Couldn't create directories for save file." << std::endl;
                 return;
-            }
-            else {
+            } else {
                 std::cerr << "Directories created" << std::endl;
             }
         }

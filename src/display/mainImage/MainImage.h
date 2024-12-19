@@ -5,6 +5,7 @@
 // #include <QFileDialog>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QImageIOHandler>
 
 #include "../../Const.h"
 #include "../../structure/data/Data.h"
@@ -33,8 +34,9 @@ protected:
 
 
 private:
-    QPixmap defaultPixmap;
+    Data* data;
 
+    QPixmap defaultPixmap;
 
     int border = 0;
     int border_radius = 5;
@@ -46,10 +48,8 @@ private:
     QPoint cropStart = QPoint(-1, -1);
     QPoint cropEnd = QPoint(-1, -1);
 
-    // QPoint startPoint;
-    // QPoint endPoint;
-
     void cropImage();
+    std::vector<QPoint> adjustPointsForOrientation(const std::vector<QPoint>& points, int orientation, QSize imageSize);
 
 
 
@@ -63,3 +63,4 @@ public:
     QString background_color = "transparent";
     QString hover_background_color = "transparent";
 };
+

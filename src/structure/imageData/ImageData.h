@@ -15,10 +15,7 @@ public:
     std::string imagePath;
     Folders folders;
     MetaData metaData;
-    std::vector<QSize> cropSizes;
-
-    // ImageData& operator=(const ImageData& other);
-
+    std::vector<std::vector<QPoint>> cropSizes = std::vector<std::vector<QPoint>>();
 
     ImageData() : imagePath(""), folders(Folders()), metaData(MetaData()) {}
 

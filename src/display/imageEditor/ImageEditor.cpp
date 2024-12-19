@@ -77,8 +77,7 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
     infoLayout->addWidget(validateButton);
     if (exifEditor) {
         populateMetadataFields();
-    }
-    else {
+    } else {
         for (int i = 0; i < infoLayout->count(); ++i) {
             QWidget* widget = infoLayout->itemAt(i)->widget();
             if (widget) {
@@ -200,8 +199,7 @@ void ImageEditor::reload() {
 
     if (exifEditor) {
         populateMetadataFields();
-    }
-    else {
+    } else {
         for (int i = 0; i < infoLayout->count(); ++i) {
             QWidget* widget = infoLayout->itemAt(i)->widget();
             if (widget) {
@@ -288,8 +286,7 @@ void ImageEditor::updatePreview() {
                 previewButtons[i]->deleteLater();
 
                 previewButtons[i] = previewButtonNew;
-            }
-            else {
+            } else {
 
                 ClickableLabel* previewButtonNew = createImagePreview(imagePaths[i], imageNbr);
 
@@ -300,8 +297,7 @@ void ImageEditor::updatePreview() {
 
                 previewButtons[i] = previewButtonNew;
             }
-        }
-        else {
+        } else {
 
             previewButtons[i]->hide();
         }
@@ -339,11 +335,17 @@ void ImageEditor::createButtons() {
     buttonImageBefore = createImageBefore();
     buttonImageNext = createImageNext();
 
+    // TODO revoir un peu
+    QLayout* imageLabelLayout = new QVBoxLayout();
     imageLabel = createImageLabel();
+
+    imageLabelLayout->addWidget(imageLabel);
+    // imageLabel->setFixedSize(data->sizes.imagesEditorSizes->mainImageSize);
     checkCache();
 
     buttonLayout->addWidget(buttonImageBefore);
-    buttonLayout->addWidget(imageLabel);
+    buttonLayout->addLayout(imageLabelLayout);
+    // buttonLayout->addWidget(imageLabel);
     buttonLayout->addWidget(buttonImageNext);
     buttonLayout->setAlignment(Qt::AlignCenter);
 }
@@ -687,8 +689,7 @@ ClickableLabel* ImageEditor::createImageRotateRight() {
 
     if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageRotateRightNew->setDisabled(true);
-    }
-    else {
+    } else {
 
         if (!imageRotateRightNew->isEnabled())
             imageRotateRightNew->setEnabled(true);
@@ -712,8 +713,7 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
 
     if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageRotateLeftNew->setDisabled(true);
-    }
-    else {
+    } else {
         if (!imageRotateLeftNew->isEnabled())
             imageRotateLeftNew->setEnabled(true);
     }
@@ -733,8 +733,7 @@ ClickableLabel* ImageEditor::createImageMirrorUpDown() {
 
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageMirrorUpDownNew->setDisabled(true);
-    }
-    else {
+    } else {
         if (!imageMirrorUpDownNew->isEnabled())
             imageMirrorUpDownNew->setEnabled(true);
     }
@@ -759,8 +758,7 @@ ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageMirrorLeftRightNew->setDisabled(true);
         // std::cerr << "disabled" << std::endl;
-    }
-    else {
+    } else {
         // std::cerr << "enabled" << std::endl;
         if (!imageMirrorLeftRightNew->isEnabled())
             imageMirrorLeftRightNew->setEnabled(true);
@@ -785,8 +783,7 @@ ClickableLabel* ImageEditor::createImageEditExif() {
         // exifEditor = !exifEditor;
         if (exifEditor) {
             exifEditor = false;
-        }
-        else {
+        } else {
             exifEditor = true;
             for (int i = 0; i < infoLayout->count(); ++i) {
                 QWidget* widget = infoLayout->itemAt(i)->widget();
@@ -872,7 +869,7 @@ MainImage* ImageEditor::createImageLabel() {
 
     MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, mainImageSize, false);
 
-    imageLabelNew->setFixedSize(mainImageSize);
+    // imageLabelNew->setFixedSize(mainImageSize);
 
     connect(imageLabelNew, &MainImage::leftClicked, [this]() {
         openBigImageLabel();
@@ -909,8 +906,7 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
         if (event->modifiers() & Qt::ControlModifier) {
             imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
             imageRotateLeft->updateStyleSheet();
-        }
-        else {
+        } else {
             buttonImageBefore->background_color = CLICK_BACKGROUND_COLOR;
             buttonImageBefore->updateStyleSheet();
         }
@@ -924,8 +920,7 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
         if (event->modifiers() & Qt::ControlModifier) {
             imageRotateRight->background_color = CLICK_BACKGROUND_COLOR;
             imageRotateRight->updateStyleSheet();
-        }
-        else {
+        } else {
             buttonImageNext->background_color = CLICK_BACKGROUND_COLOR;
             buttonImageNext->updateStyleSheet();
         }
@@ -989,14 +984,12 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
             imageRotateLeft->background_color = BACKGROUND_COLOR;
             imageRotateLeft->updateStyleSheet();
             rotateLeft();
-        }
-        else if (event->modifiers() & Qt::MetaModifier) {
+        } else if (event->modifiers() & Qt::MetaModifier) {
             imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
             imageRotateLeft->updateStyleSheet();
             data->imagesData.imageNumber = data->imagesData.get()->size() - 1;
             reload();
-        }
-        else {
+        } else {
             buttonImageBefore->background_color = BACKGROUND_COLOR;
             buttonImageBefore->updateStyleSheet();
             previousImage();
@@ -1015,14 +1008,12 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
             imageRotateRight->background_color = BACKGROUND_COLOR;
             imageRotateRight->updateStyleSheet();
             rotateRight();
-        }
-        else if (event->modifiers() & Qt::MetaModifier) {
+        } else if (event->modifiers() & Qt::MetaModifier) {
             imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
             imageRotateLeft->updateStyleSheet();
             data->imagesData.imageNumber = data->imagesData.get()->size() - 1;
             reload();
-        }
-        else {
+        } else {
             buttonImageNext->background_color = BACKGROUND_COLOR;
             buttonImageNext->updateStyleSheet();
             nextImage();
@@ -1099,8 +1090,7 @@ void ImageEditor::wheelEvent(QWheelEvent* event) {
         buttonImageBefore->background_color = BACKGROUND_COLOR;
         buttonImageBefore->updateStyleSheet();
         previousImage(numSteps);
-    }
-    else if (numSteps < 0) {
+    } else if (numSteps < 0) {
         buttonImageNext->background_color = BACKGROUND_COLOR;
         buttonImageNext->updateStyleSheet();
         nextImage(-numSteps);
@@ -1155,8 +1145,7 @@ void ImageEditor::deleteImage() {
         data->unPreDeleteImage(data->imagesData.getImageNumber());
 
         updateButtons();
-    }
-    else {
+    } else {
 
         data->preDeleteImage(data->imagesData.getImageNumber());
         updateButtons();
@@ -1284,8 +1273,7 @@ void ImageEditor::rotateLeft() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         rotateLeftJpg();
-    }
-    else if (extension == ".png" || extension == ".PNG") {
+    } else if (extension == ".png" || extension == ".PNG") {
         rotateLeftPng();
     }
 
@@ -1294,8 +1282,7 @@ void ImageEditor::rotateRight() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         rotateRightJpg();
-    }
-    else if (extension == ".png" || extension == ".PNG") {
+    } else if (extension == ".png" || extension == ".PNG") {
         rotateRightPng();
     }
 }
@@ -1332,8 +1319,7 @@ void ImageEditor::mirrorUpDown() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         mirrorUpDownJpg();
-    }
-    else if (extension == ".png" || extension == ".PNG") {
+    } else if (extension == ".png" || extension == ".PNG") {
         mirrorUpDownPng();
     }
 }
@@ -1342,8 +1328,7 @@ void ImageEditor::mirrorLeftRight() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         mirrorLeftRightJpg();
-    }
-    else if (extension == ".png" || extension == ".PNG") {
+    } else if (extension == ".png" || extension == ".PNG") {
         mirrorLeftRightPng();
 
     }
@@ -1361,26 +1346,19 @@ void ImageEditor::mirrorUpDownJpg() {
 
     if (orientation == 1) {
         orientation = 4;
-    }
-    else if (orientation == 3) {
+    } else if (orientation == 3) {
         orientation = 2;
-    }
-    else if (orientation == 6) {
+    } else if (orientation == 6) {
         orientation = 5;
-    }
-    else if (orientation == 8) {
+    } else if (orientation == 8) {
         orientation = 7;
-    }
-    else if (orientation == 2) {
+    } else if (orientation == 2) {
         orientation = 3;
-    }
-    else if (orientation == 4) {
+    } else if (orientation == 4) {
         orientation = 1;
-    }
-    else if (orientation == 5) {
+    } else if (orientation == 5) {
         orientation = 6;
-    }
-    else if (orientation == 7) {
+    } else if (orientation == 7) {
         orientation = 8;
     }
 
@@ -1402,26 +1380,19 @@ void ImageEditor::mirrorLeftRightJpg() {
     int orientation = imageData->getImageOrientation();
     if (orientation == 1) {
         orientation = 2;
-    }
-    else if (orientation == 3) {
+    } else if (orientation == 3) {
         orientation = 4;
-    }
-    else if (orientation == 6) {
+    } else if (orientation == 6) {
         orientation = 7;
-    }
-    else if (orientation == 8) {
+    } else if (orientation == 8) {
         orientation = 5;
-    }
-    else if (orientation == 2) {
+    } else if (orientation == 2) {
         orientation = 1;
-    }
-    else if (orientation == 4) {
+    } else if (orientation == 4) {
         orientation = 3;
-    }
-    else if (orientation == 5) {
+    } else if (orientation == 5) {
         orientation = 8;
-    }
-    else if (orientation == 7) {
+    } else if (orientation == 7) {
         orientation = 6;
     }
     imageData->turnImage(orientation);

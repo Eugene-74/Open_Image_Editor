@@ -92,8 +92,7 @@ void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
     try {
         metaData.setExifData(toAddMetaData);
         saveMetaData();
-    }
-    catch (const Exiv2::Error& e) {
+    } catch (const Exiv2::Error& e) {
         handleExiv2Error(e);
     }
 }
@@ -101,8 +100,7 @@ void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
 void ImageData::loadData() {
     try {
         metaData.loadData(imagePath);
-    }
-    catch (const Exiv2::Error& e) {
+    } catch (const Exiv2::Error& e) {
         handleExiv2Error(e);
     }
 }
@@ -110,8 +108,7 @@ void ImageData::loadData() {
 void ImageData::saveMetaData() {
     try {
         metaData.saveMetaData(imagePath);
-    }
-    catch (const Exiv2::Error& e) {
+    } catch (const Exiv2::Error& e) {
         handleExiv2Error(e);
     }
 }

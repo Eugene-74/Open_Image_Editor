@@ -1,7 +1,7 @@
 #include "MainImage.h"
 
 MainImage::MainImage(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square)
-    : QLabel(parent), cropping(true) {
+    : QLabel(parent), data(data), cropping(false) {
 
     qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail, true, square);
 
@@ -88,9 +88,13 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
             if (cropping) {
                 if (cropStart == QPoint(-1, -1)) {
                     cropStart = event->pos();
+
                     drawingRectangle = true;
                 } else {
+                    std::cerr << "end cropping" << std::endl;
                     cropEnd = event->pos();
+
+                    // cropEnd = event->pos();
                     drawingRectangle = false;
                     cropImage();
 
@@ -107,43 +111,70 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 void MainImage::cropImage() {
+    QImage qImageReel = qImage.copy();
     if (cropStart == QPoint(-1, -1) || cropEnd == QPoint(-1, -1)) {
         return;
     }
+
+    // Créer un rectangle à partir de cropStart et cropEnd
     QRect cropRect = QRect(cropStart, cropEnd).normalized();
 
-    // Calcul de la taille réelle de l'image affichée (pixmap)
+    // Calculer la taille de l'image affichée (avec le redimensionnement)
     QSize scaledPixmapSize = qImage.size();
-    scaledPixmapSize.scale(this->size() - QSize(5, 5), Qt::KeepAspectRatio);
+    scaledPixmapSize.scale(this->size(), Qt::KeepAspectRatio);
 
-    // Calcul des décalages dus à l'alignement de l'image dans le QLabel
+    // Calculer les décalages si l'image est centrée dans le widget
     int xOffset = (this->width() - scaledPixmapSize.width()) / 2;
     int yOffset = (this->height() - scaledPixmapSize.height()) / 2;
 
-    // Ajustement du rectangle de découpe en tenant compte des décalages
+    // Ajuster cropRect pour qu'il soit relatif à l'image affichée
     cropRect.translate(-xOffset, -yOffset);
 
-    // Vérification que le rectangle de découpe est dans les limites de l'image affichée
-    QRect pixmapRect(0, 0, scaledPixmapSize.width(), scaledPixmapSize.height());
-    cropRect = cropRect.intersected(pixmapRect);
+    // S'assurer que cropRect est dans les limites de l'image affichée
+    QRect displayedImageRect(0, 0, scaledPixmapSize.width(), scaledPixmapSize.height());
+    cropRect = cropRect.intersected(displayedImageRect);
 
-    if (cropRect.isEmpty() || !qImage.isNull()) {
-        // Conversion des coordonnées vers l'image originale
-        double xRatio = static_cast<double>(qImage.width()) / scaledPixmapSize.width();
-        double yRatio = static_cast<double>(qImage.height()) / scaledPixmapSize.height();
+    if (cropRect.isEmpty() || qImage.isNull()) {
+        return;
+    }
 
-        QRect imageCropRect(
-            static_cast<int>(cropRect.left() * xRatio),
-            static_cast<int>(cropRect.top() * yRatio),
-            static_cast<int>(cropRect.width() * xRatio),
-            static_cast<int>(cropRect.height() * yRatio)
-        );
+    // Mapper cropRect vers les coordonnées réelles de l'image
+    double xScale = static_cast<double>(qImage.width()) / scaledPixmapSize.width();
+    double yScale = static_cast<double>(qImage.height()) / scaledPixmapSize.height();
 
-        if (imageCropRect.isValid()) {
-            QImage croppedImage = qImage.copy(imageCropRect.normalized());
-            this->setPixmap(QPixmap::fromImage(croppedImage).scaled(this->size() - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-            qImage = croppedImage;
-        }
+    QRect imageCropRect(
+        static_cast<int>(cropRect.left() * xScale),
+        static_cast<int>(cropRect.top() * yScale),
+        static_cast<int>(cropRect.width() * xScale),
+        static_cast<int>(cropRect.height() * yScale)
+    );
+
+    if (!imageCropRect.isValid()) {
+        return;
+    }
+
+    // Découper l'image en utilisant le rectangle calculé
+    QImage croppedImage = qImage.copy(imageCropRect);
+
+    // Mettre à jour qImage et afficher l'image découpée
+    qImage = croppedImage;
+    this->setPixmap(QPixmap::fromImage(qImage).scaled(
+        this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation
+    ));
+
+    // Sauvegarder les coordonnées de découpe dans les coordonnées réelles de l'image
+    if (data && data->imagesData.getCurrentImageData()) {
+        std::vector<QPoint> cropPoints = {
+            QPoint(imageCropRect.left(), imageCropRect.top()),
+            QPoint(imageCropRect.right(), imageCropRect.bottom())
+        };
+
+        int orientation = data->imagesData.getCurrentImageData()->getImageOrientation();
+        std::vector<QPoint> adjustedCropPoints = adjustPointsForOrientation(cropPoints, orientation, qImageReel.size());
+
+        data->imagesData.getCurrentImageData()->cropSizes.push_back(adjustedCropPoints);
+    } else {
+        std::cerr << "Erreur : data ou getCurrentImageData() est nul" << std::endl;
     }
 }
 
@@ -164,4 +195,52 @@ void MainImage::mouseMoveEvent(QMouseEvent* event) {
         cropEnd = event->pos();
         update();
     }
+}
+
+std::vector<QPoint> MainImage::adjustPointsForOrientation(const std::vector<QPoint>& points, int orientation, QSize imageSize) {
+    std::vector<QPoint> adjustedPoints;
+
+
+
+    int W = imageSize.width();
+    int H = imageSize.height();
+
+    for (const QPoint& point : points) {
+        QPoint adjustedPoint = point;
+
+        switch (orientation) {
+        case 2: // Miroir vertical
+            adjustedPoint.setX(W - point.x());
+            break;
+        case 3: // Rotation de 180°
+            adjustedPoint.setX(W - point.x());
+            adjustedPoint.setY(H - point.y());
+            break;
+        case 4: // Miroir horizontal
+            adjustedPoint.setY(H - point.y());
+            break;
+        case 5: // Miroir horizontal puis rotation de 270°
+            adjustedPoint.setX(point.y());
+            adjustedPoint.setY(point.x());
+            break;
+        case 6: // Rotation de 90 degrés (sens horaire)
+            adjustedPoint.setX(point.y());
+            adjustedPoint.setY(W - point.x());
+            break;
+        case 7: // Miroir horizontal puis rotation de 90°
+            adjustedPoint.setX(H - point.y() - 1);
+            adjustedPoint.setY(W - point.x() - 1);
+            break;
+        case 8: // Rotation de 270 degrés (sens horaire)
+            adjustedPoint.setX(H - point.y() - 1);
+            adjustedPoint.setY(point.x());
+            break;
+        default: // Orientation normale, pas de changement
+            break;
+        }
+
+        adjustedPoints.push_back(adjustedPoint);
+    }
+
+    return adjustedPoints;
 }
