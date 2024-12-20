@@ -159,7 +159,6 @@ void ImageEditor::rotateRightJpg() {
     }
 
     int orientation = imageData->getImageOrientation();
-    std::cerr << imageData->getImagePath() << " 1-> " << orientation << std::endl;
 
 
     switch (orientation) {
@@ -190,7 +189,6 @@ void ImageEditor::rotateRightJpg() {
     default:
         break;
     }
-    std::cerr << imageData->getImagePath() << " 2-> " << orientation << std::endl;
     imageData->turnImage(orientation);
 
     imageData->saveMetaData();

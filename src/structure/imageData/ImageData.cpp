@@ -125,12 +125,9 @@ int ImageData::getImageOrientation() {
 
 void ImageData::turnImage(int rotation) {
 
-    std::cerr << "rotation" << rotation << std::endl;
-    // 1 : normal, 3 : 90° left, 6 : 180°, 8: 90 right
     metaData.modifyExifValue("Exif.Image.Orientation", std::to_string(rotation));
     metaData.modifyExifValue("Exif.Thumbnail.Orientation", std::to_string(rotation));
     // metaData.modifyXmpValue("Xmp.tiff.Orientation", std::to_string(rotation));
-
 
 }
 

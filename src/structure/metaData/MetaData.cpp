@@ -55,7 +55,7 @@ int MetaData::getImageOrientation() {
 
 // Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
 bool MetaData::modifyExifValue(const std::string& key, const std::string& newValue) {
-    std::cerr << "modification de clékey en cours : " << std::endl;
+    // std::cerr << "modification de clékey en cours : " << std::endl;
 
     Exiv2::ExifKey exifKey(key);
 
@@ -67,8 +67,7 @@ bool MetaData::modifyExifValue(const std::string& key, const std::string& newVal
         // displayExifData(metaData);
 
         return true;  // Retourne vrai si l'opération est réussie
-    }
-    else {
+    } else {
         // Si la clé n'existe pas, la créer et y ajouter la nouvelle valeur
         try {
             // Créer un nouvel Exifdatum avec la clé
@@ -79,8 +78,7 @@ bool MetaData::modifyExifValue(const std::string& key, const std::string& newVal
             exifMetaData.add(newDatum);
 
             return true;
-        }
-        catch (const Exiv2::Error& e) {
+        } catch (const Exiv2::Error& e) {
             std::cerr << "Erreur lors de l'ajout de la clé : " << e.what() << std::endl;
             return false;
         }
@@ -101,8 +99,7 @@ bool MetaData::modifyXmpValue(const std::string& key, const std::string& newValu
         // displayExifData(metaData);
 
         return true;  // Retourne vrai si l'opération est réussie
-    }
-    else {
+    } else {
         // Si la clé n'existe pas, la créer et y ajouter la nouvelle valeur
         try {
             // Créer un nouvel Exifdatum avec la clé
@@ -113,8 +110,7 @@ bool MetaData::modifyXmpValue(const std::string& key, const std::string& newValu
             xmpMetaData.add(newDatum);
 
             return true;
-        }
-        catch (const Exiv2::Error& e) {
+        } catch (const Exiv2::Error& e) {
             std::cerr << "Erreur lors de l'ajout de la clé : " << e.what() << std::endl;
             return false;
         }
@@ -134,8 +130,7 @@ bool MetaData::modifyIptcValue(const std::string& key, const std::string& newVal
         // displayExifData(metaData);
 
         return true;  // Retourne vrai si l'opération est réussie
-    }
-    else {
+    } else {
         // Si la clé n'existe pas, la créer et y ajouter la nouvelle valeur
         try {
             // Créer un nouvel Exifdatum avec la clé
@@ -146,8 +141,7 @@ bool MetaData::modifyIptcValue(const std::string& key, const std::string& newVal
             iptcMetaData.add(newDatum);
 
             return true;
-        }
-        catch (const Exiv2::Error& e) {
+        } catch (const Exiv2::Error& e) {
             std::cerr << "Erreur lors de l'ajout de la clé : " << e.what() << std::endl;
             return false;
         }
@@ -186,8 +180,7 @@ void MetaData::loadData(const std::string& imagePath) {
 
 
 
-    }
-    catch (const Exiv2::Error& e) {
+    } catch (const Exiv2::Error& e) {
         std::cerr << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what() << std::endl;
         // return Exiv2::ExifData(); // Retourne des métadonnées vides en cas d'erreur
     }
@@ -206,8 +199,7 @@ bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData)
         // Sauvegarder les métadonnées dans l'image
         image->writeMetadata();
         return true;
-    }
-    catch (const Exiv2::Error& e) {
+    } catch (const Exiv2::Error& e) {
         std::cerr << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what() << std::endl;
         return false;
     }
@@ -224,8 +216,7 @@ bool saveXmpData(const std::string& imagePath, const Exiv2::XmpData& exifData) {
         // Sauvegarder les métadonnées dans l'image
         image->writeMetadata();
         return true;
-    }
-    catch (const Exiv2::Error& e) {
+    } catch (const Exiv2::Error& e) {
         std::cerr << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what() << std::endl;
         return false;
     }
@@ -242,8 +233,7 @@ bool saveIptcData(const std::string& imagePath, const Exiv2::IptcData& exifData)
         // Sauvegarder les métadonnées dans l'image
         image->writeMetadata();
         return true;
-    }
-    catch (const Exiv2::Error& e) {
+    } catch (const Exiv2::Error& e) {
         std::cerr << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what() << std::endl;
         return false;
     }
