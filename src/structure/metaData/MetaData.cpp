@@ -18,7 +18,6 @@ void MetaData::saveMetaData(const std::string& imageName) {
     saveXmpData(imageName, xmpMetaData);
     saveIptcData(imageName, iptcMetaData);
     displayExifData(exifMetaData);
-    std::cerr << "Métadonnées sauvegardées pour l'image : " << imageName << std::endl;
 }
 
 // Fonction pour récupérer la largeur de l'image
@@ -55,7 +54,6 @@ int MetaData::getImageOrientation() {
 
 // Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
 bool MetaData::modifyExifValue(const std::string& key, const std::string& newValue) {
-    // std::cerr << "modification de clékey en cours : " << std::endl;
 
     Exiv2::ExifKey exifKey(key);
 
@@ -87,8 +85,6 @@ bool MetaData::modifyExifValue(const std::string& key, const std::string& newVal
 
 // Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
 bool MetaData::modifyXmpValue(const std::string& key, const std::string& newValue) {
-    std::cerr << "modification de clékey en cours : " << std::endl;
-
     Exiv2::XmpKey exifKey(key);
 
     // Chercher la clé dans les métadonnées
@@ -118,8 +114,6 @@ bool MetaData::modifyXmpValue(const std::string& key, const std::string& newValu
 }
 // Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
 bool MetaData::modifyIptcValue(const std::string& key, const std::string& newValue) {
-    std::cerr << "modification de clékey en cours : " << std::endl;
-
     Exiv2::IptcKey exifKey(key);
 
     // Chercher la clé dans les métadonnées
@@ -182,7 +176,6 @@ void MetaData::loadData(const std::string& imagePath) {
 
     } catch (const Exiv2::Error& e) {
         std::cerr << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what() << std::endl;
-        // return Exiv2::ExifData(); // Retourne des métadonnées vides en cas d'erreur
     }
 }
 

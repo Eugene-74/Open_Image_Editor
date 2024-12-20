@@ -72,7 +72,16 @@ InitialWindow::InitialWindow() {
 
 
     createImageBooth(data);
-    // createImageEditor(data);
+}
+
+void InitialWindow::closeEvent(QCloseEvent* event) {
+    if (showQuestionMessage(this, "Do you want to save before quit ?")) {
+        data->saveData();
+        event->accept();
+
+    } else {
+        event->accept();
+    }
 }
 
 void InitialWindow::createImageEditor(Data* data) {

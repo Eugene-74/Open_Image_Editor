@@ -46,4 +46,6 @@ private:
     ClickableLabel* createImageOption();
 
     void openOption();
+protected:
+    void closeEvent(QCloseEvent* event) override;
 };
