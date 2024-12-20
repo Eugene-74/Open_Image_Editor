@@ -103,6 +103,7 @@ void ImageEditor::previousImage(int nbr) {
 
 void ImageEditor::rotateLeftJpg() {
 
+
     ImagesData* imagesData = &data->imagesData;
 
     ImageData* imageData = imagesData->getCurrentImageData();
@@ -116,13 +117,13 @@ void ImageEditor::rotateLeftJpg() {
         orientation = 8;
         break;
     case 2:
-        orientation = 5;
+        orientation = 7;
         break;
     case 3:
         orientation = 6;
         break;
     case 4:
-        orientation = 7;
+        orientation = 5;
         break;
     case 5:
         orientation = 2;
@@ -139,6 +140,7 @@ void ImageEditor::rotateLeftJpg() {
     default:
         break;
     }
+
     imageData->turnImage(orientation);
 
     imageData->saveMetaData();
@@ -157,6 +159,8 @@ void ImageEditor::rotateRightJpg() {
     }
 
     int orientation = imageData->getImageOrientation();
+    std::cerr << imageData->getImagePath() << " 1-> " << orientation << std::endl;
+
 
     switch (orientation) {
     case 1:
@@ -172,13 +176,13 @@ void ImageEditor::rotateRightJpg() {
         orientation = 7;
         break;
     case 5:
-        orientation = 2;
+        orientation = 4;
         break;
     case 6:
         orientation = 3;
         break;
     case 7:
-        orientation = 4;
+        orientation = 2;
         break;
     case 8:
         orientation = 1;
@@ -186,6 +190,7 @@ void ImageEditor::rotateRightJpg() {
     default:
         break;
     }
+    std::cerr << imageData->getImagePath() << " 2-> " << orientation << std::endl;
     imageData->turnImage(orientation);
 
     imageData->saveMetaData();
