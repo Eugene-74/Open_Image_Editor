@@ -10,4 +10,4 @@ cmake -G Ninja ..
 ninja
 
 # Lancer l'exécutable
-./EasyImageEditor
+./OpenImageEditor
