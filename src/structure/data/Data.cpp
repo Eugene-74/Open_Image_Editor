@@ -74,8 +74,8 @@ bool Data::isDeleted(int imageNbr) {
 }
 QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     bool setSize, int thumbnail, bool rotation,
-    bool square, bool crop) {
-    QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail);
+    bool square, bool crop, bool force) {
+    QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail, force);
 
 
     if (crop){
@@ -117,31 +117,29 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
 }
 
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
-    bool setSize, int thumbnail) {
+    bool setSize, int thumbnail, bool force) {
     std::map<std::string, QImageAndPath>* cache = imageCache;
 
     auto it = cache->find(imagePath);
     if (it != cache->end()) {
-        // std::cerr << "image trouve dans le cache" << std::endl;
         return it->second.image;
     }
 
-    it = cache->find(getThumbnailPath(imagePath, 512));
-    if (it != cache->end()) {
-        // std::cerr << "image trouve dans le cache" << std::endl;
-        return it->second.image;
-    }
+    if (!force){
+        it = cache->find(getThumbnailPath(imagePath, 512));
+        if (it != cache->end()) {
+            return it->second.image;
+        }
 
-    it = cache->find(getThumbnailPath(imagePath, 256));
-    if (it != cache->end()) {
-        // std::cerr << "image trouve dans le cache" << std::endl;
-        return it->second.image;
-    }
+        it = cache->find(getThumbnailPath(imagePath, 256));
+        if (it != cache->end()) {
+            return it->second.image;
+        }
 
-    it = cache->find(getThumbnailPath(imagePath, 128));
-    if (it != cache->end()) {
-        // std::cerr << "image trouve dans le cache" << std::endl;
-        return it->second.image;
+        it = cache->find(getThumbnailPath(imagePath, 128));
+        if (it != cache->end()) {
+            return it->second.image;
+        }
     }
 
     std::string imagePathbis = imagePath;
@@ -604,3 +602,44 @@ void Data::cancelTasks() {
     threadPool.shutdown();
     futures.clear();
 }
+
+
+void Data::addAction(std::function<void()> unDo, std::function<void()> reDo){
+    Actions action;
+    action.unDo = unDo;
+    action.reDo = reDo;
+    lastActions.emplace_back(action);
+    if (lastActions.size() > 100) {
+        lastActions.erase(lastActions.begin());
+    }
+}
+
+
+void Data::addActionDone(Actions action){
+    lastActionsDone.emplace_back(action);
+    if (lastActionsDone.size() > 100) {
+        lastActionsDone.erase(lastActionsDone.begin());
+    }
+}
+
+void Data::reDoAction() {
+    if (!lastActionsDone.empty()) {
+        auto action = lastActionsDone.back();
+        addAction(action.unDo, action.reDo);
+        lastActionsDone.pop_back();
+        action.reDo();
+    }
+}
+
+void Data::unDoAction() {
+    if (!lastActions.empty()) {
+        auto action = lastActions.back();
+        addActionDone(action);
+        lastActions.pop_back();
+        action.unDo();
+    }
+}
+void Data::clearActions(){
+    lastActions.clear();
+}
+

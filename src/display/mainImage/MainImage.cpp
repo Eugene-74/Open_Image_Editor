@@ -1,9 +1,9 @@
 #include "MainImage.h"
 
-MainImage::MainImage(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square)
+MainImage::MainImage(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square, bool force)
     : QLabel(parent), data(data), cropping(false) {
 
-    qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail, true, square);
+    qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail, true, square, false, force);
 
     if (!qImage.isNull()) {
         this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));

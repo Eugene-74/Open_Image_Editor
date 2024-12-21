@@ -18,9 +18,17 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data
         data->sizes.imagesEditorSizes->mainLayoutMargins[3]); // Marges autour des bords (gauche, haut, droite, bas)
 
 
+    fixedFrame = new QFrame();
+    fixedFrame->setFixedSize(data->sizes.imagesEditorSizes->mainImageSize); // Set the desired fixed size
+    QVBoxLayout* fixedFrameLayout = new QVBoxLayout(fixedFrame);
+    fixedFrameLayout->setAlignment(Qt::AlignCenter);
+    fixedFrame->setLayout(fixedFrameLayout);
+
 
     imageLabelLayout = new QVBoxLayout();
     imageLabelLayout->setAlignment(Qt::AlignCenter);
+
+    imageLabelLayout->addWidget(fixedFrame);
 
 
     editionLayout = new QVBoxLayout();
@@ -111,7 +119,6 @@ void ImageEditor::rotateLeftJpg() {
         return;
     }
     int orientation = imageData->getImageOrientation();
-
     switch (orientation) {
     case 1:
         orientation = 8;
@@ -159,7 +166,6 @@ void ImageEditor::rotateRightJpg() {
     }
 
     int orientation = imageData->getImageOrientation();
-
 
     switch (orientation) {
     case 1:
@@ -342,8 +348,7 @@ void ImageEditor::createButtons() {
     buttonImageNext = createImageNext();
 
     imageLabel = createImageLabel();
-    imageLabelLayout->addWidget(imageLabel);
-
+    fixedFrame->layout()->addWidget(imageLabel);
 
     checkCache();
 
@@ -891,7 +896,6 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
 
     connect(previewButton, &ClickableLabel::clicked, [this, imageNbr]() {
         data->imagesData.setImageNumber(imageNbr);
-        // setImage(data.imagesData->getImageData(data->imagesData.getImageNumber()));
         reload();
         });
 
@@ -908,7 +912,10 @@ MainImage* ImageEditor::createImageLabel() {
 
 
     connect(imageLabelNew, &MainImage::leftClicked, [this]() {
-        openBigImageLabel();
+        if (!bigImage){
+            openBigImageLabel();
+        }
+
         });
 
     connect(imageLabelNew, &MainImage::imageCropted, [this]() {
@@ -925,7 +932,7 @@ void ImageEditor::reloadImageLabel() {
 
         MainImage* imageLabelNew = createImageLabel();
 
-        buttonLayout->replaceWidget(imageLabel, imageLabelNew);
+        fixedFrame->layout()->replaceWidget(imageLabel, imageLabelNew);
 
         imageLabel->hide();
         imageLabel->deleteLater();
@@ -1104,10 +1111,22 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
             deleteImage();
         }
         break;
+
+    case Qt::Key_Z:
+        if (event->modifiers() & Qt::ControlModifier) {
+            if (event->modifiers() & Qt::ShiftModifier) {
+                std::cerr << "redo" << std::endl;
+
+                data->reDoAction();
+            } else {
+                std::cerr << "undo" << std::endl;
+                data->unDoAction();
+            }
+        }
+        break;
+
     case Qt::Key_Escape:
         switchToImageBooth();
-
-
         break;
 
 
@@ -1179,13 +1198,35 @@ void ImageEditor::exportImage() {
 
 
 void ImageEditor::deleteImage() {
-    if (data->isDeleted(data->imagesData.getImageNumber())) {
-        data->unPreDeleteImage(data->imagesData.getImageNumber());
+    int nbr = data->imagesData.getImageNumber();
+
+    if (data->isDeleted(nbr)) {
+        data->unPreDeleteImage(nbr);
+
+        data->addAction([this, nbr]() {
+            data->preDeleteImage(nbr);
+            data->imagesData.imageNumber = nbr;
+            reload();
+            },
+            [this, nbr]() {
+                data->unPreDeleteImage(nbr);
+                data->imagesData.imageNumber = nbr;
+                reload();
+            });
 
         updateButtons();
     } else {
-
-        data->preDeleteImage(data->imagesData.getImageNumber());
+        data->preDeleteImage(nbr);
+        data->addAction([this, nbr]() {
+            data->unPreDeleteImage(nbr);
+            data->imagesData.imageNumber = nbr;
+            reload();
+            },
+            [this, nbr]() {
+                data->preDeleteImage(nbr);
+                data->imagesData.imageNumber = nbr;
+                reload();
+            });
         updateButtons();
     }
 }
@@ -1309,19 +1350,63 @@ void ImageEditor::checkCache() {
 
 void ImageEditor::rotateLeft() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
+    int nbr = data->imagesData.imageNumber;
+
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         rotateLeftJpg();
+        data->addAction([this, nbr]() {
+            data->imagesData.imageNumber = nbr;
+            reload();
+            rotateRightJpg();
+            },
+            [this, nbr]() {
+                data->imagesData.imageNumber = nbr;
+                reload();
+                rotateLeftJpg();
+            });
     } else if (extension == ".png" || extension == ".PNG") {
         rotateLeftPng();
+        data->addAction([this, nbr]() {
+            data->imagesData.imageNumber = nbr;
+            reload();
+            rotateRightPng();
+            },
+            [this, nbr]() {
+                data->imagesData.imageNumber = nbr;
+                reload();
+                rotateLeftPng();
+            });
     }
 
 }
 void ImageEditor::rotateRight() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
+    int nbr = data->imagesData.imageNumber;
+
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         rotateRightJpg();
+        data->addAction([this, nbr]() {
+            data->imagesData.imageNumber = nbr;
+            reload();
+            rotateLeftJpg();
+            },
+            [this, nbr]() {
+                data->imagesData.imageNumber = nbr;
+                reload();
+                rotateRightJpg();
+            });
     } else if (extension == ".png" || extension == ".PNG") {
         rotateRightPng();
+        data->addAction([this, nbr]() {
+            data->imagesData.imageNumber = nbr;
+            reload();
+            rotateLeftJpg();
+            },
+            [this, nbr]() {
+                data->imagesData.imageNumber = nbr;
+                reload();
+                rotateRightPng();
+            });
     }
 }
 
@@ -1355,19 +1440,63 @@ void ImageEditor::rotateRightPng() {
 
 void ImageEditor::mirrorUpDown() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
+    int nbr = data->imagesData.imageNumber;
+
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         mirrorUpDownJpg();
+        data->addAction([this, nbr]() {
+            data->imagesData.imageNumber = nbr;
+            reload();
+            mirrorUpDownJpg();
+            },
+            [this, nbr]() {
+                data->imagesData.imageNumber = nbr;
+                reload();
+                mirrorUpDownJpg();
+            });
     } else if (extension == ".png" || extension == ".PNG") {
         mirrorUpDownPng();
+        data->addAction([this, nbr]() {
+            data->imagesData.imageNumber = nbr;
+            reload();
+            mirrorUpDownPng();
+            },
+            [this, nbr]() {
+                data->imagesData.imageNumber = nbr;
+                reload();
+                mirrorUpDownPng();
+            });
     }
 }
 
 void ImageEditor::mirrorLeftRight() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
+    int nbr = data->imagesData.imageNumber;
+
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         mirrorLeftRightJpg();
+        data->addAction([this, nbr]() {
+            data->imagesData.imageNumber = nbr;
+            reload();
+            mirrorLeftRightJpg();
+            },
+            [this, nbr]() {
+                data->imagesData.imageNumber = nbr;
+                reload();
+                mirrorLeftRightJpg();
+            });
     } else if (extension == ".png" || extension == ".PNG") {
         mirrorLeftRightPng();
+        data->addAction([this, nbr]() {
+            data->imagesData.imageNumber = nbr;
+            reload();
+            mirrorLeftRightPng();
+            },
+            [this, nbr]() {
+                data->imagesData.imageNumber = nbr;
+                reload();
+                mirrorLeftRightPng();
+            });
 
     }
 }
@@ -1382,22 +1511,33 @@ void ImageEditor::mirrorUpDownJpg() {
 
     int orientation = imageData->getImageOrientation();
 
-    if (orientation == 1) {
+    switch (orientation) {
+    case 1:
         orientation = 4;
-    } else if (orientation == 3) {
+        break;
+    case 3:
         orientation = 2;
-    } else if (orientation == 6) {
+        break;
+    case 6:
         orientation = 5;
-    } else if (orientation == 8) {
+        break;
+    case 8:
         orientation = 7;
-    } else if (orientation == 2) {
+        break;
+    case 2:
         orientation = 3;
-    } else if (orientation == 4) {
+        break;
+    case 4:
         orientation = 1;
-    } else if (orientation == 5) {
+        break;
+    case 5:
         orientation = 6;
-    } else if (orientation == 7) {
+        break;
+    case 7:
         orientation = 8;
+        break;
+    default:
+        break;
     }
 
     imageData->turnImage(orientation);
@@ -1416,23 +1556,36 @@ void ImageEditor::mirrorLeftRightJpg() {
     }
 
     int orientation = imageData->getImageOrientation();
-    if (orientation == 1) {
+
+    switch (orientation) {
+    case 1:
         orientation = 2;
-    } else if (orientation == 3) {
+        break;
+    case 3:
         orientation = 4;
-    } else if (orientation == 6) {
+        break;
+    case 6:
         orientation = 7;
-    } else if (orientation == 8) {
+        break;
+    case 8:
         orientation = 5;
-    } else if (orientation == 2) {
+        break;
+    case 2:
         orientation = 1;
-    } else if (orientation == 4) {
+        break;
+    case 4:
         orientation = 3;
-    } else if (orientation == 5) {
+        break;
+    case 5:
         orientation = 8;
-    } else if (orientation == 7) {
+        break;
+    case 7:
         orientation = 6;
+        break;
+    default:
+        break;
     }
+
     imageData->turnImage(orientation);
 
     imageData->saveMetaData();
@@ -1472,7 +1625,7 @@ void ImageEditor::openBigImageLabel() {
     bigImage = true;
     hide();
 
-    MainImage* bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes.imagesEditorSizes->bigImage), false);
+    bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes.imagesEditorSizes->bigImage), false, 0, false, true);
     bigImageLabel->setFixedSize(data->sizes.imagesEditorSizes->bigImage);
 
     mainLayout->addWidget(bigImageLabel);
@@ -1487,7 +1640,7 @@ void ImageEditor::openBigImageLabel() {
         }
     }
 
-    connect(bigImageLabel, &MainImage::leftClicked, [this, bigImageLabel, oldExifEditor]() {
+    connect(bigImageLabel, &MainImage::leftClicked, [this, oldExifEditor]() {
         closeBigImageLabel(bigImageLabel, oldExifEditor);
         });
 
@@ -1511,6 +1664,5 @@ void ImageEditor::closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEdito
             widget->setHidden(false);
         }
     }
-
     reload();
 }

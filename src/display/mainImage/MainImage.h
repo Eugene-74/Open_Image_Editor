@@ -15,7 +15,7 @@ class MainImage : public QLabel {
     Q_OBJECT
 
 public:
-    explicit MainImage(Data* data, const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false);
+    explicit MainImage(Data* data, const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
 
 signals:
     void clicked();

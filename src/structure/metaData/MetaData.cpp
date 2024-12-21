@@ -17,7 +17,7 @@ void MetaData::saveMetaData(const std::string& imageName) {
     saveExifData(imageName, exifMetaData);
     saveXmpData(imageName, xmpMetaData);
     saveIptcData(imageName, iptcMetaData);
-    displayExifData(exifMetaData);
+    // displayExifData(exifMetaData);
 }
 
 // Fonction pour récupérer la largeur de l'image

@@ -19,9 +19,19 @@
 
 class QImageAndPath {
 public:
+
     QImage image;
     std::string imagePath;
 };
+
+class Actions {
+public:
+    Actions() = default;
+    std::function<void()> unDo;
+    std::function<void()> reDo;
+
+};
+
 
 class Data {
 public:
@@ -30,9 +40,13 @@ public:
     Folders rootFolders = Folders("/");
     Sizes sizes;
     std::map<std::string, Option> options = DEFAULT_OPTIONS;
+    std::map<std::string, QImageAndPath>* imageCache = nullptr;
+
+
     ThreadPool threadPool = ThreadPool(std::thread::hardware_concurrency() / 2);
     std::map<QString, std::future<void>> futures;
-    std::map<std::string, QImageAndPath>* imageCache = nullptr;
+
+    Data() : imageCache(new std::map<std::string, QImageAndPath>()) {}
 
     void preDeleteImage(int imageNbr);
     void unPreDeleteImage(int imageNbr);
@@ -42,13 +56,12 @@ public:
 
     void removeDeletedImages();
 
-    QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool rotation = true, bool square = false, bool crop = true);
-    QImage loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0);
+    QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool rotation = true, bool square = false, bool crop = true, bool force = false);
+    QImage loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool force = false);
     // QImage loadImageSquare(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0);
 
     bool loadInCache(std::string imagePath, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
     void loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
-
 
     bool unloadFromCache(std::string imagePath);
     bool unloadFromFutures(std::string imagePath);
@@ -71,18 +84,30 @@ public:
 
     void exportImages(std::string exportPath, bool dateInName);
 
-
     void saveData();
     void loadData();
 
     void cancelTasks();
     bool isDeleted(int imageNbr);
 
+    void addAction(std::function<void()> unDo, std::function<void()> reDo);
+    void addActionDone(Actions action);
+
+    void unDoAction();
+    void reDoAction();
+
+    void clearActions();
+
+
 private:
+    std::vector<Actions> lastActions = {};
+    std::vector<Actions> lastActionsDone = {};
+
+
     void loadImageTask(std::string imagePath, bool setSize, QSize size, bool force, std::function<void()> callback);
     QImage rotateQImage(QImage image, std::string imagePath);
 
     Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
     void copyImages(Folders* currentFolders, std::string path, bool dateInName);
     void copyTo(std::string filePath, std::string destinationPath, bool dateInName) const;
-};
+};;
