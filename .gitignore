@@ -30,3 +30,7 @@ lib/
 .editorconfig
 .clang-format
 .vscode/
+
+src/ressources/qrc_ressources.cpp
+src/ressources/ressources.rcc
+
