@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Nom du projet
-project(EasyImageEditor VERSION 1.0.0)
+project(OpenImageEditor VERSION 1.0.0)
 
 # Configuration C++
 set(CMAKE_CXX_STANDARD 17)
