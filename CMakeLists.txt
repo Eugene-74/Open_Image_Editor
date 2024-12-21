@@ -32,6 +32,13 @@ find_package(Exiv2 REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${EXIV2_INCLUDE_DIRS})
 
+# Utiliser ccache si disponible
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+endif()
+
 # Sources et en-têtes
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE HEADERS "src/*.h")
@@ -60,60 +67,9 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs)
 endif()
 
-# Configuration des plugins Qt statiques
-if(WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-        Qt5::QWindowsIntegrationPlugin
-        Qt5::QWindowsVistaStylePlugin
-    )
-endif()
+# Activer l'incrémentation des builds
+set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API "ON")
 
-# Installation de l'exécutable
-install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-)
-
-# Installation des bibliothèques Qt
-get_target_property(Qt5_Core_LOCATION Qt5::Core LOCATION)
-get_filename_component(QT_LIB_DIR ${Qt5_Core_LOCATION} DIRECTORY)
-file(GLOB QT_LIBS "${QT_LIB_DIR}/libQt5*.so*")
-install(FILES ${QT_LIBS} DESTINATION lib)
-
-# Installation des dépendances OpenCV
-foreach(lib ${OpenCV_LIBS})
-    if(TARGET ${lib})
-        get_target_property(lib_location ${lib} LOCATION)
-        if(lib_location)
-            install(FILES ${lib_location} DESTINATION lib)
-        endif()
-    endif()
-endforeach()
-
-# Installation des dépendances Exiv2
-foreach(lib ${EXIV2_LIBRARIES})
-    if(IS_ABSOLUTE ${lib})
-        install(FILES ${lib} DESTINATION lib)
-    else()
-        find_library(FULL_LIB_PATH ${lib})
-        if(FULL_LIB_PATH)
-            install(FILES ${FULL_LIB_PATH} DESTINATION lib)
-        endif()
-    endif()
-endforeach()
-
-# Configuration CPack
-set(CPACK_GENERATOR "ZIP")
-set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
-set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Open Image Editor Application")
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-endif()
-set(CPACK_PACKAGE_INSTALL_DIRECTORY ${PROJECT_NAME})
-
-# Configuration des bibliothèques système
-set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP FALSE)
-include(InstallRequiredSystemLibraries)
-include(CPack)
+# Réduire les niveaux d'optimisation pour les builds de développement
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")

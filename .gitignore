@@ -25,3 +25,7 @@ lib/
 .vscode/
 *.swp
 *.swo
+
+
+.editorconfig
+.vscode/
