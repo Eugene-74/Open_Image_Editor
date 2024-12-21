@@ -943,7 +943,7 @@ void ImageEditor::reloadImageLabel() {
 
 
 void ImageEditor::keyPressEvent(QKeyEvent* event) {
-    if (bigImage) {
+    if (bigImage || exifEditor) {
         return;
     }
     switch (event->key()) {
@@ -1019,7 +1019,7 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
 
 
 void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
-    if (bigImage) {
+    if (bigImage || exifEditor) {
         return;
     }
     switch (event->key()) {
@@ -1137,7 +1137,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
 
 
 void ImageEditor::wheelEvent(QWheelEvent* event) {
-    if (bigImage) {
+    if (bigImage || exifEditor) {
         return;
     }
     int numDegrees = event->angleDelta().y() / 8;
