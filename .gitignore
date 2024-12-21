@@ -28,4 +28,5 @@ lib/
 
 
 .editorconfig
+.clang-format
 .vscode/
