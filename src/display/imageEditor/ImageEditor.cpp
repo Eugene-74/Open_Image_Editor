@@ -822,10 +822,15 @@ ClickableLabel* ImageEditor::createImageEditExif() {
     ClickableLabel* imageEditExifNew = new ClickableLabel(data, ":/editExif.png", this, actionSize);
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
-        // exifEditor = !exifEditor;
+
         if (exifEditor) {
             exifEditor = false;
         } else {
+            // TODO modifier pour etre plus efficace (pas chager a chaque fois)
+            for (auto& imageData : *data->imagesData.get()) {
+                imageData.loadData();
+            }
+
             exifEditor = true;
             for (int i = 0; i < infoLayout->count(); ++i) {
                 QWidget* widget = infoLayout->itemAt(i)->widget();
