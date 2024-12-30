@@ -145,11 +145,11 @@ void ImageData::save(std::ofstream& out) const {
     folders.save(out);
     metaData.save(out);
 
-    size_t cropSizesSize = cropSizes.size();
+    size_t cropSizesSize = cropSizes->size();
 
     out.write(reinterpret_cast<const char*>(&cropSizesSize), sizeof(cropSizesSize));
 
-    for (const auto& cropSize : cropSizes) {
+    for (const auto& cropSize : *cropSizes) {
         size_t innerSize = cropSize.size();
         out.write(reinterpret_cast<const char*>(&innerSize), sizeof(innerSize));
         out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
@@ -166,8 +166,8 @@ void ImageData::load(std::ifstream& in) {
 
     size_t cropSizesSize;
     in.read(reinterpret_cast<char*>(&cropSizesSize), sizeof(cropSizesSize));
-    cropSizes.resize(cropSizesSize);
-    for (auto& cropSize : cropSizes) {
+    cropSizes->resize(cropSizesSize);
+    for (auto& cropSize : *cropSizes) {
         size_t innerSize;
         in.read(reinterpret_cast<char*>(&innerSize), sizeof(innerSize));
         cropSize.resize(innerSize);
