@@ -65,19 +65,17 @@ InitialWindow::InitialWindow() {
 
     windowLayout->addLayout(linkLayout);
 
-
-
     createImageBooth(data);
 }
 
 void InitialWindow::closeEvent(QCloseEvent* event) {
-    if (showQuestionMessage(this, "Do you want to save before quit ?")) {
-        data->saveData();
-        event->accept();
+    if (!data->saved){
 
-    } else {
-        event->accept();
+        if (showQuestionMessage(this, "Do you want to save before quit ?")) {
+            data->saveData();
+        }
     }
+    event->accept();
 }
 
 void InitialWindow::createImageEditor(Data* data) {

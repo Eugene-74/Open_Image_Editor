@@ -336,7 +336,6 @@ void MetaData::load(std::ifstream& in) {
 
 void MetaData::save(std::ofstream& out) const {
 
-    // auto start = std::chrono::high_resolution_clock::now();
     // Save exifMetaData
     size_t exifSize = 0;
     for (const auto& datum : exifMetaData) {
@@ -360,9 +359,6 @@ void MetaData::save(std::ofstream& out) const {
         out.write(value.c_str(), valueSize);
     }
 
-    // auto end = std::chrono::high_resolution_clock::now();
-    // std::chrono::duration<double> elapsed = end - start;
-    // std::cerr << "Time taken to save imagesData: " << elapsed.count() << " seconds" << " for :: " << exifSize << std::endl;
     // Save xmpMetaData
     size_t xmpSize = xmpMetaData.count();
     out.write(reinterpret_cast<const char*>(&xmpSize), sizeof(xmpSize));

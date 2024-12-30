@@ -41,6 +41,8 @@ public:
     Sizes sizes;
     std::map<std::string, Option> options = DEFAULT_OPTIONS;
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
+    // TODO gerrer pour le mettre a false lors de modification et puis true si il ny a pas de modification / un Ctrl + Z
+    bool saved = false;
 
 
     ThreadPool threadPool = ThreadPool(std::thread::hardware_concurrency() / 2);
