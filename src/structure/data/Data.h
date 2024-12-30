@@ -98,6 +98,7 @@ public:
 
     void clearActions();
 
+    void sortImagesData();
 
 private:
     std::vector<Actions> lastActions = {};

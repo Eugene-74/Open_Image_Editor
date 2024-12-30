@@ -143,8 +143,7 @@ void ImageData::save(std::ofstream& out) const {
     out.write(reinterpret_cast<const char*>(&pathLength), sizeof(pathLength));
     out.write(imagePath.c_str(), pathLength);
     folders.save(out);
-    // TODO charger a chaque fois sinon trop long pour rien
-    // metaData.save(out);
+    metaData.save(out);
 
     size_t cropSizesSize = cropSizes.size();
 
@@ -163,7 +162,7 @@ void ImageData::load(std::ifstream& in) {
     imagePath.resize(pathLength);
     in.read(&imagePath[0], pathLength);
     folders.load(in);
-    // metaData.load(in);
+    metaData.load(in);
 
     size_t cropSizesSize;
     in.read(reinterpret_cast<char*>(&cropSizesSize), sizeof(cropSizesSize));
