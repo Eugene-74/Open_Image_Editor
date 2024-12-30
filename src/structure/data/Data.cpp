@@ -513,14 +513,17 @@ void Data::saveData() {
         }
     }
 
+
     std::cerr << "Saving data" << std::endl;
     // Serialize imagesData
+
     size_t imagesDataSize = imagesData.get()->size();
     outFile.write(reinterpret_cast<const char*>(&imagesDataSize),
         sizeof(imagesDataSize));
     for (const auto& imageData : *imagesData.get()) {
         imageData.save(outFile);
     }
+
 
     // Serialize deletedImagesData
     size_t deletedImagesDataSize = deletedImagesData.get()->size();
