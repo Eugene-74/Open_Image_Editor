@@ -1,9 +1,9 @@
 #include "MainImage.h"
 
 MainImage::MainImage(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square, bool force)
-    : QLabel(parent), data(data), cropping(false) {
+    : QLabel(parent), data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), thumbnail(thumbnail), square(square), force(force) {
 
-    qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail, true, square, true, force);
+    qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, true, force);
 
     if (!qImage.isNull()) {
         this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -86,6 +86,14 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
                 emit ctrlLeftClicked();
             }
             cropping = true;
+            qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, false, force);
+
+            if (!qImage.isNull()) {
+                this->setPixmap(QPixmap::fromImage(qImage).scaled(mSize - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            } else {
+                this->setText("Erreur");
+            }
+
         } else {
             if (cropping) {
 

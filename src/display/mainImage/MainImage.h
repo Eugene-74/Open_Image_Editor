@@ -35,6 +35,13 @@ protected:
 
 
 private:
+    QString imagePath;
+    QSize mSize;
+    bool setSize;
+    int thumbnail;
+    bool square;
+    bool force;
+
     Data* data;
 
     QPixmap defaultPixmap;
