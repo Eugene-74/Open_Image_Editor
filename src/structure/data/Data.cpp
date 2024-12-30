@@ -649,7 +649,6 @@ void Data::clearActions(){
 
 void Data::sortImagesData(){
     std::sort(imagesData.get()->begin(), imagesData.get()->end(), [](const ImageData& a, const ImageData& b) {
-        // TODO modifier pour s'assurer que les metaData sont bonne
         return a.getMetaData().getExifData()["Exif.Image.DateTime"].toString() < b.getMetaData().getExifData()["Exif.Image.DateTime"].toString();
         });
 }

@@ -827,8 +827,12 @@ ClickableLabel* ImageEditor::createImageEditExif() {
             exifEditor = false;
         } else {
             // TODO modifier pour etre plus efficace (pas chager a chaque fois)
-            for (auto& imageData : *data->imagesData.get()) {
-                imageData.loadData();
+            if (!data->loadedMetaData){
+
+                for (auto& imageData : *data->imagesData.get()) {
+                    imageData.loadData();
+                }
+                data->loadedMetaData = true;
             }
 
             exifEditor = true;
