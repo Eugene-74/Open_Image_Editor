@@ -82,9 +82,9 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
         int imageId = imagesData.getImageIdByName(imagePath);
         if (imageId != -1) {
             ImageData* imageData = imagesData.getImageData(imagePath);
-            if (imageData != nullptr && !imageData->cropSizes.empty()) {
+            if (imageData != nullptr && !imageData->cropSizes->empty()) {
 
-                std::vector<QPoint> cropPoints = imageData->cropSizes.back();
+                std::vector<QPoint> cropPoints = imageData->cropSizes->back();
                 if (cropPoints.size() == 2) {
                     QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
 
