@@ -88,26 +88,6 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
             cropping = true;
 
 
-
-            // qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, true, force);
-
-            //     if (!qImage.isNull()) {
-            //         this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-            //     } else {
-            //         this->setText("Erreur");
-            //     }
-
-            //     if (setSize)
-            //         setFixedSize(size);
-            //     else {
-
-            //         QSize scaledSize = qImage.size();
-            //         scaledSize.scale(size, Qt::KeepAspectRatio);
-            //         setFixedSize(scaledSize);
-            //     }
-            //     this->setAlignment(Qt::AlignCenter);
-
-
             qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, false, force);
 
             if (!qImage.isNull()) {
@@ -222,11 +202,13 @@ void MainImage::cropImage() {
         data->addAction([this, nbr]() {
             data->imagesData.getCurrentImageData()->cropSizes->pop_back();
             data->imagesData.imageNumber = nbr;
+            // TODO reussir a realod
             // reload();
             },
             [this, nbr, adjustedCropPoints]() {
                 data->imagesData.getCurrentImageData()->cropSizes->push_back(adjustedCropPoints);
                 data->imagesData.imageNumber = nbr;
+                // TODO reussir a realod
                 // reload();
             });
 
