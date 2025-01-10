@@ -6,17 +6,17 @@ MainImage::MainImage(Data* data, const QString& imagePath, QWidget* parent, QSiz
     qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, true, force);
 
     if (!qImage.isNull()) {
-        this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        this->setPixmap(QPixmap::fromImage(qImage).scaled(mSize - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     } else {
         this->setText("Erreur");
     }
 
     if (setSize)
-        setFixedSize(size);
+        setFixedSize(mSize);
     else {
 
         QSize scaledSize = qImage.size();
-        scaledSize.scale(size, Qt::KeepAspectRatio);
+        scaledSize.scale(mSize, Qt::KeepAspectRatio);
         setFixedSize(scaledSize);
     }
     this->setAlignment(Qt::AlignCenter);
@@ -86,6 +86,28 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
                 emit ctrlLeftClicked();
             }
             cropping = true;
+
+
+
+            // qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, true, force);
+
+            //     if (!qImage.isNull()) {
+            //         this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            //     } else {
+            //         this->setText("Erreur");
+            //     }
+
+            //     if (setSize)
+            //         setFixedSize(size);
+            //     else {
+
+            //         QSize scaledSize = qImage.size();
+            //         scaledSize.scale(size, Qt::KeepAspectRatio);
+            //         setFixedSize(scaledSize);
+            //     }
+            //     this->setAlignment(Qt::AlignCenter);
+
+
             qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, false, force);
 
             if (!qImage.isNull()) {
@@ -93,6 +115,15 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
             } else {
                 this->setText("Erreur");
             }
+            if (setSize)
+                setFixedSize(mSize);
+            else {
+
+                QSize scaledSize = qImage.size();
+                scaledSize.scale(mSize, Qt::KeepAspectRatio);
+                setFixedSize(scaledSize);
+            }
+            this->setAlignment(Qt::AlignCenter);
 
         } else {
             if (cropping) {
