@@ -216,6 +216,20 @@ void MainImage::cropImage() {
         std::vector<QPoint> adjustedCropPoints = adjustPointsForOrientation(cropPoints, orientation, qImageReel.size());
 
         data->imagesData.getCurrentImageData()->cropSizes->push_back(adjustedCropPoints);
+
+        int nbr = data->imagesData.imageNumber;
+
+        data->addAction([this, nbr]() {
+            data->imagesData.getCurrentImageData()->cropSizes->pop_back();
+            data->imagesData.imageNumber = nbr;
+            // reload();
+            },
+            [this, nbr, adjustedCropPoints]() {
+                data->imagesData.getCurrentImageData()->cropSizes->push_back(adjustedCropPoints);
+                data->imagesData.imageNumber = nbr;
+                // reload();
+            });
+
         imageCropted();
     } else {
         std::cerr << "Erreur : data ou getCurrentImageData() est nul" << std::endl;
