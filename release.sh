@@ -9,9 +9,6 @@ cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release
 # Compiler le projet avec Ninja
 ninja -j8
 
-# Lancer l'exécutable
-# ./OpenImageEditor
-
 ../linuxdeployqt-continuous-x86_64.AppImage OpenImageEditor -unsupported-allow-new-glibc
 # ../linuxdeployqt-continuous-x86_64.AppImage OpenImageEditor -unsupported-allow-new-glibc -appimage
 
@@ -30,7 +27,7 @@ else
     echo "opencv is not linked. Please check your installation."
 fi
 
-
+# Creation zip file
 mkdir MonApplication
 cp OpenImageEditor MonApplication/
 ldd OpenImageEditor | grep "=> /" | awk '{print $3}' | xargs -I '{}' cp -v '{}' MonApplication/

@@ -84,8 +84,7 @@ std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString)
             jsonStream >> ch; // skip space or '"'
             if (ch == '"') {
                 std::getline(jsonStream, value, '"');
-            }
-            else {
+            } else {
                 jsonStream.putback(ch);
                 std::getline(jsonStream, value, ',');
                 value.pop_back(); // remove trailing comma
@@ -116,8 +115,7 @@ void countImagesFromFolder(const std::string path, int& nbrImage) {
                 nbrImage += 1;
 
             }
-        }
-        else if (fs::is_directory(entry.status())) {
+        } else if (fs::is_directory(entry.status())) {
 
             countImagesFromFolder(entry.path(), nbrImage);
 
@@ -138,9 +136,11 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
                 ImageData* imageData = imagesData->getImageData(entry.path());
                 if (imageData != nullptr) {
                     folders = imageData->folders;
-                }
-                else {
-                    folders = Folders(relativePath.parent_path().string());
+                } else {
+                    // folders = Folders(relativePath.parent_path().string());
+                    folders = Folders(fs::absolute(entry.path()).parent_path().string());
+
+                    std::cerr << "relativePath.root_path().string() : " << fs::absolute(entry.path()).parent_path().string() << std::endl;
 
                 }
                 folders.files.push_back(relativePath.parent_path().filename().string());
@@ -151,8 +151,7 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
                 nbrImage -= 1;
                 std::cerr << "Image restante : " << nbrImage << std::endl;
             }
-        }
-        else if (fs::is_directory(entry.status())) {
+        } else if (fs::is_directory(entry.status())) {
             loadImagesFromFolder(initialPath, entry.path(), imagesData, nbrImage);
         }
     }
@@ -182,8 +181,7 @@ void loadImagesMetaDataOfGoogle(ImagesData* imagesData) {
                     }
                 }
             }
-        }
-        else {
+        } else {
             displayExifData(imageData->metaData.exifMetaData);
 
         }

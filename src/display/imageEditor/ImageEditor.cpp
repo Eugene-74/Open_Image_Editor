@@ -1285,6 +1285,9 @@ void ImageEditor::validateMetadata() {
     }
     metaData->modifyExifValue("Exif.Image.ImageDescription", descriptionEdit->text().toStdString());
 
+
+    // imageData->folders.print();
+
     imageData->saveMetaData();
 }
 
