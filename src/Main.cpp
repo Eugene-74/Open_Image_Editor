@@ -6,8 +6,11 @@ namespace fs = std::filesystem;
 
 
 int main(int argc, char* argv[]) {
+
+
     QApplication app(argc, argv);
 
+    // QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     // Définir le style sur Fusion
     app.setStyle(QStyleFactory::create("Fusion"));
