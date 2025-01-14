@@ -15,7 +15,7 @@ public:
     QSize screenGeometry;
     QSize linkButtons;
 
-
+    int pixelRatio;
 
     class ImagesEditorSizes;
     class ImagesBoothSizes;

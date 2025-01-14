@@ -4,7 +4,8 @@ Sizes::Sizes() {
     // Initialisation des membres
     screen = QGuiApplication::primaryScreen();
     screenR = screen->availableGeometry();
-    screenGeometry = screenR.size();
+    pixelRatio = screen->devicePixelRatio();
+    screenGeometry = screenR.size() / pixelRatio;
     linkButtons = QSize(screenGeometry.width() * 1 / 20 * 2, screenGeometry.height() * 1 / 20);
 
 
@@ -17,9 +18,9 @@ Sizes::ImagesEditorSizes::ImagesEditorSizes(Sizes* parent) : parentSizes(parent)
     // Utilisation de parentSizes pour accéder à screenGeometry
 
     if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height()) {
-        actionSize = QSize((parentSizes->screenGeometry.width() * 1 / 24), (parentSizes->screenGeometry.width() * 1 / 24));
+        actionSize = QSize((parentSizes->screenGeometry.width() * 1 / 48) * parentSizes->pixelRatio, (parentSizes->screenGeometry.width() * 1 / 48) * parentSizes->pixelRatio);
     } else {
-        actionSize = QSize((parentSizes->screenGeometry.height() * 1 / 24), (parentSizes->screenGeometry.height() * 1 / 24));
+        actionSize = QSize((parentSizes->screenGeometry.height() * 1 / 48) * parentSizes->pixelRatio, (parentSizes->screenGeometry.height() * 1 / 48) * parentSizes->pixelRatio);
     }
 
     previewSize = (parentSizes->screenGeometry * 1 / 12);
