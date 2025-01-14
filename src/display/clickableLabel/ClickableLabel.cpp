@@ -26,7 +26,7 @@ ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QWidget* pa
 
 }
 
-void ClickableLabel::enterEvent(QEvent* event) {
+void ClickableLabel::enterEvent(QEnterEvent* event) {
     QLabel::enterEvent(event);
 }
 

@@ -4,8 +4,7 @@ Sizes::Sizes() {
     // Initialisation des membres
     screen = QGuiApplication::primaryScreen();
     screenR = screen->availableGeometry();
-    pixelRatio = screen->devicePixelRatio();
-    screenGeometry = screenR.size() / pixelRatio;
+    screenGeometry = screenR.size();
     linkButtons = QSize(screenGeometry.width() * 1 / 20 * 2, screenGeometry.height() * 1 / 20);
 
 
@@ -18,10 +17,9 @@ Sizes::ImagesEditorSizes::ImagesEditorSizes(Sizes* parent) : parentSizes(parent)
     // Utilisation de parentSizes pour accéder à screenGeometry
 
     if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height()) {
-        actionSize = QSize((parentSizes->screenGeometry.width() * 1 / 48) * parentSizes->pixelRatio, (parentSizes->screenGeometry.width() * 1 / 48) * parentSizes->pixelRatio);
-    }
-    else {
-        actionSize = QSize((parentSizes->screenGeometry.height() * 1 / 48) * parentSizes->pixelRatio, (parentSizes->screenGeometry.height() * 1 / 48) * parentSizes->pixelRatio);
+        actionSize = QSize((parentSizes->screenGeometry.width() * 1 / 24), (parentSizes->screenGeometry.width() * 1 / 24));
+    } else {
+        actionSize = QSize((parentSizes->screenGeometry.height() * 1 / 24), (parentSizes->screenGeometry.height() * 1 / 24));
     }
 
     previewSize = (parentSizes->screenGeometry * 1 / 12);
@@ -43,8 +41,7 @@ Sizes::ImagesBoothSizes::ImagesBoothSizes(Sizes* parent) : parentSizes(parent) {
     if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height()) {
         imageSize = QSize(parentSizes->screenGeometry.width() * 5 / 6 * 1 / 10, parentSizes->screenGeometry.width() * 5 / 6 * 1 / 10);
 
-    }
-    else {
+    } else {
         imageSize = QSize(parentSizes->screenGeometry.height() * 5 / 6 * 1 / 10, parentSizes->screenGeometry.height() * 5 / 6 * 1 / 10);
     }
 

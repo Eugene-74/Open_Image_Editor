@@ -49,7 +49,7 @@ void MainImage::updateStyleSheet() {
     this->setStyleSheet(styleSheet);
 }
 
-void MainImage::enterEvent(QEvent* event) {
+void MainImage::enterEvent(QEnterEvent* event) {
     QLabel::enterEvent(event);
 }
 

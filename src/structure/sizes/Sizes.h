@@ -12,7 +12,6 @@ public:
     // Membres de Sizes
     QScreen* screen;
     QRect screenR;
-    int pixelRatio;
     QSize screenGeometry;
     QSize linkButtons;
 

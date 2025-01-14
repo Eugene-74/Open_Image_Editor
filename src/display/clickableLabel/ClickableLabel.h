@@ -21,7 +21,7 @@ signals:
     void leftClicked();
 
 protected:
-    void enterEvent(QEvent* event) override;
+    void enterEvent(QEnterEvent* event) override;
     void leaveEvent(QEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;   // Override mouse press event
     void mouseReleaseEvent(QMouseEvent* event) override;  // Override mouse release event

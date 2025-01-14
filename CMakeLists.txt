@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 
 # Nom du projet
 project(OpenImageEditor VERSION 1.0.0)
@@ -14,6 +14,9 @@ set(CMAKE_AUTOUIC ON)
 set(Qt5_USE_STATIC_LIBS OFF)
 set(Qt5_USE_STATIC_RUNTIME OFF)
 
+# Définir la variable d'environnement
+set(ENV{QTFRAMEWORK_BYPASS_LICENSE_CHECK} "1")
+
 # Chemin Qt
 find_program(QMAKE_EXECUTABLE NAMES qmake)
 get_filename_component(QT_BIN_DIR ${QMAKE_EXECUTABLE} DIRECTORY)
@@ -24,7 +27,7 @@ set(CMAKE_PREFIX_PATH "${QT_ROOT_DIR}/lib/cmake")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 # Trouver les packages
-find_package(Qt5 COMPONENTS Core Gui Widgets Location REQUIRED)
+find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Exiv2 REQUIRED)
 
@@ -45,18 +48,18 @@ file(GLOB_RECURSE HEADERS "src/*.h")
 set(RESOURCE_FILES src/ressources/ressources.qrc)
 
 # Génération Qt
-qt5_wrap_cpp(MOC_SOURCES ${HEADERS})
-qt5_add_resources(QRC_SOURCES ${RESOURCE_FILES})
+qt6_wrap_cpp(MOC_SOURCES ${HEADERS})
+qt6_add_resources(QRC_SOURCES ${RESOURCE_FILES})
 
 # Création de l'exécutable
 add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
 
 # Liaison des bibliothèques
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Widgets
-    Qt5::Location
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
+    # Qt6::Location
     ${OpenCV_LIBS}
     ${EXIV2_LIBRARIES}
     ${CMAKE_DL_LIBS}  # Ajout de la bibliothèque de chargement dynamique
