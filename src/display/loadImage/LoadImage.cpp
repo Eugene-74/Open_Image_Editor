@@ -139,8 +139,8 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
                 } else {
                     // folders = Folders(relativePath.parent_path().string());
                     folders = Folders(fs::absolute(entry.path()).parent_path().string());
+                    // std::cerr << "relativePath.root_path().string() : " << fs::absolute(entry.path()).parent_path().string() << std::endl;
 
-                    std::cerr << "relativePath.root_path().string() : " << fs::absolute(entry.path()).parent_path().string() << std::endl;
 
                 }
                 folders.files.push_back(relativePath.parent_path().filename().string());
