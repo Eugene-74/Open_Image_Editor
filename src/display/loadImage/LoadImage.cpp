@@ -204,7 +204,7 @@ void loadImagesMetaDataOfGoogle(ImagesData* imagesData)
                 }
             }
         } else{
-            displayExifData(imageData->metaData.exifMetaData);
+            // displayExifData(imageData->metaData.exifMetaData);
         }
     }
 }
