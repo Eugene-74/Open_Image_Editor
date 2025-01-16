@@ -82,9 +82,9 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
         int imageId = imagesData.getImageIdByName(imagePath);
         if (imageId != -1) {
             ImageData* imageData = imagesData.getImageData(imagePath);
-            if (imageData != nullptr && !imageData->cropSizes.empty()) {
+            if (imageData != nullptr && !imageData->cropSizes->empty()) {
 
-                std::vector<QPoint> cropPoints = imageData->cropSizes.back();
+                std::vector<QPoint> cropPoints = imageData->cropSizes->back();
                 if (cropPoints.size() == 2) {
                     QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
 
@@ -513,14 +513,17 @@ void Data::saveData() {
         }
     }
 
+
     std::cerr << "Saving data" << std::endl;
     // Serialize imagesData
+
     size_t imagesDataSize = imagesData.get()->size();
     outFile.write(reinterpret_cast<const char*>(&imagesDataSize),
         sizeof(imagesDataSize));
     for (const auto& imageData : *imagesData.get()) {
         imageData.save(outFile);
     }
+
 
     // Serialize deletedImagesData
     size_t deletedImagesDataSize = deletedImagesData.get()->size();
@@ -643,3 +646,9 @@ void Data::clearActions(){
     lastActions.clear();
 }
 
+
+void Data::sortImagesData(){
+    std::sort(imagesData.get()->begin(), imagesData.get()->end(), [](const ImageData& a, const ImageData& b) {
+        return a.getMetaData().getExifData()["Exif.Image.DateTime"].toString() < b.getMetaData().getExifData()["Exif.Image.DateTime"].toString();
+        });
+}

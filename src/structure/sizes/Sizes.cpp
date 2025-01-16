@@ -19,8 +19,7 @@ Sizes::ImagesEditorSizes::ImagesEditorSizes(Sizes* parent) : parentSizes(parent)
 
     if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height()) {
         actionSize = QSize((parentSizes->screenGeometry.width() * 1 / 48) * parentSizes->pixelRatio, (parentSizes->screenGeometry.width() * 1 / 48) * parentSizes->pixelRatio);
-    }
-    else {
+    } else {
         actionSize = QSize((parentSizes->screenGeometry.height() * 1 / 48) * parentSizes->pixelRatio, (parentSizes->screenGeometry.height() * 1 / 48) * parentSizes->pixelRatio);
     }
 
@@ -43,8 +42,7 @@ Sizes::ImagesBoothSizes::ImagesBoothSizes(Sizes* parent) : parentSizes(parent) {
     if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height()) {
         imageSize = QSize(parentSizes->screenGeometry.width() * 5 / 6 * 1 / 10, parentSizes->screenGeometry.width() * 5 / 6 * 1 / 10);
 
-    }
-    else {
+    } else {
         imageSize = QSize(parentSizes->screenGeometry.height() * 5 / 6 * 1 / 10, parentSizes->screenGeometry.height() * 5 / 6 * 1 / 10);
     }
 

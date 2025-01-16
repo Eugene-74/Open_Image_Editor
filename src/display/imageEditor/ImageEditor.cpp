@@ -822,10 +822,18 @@ ClickableLabel* ImageEditor::createImageEditExif() {
     ClickableLabel* imageEditExifNew = new ClickableLabel(data, ":/editExif.png", this, actionSize);
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
-        // exifEditor = !exifEditor;
+
         if (exifEditor) {
             exifEditor = false;
         } else {
+            if (!data->loadedMetaData){
+
+                for (auto& imageData : *data->imagesData.get()) {
+                    imageData.loadData();
+                }
+                data->loadedMetaData = true;
+            }
+
             exifEditor = true;
             for (int i = 0; i < infoLayout->count(); ++i) {
                 QWidget* widget = infoLayout->itemAt(i)->widget();
@@ -891,7 +899,7 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
         return nullptr;
     }
 
-    ClickableLabel* previewButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, previewSize, false, 128);
+    ClickableLabel* previewButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, previewSize, false, 128, false);
 
 
     connect(previewButton, &ClickableLabel::clicked, [this, imageNbr]() {
@@ -1276,6 +1284,9 @@ void ImageEditor::validateMetadata() {
         metaData->modifyExifValue("Exif.GPSInfo.GPSLongitude", geoData[1].trimmed().toStdString());
     }
     metaData->modifyExifValue("Exif.Image.ImageDescription", descriptionEdit->text().toStdString());
+
+
+    // imageData->folders.print();
 
     imageData->saveMetaData();
 }

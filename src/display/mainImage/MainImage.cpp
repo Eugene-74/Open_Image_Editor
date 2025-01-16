@@ -1,22 +1,22 @@
 #include "MainImage.h"
 
 MainImage::MainImage(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square, bool force)
-    : QLabel(parent), data(data), cropping(false) {
+    : QLabel(parent), data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), thumbnail(thumbnail), square(square), force(force) {
 
-    qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail, true, square, true, force);
+    qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, true, force);
 
     if (!qImage.isNull()) {
-        this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        this->setPixmap(QPixmap::fromImage(qImage).scaled(mSize - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     } else {
         this->setText("Erreur");
     }
 
     if (setSize)
-        setFixedSize(size);
+        setFixedSize(mSize);
     else {
 
         QSize scaledSize = qImage.size();
-        scaledSize.scale(size, Qt::KeepAspectRatio);
+        scaledSize.scale(mSize, Qt::KeepAspectRatio);
         setFixedSize(scaledSize);
     }
     this->setAlignment(Qt::AlignCenter);
@@ -49,7 +49,7 @@ void MainImage::updateStyleSheet() {
     this->setStyleSheet(styleSheet);
 }
 
-void MainImage::enterEvent(QEvent* event) {
+void MainImage::enterEvent(QEnterEvent* event) {
     QLabel::enterEvent(event);
 }
 
@@ -86,6 +86,25 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
                 emit ctrlLeftClicked();
             }
             cropping = true;
+
+
+            qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, false, force);
+
+            if (!qImage.isNull()) {
+                this->setPixmap(QPixmap::fromImage(qImage).scaled(mSize - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            } else {
+                this->setText("Erreur");
+            }
+            if (setSize)
+                setFixedSize(mSize);
+            else {
+
+                QSize scaledSize = qImage.size();
+                scaledSize.scale(mSize, Qt::KeepAspectRatio);
+                setFixedSize(scaledSize);
+            }
+            this->setAlignment(Qt::AlignCenter);
+
         } else {
             if (cropping) {
 
@@ -176,7 +195,23 @@ void MainImage::cropImage() {
         int orientation = data->imagesData.getCurrentImageData()->getImageOrientation();
         std::vector<QPoint> adjustedCropPoints = adjustPointsForOrientation(cropPoints, orientation, qImageReel.size());
 
-        data->imagesData.getCurrentImageData()->cropSizes.push_back(adjustedCropPoints);
+        data->imagesData.getCurrentImageData()->cropSizes->push_back(adjustedCropPoints);
+
+        int nbr = data->imagesData.imageNumber;
+
+        data->addAction([this, nbr]() {
+            data->imagesData.getCurrentImageData()->cropSizes->pop_back();
+            data->imagesData.imageNumber = nbr;
+            // TODO reussir a realod
+            // reload();
+            },
+            [this, nbr, adjustedCropPoints]() {
+                data->imagesData.getCurrentImageData()->cropSizes->push_back(adjustedCropPoints);
+                data->imagesData.imageNumber = nbr;
+                // TODO reussir a realod
+                // reload();
+            });
+
         imageCropted();
     } else {
         std::cerr << "Erreur : data ou getCurrentImageData() est nul" << std::endl;

@@ -41,3 +41,5 @@
 
 #include <QFileDialog>
 #include <chrono>
+#include <QPalette>
+#include <QStyleFactory>

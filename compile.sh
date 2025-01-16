@@ -7,7 +7,7 @@ cd buildLinux
 cmake -G Ninja ..
 
 # Compiler le projet avec Ninja
-ninja
+ninja -j8
 
 # Lancer l'exécutable
 ./OpenImageEditor

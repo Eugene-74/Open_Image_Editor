@@ -335,10 +335,20 @@ void MetaData::load(std::ifstream& in) {
 }
 
 void MetaData::save(std::ofstream& out) const {
+
     // Save exifMetaData
-    size_t exifSize = exifMetaData.count();
+    size_t exifSize = 0;
+    for (const auto& datum : exifMetaData) {
+        if (datum.key() == "Exif.Image.Orientation") {
+            exifSize = 1;
+            break;
+        }
+    }
     out.write(reinterpret_cast<const char*>(&exifSize), sizeof(exifSize));
     for (const auto& datum : exifMetaData) {
+        if (datum.key() != "Exif.Image.Orientation") {
+            continue;
+        }
         std::string key = datum.key();
         std::string value = datum.toString();
         size_t keySize = key.size();

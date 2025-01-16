@@ -14,14 +14,14 @@ class ClickableLabel : public QLabel {
     Q_OBJECT
 
 public:
-    explicit ClickableLabel(Data* data, const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false);
+    explicit ClickableLabel(Data* data, const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
 
 signals:
     void clicked();
     void leftClicked();
 
 protected:
-    void enterEvent(QEvent* event) override;
+    void enterEvent(QEnterEvent* event) override;
     void leaveEvent(QEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;   // Override mouse press event
     void mouseReleaseEvent(QMouseEvent* event) override;  // Override mouse release event

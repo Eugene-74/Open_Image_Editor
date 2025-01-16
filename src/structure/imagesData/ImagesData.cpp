@@ -23,16 +23,6 @@ void ImagesData::setImageNumber(int nbr) {
 int ImagesData::getImageNumber() {
     return imageNumber;
 }
-// void ImagesData::saveImagesData(std::string savePath) {
-//     // Sauvegarder l'objet dans un fichier binaire
-//     std::ofstream outFile(savePath, std::ios::binary);
-//     save(outFile);
-//     outFile.close();
-
-//     std::cerr << "ImagesData saved in : " << savePath << std::endl;
-
-
-// }
 
 void ImagesData::print() const {
     std::cerr << "ImagesData : \n";
@@ -54,8 +44,7 @@ void ImagesData::addImage(ImageData& imageD) {
         imageD.addFolders(lastImageD.getFolders());
 
         imagesData.push_back(imageD);
-    }
-    else {
+    } else {
         imagesData.push_back(imageD);
     }
 }
@@ -119,8 +108,7 @@ int ImagesData::getImageIdByName(std::string imagePath) {
 
     if (it != imagesData.end()) {
         return std::distance(imagesData.begin(), it);
-    }
-    else {
+    } else {
         return -1; // Return -1 if the image is not found
     }
 }

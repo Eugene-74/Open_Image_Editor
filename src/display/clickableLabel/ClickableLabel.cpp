@@ -1,13 +1,12 @@
 #include "ClickableLabel.h"
-ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square)
+ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square, bool force)
     : QLabel(parent) {
 
-    QImage qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail, true, square);
+    QImage qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail, true, square, false, force);
 
     if (!qImage.isNull()) {
         this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    }
-    else {
+    } else {
         this->setText("Erreur");
     }
 
@@ -27,7 +26,7 @@ ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QWidget* pa
 
 }
 
-void ClickableLabel::enterEvent(QEvent* event) {
+void ClickableLabel::enterEvent(QEnterEvent* event) {
     QLabel::enterEvent(event);
 }
 

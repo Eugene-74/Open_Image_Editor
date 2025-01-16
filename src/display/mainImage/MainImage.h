@@ -25,7 +25,7 @@ signals:
 
 
 protected:
-    void enterEvent(QEvent* event) override;
+    void enterEvent(QEnterEvent* event) override;
     void leaveEvent(QEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
@@ -35,6 +35,13 @@ protected:
 
 
 private:
+    QString imagePath;
+    QSize mSize;
+    bool setSize;
+    int thumbnail;
+    bool square;
+    bool force;
+
     Data* data;
 
     QPixmap defaultPixmap;
