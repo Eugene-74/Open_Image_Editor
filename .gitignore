@@ -29,7 +29,7 @@ lib/
 *.swo
 
 
-.editorconfig
+# .editorconfig
 .clang-format
 .vscode/
 
