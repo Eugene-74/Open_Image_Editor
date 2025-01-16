@@ -4,8 +4,12 @@ namespace fs = std::filesystem;
 
 // Revoie True si l'extension du fichier correspond à l'extension d'une image
 bool isImage(const std::string& path) {
+    // Vérifier si le nom du fichier commence par un point
+    if (fs::path(path).filename().string().front() == '.') {
+        return false;
+    }
     // Liste des extensions d'images courantes
-    std::vector<std::string> extensionsImages = { ".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".webp",".webp" };
+    std::vector<std::string> extensionsImages = { ".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".webp" };
 
     // Récupération de l'extension du fichier
     std::string extension = fs::path(path).extension().string();

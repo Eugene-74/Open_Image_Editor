@@ -1,7 +1,7 @@
 #include "MetaData.h"
-#include <fstream>
 
-MetaData &MetaData::operator=(const MetaData &other)
+
+MetaData& MetaData::operator=(const MetaData& other)
 {
     if (this != &other)
     {
@@ -12,7 +12,7 @@ MetaData &MetaData::operator=(const MetaData &other)
     return *this;
 }
 
-void MetaData::saveMetaData(const std::string &imageName)
+void MetaData::saveMetaData(const std::string& imageName)
 {
 
     saveExifData(imageName, exifMetaData);
@@ -24,7 +24,7 @@ void MetaData::saveMetaData(const std::string &imageName)
 // Fonction pour récupérer la largeur de l'image
 int MetaData::getImageWidth()
 {
-    for (auto &entry : exifMetaData)
+    for (auto& entry : exifMetaData)
     {
         if (entry.key() == "Exif.Image.ImageWidth")
         {
@@ -42,7 +42,7 @@ int MetaData::getImageWidth()
 // Fonction pour récupérer la hauteur de l'image
 int MetaData::getImageHeight()
 {
-    for (auto &entry : exifMetaData)
+    for (auto& entry : exifMetaData)
     {
         if (entry.key() == "Exif.Image.ImageLength")
         {
@@ -59,7 +59,7 @@ int MetaData::getImageHeight()
 // Fonction pour récupérer l'orientation de l'image (rotation)
 int MetaData::getImageOrientation()
 {
-    for (auto &entry : exifMetaData)
+    for (auto& entry : exifMetaData)
     {
         if (entry.key() == "Exif.Image.Orientation")
         {
@@ -75,7 +75,7 @@ int MetaData::getImageOrientation()
 }
 
 // Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
-bool MetaData::modifyExifValue(const std::string &key, const std::string &newValue)
+bool MetaData::modifyExifValue(const std::string& key, const std::string& newValue)
 {
 
     Exiv2::ExifKey exifKey(key);
@@ -89,8 +89,7 @@ bool MetaData::modifyExifValue(const std::string &key, const std::string &newVal
         // displayExifData(metaData);
 
         return true; // Retourne vrai si l'opération est réussie
-    }
-    else
+    } else
     {
         // Si la clé n'existe pas, la créer et y ajouter la nouvelle valeur
         try
@@ -103,8 +102,7 @@ bool MetaData::modifyExifValue(const std::string &key, const std::string &newVal
             exifMetaData.add(newDatum);
 
             return true;
-        }
-        catch (const Exiv2::Error &e)
+        } catch (const Exiv2::Error& e)
         {
             std::cerr << "Erreur lors de l'ajout de la clé : " << e.what() << std::endl;
             return false;
@@ -113,7 +111,7 @@ bool MetaData::modifyExifValue(const std::string &key, const std::string &newVal
 }
 
 // Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
-bool MetaData::modifyXmpValue(const std::string &key, const std::string &newValue)
+bool MetaData::modifyXmpValue(const std::string& key, const std::string& newValue)
 {
     Exiv2::XmpKey exifKey(key);
 
@@ -126,8 +124,7 @@ bool MetaData::modifyXmpValue(const std::string &key, const std::string &newValu
         // displayExifData(metaData);
 
         return true; // Retourne vrai si l'opération est réussie
-    }
-    else
+    } else
     {
         // Si la clé n'existe pas, la créer et y ajouter la nouvelle valeur
         try
@@ -140,8 +137,7 @@ bool MetaData::modifyXmpValue(const std::string &key, const std::string &newValu
             xmpMetaData.add(newDatum);
 
             return true;
-        }
-        catch (const Exiv2::Error &e)
+        } catch (const Exiv2::Error& e)
         {
             std::cerr << "Erreur lors de l'ajout de la clé : " << e.what() << std::endl;
             return false;
@@ -149,7 +145,7 @@ bool MetaData::modifyXmpValue(const std::string &key, const std::string &newValu
     }
 }
 // Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
-bool MetaData::modifyIptcValue(const std::string &key, const std::string &newValue)
+bool MetaData::modifyIptcValue(const std::string& key, const std::string& newValue)
 {
     Exiv2::IptcKey exifKey(key);
 
@@ -162,8 +158,7 @@ bool MetaData::modifyIptcValue(const std::string &key, const std::string &newVal
         // displayExifData(metaData);
 
         return true; // Retourne vrai si l'opération est réussie
-    }
-    else
+    } else
     {
         // Si la clé n'existe pas, la créer et y ajouter la nouvelle valeur
         try
@@ -176,8 +171,7 @@ bool MetaData::modifyIptcValue(const std::string &key, const std::string &newVal
             iptcMetaData.add(newDatum);
 
             return true;
-        }
-        catch (const Exiv2::Error &e)
+        } catch (const Exiv2::Error& e)
         {
             std::cerr << "Erreur lors de l'ajout de la clé : " << e.what() << std::endl;
             return false;
@@ -186,12 +180,12 @@ bool MetaData::modifyIptcValue(const std::string &key, const std::string &newVal
 }
 
 // Fonction pour mettre à jour ou créer les métadonnées EXIF si elles n'existent pas
-void MetaData::setOrCreateExifData(std::string &imagePath)
+void MetaData::setOrCreateExifData(std::string& imagePath)
 {
 
     // Obtenir le timestamp actuel
     time_t now = time(0);
-    struct tm *timeinfo = localtime(&now);
+    struct tm* timeinfo = localtime(&now);
     char dateTime[20];
     strftime(dateTime, sizeof(dateTime), "%Y:%m:%d %H:%M:%S", timeinfo);
 
@@ -203,27 +197,36 @@ void MetaData::setOrCreateExifData(std::string &imagePath)
     saveMetaData(imagePath);
 }
 
+
+
 // Fonction pour charger les métadonnées EXIF d'une image
-void MetaData::loadData(const std::string &imagePath)
-{
-    try
-    {
-        // Charger l'image
+void MetaData::loadData(const std::string& imagePath){
+    try{
+#ifdef _WIN32
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        std::wstring wImagePath = converter.from_bytes(imagePath);
+        std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(wImagePath);
+#else
         std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(imagePath);
+#endif
+
         image->readMetadata();
 
         exifMetaData = image->exifData();
         xmpMetaData = image->xmpData();
         iptcMetaData = image->iptcData();
-    }
-    catch (const Exiv2::Error &e)
-    {
+
+        if (exifMetaData.empty() && xmpMetaData.empty() && iptcMetaData.empty())
+        {
+            std::cerr << "Aucune métadonnée trouvée dans l'image." << std::endl;
+        }
+    } catch (const Exiv2::Error& e){
         std::cerr << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what() << std::endl;
     }
 }
 
 // Fonction pour sauvegarder les métadonnées EXIF dans une image
-bool saveExifData(const std::string &imagePath, const Exiv2::ExifData &exifData)
+bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData)
 {
     try
     {
@@ -237,14 +240,13 @@ bool saveExifData(const std::string &imagePath, const Exiv2::ExifData &exifData)
         // Sauvegarder les métadonnées dans l'image
         image->writeMetadata();
         return true;
-    }
-    catch (const Exiv2::Error &e)
+    } catch (const Exiv2::Error& e)
     {
         std::cerr << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what() << std::endl;
         return false;
     }
 }
-bool saveXmpData(const std::string &imagePath, const Exiv2::XmpData &exifData)
+bool saveXmpData(const std::string& imagePath, const Exiv2::XmpData& exifData)
 {
     try
     {
@@ -258,14 +260,13 @@ bool saveXmpData(const std::string &imagePath, const Exiv2::XmpData &exifData)
         // Sauvegarder les métadonnées dans l'image
         image->writeMetadata();
         return true;
-    }
-    catch (const Exiv2::Error &e)
+    } catch (const Exiv2::Error& e)
     {
         std::cerr << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what() << std::endl;
         return false;
     }
 }
-bool saveIptcData(const std::string &imagePath, const Exiv2::IptcData &exifData)
+bool saveIptcData(const std::string& imagePath, const Exiv2::IptcData& exifData)
 {
     try
     {
@@ -279,8 +280,7 @@ bool saveIptcData(const std::string &imagePath, const Exiv2::IptcData &exifData)
         // Sauvegarder les métadonnées dans l'image
         image->writeMetadata();
         return true;
-    }
-    catch (const Exiv2::Error &e)
+    } catch (const Exiv2::Error& e)
     {
         std::cerr << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what() << std::endl;
         return false;
@@ -288,7 +288,7 @@ bool saveIptcData(const std::string &imagePath, const Exiv2::IptcData &exifData)
 }
 
 // Fonction pour afficher les métadonnées EXIF
-void displayExifData(const Exiv2::ExifData &data)
+void displayExifData(const Exiv2::ExifData& data)
 {
     if (data.empty())
     {
@@ -296,7 +296,7 @@ void displayExifData(const Exiv2::ExifData &data)
     }
     std::cerr << "métadonnée : " << std::endl;
 
-    for (const auto &item : data)
+    for (const auto& item : data)
     {
         if (item.key().substr(0, 10) == "Exif.Image")
         {
@@ -306,14 +306,14 @@ void displayExifData(const Exiv2::ExifData &data)
 }
 
 // Fonction pour afficher les métadonnées EXIF
-void displayXmpData(const Exiv2::XmpData &data)
+void displayXmpData(const Exiv2::XmpData& data)
 {
     if (data.empty())
     {
         std::cerr << "Aucune métadonnée Xmp disponible." << std::endl;
     }
 
-    for (const auto &item : data)
+    for (const auto& item : data)
     {
         // if (item.key().substr(0, 10) == "Exif.Image") {
         std::cerr << item.key() << " : " << item.value() << std::endl;
@@ -334,14 +334,14 @@ void MetaData::displayMetaData()
 }
 
 // Fonction pour afficher les métadonnées EXIF
-void displayIptcData(const Exiv2::IptcData &data)
+void displayIptcData(const Exiv2::IptcData& data)
 {
     if (data.empty())
     {
         std::cerr << "Aucune métadonnée Iptc disponible." << std::endl;
     }
 
-    for (const auto &item : data)
+    for (const auto& item : data)
     {
         // if (item.key().substr(0, 10) == "Exif.Image") {
         std::cerr << item.key() << " : " << item.value() << std::endl;
@@ -349,18 +349,18 @@ void displayIptcData(const Exiv2::IptcData &data)
     }
 }
 
-void MetaData::load(std::ifstream &in)
+void MetaData::load(std::ifstream& in)
 {
     // Load exifMetaData
     size_t exifSize;
-    in.read(reinterpret_cast<char *>(&exifSize), sizeof(exifSize));
+    in.read(reinterpret_cast<char*>(&exifSize), sizeof(exifSize));
     for (size_t i = 0; i < exifSize; ++i)
     {
         size_t keySize, valueSize;
-        in.read(reinterpret_cast<char *>(&keySize), sizeof(keySize));
+        in.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
         std::string key(keySize, '\0');
         in.read(&key[0], keySize);
-        in.read(reinterpret_cast<char *>(&valueSize), sizeof(valueSize));
+        in.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
         std::string value(valueSize, '\0');
         in.read(&value[0], valueSize);
         Exiv2::Exifdatum datum = Exiv2::Exifdatum(Exiv2::ExifKey(key));
@@ -370,14 +370,14 @@ void MetaData::load(std::ifstream &in)
 
     // Load xmpMetaData
     size_t xmpSize;
-    in.read(reinterpret_cast<char *>(&xmpSize), sizeof(xmpSize));
+    in.read(reinterpret_cast<char*>(&xmpSize), sizeof(xmpSize));
     for (size_t i = 0; i < xmpSize; ++i)
     {
         size_t keySize, valueSize;
-        in.read(reinterpret_cast<char *>(&keySize), sizeof(keySize));
+        in.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
         std::string key(keySize, '\0');
         in.read(&key[0], keySize);
-        in.read(reinterpret_cast<char *>(&valueSize), sizeof(valueSize));
+        in.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
         std::string value(valueSize, '\0');
         in.read(&value[0], valueSize);
         Exiv2::Xmpdatum datum = Exiv2::Xmpdatum(Exiv2::XmpKey(key));
@@ -387,14 +387,14 @@ void MetaData::load(std::ifstream &in)
 
     // Load iptcMetaData
     size_t iptcSize;
-    in.read(reinterpret_cast<char *>(&iptcSize), sizeof(iptcSize));
+    in.read(reinterpret_cast<char*>(&iptcSize), sizeof(iptcSize));
     for (size_t i = 0; i < iptcSize; ++i)
     {
         size_t keySize, valueSize;
-        in.read(reinterpret_cast<char *>(&keySize), sizeof(keySize));
+        in.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
         std::string key(keySize, '\0');
         in.read(&key[0], keySize);
-        in.read(reinterpret_cast<char *>(&valueSize), sizeof(valueSize));
+        in.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
         std::string value(valueSize, '\0');
         in.read(&value[0], valueSize);
         Exiv2::Iptcdatum datum = Exiv2::Iptcdatum(Exiv2::IptcKey(key));
@@ -403,12 +403,12 @@ void MetaData::load(std::ifstream &in)
     }
 }
 
-void MetaData::save(std::ofstream &out) const
+void MetaData::save(std::ofstream& out) const
 {
 
     // Save exifMetaData
     size_t exifSize = 0;
-    for (const auto &datum : exifMetaData)
+    for (const auto& datum : exifMetaData)
     {
         if (datum.key() == "Exif.Image.Orientation")
         {
@@ -416,8 +416,8 @@ void MetaData::save(std::ofstream &out) const
             break;
         }
     }
-    out.write(reinterpret_cast<const char *>(&exifSize), sizeof(exifSize));
-    for (const auto &datum : exifMetaData)
+    out.write(reinterpret_cast<const char*>(&exifSize), sizeof(exifSize));
+    for (const auto& datum : exifMetaData)
     {
         if (datum.key() != "Exif.Image.Orientation")
         {
@@ -427,39 +427,39 @@ void MetaData::save(std::ofstream &out) const
         std::string value = datum.toString();
         size_t keySize = key.size();
         size_t valueSize = value.size();
-        out.write(reinterpret_cast<const char *>(&keySize), sizeof(keySize));
+        out.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
         out.write(key.c_str(), keySize);
-        out.write(reinterpret_cast<const char *>(&valueSize), sizeof(valueSize));
+        out.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
         out.write(value.c_str(), valueSize);
     }
 
     // Save xmpMetaData
     size_t xmpSize = xmpMetaData.count();
-    out.write(reinterpret_cast<const char *>(&xmpSize), sizeof(xmpSize));
-    for (const auto &datum : xmpMetaData)
+    out.write(reinterpret_cast<const char*>(&xmpSize), sizeof(xmpSize));
+    for (const auto& datum : xmpMetaData)
     {
         std::string key = datum.key();
         std::string value = datum.toString();
         size_t keySize = key.size();
         size_t valueSize = value.size();
-        out.write(reinterpret_cast<const char *>(&keySize), sizeof(keySize));
+        out.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
         out.write(key.c_str(), keySize);
-        out.write(reinterpret_cast<const char *>(&valueSize), sizeof(valueSize));
+        out.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
         out.write(value.c_str(), valueSize);
     }
 
     // Save iptcMetaData
     size_t iptcSize = iptcMetaData.size();
-    out.write(reinterpret_cast<const char *>(&iptcSize), sizeof(iptcSize));
-    for (const auto &datum : iptcMetaData)
+    out.write(reinterpret_cast<const char*>(&iptcSize), sizeof(iptcSize));
+    for (const auto& datum : iptcMetaData)
     {
         std::string key = datum.key();
         std::string value = datum.toString();
         size_t keySize = key.size();
         size_t valueSize = value.size();
-        out.write(reinterpret_cast<const char *>(&keySize), sizeof(keySize));
+        out.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
         out.write(key.c_str(), keySize);
-        out.write(reinterpret_cast<const char *>(&valueSize), sizeof(valueSize));
+        out.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
         out.write(value.c_str(), valueSize);
     }
 }
