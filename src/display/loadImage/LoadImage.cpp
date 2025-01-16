@@ -1,7 +1,7 @@
 #include "LoadImage.h"
 
 // Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
-ImagesData addSelectedFilesToFolders(Data *data, QWidget *parent)
+ImagesData addSelectedFilesToFolders(Data* data, QWidget* parent)
 {
     // Data data;
     ImagesData imagesData = ImagesData(std::vector<ImageData>{});
@@ -12,7 +12,7 @@ ImagesData addSelectedFilesToFolders(Data *data, QWidget *parent)
 
     selectedFiles = fileSelector.openDirectoryDialog();
 
-    for (const QString &fileName : selectedFiles)
+    for (const QString& fileName : selectedFiles)
     {
         startLoadingImagesFromFolder(data, fileName.toStdString(), &imagesData);
     }
@@ -20,7 +20,7 @@ ImagesData addSelectedFilesToFolders(Data *data, QWidget *parent)
     return imagesData;
 }
 
-std::string getDirectoryFromUser(QWidget *parent)
+std::string getDirectoryFromUser(QWidget* parent)
 {
     QFileDialog dialog(parent);
     dialog.setFileMode(QFileDialog::Directory);
@@ -38,7 +38,7 @@ std::string getDirectoryFromUser(QWidget *parent)
 }
 
 // Charges dans un imagesData toutes les données des images dans un dossier et ses sous dossier
-void startLoadingImagesFromFolder(Data *data, const std::string imagePaths, ImagesData *imagesData)
+void startLoadingImagesFromFolder(Data* data, const std::string imagePaths, ImagesData* imagesData)
 {
     int nbrImage = 0;
 
@@ -57,7 +57,7 @@ void startLoadingImagesFromFolder(Data *data, const std::string imagePaths, Imag
     loadImagesMetaDataOfGoogle(imagesData);
 }
 
-std::string readFile(const std::string &filePath)
+std::string readFile(const std::string& filePath)
 {
     std::ifstream file(filePath);
     if (!file.is_open())
@@ -72,7 +72,7 @@ std::string readFile(const std::string &filePath)
 
 // std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString) {
 
-std::map<std::string, std::string> parseJsonToMap(const std::string &jsonString)
+std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString)
 {
     std::map<std::string, std::string> resultMap;
     std::string key, value;
@@ -89,8 +89,7 @@ std::map<std::string, std::string> parseJsonToMap(const std::string &jsonString)
             if (ch == '"')
             {
                 std::getline(jsonStream, value, '"');
-            }
-            else
+            } else
             {
                 jsonStream.putback(ch);
                 std::getline(jsonStream, value, ',');
@@ -112,11 +111,11 @@ std::map<std::string, std::string> openJsonFile(std::string filePath)
 }
 
 // Conte toutes les images dans un dossier et ses sous dossier
-void countImagesFromFolder(const std::string path, int &nbrImage)
+void countImagesFromFolder(const std::string path, int& nbrImage)
 {
 
     int i = 0;
-    for (const auto &entry : fs::directory_iterator(path))
+    for (const auto& entry : fs::directory_iterator(path))
     {
         if (fs::is_regular_file(entry.status()))
         {
@@ -125,9 +124,7 @@ void countImagesFromFolder(const std::string path, int &nbrImage)
             {
                 nbrImage += 1;
             }
-        }
-        else if (fs::is_directory(entry.status()))
-        {
+        } else if (fs::is_directory(entry.status())) {
 
             countImagesFromFolder(entry.path().string(), nbrImage);
 
@@ -137,9 +134,9 @@ void countImagesFromFolder(const std::string path, int &nbrImage)
 }
 
 // Charges concrètement dans un imagesData toutes les données des images dans un dossier et ses sous dossier
-void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData *imagesData, int &nbrImage)
+void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage)
 {
-    for (const auto &entry : fs::directory_iterator(path))
+    for (const auto& entry : fs::directory_iterator(path))
     {
         if (fs::is_regular_file(entry.status()))
         {
@@ -149,12 +146,11 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
                 fs::path relativePath = fs::relative(entry.path(), fs::path(initialPath).parent_path());
 
                 Folders folders;
-                ImageData *imageData = imagesData->getImageData(entry.path().string());
+                ImageData* imageData = imagesData->getImageData(entry.path().string());
                 if (imageData != nullptr)
                 {
                     folders = imageData->folders;
-                }
-                else
+                } else
                 {
                     // folders = Folders(relativePath.parent_path().string());
                     folders = Folders(fs::absolute(entry.path()).parent_path().string());
@@ -168,15 +164,14 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
                 nbrImage -= 1;
                 std::cerr << "Image restante : " << nbrImage << std::endl;
             }
-        }
-        else if (fs::is_directory(entry.status()))
+        } else if (fs::is_directory(entry.status()))
         {
             loadImagesFromFolder(initialPath, entry.path().string(), imagesData, nbrImage);
         }
     }
 }
 
-void loadImagesMetaData(ImagesData *imagesData)
+void loadImagesMetaData(ImagesData* imagesData)
 {
     for (int i = 0; i < imagesData->get()->size(); ++i)
     {
@@ -184,11 +179,11 @@ void loadImagesMetaData(ImagesData *imagesData)
     }
 }
 
-void loadImagesMetaDataOfGoogle(ImagesData *imagesData)
+void loadImagesMetaDataOfGoogle(ImagesData* imagesData)
 {
     for (int i = 0; i < imagesData->get()->size(); ++i)
     {
-        ImageData *imageData = imagesData->getImageData(i);
+        ImageData* imageData = imagesData->getImageData(i);
         std::string jsonFilePath = imageData->getImagePath() + ".json";
 
         if (fs::exists(jsonFilePath))
@@ -196,7 +191,7 @@ void loadImagesMetaDataOfGoogle(ImagesData *imagesData)
             std::cerr << "json found" << std::endl;
             std::map<std::string, std::string> jsonMap = openJsonFile(jsonFilePath);
 
-            for (const auto &[key, value] : jsonMap)
+            for (const auto& [key, value] : jsonMap)
             {
                 std::cerr << key << " : " << value << std::endl;
                 if (!key.empty() && !value.empty())
@@ -208,15 +203,13 @@ void loadImagesMetaDataOfGoogle(ImagesData *imagesData)
                     }
                 }
             }
-        }
-        else
-        {
+        } else{
             displayExifData(imageData->metaData.exifMetaData);
         }
     }
 }
 
-std::string mapJsonKeyToExifKey(const std::string &jsonKey)
+std::string mapJsonKeyToExifKey(const std::string& jsonKey)
 {
     static const std::map<std::string, std::string> keyMap = {
         // TODO mettre tous les nécessaires
@@ -228,7 +221,7 @@ std::string mapJsonKeyToExifKey(const std::string &jsonKey)
         {"geoData.altitude", "Exif.GPSInfo.GPSAltitude"},
         {"googlePhotosOrigin.mobileUpload.deviceModel", "Exif.Image.Model"},
         {"googlePhotosOrigin.mobileUpload.deviceType", "Exif.Image.Make"},
-        {"googlePhotosOrigin.mobileUpload.deviceSoftwareVersion", "Exif.Image.Software"}};
+        {"googlePhotosOrigin.mobileUpload.deviceSoftwareVersion", "Exif.Image.Software"} };
 
     std::string lowerJsonKey = jsonKey;
     std::transform(lowerJsonKey.begin(), lowerJsonKey.end(), lowerJsonKey.begin(), ::tolower);
