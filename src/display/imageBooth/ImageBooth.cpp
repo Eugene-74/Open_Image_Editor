@@ -73,13 +73,13 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         return nullptr;
     }
     ClickableLabel* imageButton;
-    if (data->isInCache(data->getThumbnailPath(imagePath, 128))) {
+    if (data->isInCache(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_QUALITY))) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
-            this, imageSize, false, 128, true);
+            this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
         loadedImageNumber += 1;
-    } else if (data->hasThumbnail(imagePath, 128)) {
+    } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_QUALITY)) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
-            this, imageSize, false, 128, true);
+            this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
         loadedImageNumber += 1;
     } else {
         imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING, this, imageSize,
@@ -88,12 +88,21 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         data->loadInCacheAsync(imagePath, [this, imagePath, imageButton]() {
             done += 1;
             data->createAllThumbnail(imagePath, 512);
+            if (IMAGE_BOOTH_IMAGE_QUALITY == 128) {
+                data->unloadFromCache(data->getThumbnailPath(imagePath, 256));
+                data->unloadFromCache(data->getThumbnailPath(imagePath, 512));
+
+            } else if (IMAGE_BOOTH_IMAGE_QUALITY == 256) {
+                data->unloadFromCache(data->getThumbnailPath(imagePath, 128));
+                data->unloadFromCache(data->getThumbnailPath(imagePath, 512));
+            } else if (IMAGE_BOOTH_IMAGE_QUALITY == 512) {
+                data->unloadFromCache(data->getThumbnailPath(imagePath, 128));
+                data->unloadFromCache(data->getThumbnailPath(imagePath, 256));
+            }
             data->unloadFromCache(imagePath);
-            data->unloadFromCache(data->getThumbnailPath(imagePath, 256));
-            data->unloadFromCache(data->getThumbnailPath(imagePath, 512));
 
             QImage qImage = data->loadImage(this, imagePath, this->size(), true,
-                128, true, true);
+                IMAGE_BOOTH_IMAGE_QUALITY, true, true);
 
             QMetaObject::invokeMethod(
                 QApplication::instance(),

@@ -95,8 +95,8 @@ elseif(UNIX)
     set(CMAKE_AUTOUIC ON)
 
     # Configuration Qt dynamique
-    set(Qt5_USE_STATIC_LIBS OFF)
-    set(Qt5_USE_STATIC_RUNTIME OFF)
+    set(Qt6_USE_STATIC_LIBS OFF)
+    set(Qt6_USE_STATIC_RUNTIME OFF)
 
     # Définir la variable d'environnement
     set(ENV{QTFRAMEWORK_BYPASS_LICENSE_CHECK} "1")

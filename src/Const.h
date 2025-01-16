@@ -23,7 +23,6 @@ const int TIME_BEFORE_FULL_QUALITY = 200;
 const int LINE_LOADED = 2; // fois ou l'on charge un tableau d'image (2 = 2 tableau pres charger)
 
 
-
 const QString CLICK_BACKGROUND_COLOR = "#9c9c9c";
 const QString HOVER_BACKGROUND_COLOR = "#b3b3b3";
 const QString BACKGROUND_COLOR = "transparent";
@@ -32,6 +31,7 @@ const QString BACKGROUND_COLOR = "transparent";
 
 const QString IMAGE_EDITOR_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Editor Window";
 const QString IMAGE_BOOTH_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Booth Window";
+const int IMAGE_BOOTH_IMAGE_QUALITY = 256;
 
 
 const std::string THUMBNAIL_PATH_OPTION = "thumbnail save path";
