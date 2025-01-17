@@ -13,8 +13,6 @@ InitialWindow::InitialWindow() {
     data->imagesData = imagesData;
     data->deletedImagesData = deletedImagesData;
 
-    std::string path = "/home/eugene/Documents/photo trié";
-
 
     data->loadData();
 

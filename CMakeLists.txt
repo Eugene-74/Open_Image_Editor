@@ -40,6 +40,7 @@ if(WIN32)
     message(STATUS "Exiv2 library: ${EXIV2_LIBRARIES}")
 
 
+
     # Inclure les répertoires d'en-têtes
     include_directories(${OpenCV_INCLUDE_DIRS})
     include_directories(${EXIV2_INCLUDE_DIRS})
@@ -163,3 +164,54 @@ elseif(UNIX)
 endif()
 
 
+
+
+# Configuration de CPack
+set(CPACK_GENERATOR "ZIP")  # Utiliser le générateur ZIP
+set(CPACK_PACKAGE_NAME "OpenImageEditor")
+set(CPACK_PACKAGE_VERSION "1.0.0")
+set(CPACK_PACKAGE_CONTACT "votre.email@example.com")
+
+
+install(TARGETS ${PROJECT_NAME})
+
+
+
+file(GLOB MINGW_DLLS1 "C:/msys64/mingw64/bin/*.dll")
+
+install(FILES ${MINGW_DLLS1} DESTINATION bin)
+
+file(GLOB MINGW_DLLS2 "C:/msys64/mingw64/share/qt6/plugins/platforms/*.dll")
+
+install(FILES ${MINGW_DLLS2} DESTINATION bin/platforms)
+
+# install(FILES
+#     C:/msys64/mingw64/lib/libopencv_calib3d.dll.a
+#     C:/msys64/mingw64/lib/libopencv_core.dll.a
+#     C:/msys64/mingw64/lib/libopencv_dnn.dll.a
+
+#     DESTINATION test
+# )
+
+# Ajouter les bibliothèques Exiv2 au package
+# install(FILES ${EXIV2_LIBRARIES} 
+#     C:/msys64/mingw64/bin/libexiv2-27.dll
+#     C:/msys64/mingw64/bin/libb2-1.dll
+#     C:/msys64/mingw64/bin/libdouble-conversion.dll
+#     C:/msys64/mingw64/bin/libicuin75.dll
+
+#     DESTINATION test
+# )
+
+
+
+# Obtenir les chemins des bibliothèques Qt6
+get_target_property(Qt6Core_LOCATION Qt6::Core LOCATION)
+get_target_property(Qt6Gui_LOCATION Qt6::Gui LOCATION)
+get_target_property(Qt6Widgets_LOCATION Qt6::Widgets LOCATION)
+
+# Ajouter les bibliothèques Qt6 au package
+install(FILES ${Qt6Core_LOCATION} ${Qt6Gui_LOCATION} ${Qt6Widgets_LOCATION}
+    DESTINATION bin)
+
+include(CPack)

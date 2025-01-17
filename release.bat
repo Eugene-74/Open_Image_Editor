@@ -5,5 +5,5 @@ cmake -G "Ninja" ..
     
 cmake --build .
 
-OpenImageEditor.exe
+cpack
 cd ..
