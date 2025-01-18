@@ -344,8 +344,7 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim)
 void Data::createThumbnailsIfNotExists(
     const std::vector<std::string>& imagePaths, const int maxDim)
 {
-    for (const auto& imagePath : imagePaths)
-    {
+    for (const auto& imagePath : imagePaths){
         createThumbnailIfNotExists(imagePath, maxDim);
     }
 }
@@ -784,7 +783,6 @@ void Data::sortImagesData(){
 
     // Sort the images data using multiple threads
     auto& data = *imagesData.get();
-    size_t numThreads = std::thread::hardware_concurrency();
 
     size_t chunkSize = data.size() / numThreads;
     std::vector<std::future<void>> sortFutures;

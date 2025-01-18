@@ -48,8 +48,8 @@ public:
     // TODO gerrer pour le mettre a false lors de modification et puis true si il ny a pas de modification / un Ctrl + Z
     bool saved = false;
 
-
-    ThreadPool threadPool = ThreadPool(std::thread::hardware_concurrency());
+    unsigned int numThreads = std::max(1u, std::thread::hardware_concurrency() / 2); // Reserve 2 threads for UI
+    ThreadPool threadPool = ThreadPool(numThreads);
     std::map<QString, std::future<void>> futures;
 
     Data() : imageCache(new std::map<std::string, QImageAndPath>()) {}

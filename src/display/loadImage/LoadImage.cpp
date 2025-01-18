@@ -20,7 +20,11 @@ void addImagesFromFolder(Data* data, QWidget* parent){
     std::chrono::duration<double> elapsed = end - start;
     std::cout << "Sorting images took " << elapsed.count() << " seconds." << std::endl;
 
+    auto saveStart = std::chrono::high_resolution_clock::now();
     data->saveData();
+    auto saveEnd = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> saveElapsed = saveEnd - saveStart;
+    std::cout << "Saving data took " << saveElapsed.count() << " seconds." << std::endl;
 }
 
 
@@ -101,6 +105,30 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     if (!loadImagesMetaDataOfGoogle(imagesData, progressDialog)){
         return false;
     }
+
+    progressDialog.setValue(0);
+    progressDialog.show();
+    progressDialog.setLabelText("Loading images thumbnail...");
+
+
+    for (int i = 0; i < imagesData->get()->size(); ++i) {
+        if (progressDialog.wasCanceled()) {
+            return false;
+        }
+        ImageData* imageData = imagesData->getImageData(i);
+        // TODO cree une fonction et utiliser le threadpool si possible
+        data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
+        data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
+        data->createThumbnailIfNotExists(imageData->getImagePath(), 512);
+
+        data->unloadFromCache(imageData->getImagePath());
+        progressDialog.setValue(i);
+        QApplication::processEvents();
+    }
+    progressDialog.setLabelText("sorting...");
+    QApplication::processEvents();
+
+
 
     return true;
 }
