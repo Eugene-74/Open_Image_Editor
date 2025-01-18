@@ -7,7 +7,7 @@ namespace fs = std::filesystem;
 
 int main(int argc, char* argv[]) {
 
-
+    auto start = std::chrono::high_resolution_clock::now();
     QApplication app(argc, argv);
 
     // QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -30,6 +30,7 @@ int main(int argc, char* argv[]) {
     lightPalette.setColor(QPalette::Link, QColor(0, 0, 255));
     lightPalette.setColor(QPalette::Highlight, QColor(0, 120, 215));
     lightPalette.setColor(QPalette::HighlightedText, QColor(255, 255, 255));
+
 
     // Appliquer la palette de couleurs claires
     app.setPalette(lightPalette);

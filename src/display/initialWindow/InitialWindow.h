@@ -10,10 +10,13 @@
 
 #include "../../display/imageEditor/ImageEditor.h"
 #include "../../display/imageBooth/ImageBooth.h"
+#include "../../display/mainWindow/MainWindow.h"
+
 
 
 class ImageEditor;
 class ImageBooth;
+class MainWindow;
 
 class InitialWindow : public QMainWindow {
     Q_OBJECT
@@ -32,6 +35,10 @@ public:
     void createImageBooth(Data* data);
     void clearImageBooth();
 
+    void createMainWindow(Data* data);
+    void clearMainWindow();
+
+
 private slots:
     void showImageEditor();
     void showImageBooth();
@@ -39,6 +46,8 @@ private slots:
 private:
     ImageEditor* imageEditor = nullptr;
     ImageBooth* imageBooth = nullptr;
+    MainWindow* mainWindow = nullptr;
+
     QVBoxLayout* layout;
     QWidget* centralWidget;
     ClickableLabel* createImageDiscord();

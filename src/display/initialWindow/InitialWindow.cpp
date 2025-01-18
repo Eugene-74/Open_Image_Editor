@@ -1,7 +1,9 @@
 #include "InitialWindow.h"
 
 
+
 InitialWindow::InitialWindow() {
+
     data = new Data();
 
     ImagesData imagesData(std::vector<ImageData>{});
@@ -63,7 +65,10 @@ InitialWindow::InitialWindow() {
 
     windowLayout->addLayout(linkLayout);
 
-    createImageBooth(data);
+
+    createMainWindow(data);
+
+
 }
 
 void InitialWindow::closeEvent(QCloseEvent* event) {
@@ -77,10 +82,6 @@ void InitialWindow::closeEvent(QCloseEvent* event) {
 }
 
 void InitialWindow::createImageEditor(Data* data) {
-    if (imageEditor) {
-        delete imageEditor;
-    }
-
     imageEditor = new ImageEditor(data, this);
 
     layout->removeWidget(imageBooth);
@@ -91,19 +92,10 @@ void InitialWindow::createImageEditor(Data* data) {
 
     connect(imageEditor, &ImageEditor::switchToImageBooth, this, &InitialWindow::showImageBooth);
 
-
 }
 
 void InitialWindow::createImageBooth(Data* data) {
-    if (imageBooth) {
-        delete imageBooth;
-    }
-    if (imageEditor) {
-        layout->removeWidget(imageEditor);
-    }
     imageBooth = new ImageBooth(data, this);
-
-
 
     layout->addWidget(imageBooth);
 
@@ -113,24 +105,64 @@ void InitialWindow::createImageBooth(Data* data) {
 
 }
 
+
+
+void InitialWindow::createMainWindow(Data* data) {
+    mainWindow = new MainWindow(data, this);
+
+
+
+    layout->addWidget(mainWindow);
+
+    mainWindow->setFocus();
+
+    connect(mainWindow, &MainWindow::switchToImageBooth, this, &InitialWindow::showImageBooth);
+    connect(mainWindow, &MainWindow::switchToImageEditor, this, &InitialWindow::showImageEditor);
+
+}
 void InitialWindow::clearImageEditor() {
+    layout->removeWidget(imageEditor);
     imageEditor->clear();
+    // delete imageEditor;
+    imageEditor = nullptr;
 }
 
 void InitialWindow::clearImageBooth() {
+    layout->removeWidget(imageBooth);
     imageBooth->clear();
+    // delete imageBooth;
+    imageBooth = nullptr;
+}
+
+void InitialWindow::clearMainWindow() {
+    layout->removeWidget(mainWindow);
+    mainWindow->clear();
+    // delete mainWindow;
+    mainWindow = nullptr;
 }
 
 
+
 void InitialWindow::showImageEditor() {
-    // data->cancelTasks();
-    clearImageBooth();
+    std::cerr << "showImageEditor" << std::endl;
+    if (imageBooth != nullptr){
+        clearImageBooth();
+    }
+    if (mainWindow != nullptr){
+        clearMainWindow();
+    }
     createImageEditor(data);
 }
 
 void InitialWindow::showImageBooth() {
     std::cerr << "showImageBooth" << std::endl;
-    clearImageEditor();
+    if (imageEditor != nullptr){
+        clearImageEditor();
+    }
+    if (mainWindow != nullptr){
+        clearMainWindow();
+    }
+
     createImageBooth(data);
 }
 
@@ -190,3 +222,4 @@ void InitialWindow::openOption() {
         std::cerr << key << " : " << value << std::endl;
     }
 }
+
