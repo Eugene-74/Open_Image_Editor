@@ -29,8 +29,6 @@ InitialWindow::InitialWindow() {
 
     screenGeometry = screenR.size() / pixelRatio;
 
-
-
     setWindowTitle("EasyImageEditor : Initial Window");
 
 

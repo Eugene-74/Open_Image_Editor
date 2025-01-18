@@ -1,10 +1,31 @@
 #include "LoadImage.h"
 
+void addImagesFromFolder(Data* data, QWidget* parent){
 
+    QProgressDialog progressDialog(parent);
+    // Necessaire : sinon s'affiche tout seul au bout de 5 s
+    progressDialog.show();
+    progressDialog.hide();
+
+    ImagesData imagesData = addSelectedFilesToFolders(data, parent, progressDialog);
+    if (imagesData.get()->size() <= 0){
+        return;
+    }
+    // TODO *& necessaire sinon data ressort sans imagesData ...
+    data->imagesData = *&imagesData;
+
+    auto start = std::chrono::high_resolution_clock::now();
+    data->sortImagesData();
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "Sorting images took " << elapsed.count() << " seconds." << std::endl;
+
+    data->saveData();
+}
 
 
 // Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
-ImagesData addSelectedFilesToFolders(Data* data, QWidget* parent){
+ImagesData addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& progressDialog){
     ImagesData imagesData = ImagesData(std::vector<ImageData>{});
 
     fileSelector fileSelector;
@@ -14,7 +35,9 @@ ImagesData addSelectedFilesToFolders(Data* data, QWidget* parent){
     selectedFiles = fileSelector.openDirectoryDialog();
 
     for (const QString& fileName : selectedFiles){
-        // startLoadingImagesFromFolder(parent, data, fileName.toStdString(), &imagesData, progressDialog);
+        if (!startLoadingImagesFromFolder(parent, data, fileName.toStdString(), &imagesData, progressDialog)){
+            return ImagesData(std::vector<ImageData>{});
+        }
     }
 
     return imagesData;
@@ -38,8 +61,7 @@ std::string getDirectoryFromUser(QWidget* parent)
 }
 
 // Charges dans un imagesData toutes les données des images dans un dossier et ses sous dossier
-void startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string imagePaths, ImagesData* imagesData, QProgressDialog& progressDialog)
-{
+bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string imagePaths, ImagesData* imagesData, QProgressDialog& progressDialog){
 
     int nbrImage = 0;
 
@@ -50,8 +72,7 @@ void startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     data->rootFolders.print();
 
-    std::cerr << "nombre d'image à charger : " << nbrImage << std::endl;
-
+    // std::cerr << "nombre d'image à charger : " << nbrImage << std::endl;
     progressDialog.setLabelText("Loading images...");
     progressDialog.setCancelButtonText("Cancel");
     progressDialog.setRange(0, nbrImage);
@@ -62,7 +83,7 @@ void startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     int loaded = 0;
     if (!loadImagesFromFolder(imagePaths, imagePaths, imagesData, loaded, progressDialog)){
         std::cerr << "loadImagesFromFolder failed" << std::endl;
-        return;
+        return false;
     }
 
 
@@ -70,7 +91,7 @@ void startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     progressDialog.show();
     progressDialog.setLabelText("Loading images metaData...");
     if (!loadImagesMetaData(imagesData, progressDialog)){
-        return;
+        return false;
     }
 
 
@@ -78,9 +99,10 @@ void startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     progressDialog.show();
     progressDialog.setLabelText("Loading images googleData...");
     if (!loadImagesMetaDataOfGoogle(imagesData, progressDialog)){
-        return;
+        return false;
     }
 
+    return true;
 }
 
 std::string readFile(const std::string& filePath)
@@ -207,6 +229,8 @@ bool loadImagesMetaData(ImagesData* imagesData, QProgressDialog& progressDialog)
 }
 
 bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog){
+    progressDialog.setMaximum(imagesData->get()->size());
+
     for (int i = 0; i < imagesData->get()->size(); ++i){
         if (progressDialog.wasCanceled()){
             return false;

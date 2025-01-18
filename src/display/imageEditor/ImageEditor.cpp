@@ -221,9 +221,7 @@ void ImageEditor::reload() {
     }
 
     if (imagesData->get()->size() <= 0) {
-        // showInformationMessage(this, "no image data loaded");
-        // data->imagesData = addSelectedFilesToFolders(data, this);
-        // data->saveData();
+
         addImagesFromFolder(data, this);
         return;
     }
@@ -243,7 +241,6 @@ void ImageEditor::createPreview() {
     for (int i = 0; i < PREVIEW_NBR * 2 + 1; ++i) {
         ClickableLabel* previewButton = createImagePreview(IMAGE_PATH_LOADING.toStdString(), 0);
         previewButtonLayout->addWidget(previewButton);
-        // previewButton->hide();
         previewButtons.push_back(previewButton);
     }
 

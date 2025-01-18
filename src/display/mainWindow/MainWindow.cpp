@@ -21,7 +21,7 @@ MainWindow::MainWindow(Data* dat, QWidget* parent) : QMainWindow(parent), data(d
 
     connect(switchToBooth, &ClickableLabel::clicked, this, [this](){
         if (data->imagesData.get()->size() <= 0){
-            // addImagesFromFolder(data, this);
+            addImagesFromFolder(data, this);
 
         }
         if (data->imagesData.get()->size() > 0){
@@ -31,20 +31,17 @@ MainWindow::MainWindow(Data* dat, QWidget* parent) : QMainWindow(parent), data(d
 
     connect(switchToEditor, &ClickableLabel::clicked, this, [this](){
         if (data->imagesData.get()->size() <= 0){
-            // data->addImagesFromFolder(this);
-            // addImagesFromFolder(data, this);
+            addImagesFromFolder(data, this);
 
         }
         if (data->imagesData.get()->size() > 0){
-            // data->imagesData.setImageNumber(0);
 
             switchToImageEditor();
         }
         });
 
     connect(addImages, &ClickableLabel::clicked, this, [this]() {
-        // addImagesFromFolder(data, this);
-        // data->addImagesFromFolder(this);
+        addImagesFromFolder(data, this);
 
         });
 

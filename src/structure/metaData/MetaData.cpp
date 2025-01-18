@@ -217,9 +217,9 @@ void MetaData::loadData(const std::string& imagePath){
             xmpMetaData = image->xmpData();
             iptcMetaData = image->iptcData();
 
-            if (exifMetaData.empty() && xmpMetaData.empty() && iptcMetaData.empty())
-            {
-                std::cerr << "Aucune métadonnée trouvée dans l'image." << std::endl;
+            if (exifMetaData.empty() && xmpMetaData.empty() && iptcMetaData.empty()){
+                // TODO mettre ou pas ?
+                // std::cerr << "Aucune métadonnée trouvée dans l'image." << std::endl;
             }
             dataLoaded = true;
 

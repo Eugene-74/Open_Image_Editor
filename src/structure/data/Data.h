@@ -13,7 +13,6 @@
 #include <iostream>
 #include <fstream>
 #include "../../display/box/Box.h"
-#include "../../display/loadImage/LoadImage.h"
 
 #include "../../structure/folders/Folders.h"
 #include "../../structure/sizes/Sizes.h"
@@ -50,7 +49,7 @@ public:
     bool saved = false;
 
 
-    ThreadPool threadPool = ThreadPool(std::thread::hardware_concurrency() / 2);
+    ThreadPool threadPool = ThreadPool(std::thread::hardware_concurrency());
     std::map<QString, std::future<void>> futures;
 
     Data() : imageCache(new std::map<std::string, QImageAndPath>()) {}
@@ -66,7 +65,6 @@ public:
 
     QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool rotation = true, bool square = false, bool crop = true, bool force = false);
     QImage loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool force = false);
-    // QImage loadImageSquare(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0);
 
     bool loadInCache(std::string imagePath, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
     void loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
@@ -122,4 +120,3 @@ private:
 };
 
 
-// void addImagesFromFolder(Data* data, QWidget* parent);

@@ -594,8 +594,9 @@ void Data::copyImages(Folders* currentFolders, std::string folderPath,
     }
 }
 
-void Data::saveData()
-{
+void Data::saveData(){
+    std::cerr << "Saving data" << std::endl;
+
     std::string filePath = IMAGESDATA_SAVE_DATA_PATH;
     std::ofstream outFile(filePath, std::ios::binary);
     if (!outFile)
@@ -623,7 +624,6 @@ void Data::saveData()
         }
     }
 
-    std::cerr << "Saving data" << std::endl;
     // Serialize imagesData
 
     size_t imagesDataSize = imagesData.get()->size();
@@ -638,8 +638,7 @@ void Data::saveData()
     size_t deletedImagesDataSize = deletedImagesData.get()->size();
     outFile.write(reinterpret_cast<const char*>(&deletedImagesDataSize),
         sizeof(deletedImagesDataSize));
-    for (const auto& imageData : *deletedImagesData.get())
-    {
+    for (const auto& imageData : *deletedImagesData.get()){
         imageData.save(outFile);
     }
 
@@ -647,8 +646,7 @@ void Data::saveData()
     size_t optionsSize = options.size();
     outFile.write(reinterpret_cast<const char*>(&optionsSize),
         sizeof(optionsSize));
-    for (const auto& [key, option] : options)
-    {
+    for (const auto& [key, option] : options){
         size_t keySize = key.size();
         outFile.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
         outFile.write(key.c_str(), keySize);
@@ -769,24 +767,45 @@ void Data::clearActions()
 }
 
 void Data::sortImagesData(){
-    // Check that all the data are loaded before sorting
+    // TODO utilise le threadPool deja existant
+
+        // Check that all the data are loaded before sorting using the existing thread pool
+    std::vector<std::future<void>> futures;
     for (auto& imageData : *imagesData.get()) {
-        imageData.loadData();
+        futures.push_back(threadPool.enqueue([&imageData]() {
+            imageData.loadData();
+            }));
     }
-    std::sort(imagesData.get()->begin(), imagesData.get()->end(), [](const ImageData& a, const ImageData& b)
-        { return a.getMetaData().getExifData()["Exif.Image.DateTime"].toString() > b.getMetaData().getExifData()["Exif.Image.DateTime"].toString(); });
+
+    // Wait for all the data to be loaded
+    for (auto& future : futures) {
+        future.get();
+    }
+
+    // Sort the images data using multiple threads
+    auto& data = *imagesData.get();
+    size_t numThreads = std::thread::hardware_concurrency();
+
+    size_t chunkSize = data.size() / numThreads;
+    std::vector<std::future<void>> sortFutures;
+
+    for (size_t i = 0; i < numThreads; ++i) {
+        sortFutures.push_back(threadPool.enqueue([&, i]() {
+            auto begin = data.begin() + i * chunkSize;
+            auto end = (i == numThreads - 1) ? data.end() : begin + chunkSize;
+            std::sort(begin, end, [](const ImageData& a, const ImageData& b) {
+                return a.getMetaData().getExifData()["Exif.Image.DateTime"].toString() > b.getMetaData().getExifData()["Exif.Image.DateTime"].toString();
+                });
+            }));
+    }
+
+    for (auto& future : sortFutures) {
+        future.get();
+    }
+
+    // Merge sorted chunks
+    std::inplace_merge(data.begin(), data.begin() + chunkSize, data.end(), [](const ImageData& a, const ImageData& b) {
+        return a.getMetaData().getExifData()["Exif.Image.DateTime"].toString() > b.getMetaData().getExifData()["Exif.Image.DateTime"].toString();
+        });
 }
 
-
-// void addImagesFromFolder(Data* data, QWidget* parent){
-
-//     QProgressDialog progressDialog(parent);
-//     progressDialog.setLabelText("Loading images...");
-//     progressDialog.setCancelButtonText("Cancel");
-//     progressDialog.setRange(0, 100);
-//     // data->imagesData = addSelectedFilesToFolders(data, parent, progressDialog);
-
-//     data->sortImagesData();
-
-//     data->saveData();
-// }
