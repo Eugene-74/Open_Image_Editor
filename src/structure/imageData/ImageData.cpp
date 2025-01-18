@@ -101,6 +101,7 @@ void ImageData::loadData() {
     try {
         metaData.loadData(imagePath);
     } catch (const Exiv2::Error& e) {
+        std::cerr << "Error loading metadata for image: " << imagePath << std::endl;
         handleExiv2Error(e);
     }
 }
@@ -126,7 +127,7 @@ int ImageData::getImageOrientation() {
 void ImageData::turnImage(int rotation) {
 
     metaData.modifyExifValue("Exif.Image.Orientation", std::to_string(rotation));
-    metaData.modifyExifValue("Exif.Thumbnail.Orientation", std::to_string(rotation));
+    // metaData.modifyExifValue("Exif.Thumbnail.Orientation", std::to_string(rotation));
     // metaData.modifyXmpValue("Xmp.tiff.Orientation", std::to_string(rotation));
 
 }
@@ -143,7 +144,9 @@ void ImageData::save(std::ofstream& out) const {
     out.write(reinterpret_cast<const char*>(&pathLength), sizeof(pathLength));
     out.write(imagePath.c_str(), pathLength);
     folders.save(out);
-    metaData.save(out);
+
+
+    // metaData.save(out);
 
     size_t cropSizesSize = cropSizes->size();
 
@@ -154,23 +157,31 @@ void ImageData::save(std::ofstream& out) const {
         out.write(reinterpret_cast<const char*>(&innerSize), sizeof(innerSize));
         out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
     }
+
 }
 
 void ImageData::load(std::ifstream& in) {
+
     size_t pathLength;
     in.read(reinterpret_cast<char*>(&pathLength), sizeof(pathLength));
     imagePath.resize(pathLength);
     in.read(&imagePath[0], pathLength);
     folders.load(in);
-    metaData.load(in);
+
+    // metaData.load(in);
 
     size_t cropSizesSize;
     in.read(reinterpret_cast<char*>(&cropSizesSize), sizeof(cropSizesSize));
     cropSizes->resize(cropSizesSize);
-    for (auto& cropSize : *cropSizes) {
-        size_t innerSize;
-        in.read(reinterpret_cast<char*>(&innerSize), sizeof(innerSize));
-        cropSize.resize(innerSize);
-        in.read(reinterpret_cast<char*>(cropSize.data()), innerSize * sizeof(QPoint));
+    if (cropSizes->size() <= 0){
+
+        for (auto& cropSize : *cropSizes) {
+
+            size_t innerSize;
+            in.read(reinterpret_cast<char*>(&innerSize), sizeof(innerSize));
+            cropSize.resize(innerSize);
+            in.read(reinterpret_cast<char*>(cropSize.data()), innerSize * sizeof(QPoint));
+        }
     }
+
 }

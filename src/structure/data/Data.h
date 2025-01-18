@@ -43,7 +43,6 @@ public:
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
     // TODO gerrer pour le mettre a false lors de modification et puis true si il ny a pas de modification / un Ctrl + Z
     bool saved = false;
-    bool loadedMetaData = false;
 
 
     ThreadPool threadPool = ThreadPool(std::thread::hardware_concurrency() / 2);

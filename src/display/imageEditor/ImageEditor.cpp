@@ -266,6 +266,7 @@ void ImageEditor::updatePreview() {
     for (int i = PREVIEW_NBR; i > 0; --i) {
 
         if (currentImageNumber - i >= 0) {
+            imagesData->getImageData(currentImageNumber - i)->loadData();
             imagePaths.push_back(imagesData->getImageData(currentImageNumber - i)->getImagePath());
             under += 1;
         }
@@ -277,7 +278,9 @@ void ImageEditor::updatePreview() {
 
 
         if (currentImageNumber + i <= totalImages - 1) {
+            imagesData->getImageData(currentImageNumber + i)->loadData();
             imagePaths.push_back(imagesData->getImageData(currentImageNumber + i)->getImagePath());
+
         }
     }
 
@@ -826,13 +829,6 @@ ClickableLabel* ImageEditor::createImageEditExif() {
         if (exifEditor) {
             exifEditor = false;
         } else {
-            if (!data->loadedMetaData){
-
-                for (auto& imageData : *data->imagesData.get()) {
-                    imageData.loadData();
-                }
-                data->loadedMetaData = true;
-            }
 
             exifEditor = true;
             for (int i = 0; i < infoLayout->count(); ++i) {
@@ -900,7 +896,6 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
     }
 
     ClickableLabel* previewButton = new ClickableLabel(data, QString::fromStdString(imagePath), this, previewSize, false, 128, false);
-
 
     connect(previewButton, &ClickableLabel::clicked, [this, imageNbr]() {
         data->imagesData.setImageNumber(imageNbr);

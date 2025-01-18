@@ -10,6 +10,9 @@
 class MetaData
 {
 public:
+
+    bool dataLoaded = false;
+
     Exiv2::ExifData exifMetaData; // JPEG, TIFF, mais pas PNG
     Exiv2::XmpData xmpMetaData;
     Exiv2::IptcData iptcMetaData;
