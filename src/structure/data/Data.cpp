@@ -776,3 +776,17 @@ void Data::sortImagesData(){
     std::sort(imagesData.get()->begin(), imagesData.get()->end(), [](const ImageData& a, const ImageData& b)
         { return a.getMetaData().getExifData()["Exif.Image.DateTime"].toString() > b.getMetaData().getExifData()["Exif.Image.DateTime"].toString(); });
 }
+
+
+// void addImagesFromFolder(Data* data, QWidget* parent){
+
+//     QProgressDialog progressDialog(parent);
+//     progressDialog.setLabelText("Loading images...");
+//     progressDialog.setCancelButtonText("Cancel");
+//     progressDialog.setRange(0, 100);
+//     // data->imagesData = addSelectedFilesToFolders(data, parent, progressDialog);
+
+//     data->sortImagesData();
+
+//     data->saveData();
+// }

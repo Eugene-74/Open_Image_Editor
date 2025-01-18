@@ -221,9 +221,10 @@ void ImageEditor::reload() {
     }
 
     if (imagesData->get()->size() <= 0) {
-        showInformationMessage(this, "no image data loaded");
-        data->imagesData = addSelectedFilesToFolders(data, this);
-        data->saveData();
+        // showInformationMessage(this, "no image data loaded");
+        // data->imagesData = addSelectedFilesToFolders(data, this);
+        // data->saveData();
+        addImagesFromFolder(data, this);
         return;
     }
 }

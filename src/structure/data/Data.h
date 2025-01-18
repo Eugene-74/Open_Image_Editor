@@ -7,13 +7,18 @@
 #include <QSize>
 #include <QResource>
 #include <QtConcurrent/QtConcurrent>
+#include <QProgressDialog>
+
 
 #include <iostream>
 #include <fstream>
 #include "../../display/box/Box.h"
+#include "../../display/loadImage/LoadImage.h"
+
 #include "../../structure/folders/Folders.h"
 #include "../../structure/sizes/Sizes.h"
 #include "../../structure/threadPool/ThreadPool.h"
+
 
 #include <QFileDialog>
 
@@ -49,6 +54,7 @@ public:
     std::map<QString, std::future<void>> futures;
 
     Data() : imageCache(new std::map<std::string, QImageAndPath>()) {}
+
 
     void preDeleteImage(int imageNbr);
     void unPreDeleteImage(int imageNbr);
@@ -113,4 +119,7 @@ private:
     Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
     void copyImages(Folders* currentFolders, std::string path, bool dateInName);
     void copyTo(std::string filePath, std::string destinationPath, bool dateInName) const;
-};;
+};
+
+
+// void addImagesFromFolder(Data* data, QWidget* parent);

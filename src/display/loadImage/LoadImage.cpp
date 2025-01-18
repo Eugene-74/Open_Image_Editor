@@ -1,5 +1,8 @@
 #include "LoadImage.h"
 
+
+
+
 // Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
 ImagesData addSelectedFilesToFolders(Data* data, QWidget* parent){
     ImagesData imagesData = ImagesData(std::vector<ImageData>{});
@@ -11,7 +14,7 @@ ImagesData addSelectedFilesToFolders(Data* data, QWidget* parent){
     selectedFiles = fileSelector.openDirectoryDialog();
 
     for (const QString& fileName : selectedFiles){
-        startLoadingImagesFromFolder(data, fileName.toStdString(), &imagesData);
+        // startLoadingImagesFromFolder(parent, data, fileName.toStdString(), &imagesData, progressDialog);
     }
 
     return imagesData;
@@ -34,9 +37,8 @@ std::string getDirectoryFromUser(QWidget* parent)
     return "";
 }
 
-#include <QProgressDialog>
 // Charges dans un imagesData toutes les données des images dans un dossier et ses sous dossier
-void startLoadingImagesFromFolder(Data* data, const std::string imagePaths, ImagesData* imagesData)
+void startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string imagePaths, ImagesData* imagesData, QProgressDialog& progressDialog)
 {
 
     int nbrImage = 0;
@@ -45,15 +47,40 @@ void startLoadingImagesFromFolder(Data* data, const std::string imagePaths, Imag
 
     countImagesFromFolder(imagePaths, nbrImage);
 
+
     data->rootFolders.print();
 
     std::cerr << "nombre d'image à charger : " << nbrImage << std::endl;
 
-    loadImagesFromFolder(imagePaths, imagePaths, imagesData, nbrImage);
+    progressDialog.setLabelText("Loading images...");
+    progressDialog.setCancelButtonText("Cancel");
+    progressDialog.setRange(0, nbrImage);
+    progressDialog.setParent(parent);
+    progressDialog.setWindowModality(Qt::WindowModal);
+    progressDialog.show();
 
-    loadImagesMetaData(imagesData);
+    int loaded = 0;
+    if (!loadImagesFromFolder(imagePaths, imagePaths, imagesData, loaded, progressDialog)){
+        std::cerr << "loadImagesFromFolder failed" << std::endl;
+        return;
+    }
 
-    loadImagesMetaDataOfGoogle(imagesData);
+
+    progressDialog.setValue(0);
+    progressDialog.show();
+    progressDialog.setLabelText("Loading images metaData...");
+    if (!loadImagesMetaData(imagesData, progressDialog)){
+        return;
+    }
+
+
+    progressDialog.setValue(0);
+    progressDialog.show();
+    progressDialog.setLabelText("Loading images googleData...");
+    if (!loadImagesMetaDataOfGoogle(imagesData, progressDialog)){
+        return;
+    }
+
 }
 
 std::string readFile(const std::string& filePath)
@@ -133,13 +160,13 @@ void countImagesFromFolder(const std::string path, int& nbrImage)
 }
 
 // Charges concrètement dans un imagesData toutes les données des images dans un dossier et ses sous dossier
-void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage){
-    for (const auto& entry : fs::directory_iterator(path))
-    {
-        if (fs::is_regular_file(entry.status()))
-        {
-            if (isImage(entry.path().string()))
-            {
+bool loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage, QProgressDialog& progressDialog){
+    for (const auto& entry : fs::directory_iterator(path)){
+        if (progressDialog.wasCanceled()){
+            return false;
+        }
+        if (fs::is_regular_file(entry.status())){
+            if (isImage(entry.path().string())){
 
                 fs::path relativePath = fs::relative(entry.path(), fs::path(initialPath).parent_path());
 
@@ -154,37 +181,44 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
 
                 ImageData imageD(entry.path().string(), folders);
                 imagesData->addImage(imageD);
-
-                nbrImage -= 1;
-                std::cerr << "Image restante : " << nbrImage << std::endl;
+                nbrImage += 1;
+                progressDialog.setValue(nbrImage);
+                QApplication::processEvents();
             }
         } else if (fs::is_directory(entry.status())){
-            loadImagesFromFolder(initialPath, entry.path().string(), imagesData, nbrImage);
+            loadImagesFromFolder(initialPath, entry.path().string(), imagesData, nbrImage, progressDialog);
         }
     }
+    return true;
 }
 
-void loadImagesMetaData(ImagesData* imagesData)
-{
+bool loadImagesMetaData(ImagesData* imagesData, QProgressDialog& progressDialog){
+    int currentImage = 0;
     for (int i = 0; i < imagesData->get()->size(); ++i){
+        if (progressDialog.wasCanceled()){
+            return false;
+        }
         imagesData->getImageData(i)->loadData();
+        currentImage += 1;
+        progressDialog.setValue(currentImage);
+        QApplication::processEvents();
     }
+    return true;
 }
 
-void loadImagesMetaDataOfGoogle(ImagesData* imagesData)
-{
-    for (int i = 0; i < imagesData->get()->size(); ++i)
-    {
+bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog){
+    for (int i = 0; i < imagesData->get()->size(); ++i){
+        if (progressDialog.wasCanceled()){
+            return false;
+        }
         ImageData* imageData = imagesData->getImageData(i);
         std::string jsonFilePath = imageData->getImagePath() + ".json";
 
-        if (fs::exists(jsonFilePath))
-        {
+        if (fs::exists(jsonFilePath)){
             std::cerr << "json found" << std::endl;
             std::map<std::string, std::string> jsonMap = openJsonFile(jsonFilePath);
 
-            for (const auto& [key, value] : jsonMap)
-            {
+            for (const auto& [key, value] : jsonMap){
                 std::cerr << key << " : " << value << std::endl;
                 if (!key.empty() && !value.empty())
                 {
@@ -198,7 +232,10 @@ void loadImagesMetaDataOfGoogle(ImagesData* imagesData)
         } else{
             // displayExifData(imageData->metaData.exifMetaData);
         }
+        progressDialog.setValue(i);
+        QApplication::processEvents();
     }
+    return true;
 }
 
 std::string mapJsonKeyToExifKey(const std::string& jsonKey)

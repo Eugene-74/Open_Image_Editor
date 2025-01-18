@@ -15,28 +15,25 @@ MainWindow::MainWindow(Data* dat, QWidget* parent) : QMainWindow(parent), data(d
 
     switchLayout = new QHBoxLayout();
 
-    ClickableLabel* switchToBooth = new ClickableLabel(data, ":/before.png", this, QSize(50, 50), false, 0, true);
-    ClickableLabel* switchToEditor = new ClickableLabel(data, ":/next.png", this, QSize(50, 50), false, 0, true);
-    ClickableLabel* addImages = new ClickableLabel(data, ":/next.png", this, QSize(50, 50), false, 0, true);
+    ClickableLabel* switchToBooth = new ClickableLabel(data, ":/imageBooth.png", this, QSize(300, 300), false, 0, true);
+    ClickableLabel* switchToEditor = new ClickableLabel(data, ":/imageEditor.png", this, QSize(300, 300), false, 0, true);
+    ClickableLabel* addImages = new ClickableLabel(data, ":/addImages.png", this, QSize(300, 300), false, 0, true);
 
     connect(switchToBooth, &ClickableLabel::clicked, this, [this](){
         if (data->imagesData.get()->size() <= 0){
-            data->imagesData = addSelectedFilesToFolders(data, this);
-            data->sortImagesData();
-            data->saveData();
+            // addImagesFromFolder(data, this);
+
         }
         if (data->imagesData.get()->size() > 0){
-            // data->imagesData.setImageNumber(0);
-
             switchToImageBooth();
         }
         });
 
     connect(switchToEditor, &ClickableLabel::clicked, this, [this](){
         if (data->imagesData.get()->size() <= 0){
-            data->imagesData = addSelectedFilesToFolders(data, this);
-            data->sortImagesData();
-            data->saveData();
+            // data->addImagesFromFolder(this);
+            // addImagesFromFolder(data, this);
+
         }
         if (data->imagesData.get()->size() > 0){
             // data->imagesData.setImageNumber(0);
@@ -46,10 +43,10 @@ MainWindow::MainWindow(Data* dat, QWidget* parent) : QMainWindow(parent), data(d
         });
 
     connect(addImages, &ClickableLabel::clicked, this, [this]() {
-        data->imagesData = addSelectedFilesToFolders(data, this);
-        data->sortImagesData();
+        // addImagesFromFolder(data, this);
+        // data->addImagesFromFolder(this);
 
-        data->saveData();});
+        });
 
     switchLayout->addWidget(switchToBooth);
     switchLayout->addWidget(switchToEditor);

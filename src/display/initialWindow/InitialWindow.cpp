@@ -67,6 +67,8 @@ void InitialWindow::closeEvent(QCloseEvent* event) {
 }
 
 void InitialWindow::createImageEditor(Data* data) {
+    data->imagesData.setImageNumber(0);
+
     imageEditor = new ImageEditor(data, this);
 
     layout->addWidget(imageEditor);
