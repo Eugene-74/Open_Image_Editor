@@ -197,24 +197,18 @@ void MetaData::setOrCreateExifData(std::string& imagePath)
     saveMetaData(imagePath);
 }
 
-
-
 // Fonction pour charger les métadonnées EXIF d'une image
 void MetaData::loadData(const std::string& imagePath){
     try{
         std::unique_ptr<Exiv2::Image> image;
         if (!dataLoaded){
-            dataLoaded = true;
 
 #ifdef _WIN32
             std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
             std::wstring wImagePath = converter.from_bytes(imagePath);
             image = Exiv2::ImageFactory::open(wImagePath);
-
 #else
             image = Exiv2::ImageFactory::open(imagePath);
-
-
 #endif
 
             image->readMetadata();
@@ -227,6 +221,8 @@ void MetaData::loadData(const std::string& imagePath){
             {
                 std::cerr << "Aucune métadonnée trouvée dans l'image." << std::endl;
             }
+            dataLoaded = true;
+
         }
     } catch (const Exiv2::Error& e){
         std::cerr << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what() << std::endl;

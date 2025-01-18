@@ -34,9 +34,11 @@ std::string getDirectoryFromUser(QWidget* parent)
     return "";
 }
 
+#include <QProgressDialog>
 // Charges dans un imagesData toutes les données des images dans un dossier et ses sous dossier
 void startLoadingImagesFromFolder(Data* data, const std::string imagePaths, ImagesData* imagesData)
 {
+
     int nbrImage = 0;
 
     addFilesToTree(&data->rootFolders, imagePaths);
@@ -143,14 +145,10 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
 
                 Folders folders;
                 ImageData* imageData = imagesData->getImageData(entry.path().string());
-                if (imageData != nullptr)
-                {
+                if (imageData != nullptr){
                     folders = imageData->folders;
-                } else
-                {
-                    // folders = Folders(relativePath.parent_path().string());
+                } else{
                     folders = Folders(fs::absolute(entry.path()).parent_path().string());
-                    // std::cerr << "relativePath.root_path().string() : " << fs::absolute(entry.path()).parent_path().string() << std::endl;
                 }
                 folders.files.push_back(relativePath.parent_path().filename().string());
 

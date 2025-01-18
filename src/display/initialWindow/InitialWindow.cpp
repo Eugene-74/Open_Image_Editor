@@ -69,8 +69,6 @@ void InitialWindow::closeEvent(QCloseEvent* event) {
 void InitialWindow::createImageEditor(Data* data) {
     imageEditor = new ImageEditor(data, this);
 
-    layout->removeWidget(imageBooth);
-
     layout->addWidget(imageEditor);
 
     imageEditor->setFocus();
@@ -95,8 +93,6 @@ void InitialWindow::createImageBooth(Data* data) {
 void InitialWindow::createMainWindow(Data* data) {
     std::cerr << "createMainWindow" << std::endl;
     mainWindow = new MainWindow(data, this);
-
-
 
     layout->addWidget(mainWindow);
 
