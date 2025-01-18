@@ -768,8 +768,11 @@ void Data::clearActions()
     lastActions.clear();
 }
 
-void Data::sortImagesData()
-{
+void Data::sortImagesData(){
+    // Check that all the data are loaded before sorting
+    for (auto& imageData : *imagesData.get()) {
+        imageData.loadData();
+    }
     std::sort(imagesData.get()->begin(), imagesData.get()->end(), [](const ImageData& a, const ImageData& b)
         { return a.getMetaData().getExifData()["Exif.Image.DateTime"].toString() > b.getMetaData().getExifData()["Exif.Image.DateTime"].toString(); });
 }

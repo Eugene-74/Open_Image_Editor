@@ -17,12 +17,44 @@ MainWindow::MainWindow(Data* dat, QWidget* parent) : QMainWindow(parent), data(d
 
     ClickableLabel* switchToBooth = new ClickableLabel(data, ":/before.png", this, QSize(50, 50), false, 0, true);
     ClickableLabel* switchToEditor = new ClickableLabel(data, ":/next.png", this, QSize(50, 50), false, 0, true);
+    ClickableLabel* addImages = new ClickableLabel(data, ":/next.png", this, QSize(50, 50), false, 0, true);
 
-    connect(switchToBooth, &ClickableLabel::clicked, this, switchToImageBooth);
-    connect(switchToEditor, &ClickableLabel::clicked, this, switchToImageEditor);
+    connect(switchToBooth, &ClickableLabel::clicked, this, [this](){
+        if (data->imagesData.get()->size() <= 0){
+            data->imagesData = addSelectedFilesToFolders(data, this);
+            data->sortImagesData();
+            data->saveData();
+        }
+        if (data->imagesData.get()->size() > 0){
+            // data->imagesData.setImageNumber(0);
+
+            switchToImageBooth();
+        }
+        });
+
+    connect(switchToEditor, &ClickableLabel::clicked, this, [this](){
+        if (data->imagesData.get()->size() <= 0){
+            data->imagesData = addSelectedFilesToFolders(data, this);
+            data->sortImagesData();
+            data->saveData();
+        }
+        if (data->imagesData.get()->size() > 0){
+            // data->imagesData.setImageNumber(0);
+
+            switchToImageEditor();
+        }
+        });
+
+    connect(addImages, &ClickableLabel::clicked, this, [this]() {
+        data->imagesData = addSelectedFilesToFolders(data, this);
+        data->sortImagesData();
+
+        data->saveData();});
 
     switchLayout->addWidget(switchToBooth);
     switchLayout->addWidget(switchToEditor);
+    switchLayout->addWidget(addImages);
+
     switchLayout->setAlignment(Qt::AlignCenter);
 
     mainLayout->addLayout(switchLayout);

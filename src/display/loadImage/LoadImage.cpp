@@ -1,19 +1,16 @@
 #include "LoadImage.h"
 
 // Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
-ImagesData addSelectedFilesToFolders(Data* data, QWidget* parent)
-{
-    // Data data;
+ImagesData addSelectedFilesToFolders(Data* data, QWidget* parent){
     ImagesData imagesData = ImagesData(std::vector<ImageData>{});
-    ;
+
     fileSelector fileSelector;
 
     QStringList selectedFiles;
 
     selectedFiles = fileSelector.openDirectoryDialog();
 
-    for (const QString& fileName : selectedFiles)
-    {
+    for (const QString& fileName : selectedFiles){
         startLoadingImagesFromFolder(data, fileName.toStdString(), &imagesData);
     }
 
@@ -134,8 +131,7 @@ void countImagesFromFolder(const std::string path, int& nbrImage)
 }
 
 // Charges concrètement dans un imagesData toutes les données des images dans un dossier et ses sous dossier
-void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage)
-{
+void loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage){
     for (const auto& entry : fs::directory_iterator(path))
     {
         if (fs::is_regular_file(entry.status()))
@@ -164,8 +160,7 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
                 nbrImage -= 1;
                 std::cerr << "Image restante : " << nbrImage << std::endl;
             }
-        } else if (fs::is_directory(entry.status()))
-        {
+        } else if (fs::is_directory(entry.status())){
             loadImagesFromFolder(initialPath, entry.path().string(), imagesData, nbrImage);
         }
     }
@@ -173,8 +168,7 @@ void loadImagesFromFolder(const std::string initialPath, const std::string path,
 
 void loadImagesMetaData(ImagesData* imagesData)
 {
-    for (int i = 0; i < imagesData->get()->size(); ++i)
-    {
+    for (int i = 0; i < imagesData->get()->size(); ++i){
         imagesData->getImageData(i)->loadData();
     }
 }

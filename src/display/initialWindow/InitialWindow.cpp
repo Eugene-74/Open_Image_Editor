@@ -34,18 +34,6 @@ InitialWindow::InitialWindow() {
     setWindowTitle("EasyImageEditor : Initial Window");
 
 
-    while (data->imagesData.get()->size() <= 0) {
-        std::cerr << "No images loaded" << std::endl;
-        // demander un fichier a l'utilisateur si aucune images n'est chargé
-        data->imagesData = addSelectedFilesToFolders(data, this);
-        data->sortImagesData();
-
-        data->saveData();
-
-    }
-    data->imagesData.setImageNumber(0);
-
-
     QVBoxLayout* windowLayout = new QVBoxLayout();
 
     centralWidget = new QWidget(this);
@@ -65,10 +53,7 @@ InitialWindow::InitialWindow() {
 
     windowLayout->addLayout(linkLayout);
 
-
     createMainWindow(data);
-
-
 }
 
 void InitialWindow::closeEvent(QCloseEvent* event) {
@@ -108,6 +93,7 @@ void InitialWindow::createImageBooth(Data* data) {
 
 
 void InitialWindow::createMainWindow(Data* data) {
+    std::cerr << "createMainWindow" << std::endl;
     mainWindow = new MainWindow(data, this);
 
 
