@@ -23,25 +23,29 @@ copy ..\build\%EXECUTABLE% .
 windeployqt6.exe %EXECUTABLE%
 
 
-
-@REM C:\mingw-bundledlls\mingw-bundledlls C:\Users\eugen\Documents\MesDocuments\git\Open_Image_Editor\build\export\%EXECUTABLE% > dependencies.txt
-
-@REM :copy_dependencies
-@REM for /f "tokens=*" %%i in ('type dependencies.txt') do (
-@REM     echo Copying %%i
-@REM     xcopy "%%i" .
-    @REM C:\mingw-bundledlls\mingw-bundledlls %%i > temp_dependencies.txt
-    @REM for /f "tokens=*" %%j in (temp_dependencies.txt) do (
-    @REM     if not exist "%%j" (
-    @REM         echo Copying sub-dependency %%j
-    @REM         xcopy "%%j" .
-    @REM     )
-    @REM )
-@REM )
-@REM exit /b
-
-@REM call :copy_dependencies
-
+@REM TODO modifier pour pas copier tout les dll mais juste les bons (mais comment les trouver XD)
 xcopy C:\msys64\mingw64\bin\*.dll .
+
+C:\mingw-bundledlls\mingw-bundledlls C:\Users\eugen\Documents\MesDocuments\git\Open_Image_Editor\build\export\%EXECUTABLE% > dependencies.txt
+
+:copy_dependencies
+for /f "tokens=*" %%i in ('type dependencies.txt') do (
+    echo Copying %%i
+    xcopy "%%i" .
+    C:\mingw-bundledlls\mingw-bundledlls %%i > temp_dependencies.txt
+    for /f "tokens=*" %%j in (temp_dependencies.txt) do (
+        if not exist "%%j" (
+            echo Copying sub-dependency %%j
+            xcopy "%%j" .
+        )
+    )
+)
+exit /b
+
+
+call :copy_dependencies
+
+
+
 
 endlocal

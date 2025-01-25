@@ -6,7 +6,8 @@ Makefile
 
 # Répertoires de build
 build/
-
+dependencies.txt
+temp_dependencies.txt
 
 bin/
 lib/
