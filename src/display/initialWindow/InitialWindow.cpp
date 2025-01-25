@@ -10,11 +10,8 @@ InitialWindow::InitialWindow() {
     ImagesData deletedImagesData(std::vector<ImageData>{});
     data->imageCache = new std::map<std::string, QImageAndPath>();
 
-
-
     data->imagesData = imagesData;
     data->deletedImagesData = deletedImagesData;
-
 
     data->loadData();
 
@@ -65,7 +62,6 @@ void InitialWindow::closeEvent(QCloseEvent* event) {
 }
 
 void InitialWindow::createImageEditor(Data* data) {
-    data->imagesData.setImageNumber(0);
 
     imageEditor = new ImageEditor(data, this);
 

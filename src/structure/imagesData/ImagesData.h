@@ -17,7 +17,7 @@ class ImagesData
 {
 public:
     std::vector<ImageData> imagesData;
-    int imageNumber;
+    int imageNumber = 0;
 
     ImagesData() : imageNumber(0) {}
 
