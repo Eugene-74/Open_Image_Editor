@@ -766,9 +766,7 @@ void Data::clearActions()
 }
 
 void Data::sortImagesData(){
-    // TODO utilise le threadPool deja existant
-
-        // Check that all the data are loaded before sorting using the existing thread pool
+    // Check that all the data are loaded before sorting using the existing thread pool
     std::vector<std::future<void>> futures;
     for (auto& imageData : *imagesData.get()) {
         futures.push_back(threadPool.enqueue([&imageData]() {
