@@ -85,14 +85,13 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     } else {
         imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING, this, imageSize,
             false, 0, true);
-        // QTimer::singleShot(100, this, [this, imagePath, imageButton]() {
         data->loadInCacheAsync(imagePath, [this, imagePath, imageButton]() {
             done += 1;
             data->createAllThumbnail(imagePath, 512);
+
             if (IMAGE_BOOTH_IMAGE_QUALITY == 128) {
                 data->unloadFromCache(data->getThumbnailPath(imagePath, 256));
                 data->unloadFromCache(data->getThumbnailPath(imagePath, 512));
-
             } else if (IMAGE_BOOTH_IMAGE_QUALITY == 256) {
                 data->unloadFromCache(data->getThumbnailPath(imagePath, 128));
                 data->unloadFromCache(data->getThumbnailPath(imagePath, 512));
@@ -116,7 +115,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
             loadedImageNumber += 1;
             });
-        // });
     }
 
     connect(imageButton, &ClickableLabel::clicked, [this, nbr]() {

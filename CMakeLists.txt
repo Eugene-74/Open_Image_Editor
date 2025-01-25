@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.14)
 project(OpenImageEditor VERSION 1.0.0)
 
 if(WIN32)
+
+    # add_compile_options(
+    #     -Wall        # Active les warnings basiques
+    #     -Wextra      # Active les warnings supplémentaires
+    #     -Wpedantic   # Respect strict du standard C++
+    # )
+
     message(STATUS "Configuring for Windows")
     # Chemin Qt
     set(CMAKE_PREFIX_PATH "C:/msys64/mingw64")
