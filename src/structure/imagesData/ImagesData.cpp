@@ -42,10 +42,16 @@ void ImagesData::addImage(ImageData& imageD) {
         ImageData lastImageD = *it;
         imagesData.erase(it);
         imageD.addFolders(lastImageD.getFolders());
+        imageD.setCropSizes(lastImageD.getCropSizes());
 
         imagesData.push_back(imageD);
     } else {
         imagesData.push_back(imageD);
+        for (const auto& crop : imageD.getCropSizes()) {
+            for (const auto& point : crop) {
+                qDebug() << point;
+            }
+        }
     }
 }
 

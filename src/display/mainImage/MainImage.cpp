@@ -195,7 +195,7 @@ void MainImage::cropImage() {
         int orientation = data->imagesData.getCurrentImageData()->getImageOrientation();
         std::vector<QPoint> adjustedCropPoints = adjustPointsForOrientation(cropPoints, orientation, qImageReel.size());
 
-        data->imagesData.getCurrentImageData()->cropSizes->push_back(adjustedCropPoints);
+        data->imagesData.getCurrentImageData()->cropSizes.push_back(adjustedCropPoints);
 
         int nbr = data->imagesData.imageNumber;
 
@@ -205,14 +205,14 @@ void MainImage::cropImage() {
             if (saved){
                 data->saved = true;
             }
-            data->imagesData.getCurrentImageData()->cropSizes->pop_back();
+            data->imagesData.getCurrentImageData()->cropSizes.pop_back();
             data->imagesData.imageNumber = nbr;
             // TODO reload marche pas bien
             // parent->reload();
             },
             [this, nbr, adjustedCropPoints]() {
                 data->saved = false;
-                data->imagesData.getCurrentImageData()->cropSizes->push_back(adjustedCropPoints);
+                data->imagesData.getCurrentImageData()->cropSizes.push_back(adjustedCropPoints);
                 data->imagesData.imageNumber = nbr;
                 // TODO reload marche pas bien
                 // parent->reload();

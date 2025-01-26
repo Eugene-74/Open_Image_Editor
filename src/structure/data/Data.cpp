@@ -82,9 +82,9 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
         int imageId = imagesData.getImageIdByName(imagePath);
         if (imageId != -1){
             ImageData* imageData = imagesData.getImageData(imagePath);
-            if (imageData != nullptr && !imageData->cropSizes->empty()){
+            if (imageData != nullptr && !imageData->cropSizes.empty()){
 
-                std::vector<QPoint> cropPoints = imageData->cropSizes->back();
+                std::vector<QPoint> cropPoints = imageData->cropSizes.back();
                 if (cropPoints.size() == 2){
                     QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
 
@@ -646,8 +646,7 @@ void Data::saveData(){
     outFile.close();
 }
 
-void Data::loadData()
-{
+void Data::loadData(){
     std::string filePath = IMAGESDATA_SAVE_DATA_PATH;
     std::ifstream inFile(filePath, std::ios::binary);
     if (!inFile)
@@ -659,12 +658,26 @@ void Data::loadData()
     // Deserialize imagesData
     size_t imagesDataSize;
     inFile.read(reinterpret_cast<char*>(&imagesDataSize), sizeof(imagesDataSize));
-    for (size_t i = 0; i < imagesDataSize; ++i)
-    {
+    for (size_t i = 0; i < imagesDataSize; ++i){
         ImageData imageData;
         imageData.load(inFile);
-        imagesData.addImage(imageData);
+        if (!imageData.cropSizes.empty()) {
+            std::cerr << "Image 1 " << imageData.imagePath << " has crop sizes." << std::endl;
+        }
+        // Do not usea addImage because it will check for duplicates and it takes times
+        imagesData.get()->push_back(imageData);
+
+        // Check for crop sizes in each ImageData
+        for (const auto& imageData : *imagesData.get()) {
+            if (!imageData.cropSizes.empty()) {
+                std::cerr << "Image 2 " << imageData.imagePath << " has crop sizes." << std::endl;
+            } else {
+                // std::cerr << "Image " << imageData.imagePath << " does not have crop sizes." << std::endl;
+            }
+        }
     }
+
+
 
     // Deserialize deletedImagesData
     size_t deletedImagesDataSize;

@@ -5,6 +5,7 @@ ImageData& ImageData::operator=(const ImageData& other) {
         imagePath = other.imagePath;
         folders = other.folders;
         metaData = other.metaData;
+        cropSizes = other.cropSizes;
     }
     return *this;
 }
@@ -145,14 +146,9 @@ void ImageData::save(std::ofstream& out) const {
     out.write(imagePath.c_str(), pathLength);
     folders.save(out);
 
-
-    // metaData.save(out);
-
-    size_t cropSizesSize = cropSizes->size();
-
+    size_t cropSizesSize = cropSizes.size();
     out.write(reinterpret_cast<const char*>(&cropSizesSize), sizeof(cropSizesSize));
-
-    for (const auto& cropSize : *cropSizes) {
+    for (const auto& cropSize : cropSizes) {
         size_t innerSize = cropSize.size();
         out.write(reinterpret_cast<const char*>(&innerSize), sizeof(innerSize));
         out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
@@ -168,20 +164,38 @@ void ImageData::load(std::ifstream& in) {
     in.read(&imagePath[0], pathLength);
     folders.load(in);
 
-    // metaData.load(in);
-
     size_t cropSizesSize;
     in.read(reinterpret_cast<char*>(&cropSizesSize), sizeof(cropSizesSize));
-    cropSizes->resize(cropSizesSize);
-    if (cropSizes->size() <= 0){
+    if (cropSizesSize >= 1){
+        qDebug() << "imagePath:" << imagePath;
 
-        for (auto& cropSize : *cropSizes) {
+        qDebug() << "cropSizesSize:" << cropSizesSize;
 
+        cropSizes.resize(cropSizesSize);
+        for (size_t i = 0; i < cropSizesSize; ++i) {
             size_t innerSize;
             in.read(reinterpret_cast<char*>(&innerSize), sizeof(innerSize));
-            cropSize.resize(innerSize);
-            in.read(reinterpret_cast<char*>(cropSize.data()), innerSize * sizeof(QPoint));
+            qDebug() << "innerSize for cropSize" << i << ":" << innerSize;
+
+            cropSizes[i].resize(innerSize);
+            in.read(reinterpret_cast<char*>(cropSizes[i].data()), innerSize * sizeof(QPoint));
+
+            // Debug output for the points
+            for (size_t j = 0; j < innerSize; ++j) {
+                qDebug() << "Point" << j << ":" << cropSizes[i][j];
+            }
         }
     }
 
+}
+
+
+std::vector<std::vector<QPoint>> ImageData::getCropSizes() const {
+    return cropSizes;
+}
+
+
+
+void ImageData::setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes) {
+    this->cropSizes = cropSizes;
 }

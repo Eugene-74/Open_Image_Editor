@@ -15,17 +15,18 @@ public:
     std::string imagePath;
     Folders folders;
     MetaData metaData;
-    std::vector<std::vector<QPoint>>* cropSizes = new std::vector<std::vector<QPoint>>();
+    std::vector<std::vector<QPoint>> cropSizes;
 
-    ImageData() : imagePath(""), folders(Folders()), metaData(MetaData()) {}
+    ImageData() : imagePath(""), folders(Folders()), metaData(MetaData()), cropSizes() {}
 
     ImageData(const ImageData& other)
-        : imagePath(other.imagePath), folders(other.folders), metaData(other.metaData) {
+        : imagePath(other.imagePath), folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes) {
     }
 
     ImageData(std::string a, const Folders c) : imagePath(a), folders(c) {}
 
     // Opérateur d'affectation
+    // ImageData& operator=(const ImageData& other);
     ImageData& operator=(const ImageData& other);
 
     void print() const;
@@ -77,6 +78,10 @@ public:
     void setOrCreateExifData();
 
     void handleExiv2Error(const Exiv2::Error& e);
+
+    std::vector<std::vector<QPoint>> getCropSizes() const;
+
+    void setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes);
 
 };
 
