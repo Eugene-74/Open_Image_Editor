@@ -496,8 +496,19 @@ void Data::copyTo(std::string filePath, std::string destinationPath,
                         destinationFile = destinationPath + "/" + "no_date" + "_" + file;
                     }
                 }
-                fs::copy(imageData.imagePath, destinationFile,
-                    fs::copy_options::overwrite_existing);
+                // fs::copy(imageData.imagePath, destinationFile,
+                //     fs::copy_options::overwrite_existing);
+                QImage image(QString::fromStdString(imageData.imagePath));
+                if (!image.isNull()) {
+                    if (!imageData.cropSizes.empty()) {
+                        std::vector<QPoint> cropPoints = imageData.cropSizes.back();
+                        if (cropPoints.size() == 2) {
+                            QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
+                            image = image.copy(cropRect);
+                        }
+                    }
+                    image.save(QString::fromStdString(destinationFile));
+                }
             }
         }
     }

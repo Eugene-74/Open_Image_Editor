@@ -1192,6 +1192,7 @@ void ImageEditor::deleteImage() {
 
     bool saved = data->saved;
 
+
     if (data->isDeleted(nbr)) {
         data->unPreDeleteImage(nbr);
 
@@ -1394,7 +1395,7 @@ void ImageEditor::rotateLeft() {
                 rotateLeftPng();
             });
     }
-
+    data->saved = false;
 }
 void ImageEditor::rotateRight() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
@@ -1434,6 +1435,8 @@ void ImageEditor::rotateRight() {
                 rotateRightPng();
             });
     }
+    data->saved = false;
+
 }
 
 
@@ -1502,6 +1505,8 @@ void ImageEditor::mirrorUpDown() {
                 mirrorUpDownPng();
             });
     }
+    data->saved = false;
+
 }
 
 void ImageEditor::mirrorLeftRight() {
@@ -1542,8 +1547,8 @@ void ImageEditor::mirrorLeftRight() {
                 reload();
                 mirrorLeftRightPng();
             });
-
     }
+    data->saved = false;
 }
 
 void ImageEditor::mirrorUpDownJpg() {
