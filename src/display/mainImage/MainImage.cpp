@@ -1,7 +1,7 @@
 #include "MainImage.h"
 
-MainImage::MainImage(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square, bool force)
-    : QLabel(parent), data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), thumbnail(thumbnail), square(square), force(force) {
+MainImage::MainImage(Data* data, const QString& imagePath, ImageEditor* parent, QSize size, bool setSize, int thumbnail, bool square, bool force)
+    : parent(parent), data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), thumbnail(thumbnail), square(square), force(force) {
 
     qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, true, force);
 
@@ -199,17 +199,23 @@ void MainImage::cropImage() {
 
         int nbr = data->imagesData.imageNumber;
 
-        data->addAction([this, nbr]() {
+        bool saved = data->saved;
+
+        data->addAction([this, nbr, saved]() {
+            if (saved){
+                data->saved = true;
+            }
             data->imagesData.getCurrentImageData()->cropSizes->pop_back();
             data->imagesData.imageNumber = nbr;
-            // TODO reussir a realod
-            // reload();
+            // TODO reload marche pas bien
+            // parent->reload();
             },
             [this, nbr, adjustedCropPoints]() {
+                data->saved = false;
                 data->imagesData.getCurrentImageData()->cropSizes->push_back(adjustedCropPoints);
                 data->imagesData.imageNumber = nbr;
-                // TODO reussir a realod
-                // reload();
+                // TODO reload marche pas bien
+                // parent->reload();
             });
 
         imageCropted();

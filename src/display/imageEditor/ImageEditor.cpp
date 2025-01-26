@@ -1,9 +1,5 @@
 #include "ImageEditor.h"
 
-
-
-
-
 ImageEditor::ImageEditor(Data* dat, QWidget* parent) : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_EDITOR_WINDOW_NAME);
 
@@ -111,7 +107,6 @@ void ImageEditor::previousImage(int nbr) {
 
 void ImageEditor::rotateLeftJpg() {
 
-
     ImagesData* imagesData = &data->imagesData;
 
     ImageData* imageData = imagesData->getCurrentImageData();
@@ -153,8 +148,6 @@ void ImageEditor::rotateLeftJpg() {
     imageData->saveMetaData();
 
     reload();
-
-
 }
 void ImageEditor::rotateRightJpg() {
 
@@ -800,9 +793,9 @@ ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
 
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageMirrorLeftRightNew->setDisabled(true);
-        // std::cerr << "disabled" << std::endl;
+
     } else {
-        // std::cerr << "enabled" << std::endl;
+
         if (!imageMirrorLeftRightNew->isEnabled())
             imageMirrorLeftRightNew->setEnabled(true);
     }
@@ -849,11 +842,7 @@ ClickableLabel* ImageEditor::createImageBefore() {
         return nullptr;
     }
 
-
-
-
     ClickableLabel* buttonImageBeforeNew = new ClickableLabel(data, ":/before.png", this, actionSize);
-    // ClickableLabel* buttonImageBeforeNew = new ClickableLabel(":/ressources/before.png", this, actionSize);
 
     buttonImageBeforeNew->setFixedSize(actionSize);
 
@@ -900,7 +889,6 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
         reload();
         });
 
-
     return previewButton;
 }
 
@@ -916,7 +904,6 @@ MainImage* ImageEditor::createImageLabel() {
         if (!bigImage){
             openBigImageLabel();
         }
-
         });
 
     connect(imageLabelNew, &MainImage::imageCropted, [this]() {
@@ -1138,7 +1125,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
 
 
 void ImageEditor::wheelEvent(QWheelEvent* event) {
-    if (bigImage || exifEditor) {
+    if (bigImage) {
         return;
     }
     int numDegrees = event->angleDelta().y() / 8;
@@ -1169,6 +1156,7 @@ void ImageEditor::saveImage() {
     }
     data->saveData();
 
+    data->saved = true;
 
     data->imagesData.setImageNumber(id);
     reload();
@@ -1185,8 +1173,6 @@ void ImageEditor::exportImage() {
     std::string exportPath = result["Export path"];
     bool dateInName = (result["Date in image Name"] == "true");
 
-    // getDirectoryFromUser(this);
-
     if (exportPath == "") {
         std::cerr << "No export path selected" << std::endl;
         return;
@@ -1199,17 +1185,27 @@ void ImageEditor::exportImage() {
 
 
 void ImageEditor::deleteImage() {
+
+
+
     int nbr = data->imagesData.getImageNumber();
+
+    bool saved = data->saved;
 
     if (data->isDeleted(nbr)) {
         data->unPreDeleteImage(nbr);
 
-        data->addAction([this, nbr]() {
+        data->addAction([this, nbr, saved]() {
+            if (saved){
+                data->saved = true;
+            }
             data->preDeleteImage(nbr);
             data->imagesData.imageNumber = nbr;
             reload();
             },
             [this, nbr]() {
+                data->saved = false;
+
                 data->unPreDeleteImage(nbr);
                 data->imagesData.imageNumber = nbr;
                 reload();
@@ -1218,18 +1214,25 @@ void ImageEditor::deleteImage() {
         updateButtons();
     } else {
         data->preDeleteImage(nbr);
-        data->addAction([this, nbr]() {
+        data->addAction([this, nbr, saved]() {
+            if (saved){
+                data->saved = true;
+            }
+
             data->unPreDeleteImage(nbr);
             data->imagesData.imageNumber = nbr;
             reload();
             },
             [this, nbr]() {
+                data->saved = false;
+
                 data->preDeleteImage(nbr);
                 data->imagesData.imageNumber = nbr;
                 reload();
             });
         updateButtons();
     }
+    data->saved = false;
 }
 
 
@@ -1356,26 +1359,36 @@ void ImageEditor::rotateLeft() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
     int nbr = data->imagesData.imageNumber;
 
+    bool saved = data->saved;
+
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         rotateLeftJpg();
-        data->addAction([this, nbr]() {
+        data->addAction([this, nbr, saved]() {
+            if (saved){
+                data->saved = true;
+            }
             data->imagesData.imageNumber = nbr;
             reload();
             rotateRightJpg();
             },
             [this, nbr]() {
+                data->saved = false;
                 data->imagesData.imageNumber = nbr;
                 reload();
                 rotateLeftJpg();
             });
     } else if (extension == ".png" || extension == ".PNG") {
         rotateLeftPng();
-        data->addAction([this, nbr]() {
+        data->addAction([this, nbr, saved]() {
+            if (saved){
+                data->saved = true;
+            }
             data->imagesData.imageNumber = nbr;
             reload();
             rotateRightPng();
             },
             [this, nbr]() {
+                data->saved = false;
                 data->imagesData.imageNumber = nbr;
                 reload();
                 rotateLeftPng();
@@ -1386,27 +1399,36 @@ void ImageEditor::rotateLeft() {
 void ImageEditor::rotateRight() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
     int nbr = data->imagesData.imageNumber;
+    bool saved = data->saved;
 
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         rotateRightJpg();
-        data->addAction([this, nbr]() {
+        data->addAction([this, nbr, saved]() {
+            if (saved){
+                data->saved = true;
+            }
             data->imagesData.imageNumber = nbr;
             reload();
             rotateLeftJpg();
             },
             [this, nbr]() {
+                data->saved = false;
                 data->imagesData.imageNumber = nbr;
                 reload();
                 rotateRightJpg();
             });
     } else if (extension == ".png" || extension == ".PNG") {
         rotateRightPng();
-        data->addAction([this, nbr]() {
+        data->addAction([this, nbr, saved]() {
+            if (saved){
+                data->saved = true;
+            }
             data->imagesData.imageNumber = nbr;
             reload();
             rotateLeftJpg();
             },
             [this, nbr]() {
+                data->saved = false;
                 data->imagesData.imageNumber = nbr;
                 reload();
                 rotateRightPng();
@@ -1445,27 +1467,36 @@ void ImageEditor::rotateRightPng() {
 void ImageEditor::mirrorUpDown() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
     int nbr = data->imagesData.imageNumber;
+    bool saved = data->saved;
 
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         mirrorUpDownJpg();
-        data->addAction([this, nbr]() {
+        data->addAction([this, nbr, saved]() {
+            if (saved){
+                data->saved = true;
+            }
             data->imagesData.imageNumber = nbr;
             reload();
             mirrorUpDownJpg();
             },
             [this, nbr]() {
+                data->saved = false;
                 data->imagesData.imageNumber = nbr;
                 reload();
                 mirrorUpDownJpg();
             });
     } else if (extension == ".png" || extension == ".PNG") {
         mirrorUpDownPng();
-        data->addAction([this, nbr]() {
+        data->addAction([this, nbr, saved]() {
+            if (saved){
+                data->saved = true;
+            }
             data->imagesData.imageNumber = nbr;
             reload();
             mirrorUpDownPng();
             },
             [this, nbr]() {
+                data->saved = false;
                 data->imagesData.imageNumber = nbr;
                 reload();
                 mirrorUpDownPng();
@@ -1476,27 +1507,37 @@ void ImageEditor::mirrorUpDown() {
 void ImageEditor::mirrorLeftRight() {
     std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
     int nbr = data->imagesData.imageNumber;
+    bool saved = data->saved;
+
 
     if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
         mirrorLeftRightJpg();
-        data->addAction([this, nbr]() {
+        data->addAction([this, nbr, saved]() {
+            if (saved){
+                data->saved = true;
+            }
             data->imagesData.imageNumber = nbr;
             reload();
             mirrorLeftRightJpg();
             },
             [this, nbr]() {
+                data->saved = false;
                 data->imagesData.imageNumber = nbr;
                 reload();
                 mirrorLeftRightJpg();
             });
     } else if (extension == ".png" || extension == ".PNG") {
         mirrorLeftRightPng();
-        data->addAction([this, nbr]() {
+        data->addAction([this, nbr, saved]() {
+            if (saved){
+                data->saved = true;
+            }
             data->imagesData.imageNumber = nbr;
             reload();
             mirrorLeftRightPng();
             },
             [this, nbr]() {
+                data->saved = false;
                 data->imagesData.imageNumber = nbr;
                 reload();
                 mirrorLeftRightPng();

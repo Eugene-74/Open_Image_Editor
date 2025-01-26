@@ -217,10 +217,6 @@ void MetaData::loadData(const std::string& imagePath){
             xmpMetaData = image->xmpData();
             iptcMetaData = image->iptcData();
 
-            if (exifMetaData.empty() && xmpMetaData.empty() && iptcMetaData.empty()){
-                // TODO mettre ou pas ?
-                // std::cerr << "Aucune métadonnée trouvée dans l'image." << std::endl;
-            }
             dataLoaded = true;
 
         }
@@ -443,10 +439,7 @@ void MetaData::load(std::ifstream& in){
             datum.setValue(value);
             xmpMetaData.add(datum);
         } catch (const std::exception& e) {
-            // TODO remettre
-
             std::cerr << "Erreur lors de la lecture des métadonnées XMP : " << e.what() << std::endl;
-            // Continue to the next entry
         }
     }
 
@@ -494,9 +487,7 @@ void MetaData::load(std::ifstream& in){
             datum.setValue(value);
             iptcMetaData.add(datum);
         } catch (const std::exception& e) {
-            // TODO remettre
             std::cerr << "Erreur lors de la lecture des métadonnées IPTC : " << e.what() << std::endl;
-            // Continue to the next entry
         }
     }
 }

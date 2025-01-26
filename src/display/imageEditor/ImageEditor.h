@@ -33,6 +33,7 @@
 #include "../../display/initialWindow/InitialWindow.h"
 
 
+class MainImage;
 
 class ImageEditor : public QMainWindow {
     Q_OBJECT
@@ -42,6 +43,7 @@ public:
     ~ImageEditor() {}
 
     void clear();
+    void reload();
 
 protected:
     void keyPressEvent(QKeyEvent* event) override;
@@ -52,7 +54,6 @@ private:
     void hide();
     void unHide();
 
-    void reload();
 
     void nextImage(int nbr = 1);
     void previousImage(int nbr = 1);

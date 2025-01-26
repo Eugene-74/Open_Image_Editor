@@ -7,8 +7,7 @@
 
 namespace fs = std::filesystem; // Alias pour simplifier le code
 
-void Data::preDeleteImage(int imageNbr)
-{
+void Data::preDeleteImage(int imageNbr){
     ImageData* imageData;
     imageData = imagesData.getImageData(imageNbr);
 
@@ -16,22 +15,19 @@ void Data::preDeleteImage(int imageNbr)
     std::cerr << "image deleted : " << imageNbr << std::endl;
     deletedImagesData.print();
 }
-void Data::unPreDeleteImage(int imageNbr)
-{
+void Data::unPreDeleteImage(int imageNbr){
     ImageData* imageData;
     imageData = imagesData.getImageData(imageNbr);
 
     deletedImagesData.removeImage(*imageData);
 }
 
-void Data::revocerDeletedImage(ImageData& imageData)
-{
+void Data::revocerDeletedImage(ImageData& imageData){
     imagesData.addImage(imageData);
     deletedImagesData.removeImage(imageData);
 }
 
-void Data::revocerDeletedImage(int imageNbr)
-{
+void Data::revocerDeletedImage(int imageNbr){
     ImageData* imageData;
     imageData = deletedImagesData.getImageData(imageNbr);
     revocerDeletedImage(*imageData);
@@ -41,16 +37,13 @@ void Data::revocerDeletedImage(int imageNbr)
 }
 
 // Supprime de imagesData les images dans deletedImagesData
-void Data::removeDeletedImages()
-{
-    for (const auto& deletedImage : *deletedImagesData.get())
-    {
+void Data::removeDeletedImages(){
+    for (const auto& deletedImage : *deletedImagesData.get()){
         // Find the image in imagesData
         auto it = std::find(imagesData.get()->begin(), imagesData.get()->end(),
             deletedImage);
         // If it exists, remove it from imagesData
-        if (it != imagesData.get()->end())
-        {
+        if (it != imagesData.get()->end()){
             // imagesData.removeImage(*imagesData.getImageData(it));
             imagesData.get()->erase(it);
             deletedImage.print();
@@ -60,8 +53,7 @@ void Data::removeDeletedImages()
     std::cerr << "All images deleted" << std::endl;
 }
 
-bool Data::isDeleted(int imageNbr)
-{
+bool Data::isDeleted(int imageNbr){
     // Find the image in deletedImagesData
 
     std::string imagePath = imagesData.getImageData(imageNbr)->imagePath;
@@ -73,8 +65,7 @@ bool Data::isDeleted(int imageNbr)
             return img.imagePath == imagePath;
         });
 
-    if (it != deletedImagesData.get()->end())
-    {
+    if (it != deletedImagesData.get()->end()){
         imagesData.getImageData(imageNbr)->print();
 
         return true;
@@ -84,22 +75,17 @@ bool Data::isDeleted(int imageNbr)
 }
 QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     bool setSize, int thumbnail, bool rotation,
-    bool square, bool crop, bool force)
-{
+    bool square, bool crop, bool force){
     QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail, force);
 
-    if (crop)
-    {
+    if (crop){
         int imageId = imagesData.getImageIdByName(imagePath);
-        if (imageId != -1)
-        {
+        if (imageId != -1){
             ImageData* imageData = imagesData.getImageData(imagePath);
-            if (imageData != nullptr && !imageData->cropSizes->empty())
-            {
+            if (imageData != nullptr && !imageData->cropSizes->empty()){
 
                 std::vector<QPoint> cropPoints = imageData->cropSizes->back();
-                if (cropPoints.size() == 2)
-                {
+                if (cropPoints.size() == 2){
                     QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
 
                     // Vérifier que le rectangle de découpe est dans les limites de l'image

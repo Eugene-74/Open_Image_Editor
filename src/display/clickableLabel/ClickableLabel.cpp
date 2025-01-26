@@ -2,7 +2,7 @@
 ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square, bool force)
     : QLabel(parent) {
 
-    QImage qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail, true, square, false, force);
+    QImage qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail, true, square, true, force);
 
     if (!qImage.isNull()) {
         this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));

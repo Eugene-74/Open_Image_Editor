@@ -6,16 +6,18 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QImageIOHandler>
+#include "../imageEditor/ImageEditor.h"
 
 #include "../../Const.h"
 #include "../../structure/data/Data.h"
 
+class ImageEditor;
 
 class MainImage : public QLabel {
     Q_OBJECT
 
 public:
-    explicit MainImage(Data* data, const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
+    explicit MainImage(Data* data, const QString& i, ImageEditor* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
 
 signals:
     void clicked();
@@ -35,6 +37,8 @@ protected:
 
 
 private:
+    ImageEditor* parent;
+
     QString imagePath;
     QSize mSize;
     bool setSize;
