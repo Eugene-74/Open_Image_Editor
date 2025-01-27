@@ -225,9 +225,11 @@ bool loadImagesFromFolder(const std::string initialPath, const std::string path,
                 if (imageData != nullptr){
                     folders = imageData->folders;
                 } else{
-                    folders = Folders(fs::absolute(entry.path()).parent_path().string());
+                    folders = Folders(entry.path().string());
+                    std::cerr << "path saved ? : " << entry.path().string() << std::endl;
                 }
-                folders.files.push_back(relativePath.parent_path().filename().string());
+                folders.folders.push_back(fs::absolute(entry.path()).parent_path().string());
+                std::cerr << "folders : " << fs::absolute(entry.path()).parent_path().string() << std::endl;
 
                 ImageData imageD(entry.path().string(), folders);
                 imagesData->addImage(imageD);

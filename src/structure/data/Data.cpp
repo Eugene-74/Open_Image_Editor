@@ -56,13 +56,13 @@ void Data::removeDeletedImages(){
 bool Data::isDeleted(int imageNbr){
     // Find the image in deletedImagesData
 
-    std::string imagePath = imagesData.getImageData(imageNbr)->imagePath;
+    std::string imagePath = imagesData.getImageData(imageNbr)->folders.name;
 
     auto it = std::find_if(deletedImagesData.get()->begin(),
         deletedImagesData.get()->end(),
         [imagePath, this](const ImageData img)
         {
-            return img.imagePath == imagePath;
+            return img.folders.name == imagePath;
         });
 
     if (it != deletedImagesData.get()->end()){
@@ -442,12 +442,11 @@ bool Data::unloadFromFutures(std::string imagePath)
     }
     return false;
 }
-void Data::exportImages(std::string exportPath, bool dateInName)
-{
+void Data::exportImages(std::string exportPath, bool dateInName){
     Folders* firstFolder;
 
     firstFolder = findFirstFolderWithAllImages(imagesData, rootFolders);
-
+    // std::cerr << "firstFolder : " << firstFolder->folderName << std::endl;
     copyImages(firstFolder, exportPath, dateInName);
 }
 
@@ -460,7 +459,7 @@ Folders* Data::findFirstFolderWithAllImages(
         {
             for (Folders folderBis : imageData.folders.files)
             {
-                if (folderBis.folderName == folder.folderName)
+                if (folderBis.name == folder.name)
                 {
                     return const_cast<Folders*>(&currentFolder);
                 }
@@ -472,18 +471,17 @@ Folders* Data::findFirstFolderWithAllImages(
 }
 
 void Data::copyTo(std::string filePath, std::string destinationPath,
-    bool dateInName) const
-{
-    for (const auto& imageData : imagesData.imagesData)
-    {
-        for (const auto& file : imageData.folders.files)
-        {
-            if (file == filePath)
-            {
+    bool dateInName) const{
+    // TODO utiliser le threadPool
+    // TODO refaire marche pas bien dutout
+
+    for (const auto& imageData : imagesData.imagesData){
+        for (const auto& file : imageData.folders.files){
+            // TODO verification depuis la racine et pas juste le nom du fichier
+            if (file == filePath){
                 std::string destinationFile =
                     destinationPath + "/" + imageData.getImageName();
-                if (dateInName)
-                {
+                if (dateInName){
                     Exiv2::ExifData exifData = imageData.getMetaData().getExifData();
                     if (exifData["Exif.Image.DateTime"].count() != 0)
                     {
@@ -496,11 +494,9 @@ void Data::copyTo(std::string filePath, std::string destinationPath,
                         destinationFile = destinationPath + "/" + "no_date" + "_" + file;
                     }
                 }
-                // fs::copy(imageData.imagePath, destinationFile,
-                //     fs::copy_options::overwrite_existing);
-                QImage image(QString::fromStdString(imageData.imagePath));
-                if (!image.isNull()) {
-                    if (!imageData.cropSizes.empty()) {
+                if (!imageData.cropSizes.empty()) {
+                    QImage image(QString::fromStdString(imageData.folders.name));
+                    if (!image.isNull()) {
                         std::vector<QPoint> cropPoints = imageData.cropSizes.back();
                         if (cropPoints.size() == 2) {
                             QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
@@ -508,7 +504,19 @@ void Data::copyTo(std::string filePath, std::string destinationPath,
                         }
                     }
                     image.save(QString::fromStdString(destinationFile));
+
+                    // Copy metadata
+                    Exiv2::Image::AutoPtr srcImage = Exiv2::ImageFactory::open(imageData.folders.name);
+                    srcImage->readMetadata();
+                    Exiv2::Image::AutoPtr destImage = Exiv2::ImageFactory::open(destinationFile);
+                    destImage->setExifData(srcImage->exifData());
+                    destImage->setIptcData(srcImage->iptcData());
+                    destImage->setXmpData(srcImage->xmpData());
+                    destImage->writeMetadata();
+                } else{
+                    QFile::copy(QString::fromStdString(imageData.folders.name), QString::fromStdString(destinationFile));
                 }
+                std::cerr << imageData.folders.name << " : " << destinationFile << std::endl;
             }
         }
     }
@@ -571,22 +579,27 @@ QImage Data::rotateQImage(QImage image, std::string imagePath)
 }
 
 void Data::copyImages(Folders* currentFolders, std::string folderPath,
-    bool dateInName)
-{
+    bool dateInName){
+
     currentFolders->print();
+    imagesData.print();
+
+    std::string initialFolderPath = folderPath;
     for (auto& folder : currentFolders->folders)
     {
-        folderPath = folderPath + "/" + folder.folderName;
+        folderPath = initialFolderPath + "/" + folder.name;
         std::cerr << "folderPath : " << folderPath << std::endl;
-        if (!fs::exists(folderPath))
-        {
+        if (!fs::exists(folderPath)){
             fs::create_directories(folderPath);
         }
         copyImages(&folder, folderPath, dateInName);
     }
-    for (auto& file : currentFolders->folders)
-    {
-        copyTo(file.folderName, folderPath, dateInName);
+
+    for (auto& file : currentFolders->folders){
+
+        std::string filePath = initialFolderPath + "/" + file.name;
+
+        copyTo(file.name, filePath, dateInName);
     }
 }
 
@@ -673,7 +686,7 @@ void Data::loadData(){
         ImageData imageData;
         imageData.load(inFile);
         if (!imageData.cropSizes.empty()) {
-            std::cerr << "Image 1 " << imageData.imagePath << " has crop sizes." << std::endl;
+            std::cerr << "Image 1 " << imageData.folders.name << " has crop sizes." << std::endl;
         }
         // Do not usea addImage because it will check for duplicates and it takes times
         imagesData.get()->push_back(imageData);
@@ -681,7 +694,7 @@ void Data::loadData(){
         // Check for crop sizes in each ImageData
         for (const auto& imageData : *imagesData.get()) {
             if (!imageData.cropSizes.empty()) {
-                std::cerr << "Image 2 " << imageData.imagePath << " has crop sizes." << std::endl;
+                std::cerr << "Image 2 " << imageData.folders.name << " has crop sizes." << std::endl;
             } else {
                 // std::cerr << "Image " << imageData.imagePath << " does not have crop sizes." << std::endl;
             }

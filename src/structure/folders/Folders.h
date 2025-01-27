@@ -11,19 +11,19 @@ class Folders
 {
 public:
     Folders* parent;
-    std::string folderName;
+    std::string name;
     std::vector<Folders> folders;
     std::vector<std::string> files;
 
     Folders() = default;
 
-    Folders(std::string f) : folderName(f), parent(nullptr) {}
+    Folders(std::string f) : name(f), parent(nullptr) {}
 
 
-    Folders(std::string f, Folders* p) : folderName(f), parent(p) {}
+    Folders(std::string f, Folders* p) : name(f), parent(p) {}
 
     // Constructeur de copie
-    Folders(const Folders& other) : folderName(other.folderName), files(other.files) {}
+    Folders(const Folders& other) : name(other.name), files(other.files) {}
 
 
     Folders& operator=(const Folders& other);
