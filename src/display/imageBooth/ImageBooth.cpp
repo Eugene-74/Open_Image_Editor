@@ -61,7 +61,7 @@ void ImageBooth::createLine() {
 
     for (int i = 0; i < nbr; i++) {
         if (imageNumber >= 0 && imageNumber < data->imagesData.get()->size()) {
-            std::string imagePath = data->imagesData.get()->at(imageNumber).imagePath;
+            std::string imagePath = data->imagesData.get()->at(imageNumber).folders.name;
             data->imagesData.get()->at(imageNumber).loadData();
             lineLayout->addWidget(createImage(imagePath, imageNumber));
             imageNumber += 1;

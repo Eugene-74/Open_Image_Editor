@@ -41,7 +41,16 @@ class Data {
 public:
     ImagesData imagesData;
     ImagesData deletedImagesData;
+
+
+    // Folders rootFolders = Folders("/");
+
+#ifdef _WIN32
+    Folders rootFolders = Folders("");
+#else
     Folders rootFolders = Folders("/");
+#endif
+
     Sizes sizes;
     std::map<std::string, Option> options = DEFAULT_OPTIONS;
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
@@ -103,7 +112,7 @@ public:
 
     void clearActions();
 
-    void sortImagesData();
+    void sortImagesData(QProgressDialog& progressDialog);
 
 private:
     std::vector<Actions> lastActions = {};
@@ -114,8 +123,9 @@ private:
     QImage rotateQImage(QImage image, std::string imagePath);
 
     Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
-    void copyImages(Folders* currentFolders, std::string path, bool dateInName);
-    void copyTo(std::string filePath, std::string destinationPath, bool dateInName) const;
+    void createFolders(Folders* currentFolders, std::string path);
+    void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
+
 };
 
 

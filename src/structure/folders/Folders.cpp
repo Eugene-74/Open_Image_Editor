@@ -4,9 +4,10 @@ namespace fs = std::filesystem;
 
 Folders& Folders::operator=(const Folders& other)
 {
-    if (this != &other)
-    {
-        folderName = other.folderName; // Utiliser l'opérateur d'affectation de std::vector
+    if (this != &other){
+        name = other.name; // Utiliser l'opérateur d'affectation de std::vector
+        files = other.files;
+        folders = other.folders;
     }
     return *this;
 }
@@ -14,9 +15,9 @@ Folders& Folders::operator=(const Folders& other)
 void Folders::save(std::ofstream& out) const
 {
     // Save folder name
-    size_t folderNameSize = folderName.size();
+    size_t folderNameSize = name.size();
     out.write(reinterpret_cast<const char*>(&folderNameSize), sizeof(folderNameSize));
-    out.write(folderName.c_str(), folderNameSize);
+    out.write(name.c_str(), folderNameSize);
 
     // Save files
     size_t filesCount = files.size();
@@ -42,8 +43,8 @@ void Folders::load(std::ifstream& in)
     // Load folder name
     size_t folderNameSize;
     in.read(reinterpret_cast<char*>(&folderNameSize), sizeof(folderNameSize));
-    folderName.resize(folderNameSize);
-    in.read(&folderName[0], folderNameSize);
+    name.resize(folderNameSize);
+    in.read(&name[0], folderNameSize);
 
     // Load files
     size_t filesCount;
@@ -68,12 +69,11 @@ void Folders::load(std::ifstream& in)
     }
 }
 
-void Folders::addFolder(std::string name)
-{
-
+void Folders::addFolder(std::string name){
     Folders child = Folders(name);
-    folders.push_back(child);
     child.parent = this;
+    folders.push_back(child);
+
 }
 
 void Folders::addFile(std::string name)
@@ -82,10 +82,10 @@ void Folders::addFile(std::string name)
 }
 
 void Folders::print() const{
-    std::cerr << "Folder : {" << folderName << ",";
+    std::cerr << "Folder : {" << name << ",";
 
     for (const auto& folder : folders){
-        std::cerr << "[" << folder.folderName << "]";
+        std::cerr << "[" << folder.name << "]";
     }
     std::cerr << "}" << std::endl;
     for (const auto& folder : folders)
@@ -94,72 +94,58 @@ void Folders::print() const{
     }
 }
 
-void addFilesToTree(Folders* root, const std::string& path)
+void addSubfolders(Folders& rootFolder, const std::string& path) {
+    namespace fs = std::filesystem;
+
+    for (const auto& entry : fs::directory_iterator(path)) {
+        if (entry.is_directory()) {
+            if (containImage(entry.path().string())){
+                std::string folderName = entry.path().filename().string();
+                rootFolder.addFolder(folderName);
+                std::cerr << "Folder added : " << folderName << std::endl;
+                addSubfolders(rootFolder.folders.back(), entry.path().string());
+            } else{
+                std::cerr << "Folder does not contain image" << entry.path().string() << std::endl;
+            }
+        }
+    }
+}
+
+void addFilesToTree(Folders* currentFolder, const std::string& path)
 {
     fs::path fsPath(path);
 
-    Folders* currentFolder = root;
-
-    for (const auto& part : fsPath)
-    {
+    for (const auto& part : fsPath){
         if (part == "/")
             continue;
 
         std::string folderName = part.string();
-        if (!createIfNotExist(currentFolder, folderName))
-        {
+        if (!createIfNotExist(currentFolder, folderName)){
             currentFolder->addFolder(folderName);
             currentFolder = &currentFolder->folders.back();
+        } else{
+            std::cerr << "Folder already exist" << folderName << std::endl;
         }
     }
-    addFiles(currentFolder, path);
-}
-
-// ajouter tout les sous fichier contenant des images
-void addFiles(Folders* root, const std::string& path)
-{
-    fs::path fsPath(path);
-    for (const auto& entry : fs::directory_iterator(fsPath))
-    {
-
-        if (fs::is_directory(entry.status()))
-        {
-            if (entry.path().filename().string().front() != '.')
-            {
-                createIfNotExist(root, entry.path().filename().string());
-
-                if (containImage(entry.path().string()))
-                {
-                    root->addFolder(entry.path().filename().string());
-                }
-                addFiles(root, entry.path().string());
-            }
-        }
-    }
-    root = &root->folders.back();
+    addSubfolders(*currentFolder, path);
 }
 
 // passer au sous dossier si il existe
 bool createIfNotExist(Folders*& currentFolder, const std::string& folderName)
 {
-    if (getIfExist(currentFolder, folderName))
-    {
+    if (getIfExist(currentFolder, folderName)){
         return true;
-    } else
-    {
-
+    } else{
         return false;
     }
 }
 
 // Verifie si un dossier existe dans un Folders
-bool getIfExist(Folders* currentFolder, const std::string& path)
-{
+bool getIfExist(Folders* currentFolder, const std::string& path){
     auto it = std::find_if(currentFolder->folders.begin(), currentFolder->folders.end(), [&path](const Folders& folder)
-        { return folder.folderName == path; });
+        { return folder.name == path; });
 
-    if (it != currentFolder->folders.end())
-    {
+    if (it != currentFolder->folders.end()){
         return true;
     }
     return false;
@@ -178,3 +164,15 @@ bool containImage(const std::string& path)
     }
     return false;
 }
+
+
+// std::string Folders::getParentPath(){
+//     std::string path;
+//     Folders* current = this;
+//     while (current->parent != nullptr) {
+//         std::cerr << "current->parent->name : " << current->parent->name << std::endl;
+//         path = current->parent->name + "/" + path;
+//         current = current->parent;
+//     }
+//     return path;
+// }

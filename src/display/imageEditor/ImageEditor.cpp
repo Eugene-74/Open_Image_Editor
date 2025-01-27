@@ -1441,28 +1441,28 @@ void ImageEditor::rotateRight() {
 
 
 void ImageEditor::rotateLeftPng() {
-    QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->imagePath);
-    QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->imagePath, QSize(0, 0), false);
+    QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->folders.name);
+    QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->folders.name, QSize(0, 0), false);
     image = image.transformed(QTransform().rotate(-90));
     if (!image.save(outputPath)) {
         std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
     }
-    data->unloadFromCache(data->imagesData.getCurrentImageData()->imagePath);
-    data->loadInCache(data->imagesData.getCurrentImageData()->imagePath);
-    data->createAllThumbnail(data->imagesData.getCurrentImageData()->imagePath, 512);
+    data->unloadFromCache(data->imagesData.getCurrentImageData()->folders.name);
+    data->loadInCache(data->imagesData.getCurrentImageData()->folders.name);
+    data->createAllThumbnail(data->imagesData.getCurrentImageData()->folders.name, 512);
     reload();
 
 }
 void ImageEditor::rotateRightPng() {
-    QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->imagePath);
-    QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->imagePath, QSize(0, 0), false);
+    QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->folders.name);
+    QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->folders.name, QSize(0, 0), false);
     image = image.transformed(QTransform().rotate(90));
     if (!image.save(outputPath)) {
         std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
     }
-    data->unloadFromCache(data->imagesData.getCurrentImageData()->imagePath);
-    data->loadInCache(data->imagesData.getCurrentImageData()->imagePath);
-    data->createAllThumbnail(data->imagesData.getCurrentImageData()->imagePath, 512);
+    data->unloadFromCache(data->imagesData.getCurrentImageData()->folders.name);
+    data->loadInCache(data->imagesData.getCurrentImageData()->folders.name);
+    data->createAllThumbnail(data->imagesData.getCurrentImageData()->folders.name, 512);
 
     reload();
 }
@@ -1644,28 +1644,28 @@ void ImageEditor::mirrorLeftRightJpg() {
 }
 
 void ImageEditor::mirrorLeftRightPng() {
-    QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->imagePath);
-    QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->imagePath, QSize(0, 0), false);
+    QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->folders.name);
+    QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->folders.name, QSize(0, 0), false);
     image = image.mirrored(true, false);
     if (!image.save(outputPath)) {
         std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
     }
-    data->unloadFromCache(data->imagesData.getCurrentImageData()->imagePath);
-    data->loadInCache(data->imagesData.getCurrentImageData()->imagePath);
-    data->createAllThumbnail(data->imagesData.getCurrentImageData()->imagePath, 512);
+    data->unloadFromCache(data->imagesData.getCurrentImageData()->folders.name);
+    data->loadInCache(data->imagesData.getCurrentImageData()->folders.name);
+    data->createAllThumbnail(data->imagesData.getCurrentImageData()->folders.name, 512);
     reload();
 
 }
 void ImageEditor::mirrorUpDownPng() {
-    QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->imagePath);
-    QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->imagePath, QSize(0, 0), false);
+    QString outputPath = QString::fromStdString(data->imagesData.getCurrentImageData()->folders.name);
+    QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->folders.name, QSize(0, 0), false);
     image = image.mirrored(false, true);
     if (!image.save(outputPath)) {
         std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
     }
-    data->unloadFromCache(data->imagesData.getCurrentImageData()->imagePath);
-    data->loadInCache(data->imagesData.getCurrentImageData()->imagePath);
-    data->createAllThumbnail(data->imagesData.getCurrentImageData()->imagePath, 512);
+    data->unloadFromCache(data->imagesData.getCurrentImageData()->folders.name);
+    data->loadInCache(data->imagesData.getCurrentImageData()->folders.name);
+    data->createAllThumbnail(data->imagesData.getCurrentImageData()->folders.name, 512);
 
     reload();
 }

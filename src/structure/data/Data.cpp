@@ -56,13 +56,13 @@ void Data::removeDeletedImages(){
 bool Data::isDeleted(int imageNbr){
     // Find the image in deletedImagesData
 
-    std::string imagePath = imagesData.getImageData(imageNbr)->imagePath;
+    std::string imagePath = imagesData.getImageData(imageNbr)->folders.name;
 
     auto it = std::find_if(deletedImagesData.get()->begin(),
         deletedImagesData.get()->end(),
         [imagePath, this](const ImageData img)
         {
-            return img.imagePath == imagePath;
+            return img.folders.name == imagePath;
         });
 
     if (it != deletedImagesData.get()->end()){
@@ -442,74 +442,111 @@ bool Data::unloadFromFutures(std::string imagePath)
     }
     return false;
 }
-void Data::exportImages(std::string exportPath, bool dateInName)
-{
+void Data::exportImages(std::string exportPath, bool dateInName){
     Folders* firstFolder;
+
+    rootFolders.print();
 
     firstFolder = findFirstFolderWithAllImages(imagesData, rootFolders);
 
-    copyImages(firstFolder, exportPath, dateInName);
+    firstFolder->print();
+
+    std::cerr << "firstFolder : " << firstFolder->name << std::endl;
+
+    exportPath += "/" + firstFolder->name;
+
+    createFolders(firstFolder, exportPath);
+
+    copyTo(rootFolders, exportPath, dateInName);
 }
 
-Folders* Data::findFirstFolderWithAllImages(
-    const ImagesData& imagesData, const Folders& currentFolder) const
-{
-    for (const auto& folder : currentFolder.folders)
-    {
-        for (ImageData imageData : imagesData.imagesData)
-        {
-            for (Folders folderBis : imageData.folders.files)
-            {
-                if (folderBis.folderName == folder.folderName)
-                {
+Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const{
+    if (currentFolder.folders.size() > 1){
+        return const_cast<Folders*>(&currentFolder);
+    }
+    for (const auto& folder : currentFolder.folders){
+
+        for (ImageData imageData : imagesData.imagesData){
+            for (Folders folderBis : imageData.folders.folders){
+                if (folderBis.name == folder.name){
                     return const_cast<Folders*>(&currentFolder);
                 }
             }
         }
         return findFirstFolderWithAllImages(imagesData, folder);
     }
+
     return const_cast<Folders*>(&currentFolder);
 }
 
-void Data::copyTo(std::string filePath, std::string destinationPath,
-    bool dateInName) const
-{
-    for (const auto& imageData : imagesData.imagesData)
-    {
-        for (const auto& file : imageData.folders.files)
-        {
-            if (file == filePath)
-            {
-                std::string destinationFile =
-                    destinationPath + "/" + imageData.getImageName();
-                if (dateInName)
-                {
-                    Exiv2::ExifData exifData = imageData.getMetaData().getExifData();
-                    if (exifData["Exif.Image.DateTime"].count() != 0)
-                    {
-                        std::string date = exifData["Exif.Image.DateTime"].toString();
-                        std::replace(date.begin(), date.end(), ':', '-');
-                        std::replace(date.begin(), date.end(), ' ', '_');
-                        destinationFile = destinationPath + "/" + date + "_" + file;
-                    } else
-                    {
-                        destinationFile = destinationPath + "/" + "no_date" + "_" + file;
-                    }
-                }
-                // fs::copy(imageData.imagePath, destinationFile,
-                //     fs::copy_options::overwrite_existing);
-                QImage image(QString::fromStdString(imageData.imagePath));
-                if (!image.isNull()) {
-                    if (!imageData.cropSizes.empty()) {
-                        std::vector<QPoint> cropPoints = imageData.cropSizes.back();
-                        if (cropPoints.size() == 2) {
-                            QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
-                            image = image.copy(cropRect);
-                        }
-                    }
-                    image.save(QString::fromStdString(destinationFile));
-                }
+void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInName){
+
+    std::string initialFolder = fs::path(destinationPath).filename().string();
+
+    QProgressDialog progressDialog("Exporting images...", "Cancel", 0, imagesData.imagesData.size());
+    progressDialog.setWindowModality(Qt::WindowModal);
+    progressDialog.show();
+
+    int progress = 0;
+
+    for (auto& imageData : imagesData.imagesData){
+        for (auto& folder : imageData.folders.folders){
+            std::string fileName = fs::path(imageData.folders.name).filename().string();
+
+            std::string folderName = folder.name;
+
+            size_t pos = folderName.find(initialFolder);
+            if (pos != std::string::npos) {
+                folderName = folderName.substr(pos + initialFolder.length());
             }
+
+
+
+
+            std::string destinationFile;
+
+            if (dateInName) {
+                imageData.loadData();
+                Exiv2::ExifData exifData = imageData.getMetaData()->getExifData();
+                if (exifData["Exif.Image.DateTime"].count() != 0) {
+                    std::string date = exifData["Exif.Image.DateTime"].toString();
+                    std::replace(date.begin(), date.end(), ':', '-');
+                    std::replace(date.begin(), date.end(), ' ', '_');
+                    destinationFile = destinationPath + "/" + folderName + "/" + date + "_" + fileName;
+                } else {
+                    destinationFile = destinationPath + "/" + folderName + "/" + "no_date" + "_" + fileName;
+                }
+            } else{
+                destinationFile = destinationPath + "/" + folderName + "/" + fileName;
+            }
+            if (!imageData.cropSizes.empty()) {
+                QImage image(QString::fromStdString(imageData.folders.name));
+                if (!image.isNull()) {
+                    std::vector<QPoint> cropPoints = imageData.cropSizes.back();
+                    if (cropPoints.size() == 2) {
+                        QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
+                        image = image.copy(cropRect);
+                    }
+                }
+                image.save(QString::fromStdString(destinationFile));
+
+                // Copy metadata
+                Exiv2::Image::AutoPtr srcImage = Exiv2::ImageFactory::open(imageData.folders.name);
+                srcImage->readMetadata();
+                Exiv2::Image::AutoPtr destImage = Exiv2::ImageFactory::open(destinationFile);
+                destImage->setExifData(srcImage->exifData());
+                destImage->setIptcData(srcImage->iptcData());
+                destImage->setXmpData(srcImage->xmpData());
+                destImage->writeMetadata();
+            } else {
+                QFile::copy(QString::fromStdString(imageData.folders.name), QString::fromStdString(destinationFile));
+            }
+            if (progressDialog.wasCanceled()) {
+                return;
+            }
+            progressDialog.setValue(progress++);
+            QApplication::processEvents();
+
         }
     }
 }
@@ -570,23 +607,21 @@ QImage Data::rotateQImage(QImage image, std::string imagePath)
     return image;
 }
 
-void Data::copyImages(Folders* currentFolders, std::string folderPath,
-    bool dateInName)
-{
-    currentFolders->print();
-    for (auto& folder : currentFolders->folders)
-    {
-        folderPath = folderPath + "/" + folder.folderName;
+void Data::createFolders(Folders* currentFolders, std::string folderPath){
+
+    std::string initialFolderPath = folderPath;
+    std::cerr << "initialFolderPath : " << initialFolderPath << std::endl;
+    if (!fs::exists(initialFolderPath)){
+        fs::create_directories(initialFolderPath);
+    }
+
+    for (auto& folder : currentFolders->folders){
+        folderPath = initialFolderPath + "/" + folder.name;
         std::cerr << "folderPath : " << folderPath << std::endl;
-        if (!fs::exists(folderPath))
-        {
+        if (!fs::exists(folderPath)){
             fs::create_directories(folderPath);
         }
-        copyImages(&folder, folderPath, dateInName);
-    }
-    for (auto& file : currentFolders->folders)
-    {
-        copyTo(file.folderName, folderPath, dateInName);
+        createFolders(&folder, folderPath);
     }
 }
 
@@ -673,7 +708,7 @@ void Data::loadData(){
         ImageData imageData;
         imageData.load(inFile);
         if (!imageData.cropSizes.empty()) {
-            std::cerr << "Image 1 " << imageData.imagePath << " has crop sizes." << std::endl;
+            std::cerr << "Image 1 " << imageData.folders.name << " has crop sizes." << std::endl;
         }
         // Do not usea addImage because it will check for duplicates and it takes times
         imagesData.get()->push_back(imageData);
@@ -681,7 +716,7 @@ void Data::loadData(){
         // Check for crop sizes in each ImageData
         for (const auto& imageData : *imagesData.get()) {
             if (!imageData.cropSizes.empty()) {
-                std::cerr << "Image 2 " << imageData.imagePath << " has crop sizes." << std::endl;
+                std::cerr << "Image 2 " << imageData.folders.name << " has crop sizes." << std::endl;
             } else {
                 // std::cerr << "Image " << imageData.imagePath << " does not have crop sizes." << std::endl;
             }
@@ -775,11 +810,16 @@ void Data::clearActions()
     lastActions.clear();
 }
 
-void Data::sortImagesData(){
+void Data::sortImagesData(QProgressDialog& progressDialog){
+
+    int progress = 0;
+
+    progressDialog.setMaximum(imagesData.get()->size() * 2);
+
     // Check that all the data are loaded before sorting using the existing thread pool
     std::vector<std::future<void>> futures;
     for (auto& imageData : *imagesData.get()) {
-        futures.push_back(threadPool.enqueue([&imageData]() {
+        futures.push_back(threadPool.enqueue([&imageData, &progressDialog, &progress]() {
             imageData.loadData();
             }));
     }

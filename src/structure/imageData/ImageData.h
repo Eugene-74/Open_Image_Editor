@@ -12,21 +12,20 @@ namespace fs = std::filesystem;
 class ImageData
 {
 public:
-    std::string imagePath;
+    // std::string imagePath;
     Folders folders;
     MetaData metaData;
     std::vector<std::vector<QPoint>> cropSizes;
 
-    ImageData() : imagePath(""), folders(Folders()), metaData(MetaData()), cropSizes() {}
+    ImageData() : folders(Folders()), metaData(MetaData()), cropSizes() {}
 
     ImageData(const ImageData& other)
-        : imagePath(other.imagePath), folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes) {
+        : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes) {
     }
 
-    ImageData(std::string a, const Folders c) : imagePath(a), folders(c) {}
+    ImageData(const Folders c) : folders(c) {}
 
     // Opérateur d'affectation
-    // ImageData& operator=(const ImageData& other);
     ImageData& operator=(const ImageData& other);
 
     void print() const;

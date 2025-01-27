@@ -10,20 +10,20 @@
 class Folders
 {
 public:
-    Folders* parent;
-    std::string folderName;
+    Folders* parent = nullptr;
+    std::string name;
     std::vector<Folders> folders;
     std::vector<std::string> files;
 
     Folders() = default;
 
-    Folders(std::string f) : folderName(f), parent(nullptr) {}
+    Folders(std::string f) : name(f), parent(nullptr) {}
 
 
-    Folders(std::string f, Folders* p) : folderName(f), parent(p) {}
+    Folders(std::string f, Folders* p) : name(f), parent(p) {}
 
     // Constructeur de copie
-    Folders(const Folders& other) : folderName(other.folderName), files(other.files) {}
+    Folders(const Folders& other) : name(other.name), files(other.files), folders(other.folders) {}
 
 
     Folders& operator=(const Folders& other);
@@ -38,11 +38,15 @@ public:
 
     void print() const;
 
+    // std::string getParentPath();
 
 
 };
 
-void addFilesToTree(Folders* root, const std::string& path);
+
+void addSubfolders(Folders& rootFolder, const std::string& path);
+
+void addFilesToTree(Folders* currentFolder, const std::string& path);
 
 bool createIfNotExist(Folders*& currentFolder, const std::string& path);
 bool getIfExist(Folders* currentFolder, const std::string& path);

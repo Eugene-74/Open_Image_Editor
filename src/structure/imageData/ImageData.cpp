@@ -2,7 +2,7 @@
 
 ImageData& ImageData::operator=(const ImageData& other) {
     if (this != &other) {
-        imagePath = other.imagePath;
+        // imagePath = other.imagePath;
         folders = other.folders;
         metaData = other.metaData;
         cropSizes = other.cropSizes;
@@ -11,20 +11,20 @@ ImageData& ImageData::operator=(const ImageData& other) {
 }
 
 void ImageData::print() const {
-    std::cerr << "Image : " << imagePath
+    std::cerr << "Image : " << folders.name
         << " fichiers : ";
-    for (const auto& file : folders.files) {
-        std::cerr << " " << file;
+    for (const auto& file : folders.folders) {
+        std::cerr << " " << file.name;
     }
     std::cerr << " " << std::endl;
 }
 
 std::string ImageData::get() const {
     std::string name;
-    name += "Image : " + imagePath + " fichiers : ";
-    for (const auto& file : folders.files) {
+    name += "Image : " + folders.name + " fichiers : ";
+    for (const auto& file : folders.folders) {
         name += " ";
-        name += file;
+        name += file.name;
     }
     name += "\n";
     return  name;
@@ -55,17 +55,17 @@ void ImageData::addFolders(const std::vector<std::string>& toAddFolders) {
 
 
 std::string ImageData::getImageName() const {
-    std::filesystem::path filePath(imagePath);
+    std::filesystem::path filePath(folders.name);
     return filePath.filename().string();
 }
 
 bool ImageData::operator==(const ImageData& other) const {
-    std::filesystem::path filePath(imagePath);
+    std::filesystem::path filePath(folders.name);
     std::string imageName = filePath.filename().string();
     std::transform(imageName.begin(), imageName.end(), imageName.begin(),
         [](unsigned char c) { return std::tolower(c); });
 
-    std::filesystem::path filePathOther(other.imagePath);
+    std::filesystem::path filePathOther(other.folders.name);
     std::string imageNameOther = filePathOther.filename().string();
     std::transform(imageNameOther.begin(), imageNameOther.end(), imageNameOther.begin(),
         [](unsigned char c) { return std::tolower(c); });
@@ -74,14 +74,14 @@ bool ImageData::operator==(const ImageData& other) const {
 }
 
 std::string ImageData::getImagePath() {
-    return imagePath;
+    return folders.name;
 }
 
 
 
 std::string ImageData::getImageExtension() {
 
-    return fs::path(imagePath).extension().string();
+    return fs::path(folders.name).extension().string();
 
 }
 
@@ -100,16 +100,16 @@ void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
 
 void ImageData::loadData() {
     try {
-        metaData.loadData(imagePath);
+        metaData.loadData(folders.name);
     } catch (const Exiv2::Error& e) {
-        std::cerr << "Error loading metadata for image: " << imagePath << std::endl;
+        std::cerr << "Error loading metadata for image: " << folders.name << std::endl;
         handleExiv2Error(e);
     }
 }
 
 void ImageData::saveMetaData() {
     try {
-        metaData.saveMetaData(imagePath);
+        metaData.saveMetaData(folders.name);
     } catch (const Exiv2::Error& e) {
         handleExiv2Error(e);
     }
@@ -134,16 +134,16 @@ void ImageData::turnImage(int rotation) {
 }
 
 void ImageData::setOrCreateExifData() {
-    metaData.setOrCreateExifData(imagePath);
+    metaData.setOrCreateExifData(folders.name);
 
 }
 
 
 void ImageData::save(std::ofstream& out) const {
 
-    size_t pathLength = imagePath.size();
+    size_t pathLength = folders.name.size();
     out.write(reinterpret_cast<const char*>(&pathLength), sizeof(pathLength));
-    out.write(imagePath.c_str(), pathLength);
+    out.write(folders.name.c_str(), pathLength);
     folders.save(out);
 
     size_t cropSizesSize = cropSizes.size();
@@ -160,14 +160,14 @@ void ImageData::load(std::ifstream& in) {
 
     size_t pathLength;
     in.read(reinterpret_cast<char*>(&pathLength), sizeof(pathLength));
-    imagePath.resize(pathLength);
-    in.read(&imagePath[0], pathLength);
+    folders.name.resize(pathLength);
+    in.read(&folders.name[0], pathLength);
     folders.load(in);
 
     size_t cropSizesSize;
     in.read(reinterpret_cast<char*>(&cropSizesSize), sizeof(cropSizesSize));
     if (cropSizesSize >= 1){
-        qDebug() << "imagePath:" << imagePath;
+        qDebug() << "imagePath:" << folders.name;
 
         qDebug() << "cropSizesSize:" << cropSizesSize;
 
