@@ -483,7 +483,11 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
 
     std::string initialFolder = fs::path(destinationPath).filename().string();
 
+    QProgressDialog progressDialog("Exporting images...", "Cancel", 0, imagesData.imagesData.size());
+    progressDialog.setWindowModality(Qt::WindowModal);
+    progressDialog.show();
 
+    int progress = 0;
 
     for (auto& imageData : imagesData.imagesData){
         for (auto& folder : imageData.folders.folders){
@@ -537,6 +541,11 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
             } else {
                 QFile::copy(QString::fromStdString(imageData.folders.name), QString::fromStdString(destinationFile));
             }
+            if (progressDialog.wasCanceled()) {
+                return;
+            }
+            progressDialog.setValue(progress++);
+            QApplication::processEvents();
 
         }
     }
