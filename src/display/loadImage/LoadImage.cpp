@@ -75,6 +75,8 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     data->rootFolders = Folders("");
 
+    data->imagesData = ImagesData(std::vector<ImageData>{});
+
     addFilesToTree(&data->rootFolders, imagePaths);
     // data->rootFolders.print();
     // return false;
