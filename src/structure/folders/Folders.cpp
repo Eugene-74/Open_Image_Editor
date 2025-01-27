@@ -4,9 +4,10 @@ namespace fs = std::filesystem;
 
 Folders& Folders::operator=(const Folders& other)
 {
-    if (this != &other)
-    {
+    if (this != &other){
         name = other.name; // Utiliser l'opérateur d'affectation de std::vector
+        files = other.files;
+        folders = other.folders;
     }
     return *this;
 }
@@ -68,12 +69,11 @@ void Folders::load(std::ifstream& in)
     }
 }
 
-void Folders::addFolder(std::string name)
-{
-
+void Folders::addFolder(std::string name){
     Folders child = Folders(name);
-    folders.push_back(child);
     child.parent = this;
+    folders.push_back(child);
+
 }
 
 void Folders::addFile(std::string name)
@@ -94,77 +94,56 @@ void Folders::print() const{
     }
 }
 
-void addFilesToTree(Folders* root, const std::string& path)
-{
-    fs::path fsPath(path);
+void addSubfolders(Folders& rootFolder, const std::string& path) {
+    namespace fs = std::filesystem;
 
-    Folders* currentFolder = root;
-
-    for (const auto& part : fsPath)
-    {
-        if (part == "/")
-            continue;
-
-        std::string folderName = part.string();
-        if (!createIfNotExist(currentFolder, folderName))
-        {
-            currentFolder->addFolder(folderName);
-            currentFolder = &currentFolder->folders.back();
-        }
-    }
-    addFiles(currentFolder, path);
-}
-
-// ajouter tout les sous fichier contenant des images
-void addFiles(Folders* root, const std::string& path){
-    fs::path fsPath(path);
-    for (const auto& entry : fs::directory_iterator(fsPath)){
-        if (fs::is_directory(entry.status())){
-            if (entry.path().filename().string().front() != '.'){
-                createIfNotExist(root, entry.path().filename().string());
-
-                if (containImage(entry.path().string())){
-                    root->addFolder(entry.path().filename().string());
-                }
-
-                // Find the newly created folder and update the root pointer
-                Folders* newRoot = nullptr;
-                for (auto& folder : root->folders) {
-                    if (folder.name == entry.path().filename().string()) {
-                        newRoot = &folder;
-                        break;
-                    }
-                }
-
-                if (newRoot) {
-                    addFiles(newRoot, entry.path().string());
-                }
+    for (const auto& entry : fs::recursive_directory_iterator(path)) {
+        if (entry.is_directory()) {
+            if (containImage(entry.path().string())){
+                std::string relativePath = fs::relative(entry.path(), path).string();
+                rootFolder.addFolder(relativePath);
+            } else{
+                std::cerr << "Folder does not contain image" << entry.path().string() << std::endl;
             }
         }
     }
 }
 
+void addFilesToTree(Folders* currentFolder, const std::string& path)
+{
+    fs::path fsPath(path);
+
+    for (const auto& part : fsPath){
+        if (part == "/")
+            continue;
+
+        std::string folderName = part.string();
+        if (!createIfNotExist(currentFolder, folderName)){
+            currentFolder->addFolder(folderName);
+            currentFolder = &currentFolder->folders.back();
+        } else{
+            std::cerr << "Folder already exist" << folderName << std::endl;
+        }
+    }
+    addSubfolders(*currentFolder, path);
+}
+
 // passer au sous dossier si il existe
 bool createIfNotExist(Folders*& currentFolder, const std::string& folderName)
 {
-    if (getIfExist(currentFolder, folderName))
-    {
+    if (getIfExist(currentFolder, folderName)){
         return true;
-    } else
-    {
-
+    } else{
         return false;
     }
 }
 
 // Verifie si un dossier existe dans un Folders
-bool getIfExist(Folders* currentFolder, const std::string& path)
-{
+bool getIfExist(Folders* currentFolder, const std::string& path){
     auto it = std::find_if(currentFolder->folders.begin(), currentFolder->folders.end(), [&path](const Folders& folder)
         { return folder.name == path; });
 
-    if (it != currentFolder->folders.end())
-    {
+    if (it != currentFolder->folders.end()){
         return true;
     }
     return false;

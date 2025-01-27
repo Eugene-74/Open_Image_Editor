@@ -73,10 +73,6 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     countImagesFromFolder(imagePaths, nbrImage);
 
-
-    data->rootFolders.print();
-
-    // std::cerr << "nombre d'image à charger : " << nbrImage << std::endl;
     progressDialog.setLabelText("Loading images...");
     progressDialog.setCancelButtonText("Cancel");
     progressDialog.setRange(0, nbrImage);
@@ -228,7 +224,7 @@ bool loadImagesFromFolder(const std::string initialPath, const std::string path,
                     folders = Folders(entry.path().string());
                     std::cerr << "path saved ? : " << entry.path().string() << std::endl;
                 }
-                folders.folders.push_back(fs::absolute(entry.path()).parent_path().string());
+                folders.folders.push_back(Folders(fs::absolute(entry.path()).parent_path().string()));
                 std::cerr << "folders : " << fs::absolute(entry.path()).parent_path().string() << std::endl;
 
                 ImageData imageD(entry.path().string(), folders);

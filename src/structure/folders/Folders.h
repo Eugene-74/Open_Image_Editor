@@ -42,7 +42,10 @@ public:
 
 };
 
-void addFilesToTree(Folders* root, const std::string& path);
+
+void addSubfolders(Folders& rootFolder, const std::string& path);
+
+void addFilesToTree(Folders* currentFolder, const std::string& path);
 
 bool createIfNotExist(Folders*& currentFolder, const std::string& path);
 bool getIfExist(Folders* currentFolder, const std::string& path);

@@ -13,8 +13,8 @@ ImageData& ImageData::operator=(const ImageData& other) {
 void ImageData::print() const {
     std::cerr << "Image : " << folders.name
         << " fichiers : ";
-    for (const auto& file : folders.files) {
-        std::cerr << " " << file;
+    for (const auto& file : folders.folders) {
+        std::cerr << " " << file.name;
     }
     std::cerr << " " << std::endl;
 }
@@ -22,9 +22,9 @@ void ImageData::print() const {
 std::string ImageData::get() const {
     std::string name;
     name += "Image : " + folders.name + " fichiers : ";
-    for (const auto& file : folders.files) {
+    for (const auto& file : folders.folders) {
         name += " ";
-        name += file;
+        name += file.name;
     }
     name += "\n";
     return  name;

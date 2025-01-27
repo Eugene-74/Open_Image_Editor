@@ -445,28 +445,35 @@ bool Data::unloadFromFutures(std::string imagePath)
 void Data::exportImages(std::string exportPath, bool dateInName){
     Folders* firstFolder;
 
+    rootFolders.print();
+
     firstFolder = findFirstFolderWithAllImages(imagesData, rootFolders);
-    // std::cerr << "firstFolder : " << firstFolder->folderName << std::endl;
+
+    // firstFolder->print();
+
+    // std::cerr << "firstFolder : " << firstFolder->name << std::endl;
+
+    exportPath += "/" + firstFolder->name;
+
     copyImages(firstFolder, exportPath, dateInName);
 }
 
-Folders* Data::findFirstFolderWithAllImages(
-    const ImagesData& imagesData, const Folders& currentFolder) const
-{
-    for (const auto& folder : currentFolder.folders)
-    {
-        for (ImageData imageData : imagesData.imagesData)
-        {
-            for (Folders folderBis : imageData.folders.files)
-            {
-                if (folderBis.name == folder.name)
-                {
+Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const{
+    if (currentFolder.folders.size() > 1){
+        return const_cast<Folders*>(&currentFolder);
+    }
+    for (const auto& folder : currentFolder.folders){
+
+        for (ImageData imageData : imagesData.imagesData){
+            for (Folders folderBis : imageData.folders.folders){
+                if (folderBis.name == folder.name){
                     return const_cast<Folders*>(&currentFolder);
                 }
             }
         }
         return findFirstFolderWithAllImages(imagesData, folder);
     }
+
     return const_cast<Folders*>(&currentFolder);
 }
 
@@ -474,11 +481,15 @@ void Data::copyTo(std::string filePath, std::string destinationPath,
     bool dateInName) const{
     // TODO utiliser le threadPool
     // TODO refaire marche pas bien dutout
+    std::cerr << "copy : " << filePath << std::endl;
 
     for (const auto& imageData : imagesData.imagesData){
-        for (const auto& file : imageData.folders.files){
-            // TODO verification depuis la racine et pas juste le nom du fichier
-            if (file == filePath){
+        std::cerr << "imageData.folders.name : " << imageData.folders.name << " : " << imageData.folders.folders.size() << " : " << imageData.folders.files.size()
+            << std::endl;
+
+        for (const auto& folder : imageData.folders.folders){
+            std::cerr << "file.name : " << folder.name << std::endl;
+            if (folder.name == filePath){
                 std::string destinationFile =
                     destinationPath + "/" + imageData.getImageName();
                 if (dateInName){
@@ -488,10 +499,10 @@ void Data::copyTo(std::string filePath, std::string destinationPath,
                         std::string date = exifData["Exif.Image.DateTime"].toString();
                         std::replace(date.begin(), date.end(), ':', '-');
                         std::replace(date.begin(), date.end(), ' ', '_');
-                        destinationFile = destinationPath + "/" + date + "_" + file;
+                        destinationFile = destinationPath + "/" + date + "_" + folder.name;
                     } else
                     {
-                        destinationFile = destinationPath + "/" + "no_date" + "_" + file;
+                        destinationFile = destinationPath + "/" + "no_date" + "_" + folder.name;
                     }
                 }
                 if (!imageData.cropSizes.empty()) {
@@ -581,12 +592,13 @@ QImage Data::rotateQImage(QImage image, std::string imagePath)
 void Data::copyImages(Folders* currentFolders, std::string folderPath,
     bool dateInName){
 
-    currentFolders->print();
-    imagesData.print();
-
     std::string initialFolderPath = folderPath;
-    for (auto& folder : currentFolders->folders)
-    {
+    std::cerr << "initialFolderPath : " << initialFolderPath << std::endl;
+    if (!fs::exists(initialFolderPath)){
+        fs::create_directories(initialFolderPath);
+    }
+
+    for (auto& folder : currentFolders->folders){
         folderPath = initialFolderPath + "/" + folder.name;
         std::cerr << "folderPath : " << folderPath << std::endl;
         if (!fs::exists(folderPath)){
