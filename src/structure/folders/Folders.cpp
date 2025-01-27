@@ -70,6 +70,9 @@ void Folders::load(std::ifstream& in)
 }
 
 void Folders::addFolder(std::string name){
+    if (std::find_if(folders.begin(), folders.end(), [&name](const Folders& folder) { return folder.name == name; }) != folders.end()) {
+        return;
+    }
     Folders child = Folders(name);
     child.parent = this;
     folders.push_back(child);
@@ -102,11 +105,11 @@ void addSubfolders(Folders& rootFolder, const std::string& path) {
             if (containImage(entry.path().string())){
                 std::string folderName = entry.path().filename().string();
                 rootFolder.addFolder(folderName);
-                std::cerr << "Folder added : " << folderName << std::endl;
                 addSubfolders(rootFolder.folders.back(), entry.path().string());
-            } else{
-                std::cerr << "Folder does not contain image" << entry.path().string() << std::endl;
             }
+            // else{
+            //     std::cerr << "Folder does not contain image" << entry.path().string() << std::endl;
+            // }
         }
     }
 }
@@ -123,9 +126,10 @@ void addFilesToTree(Folders* currentFolder, const std::string& path)
         if (!createIfNotExist(currentFolder, folderName)){
             currentFolder->addFolder(folderName);
             currentFolder = &currentFolder->folders.back();
-        } else{
-            std::cerr << "Folder already exist" << folderName << std::endl;
         }
+        // else{
+        //     std::cerr << "Folder already exist" << folderName << std::endl;
+        // }
     }
     addSubfolders(*currentFolder, path);
 }

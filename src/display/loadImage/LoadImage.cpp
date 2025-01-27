@@ -15,7 +15,7 @@ void addImagesFromFolder(Data* data, QWidget* parent){
     data->imagesData = *&imagesData;
 
     progressDialog.setLabelText("sorting...");
-    progressDialog.setValue(0);
+    // progressDialog.setValue(0);
     QApplication::processEvents();
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -28,11 +28,7 @@ void addImagesFromFolder(Data* data, QWidget* parent){
     std::chrono::duration<double> elapsed = end - start;
     std::cout << "Sorting images took " << elapsed.count() << " seconds." << std::endl;
 
-    auto saveStart = std::chrono::high_resolution_clock::now();
     data->saveData();
-    auto saveEnd = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> saveElapsed = saveEnd - saveStart;
-    std::cout << "Saving data took " << saveElapsed.count() << " seconds." << std::endl;
 }
 
 
@@ -76,6 +72,8 @@ std::string getDirectoryFromUser(QWidget* parent)
 bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string imagePaths, ImagesData* imagesData, QProgressDialog& progressDialog){
 
     int nbrImage = 0;
+
+    data->rootFolders = Folders("");
 
     addFilesToTree(&data->rootFolders, imagePaths);
     // data->rootFolders.print();
@@ -236,7 +234,6 @@ bool loadImagesFromFolder(const std::string initialPath, const std::string path,
                     folders = Folders(entry.path().string());
                 }
                 folders.addFolder(fs::absolute(entry.path()).parent_path().string());
-                std::cerr << "folders.name : " << fs::absolute(entry.path()).parent_path().string() << std::endl;
 
                 ImageData imageD(folders);
 

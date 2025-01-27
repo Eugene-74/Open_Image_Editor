@@ -449,8 +449,6 @@ void Data::exportImages(std::string exportPath, bool dateInName){
 
     firstFolder = findFirstFolderWithAllImages(imagesData, rootFolders);
 
-    firstFolder->print();
-
     std::cerr << "firstFolder : " << firstFolder->name << std::endl;
 
     exportPath += "/" + firstFolder->name;
@@ -610,14 +608,12 @@ QImage Data::rotateQImage(QImage image, std::string imagePath)
 void Data::createFolders(Folders* currentFolders, std::string folderPath){
 
     std::string initialFolderPath = folderPath;
-    std::cerr << "initialFolderPath : " << initialFolderPath << std::endl;
     if (!fs::exists(initialFolderPath)){
         fs::create_directories(initialFolderPath);
     }
 
     for (auto& folder : currentFolders->folders){
         folderPath = initialFolderPath + "/" + folder.name;
-        std::cerr << "folderPath : " << folderPath << std::endl;
         if (!fs::exists(folderPath)){
             fs::create_directories(folderPath);
         }
