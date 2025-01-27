@@ -70,8 +70,11 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     int nbrImage = 0;
 
     addFilesToTree(&data->rootFolders, imagePaths);
+    // data->rootFolders.print();
+    // return false;
 
     countImagesFromFolder(imagePaths, nbrImage);
+
 
     progressDialog.setLabelText("Loading images...");
     progressDialog.setCancelButtonText("Cancel");
@@ -222,13 +225,14 @@ bool loadImagesFromFolder(const std::string initialPath, const std::string path,
                     folders = imageData->folders;
                 } else{
                     folders = Folders(entry.path().string());
-                    std::cerr << "path saved ? : " << entry.path().string() << std::endl;
                 }
-                folders.folders.push_back(Folders(fs::absolute(entry.path()).parent_path().string()));
-                std::cerr << "folders : " << fs::absolute(entry.path()).parent_path().string() << std::endl;
+                folders.addFolder(fs::absolute(entry.path()).parent_path().string());
+                std::cerr << "folders.name : " << fs::absolute(entry.path()).parent_path().string() << std::endl;
 
-                ImageData imageD(entry.path().string(), folders);
+                ImageData imageD(folders);
+
                 imagesData->addImage(imageD);
+
                 nbrImage += 1;
                 progressDialog.setValue(nbrImage);
                 QApplication::processEvents();

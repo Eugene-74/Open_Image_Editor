@@ -23,10 +23,9 @@ public:
         : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes) {
     }
 
-    ImageData(std::string a, const Folders c) : folders(c) {}
+    ImageData(const Folders c) : folders(c) {}
 
     // Opérateur d'affectation
-    // ImageData& operator=(const ImageData& other);
     ImageData& operator=(const ImageData& other);
 
     void print() const;

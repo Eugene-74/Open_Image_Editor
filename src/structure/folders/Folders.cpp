@@ -97,11 +97,13 @@ void Folders::print() const{
 void addSubfolders(Folders& rootFolder, const std::string& path) {
     namespace fs = std::filesystem;
 
-    for (const auto& entry : fs::recursive_directory_iterator(path)) {
+    for (const auto& entry : fs::directory_iterator(path)) {
         if (entry.is_directory()) {
             if (containImage(entry.path().string())){
-                std::string relativePath = fs::relative(entry.path(), path).string();
-                rootFolder.addFolder(relativePath);
+                std::string folderName = entry.path().filename().string();
+                rootFolder.addFolder(folderName);
+                std::cerr << "Folder added : " << folderName << std::endl;
+                addSubfolders(rootFolder.folders.back(), entry.path().string());
             } else{
                 std::cerr << "Folder does not contain image" << entry.path().string() << std::endl;
             }
@@ -162,3 +164,15 @@ bool containImage(const std::string& path)
     }
     return false;
 }
+
+
+// std::string Folders::getParentPath(){
+//     std::string path;
+//     Folders* current = this;
+//     while (current->parent != nullptr) {
+//         std::cerr << "current->parent->name : " << current->parent->name << std::endl;
+//         path = current->parent->name + "/" + path;
+//         current = current->parent;
+//     }
+//     return path;
+// }

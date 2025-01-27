@@ -10,7 +10,7 @@
 class Folders
 {
 public:
-    Folders* parent;
+    Folders* parent = nullptr;
     std::string name;
     std::vector<Folders> folders;
     std::vector<std::string> files;
@@ -23,7 +23,7 @@ public:
     Folders(std::string f, Folders* p) : name(f), parent(p) {}
 
     // Constructeur de copie
-    Folders(const Folders& other) : name(other.name), files(other.files) {}
+    Folders(const Folders& other) : name(other.name), files(other.files), folders(other.folders) {}
 
 
     Folders& operator=(const Folders& other);
@@ -38,6 +38,7 @@ public:
 
     void print() const;
 
+    // std::string getParentPath();
 
 
 };

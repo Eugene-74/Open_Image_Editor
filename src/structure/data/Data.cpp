@@ -449,13 +449,15 @@ void Data::exportImages(std::string exportPath, bool dateInName){
 
     firstFolder = findFirstFolderWithAllImages(imagesData, rootFolders);
 
-    // firstFolder->print();
+    firstFolder->print();
 
-    // std::cerr << "firstFolder : " << firstFolder->name << std::endl;
+    std::cerr << "firstFolder : " << firstFolder->name << std::endl;
 
     exportPath += "/" + firstFolder->name;
 
-    copyImages(firstFolder, exportPath, dateInName);
+    createFolders(firstFolder, exportPath);
+
+    copyTo(rootFolders, exportPath, dateInName);
 }
 
 Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const{
@@ -477,60 +479,127 @@ Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const 
     return const_cast<Folders*>(&currentFolder);
 }
 
-void Data::copyTo(std::string filePath, std::string destinationPath,
-    bool dateInName) const{
-    // TODO utiliser le threadPool
-    // TODO refaire marche pas bien dutout
-    std::cerr << "copy : " << filePath << std::endl;
+void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInName){
 
-    for (const auto& imageData : imagesData.imagesData){
-        std::cerr << "imageData.folders.name : " << imageData.folders.name << " : " << imageData.folders.folders.size() << " : " << imageData.folders.files.size()
-            << std::endl;
+    std::string initialFolder = fs::path(destinationPath).filename().string();
 
-        for (const auto& folder : imageData.folders.folders){
-            std::cerr << "file.name : " << folder.name << std::endl;
-            if (folder.name == filePath){
-                std::string destinationFile =
-                    destinationPath + "/" + imageData.getImageName();
-                if (dateInName){
-                    Exiv2::ExifData exifData = imageData.getMetaData().getExifData();
-                    if (exifData["Exif.Image.DateTime"].count() != 0)
-                    {
-                        std::string date = exifData["Exif.Image.DateTime"].toString();
-                        std::replace(date.begin(), date.end(), ':', '-');
-                        std::replace(date.begin(), date.end(), ' ', '_');
-                        destinationFile = destinationPath + "/" + date + "_" + folder.name;
-                    } else
-                    {
-                        destinationFile = destinationPath + "/" + "no_date" + "_" + folder.name;
-                    }
-                }
-                if (!imageData.cropSizes.empty()) {
-                    QImage image(QString::fromStdString(imageData.folders.name));
-                    if (!image.isNull()) {
-                        std::vector<QPoint> cropPoints = imageData.cropSizes.back();
-                        if (cropPoints.size() == 2) {
-                            QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
-                            image = image.copy(cropRect);
-                        }
-                    }
-                    image.save(QString::fromStdString(destinationFile));
 
-                    // Copy metadata
-                    Exiv2::Image::AutoPtr srcImage = Exiv2::ImageFactory::open(imageData.folders.name);
-                    srcImage->readMetadata();
-                    Exiv2::Image::AutoPtr destImage = Exiv2::ImageFactory::open(destinationFile);
-                    destImage->setExifData(srcImage->exifData());
-                    destImage->setIptcData(srcImage->iptcData());
-                    destImage->setXmpData(srcImage->xmpData());
-                    destImage->writeMetadata();
-                } else{
-                    QFile::copy(QString::fromStdString(imageData.folders.name), QString::fromStdString(destinationFile));
-                }
-                std::cerr << imageData.folders.name << " : " << destinationFile << std::endl;
+
+    for (auto& imageData : imagesData.imagesData){
+        for (auto& folder : imageData.folders.folders){
+            std::string fileName = fs::path(imageData.folders.name).filename().string();
+
+            std::string folderName = folder.name;
+
+            size_t pos = folderName.find(initialFolder);
+            if (pos != std::string::npos) {
+                folderName = folderName.substr(pos + initialFolder.length());
             }
+
+
+
+
+            std::string destinationFile;
+
+            if (dateInName) {
+                imageData.loadData();
+                Exiv2::ExifData exifData = imageData.getMetaData()->getExifData();
+                if (exifData["Exif.Image.DateTime"].count() != 0) {
+                    std::string date = exifData["Exif.Image.DateTime"].toString();
+                    std::replace(date.begin(), date.end(), ':', '-');
+                    std::replace(date.begin(), date.end(), ' ', '_');
+                    destinationFile = destinationPath + "/" + folderName + "/" + date + "_" + fileName;
+                } else {
+                    destinationFile = destinationPath + "/" + folderName + "/" + "no_date" + "_" + fileName;
+                }
+            } else{
+                destinationFile = destinationPath + "/" + folderName + "/" + fileName;
+            }
+            if (!imageData.cropSizes.empty()) {
+                QImage image(QString::fromStdString(imageData.folders.name));
+                if (!image.isNull()) {
+                    std::vector<QPoint> cropPoints = imageData.cropSizes.back();
+                    if (cropPoints.size() == 2) {
+                        QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
+                        image = image.copy(cropRect);
+                    }
+                }
+                image.save(QString::fromStdString(destinationFile));
+
+                // Copy metadata
+                Exiv2::Image::AutoPtr srcImage = Exiv2::ImageFactory::open(imageData.folders.name);
+                srcImage->readMetadata();
+                Exiv2::Image::AutoPtr destImage = Exiv2::ImageFactory::open(destinationFile);
+                destImage->setExifData(srcImage->exifData());
+                destImage->setIptcData(srcImage->iptcData());
+                destImage->setXmpData(srcImage->xmpData());
+                destImage->writeMetadata();
+            } else {
+                QFile::copy(QString::fromStdString(imageData.folders.name), QString::fromStdString(destinationFile));
+            }
+
         }
     }
+
+
+
+
+
+
+    // TODO utiliser le threadPool
+    // TODO refaire marche pas bien dutout
+    // std::cerr << "copy : " << filePath << std::endl;
+
+
+
+    // for (const auto& imageData : imagesData.imagesData){
+    //     std::cerr << "imageData.folders.name : " << imageData.folders.name << " : " << imageData.folders.folders.size() << " : " << imageData.folders.files.size()
+    //         << std::endl;
+
+    //     for (const auto& folder : imageData.folders.folders){
+    //         // std::cerr << "file.name : " << folder.name << std::endl;
+    //         if (folder.name == filePath){
+    //             std::string destinationFile =
+    //                 destinationPath + "/" + imageData.getImageName();
+    //             if (dateInName){
+    //                 Exiv2::ExifData exifData = imageData.getMetaData().getExifData();
+    //                 if (exifData["Exif.Image.DateTime"].count() != 0)
+    //                 {
+    //                     std::string date = exifData["Exif.Image.DateTime"].toString();
+    //                     std::replace(date.begin(), date.end(), ':', '-');
+    //                     std::replace(date.begin(), date.end(), ' ', '_');
+    //                     destinationFile = destinationPath + "/" + date + "_" + folder.name;
+    //                 } else
+    //                 {
+    //                     destinationFile = destinationPath + "/" + "no_date" + "_" + folder.name;
+    //                 }
+    //             }
+    //             if (!imageData.cropSizes.empty()) {
+    //                 QImage image(QString::fromStdString(imageData.folders.name));
+    //                 if (!image.isNull()) {
+    //                     std::vector<QPoint> cropPoints = imageData.cropSizes.back();
+    //                     if (cropPoints.size() == 2) {
+    //                         QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
+    //                         image = image.copy(cropRect);
+    //                     }
+    //                 }
+    //                 image.save(QString::fromStdString(destinationFile));
+
+    //                 // Copy metadata
+    //                 Exiv2::Image::AutoPtr srcImage = Exiv2::ImageFactory::open(imageData.folders.name);
+    //                 srcImage->readMetadata();
+    //                 Exiv2::Image::AutoPtr destImage = Exiv2::ImageFactory::open(destinationFile);
+    //                 destImage->setExifData(srcImage->exifData());
+    //                 destImage->setIptcData(srcImage->iptcData());
+    //                 destImage->setXmpData(srcImage->xmpData());
+    //                 destImage->writeMetadata();
+    //             } else{
+    //                 QFile::copy(QString::fromStdString(imageData.folders.name), QString::fromStdString(destinationFile));
+    //             }
+    //             std::cerr << imageData.folders.name << " : " << destinationFile << std::endl;
+    //         }
+    //     }
+    // }
 }
 QImage Data::rotateQImage(QImage image, std::string imagePath)
 {
@@ -589,8 +658,7 @@ QImage Data::rotateQImage(QImage image, std::string imagePath)
     return image;
 }
 
-void Data::copyImages(Folders* currentFolders, std::string folderPath,
-    bool dateInName){
+void Data::createFolders(Folders* currentFolders, std::string folderPath){
 
     std::string initialFolderPath = folderPath;
     std::cerr << "initialFolderPath : " << initialFolderPath << std::endl;
@@ -604,14 +672,7 @@ void Data::copyImages(Folders* currentFolders, std::string folderPath,
         if (!fs::exists(folderPath)){
             fs::create_directories(folderPath);
         }
-        copyImages(&folder, folderPath, dateInName);
-    }
-
-    for (auto& file : currentFolders->folders){
-
-        std::string filePath = initialFolderPath + "/" + file.name;
-
-        copyTo(file.name, filePath, dateInName);
+        createFolders(&folder, folderPath);
     }
 }
 
