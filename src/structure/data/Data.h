@@ -112,7 +112,7 @@ public:
 
     void clearActions();
 
-    void sortImagesData();
+    void sortImagesData(QProgressDialog& progressDialog);
 
 private:
     std::vector<Actions> lastActions = {};
@@ -125,6 +125,7 @@ private:
     Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
     void createFolders(Folders* currentFolders, std::string path);
     void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
+
 };
 
 

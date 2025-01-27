@@ -14,8 +14,16 @@ void addImagesFromFolder(Data* data, QWidget* parent){
     // TODO *& necessaire sinon data ressort sans imagesData ...
     data->imagesData = *&imagesData;
 
+    progressDialog.setLabelText("sorting...");
+    progressDialog.setValue(0);
+    QApplication::processEvents();
+
     auto start = std::chrono::high_resolution_clock::now();
-    data->sortImagesData();
+
+
+    data->sortImagesData(progressDialog);
+
+
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;
     std::cout << "Sorting images took " << elapsed.count() << " seconds." << std::endl;
@@ -124,8 +132,9 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
         progressDialog.setValue(i);
         QApplication::processEvents();
     }
-    progressDialog.setLabelText("sorting...");
-    QApplication::processEvents();
+
+
+
 
 
 
