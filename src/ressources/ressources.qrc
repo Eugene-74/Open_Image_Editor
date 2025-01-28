@@ -7,9 +7,12 @@
         <file>delete.png</file>
         <file>save.png</file>
         <file>export.png</file>
-        <file>editExif.png</file>
         <file>mirrorUpDown.png</file> 
         <file>mirrorLeftRight.png</file>
+        <file>editExif.png</file>
+        <file>conversion.png</file>
+
+
         <file>loading.png</file>
 
         <file>imageBooth.png</file>

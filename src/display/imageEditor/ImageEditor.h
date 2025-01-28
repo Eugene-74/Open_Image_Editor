@@ -112,6 +112,8 @@ private:
     ClickableLabel* createImageExport();
 
     ClickableLabel* createImageEditExif();
+    ClickableLabel* createImageConversion();
+
 
     ClickableLabel* createImageBefore();
     ClickableLabel* createImageNext();
@@ -165,6 +167,8 @@ private:
     ClickableLabel* imageExport;
 
     ClickableLabel* imageEditExif;
+    ClickableLabel* imageConversion;
+
 
     QTimer* imageOpenTimer = new QTimer(this);
 

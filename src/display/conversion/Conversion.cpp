@@ -96,21 +96,34 @@ QImage readHEICAndHEIF(const std::string& filename) {
     return qImage;
 }
 
-QString launchConversionDialog() {
-    // Créer une instance de QApplication si elle n'existe pas déjà
-    int argc = 0;
-    char* argv[] = { nullptr };
-    QApplication app(argc, argv);
+void launchConversionDialog(const QString& inputImagePath) {
+    // Obtenir l'extension actuelle de l'image
+    QFileInfo fileInfo(inputImagePath);
+    QString currentExtension = fileInfo.suffix().toLower();
 
     // Créer et afficher la boîte de dialogue
     ConversionDialog dialog;
     if (dialog.exec() == QDialog::Accepted) {
         // Récupérer le format sélectionné
-        return dialog.getSelectedFormat();
-    }
+        QString selectedFormat = dialog.getSelectedFormat().mid(1); // Retirer le point (.) du format
 
-    // Retourner une chaîne vide si l'utilisateur annule la boîte de dialogue
-    return QString();
+        // Vérifier si le format sélectionné est différent du format actuel
+        if (selectedFormat != currentExtension) {
+            // Construire le nouveau chemin de l'image avec le nouveau format
+            QString outputImagePath = fileInfo.path() + "/" + fileInfo.completeBaseName() + "." + selectedFormat;
+
+            // Convertir l'image avec les métadonnées
+            if (!convertImageWithMetadata(inputImagePath.toStdString(), outputImagePath.toStdString())) {
+                std::cerr << "Erreur : Impossible de convertir l'image avec les métadonnées" << std::endl;
+                return;
+            }
+
+            std::cout << "Image convertie avec succès : " << outputImagePath.toStdString() << std::endl;
+            return;
+        } else {
+            std::cout << "Le format sélectionné est identique au format actuel. Aucune conversion nécessaire." << std::endl;
+        }
+    }
 }
 
 

@@ -328,6 +328,9 @@ void ImageEditor::createButtons() {
 
     imageEditExif = createImageEditExif();
 
+    imageConversion = createImageConversion();
+
+
     actionButtonLayout->addWidget(imageRotateRight);
     actionButtonLayout->addWidget(imageRotateLeft);
     actionButtonLayout->addWidget(imageMirrorLeftRight);
@@ -335,6 +338,8 @@ void ImageEditor::createButtons() {
     actionButtonLayout->addWidget(imageDelete);
     actionButtonLayout->addWidget(imageSave);
     actionButtonLayout->addWidget(imageExport);
+    actionButtonLayout->addWidget(imageConversion);
+
 
     actionButtonLayout->addWidget(imageEditExif);
 
@@ -833,6 +838,20 @@ ClickableLabel* ImageEditor::createImageEditExif() {
         });
 
     return imageEditExifNew;
+}
+
+ClickableLabel* ImageEditor::createImageConversion() {
+    if (data->imagesData.get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageConversionNew = new ClickableLabel(data, ":/conversion.png", this, actionSize);
+
+    connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
+        launchConversionDialog(QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()));
+        });
+
+    return imageConversionNew;
 }
 
 

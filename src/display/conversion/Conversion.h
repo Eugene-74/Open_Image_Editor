@@ -9,6 +9,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QStringList>
+#include <QFileInfo>
 
 #include <heif.h>
 #include <libraw/libraw.h>
@@ -49,7 +50,7 @@ private:
 
 
 
-QString launchConversionDialog();
+void launchConversionDialog(const QString& inputImagePath);
 
 
 QImage readHEICAndHEIF(const std::string& filename);
