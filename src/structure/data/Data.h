@@ -13,6 +13,8 @@
 #include <iostream>
 #include <fstream>
 #include "../../display/box/Box.h"
+#include <heif.h>
+
 
 #include "../../structure/folders/Folders.h"
 #include "../../structure/sizes/Sizes.h"

@@ -15,10 +15,6 @@ if(WIN32)
     include_directories("C:/msys64/mingw64/include")
     link_directories("C:/msys64/mingw64/lib")
 
-    message(STATUS "Exiv2 library: ${EXIV2_LIBRARIES}")
-
-    # Nom du projet
-
     # Configuration C++
     set(CMAKE_CXX_STANDARD 17)
     set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -36,15 +32,18 @@ if(WIN32)
     # Trouver les packages
     find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
     find_package(OpenCV REQUIRED)
-    # find_package(Exiv2 REQUIRED)
     find_library(EXIV2_LIBRARIES exiv2 REQUIRED)
+    find_library(HEIF_LIBRARIES heif REQUIRED)
     message(STATUS "Exiv2 library: ${EXIV2_LIBRARIES}")
 
 
+    set(HEIF_INCLUDE_DIRS "C:/msys64/mingw64/include/libheif")
 
     # Inclure les répertoires d'en-têtes
     include_directories(${OpenCV_INCLUDE_DIRS})
     include_directories(${EXIV2_INCLUDE_DIRS})
+    include_directories(${HEIF_INCLUDE_DIRS})
+    message(STATUS "HEIF library: ${HEIF_INCLUDE_DIRS}")
 
     # Utiliser ccache si disponible
     find_program(CCACHE_PROGRAM ccache)
@@ -66,12 +65,14 @@ if(WIN32)
     add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
 
     # Liaison des bibliothèques
-    target_link_libraries(${PROJECT_NAME} PRIVATE
+    target_link_libraries(${PROJECT_NAME} 
+        PRIVATE
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets
         ${OpenCV_LIBS}
         ${EXIV2_LIBRARIES}
+        ${HEIF_LIBRARIES}
     )
 
     # Support GCC filesystem
@@ -178,6 +179,3 @@ set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
 
 # Inclure les fichiers de release dans le package
 install(DIRECTORY ${CMAKE_BINARY_DIR}/release/ DESTINATION .)
-
-# Activer CPACK
-include(CPack)

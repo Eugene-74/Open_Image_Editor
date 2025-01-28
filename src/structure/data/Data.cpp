@@ -76,6 +76,7 @@ bool Data::isDeleted(int imageNbr){
 QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     bool setSize, int thumbnail, bool rotation,
     bool square, bool crop, bool force){
+
     QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail, force);
 
     if (crop){
@@ -119,9 +120,57 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     return image;
 }
 
+
+QImage readHEIC(const std::string& filename) {
+    struct heif_context* ctx = heif_context_alloc();
+    struct heif_error err = heif_context_read_from_file(ctx, filename.c_str(), nullptr);
+    if (err.code != heif_error_Ok) {
+        std::cerr << "Erreur : Impossible de lire le fichier HEIC " << filename << std::endl;
+        heif_context_free(ctx);
+        return QImage();
+    }
+
+    struct heif_image_handle* handle;
+    err = heif_context_get_primary_image_handle(ctx, &handle);
+    if (err.code != heif_error_Ok) {
+        std::cerr << "Erreur : Impossible d'obtenir le handle de l'image" << std::endl;
+        heif_context_free(ctx);
+        return QImage();
+    }
+
+    struct heif_image* img;
+    err = heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGB, nullptr);
+    if (err.code != heif_error_Ok) {
+        std::cerr << "Erreur : Impossible de décoder l'image" << std::endl;
+        heif_image_handle_release(handle);
+        heif_context_free(ctx);
+        return QImage();
+    }
+
+    int stride;
+    const uint8_t* data = heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride);
+
+    // Créer un QImage vide avec les mêmes dimensions
+    int width = heif_image_get_width(img, heif_channel_interleaved);
+    int height = heif_image_get_height(img, heif_channel_interleaved);
+    QImage qImage(data, width, height, stride, QImage::Format_RGB888);
+
+    // Copier les données de l'image HEIC dans le QImage
+    for (int y = 0; y < qImage.height(); ++y) {
+        memcpy(qImage.scanLine(y), data + y * stride, qImage.width() * 3);
+    }
+
+    heif_image_release(img);
+    heif_image_handle_release(handle);
+    heif_context_free(ctx);
+
+    return qImage;
+}
+
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
-    bool setSize, int thumbnail, bool force)
-{
+    bool setSize, int thumbnail, bool force){
+
+
     std::map<std::string, QImageAndPath>* cache = imageCache;
 
     auto it = cache->find(imagePath);
@@ -155,49 +204,46 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 
     QResource ressource(QString::fromStdString(imagePath));
 
+
     QImage image;
 
-    if (ressource.isValid())
-    {
+
+
+    if (ressource.isValid()){
         image.load(QString::fromStdString(imagePathbis));
-    } else
-    {
-        if (thumbnail == 128)
-        {
-            if (hasThumbnail(imagePath, 128))
-            {
+    } else{
+        if (thumbnail == 128){
+            if (hasThumbnail(imagePath, 128)){
                 imagePathbis = getThumbnailPath(imagePath, 128);
-            } else
-            {
+            } else{
                 createThumbnail(imagePath, 128);
                 createThumbnailIfNotExists(imagePath, 256);
                 createThumbnailIfNotExists(imagePath, 512);
             }
-        } else if (thumbnail == 256)
-        {
-            if (hasThumbnail(imagePath, 256))
-            {
+        } else if (thumbnail == 256){
+            if (hasThumbnail(imagePath, 256)){
                 imagePathbis = getThumbnailPath(imagePath, 256);
-            } else
-            {
+            } else{
                 createThumbnailIfNotExists(imagePath, 128);
                 createThumbnail(imagePath, 256);
                 createThumbnailIfNotExists(imagePath, 512);
             }
-        } else if (thumbnail == 512)
-        {
-            if (hasThumbnail(imagePath, 512))
-            {
+        } else if (thumbnail == 512){
+            if (hasThumbnail(imagePath, 512)){
                 imagePathbis = getThumbnailPath(imagePath, 512);
-            } else
-            {
+            } else{
                 createThumbnailIfNotExists(imagePath, 128);
                 createThumbnailIfNotExists(imagePath, 256);
                 createThumbnail(imagePath, 512);
             }
         }
-
+        if (thumbnail == 0){
+            if (fs::path(imagePath).extension() == ".heic" || fs::path(imagePath).extension() == ".HEIC") {
+                image = readHEIC(imagePath);
+            }
+        }
         image.load(QString::fromStdString(imagePathbis));
+
         if (image.isNull())
         {
             return QImage();
@@ -300,7 +346,9 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim)
     std::hash<std::string> hasher;
     size_t hashValue = hasher(imagePath);
 
-    std::string extension = fs::path(imagePath).extension().string();
+    // std::string extension = fs::path(imagePath).extension().string();
+    std::string extension = ".png";
+
 
     std::string outputImage;
     if (maxDim == 128)
@@ -352,7 +400,9 @@ bool Data::hasThumbnail(const std::string& imagePath, const int maxDim)
 {
     std::hash<std::string> hasher;
     size_t hashValue = hasher(imagePath);
-    std::string extension = fs::path(imagePath).extension().string();
+    // std::string extension = fs::path(imagePath).extension().string();
+    std::string extension = ".png";
+
     std::string outputImage;
 
     if (maxDim == 128)
@@ -396,7 +446,9 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
 {
     std::hash<std::string> hasher;
     size_t hashValue = hasher(imagePath);
-    std::string extension = fs::path(imagePath).extension().string();
+    // std::string extension = fs::path(imagePath).extension().string();
+    std::string extension = ".png";
+
     std::string outputImage;
 
     if (size == 128)

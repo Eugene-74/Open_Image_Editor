@@ -9,7 +9,7 @@ bool isImage(const std::string& path) {
         return false;
     }
     // Liste des extensions d'images courantes
-    std::vector<std::string> extensionsImages = { ".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".webp" };
+    std::vector<std::string> extensionsImages = { ".jpg", ".jpeg", ".png", ".heic" };
 
     // Récupération de l'extension du fichier
     std::string extension = fs::path(path).extension().string();
