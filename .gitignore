@@ -1,16 +1,12 @@
 # Fichiers et répertoires générés par CMake
 CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
+# CMakeCache.txt
+# cmake_install.cmake
+# Makefile
 
 # Répertoires de build
 build/
-dependencies.txt
-temp_dependencies.txt
 
-bin/
-lib/
 
 # Fichiers de configuration
 *.cmake
@@ -22,14 +18,8 @@ lib/
 *~
 
 # Fichiers spécifiques à l'IDE
-.idea/
 .vscode/
-*.swp
-*.swo
 
-
-# .editorconfig
-.clang-format
 .vscode/
 
 src/ressources/qrc_ressources.cpp
