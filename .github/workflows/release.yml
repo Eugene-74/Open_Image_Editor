@@ -6,11 +6,11 @@ on:
       - 'v*.*.*'
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v2
 
     - name: Set up Node.js
@@ -21,13 +21,7 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Build project
-      run: npm run build
-
-    - name: Create ZIP file
-      run: zip -r OpenImageEditor.zip ./release
-
-    - name: Create GitHub Release
+    - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
@@ -37,6 +31,9 @@ jobs:
         release_name: Release ${{ github.ref }}
         draft: false
         prerelease: false
+
+    - name: Zip Release Files
+      run: zip -r OpenImageEditor.zip ./path/to/release/files
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
