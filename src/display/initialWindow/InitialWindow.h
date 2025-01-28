@@ -42,6 +42,8 @@ public:
 private slots:
     void showImageEditor();
     void showImageBooth();
+    void showMainWindow();
+
 
 private:
     ImageEditor* imageEditor = nullptr;

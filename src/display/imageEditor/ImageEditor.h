@@ -175,6 +175,8 @@ private:
     bool bigImage = false;
 signals:
     void switchToImageBooth();
+    void switchToMainWindow();
+
 };
 
 

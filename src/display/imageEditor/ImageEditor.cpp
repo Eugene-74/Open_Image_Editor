@@ -950,6 +950,7 @@ void ImageEditor::reloadImageLabel() {
 
 
 void ImageEditor::keyPressEvent(QKeyEvent* event) {
+    std::cerr << "keyPressEvent" << std::endl;
     if (bigImage || exifEditor) {
         return;
     }

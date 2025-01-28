@@ -70,7 +70,7 @@ void InitialWindow::createImageEditor(Data* data) {
     imageEditor->setFocus();
 
     connect(imageEditor, &ImageEditor::switchToImageBooth, this, &InitialWindow::showImageBooth);
-
+    connect(imageEditor, &ImageEditor::switchToMainWindow, this, &InitialWindow::showMainWindow);
 }
 
 void InitialWindow::createImageBooth(Data* data) {
@@ -81,7 +81,7 @@ void InitialWindow::createImageBooth(Data* data) {
     imageBooth->setFocus();
 
     connect(imageBooth, &ImageBooth::switchToImageEditor, this, &InitialWindow::showImageEditor);
-
+    connect(imageBooth, &ImageBooth::switchToMainWindow, this, &InitialWindow::showMainWindow);
 }
 
 
@@ -140,8 +140,18 @@ void InitialWindow::showImageBooth() {
     if (mainWindow != nullptr){
         clearMainWindow();
     }
-
     createImageBooth(data);
+}
+
+void InitialWindow::showMainWindow() {
+    std::cerr << "showMainWindow" << std::endl;
+    if (imageEditor != nullptr){
+        clearImageEditor();
+    }
+    if (imageBooth != nullptr){
+        clearImageBooth();
+    }
+    createMainWindow(data);
 }
 
 
