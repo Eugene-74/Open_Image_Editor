@@ -3,12 +3,6 @@ project(OpenImageEditor VERSION 1.0.0)
 
 if(WIN32)
 
-    # add_compile_options(
-    #     -Wall        # Active les warnings basiques
-    #     -Wextra      # Active les warnings supplémentaires
-    #     -Wpedantic   # Respect strict du standard C++
-    # )
-
     message(STATUS "Configuring for Windows")
     # Chemin Qt
     set(CMAKE_PREFIX_PATH "C:/msys64/mingw64")
@@ -170,3 +164,20 @@ elseif(UNIX)
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif()
 
+# Configuration de CPACK
+include(CPack)
+
+set(CPACK_PACKAGE_NAME "OpenImageEditor")
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+
+set(CPACK_GENERATOR "ZIP")
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
+
+# Inclure les fichiers de release dans le package
+install(DIRECTORY ${CMAKE_BINARY_DIR}/release/ DESTINATION .)
+
+# Activer CPACK
+include(CPack)
