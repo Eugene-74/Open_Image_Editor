@@ -1,8 +1,8 @@
 # Posibilitiées
 
-| Action               | JPEG/JPG | HEIC/HEIF | TIFF | WEBP | PNG | BMP | SVG | RAW | GIF |
+| Action               | JPEG/JPG | HEIC/HEIF | TIFF | WEBP | PNG | BMP | SVG | GIF | RAW |
 | -------------------- | -------- | --------- | ---- | ---- | --- | --- | --- | --- | --- |
-| Ouvrir               | ✔️       | ✔️        | ✔️   | ✔️   | ✔️  | ✔️  | ✔️  | ❌   | ✔️  |
+| Ouvrir               | ✔️       | ✔️        | ✔️   | ✔️   | ✔️  | ✔️  | ✔️  | ✔️  | ❌   |
 | Afficher             | ✔️       | ✔️        | ✔️   | ✔️   | ✔️  | ✔️  | ✔️  | ❌   | ❌   |
 | Enregistrer          | ✔️       | ✔️        | ✔️   | ✔️   | ✔️  | ✔️  | ✔️  | ❌   | ❌   |
 | Convertir            | ✔️       | ✔️        | ✔️   | ✔️   | ✔️  | ✔️  | ✔️  | ❌   | ❌   |
