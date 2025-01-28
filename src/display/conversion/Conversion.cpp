@@ -113,6 +113,8 @@ QString launchConversionDialog() {
     return QString();
 }
 
+
+// TODO non fonctionel
 QImage readRAW(const std::string& filename) {
     std::cerr << " begin :: : " << filename << std::endl;
 
