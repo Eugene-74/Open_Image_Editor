@@ -8,7 +8,6 @@ cmake -G "Ninja" ..
     
 cmake --build . --config Release
 
-
 cd ..
 
 rmdir /s /q release
@@ -22,19 +21,12 @@ copy ..\start.bat .
 mkdir bin
 cd bin
 
-
 copy ..\..\build\%EXECUTABLE% .
 
 windeployqt6.exe %EXECUTABLE%
 
-@REM TODO modifier pour pas copier tout les dll mais juste les bons (mais comment les trouver XD)
-@REM xcopy C:\msys64\mingw64\bin\*.dll .
-
-
 @REM NON trouver jsp pk mais necessaire
 xcopy C:\msys64\mingw64\bin\libjpeg-8.dll .
-
-
 
 C:\mingw-bundledlls\mingw-bundledlls C:\Users\eugen\Documents\MesDocuments\git\Open_Image_Editor\release\bin\%EXECUTABLE% > dependencies.txt
 
@@ -54,11 +46,6 @@ del dependencies.txt
 del temp_dependencies.txt
 exit /b
 
-
-
 call :copy_dependencies
-
-
-
 
 endlocal
