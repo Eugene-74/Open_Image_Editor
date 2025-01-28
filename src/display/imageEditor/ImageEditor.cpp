@@ -1362,7 +1362,8 @@ void ImageEditor::rotateLeft() {
 
     bool saved = data->saved;
 
-    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
+    if (exifTurnOrMiror(extension)) {
+
         rotateLeftJpg();
         data->addAction([this, nbr, saved]() {
             if (saved){
@@ -1378,7 +1379,7 @@ void ImageEditor::rotateLeft() {
                 reload();
                 rotateLeftJpg();
             });
-    } else if (extension == ".png" || extension == ".PNG") {
+    } else if (realTurnOrMiror(extension)) {
         rotateLeftPng();
         data->addAction([this, nbr, saved]() {
             if (saved){
@@ -1402,7 +1403,7 @@ void ImageEditor::rotateRight() {
     int nbr = data->imagesData.imageNumber;
     bool saved = data->saved;
 
-    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
+    if (exifTurnOrMiror(extension)) {
         rotateRightJpg();
         data->addAction([this, nbr, saved]() {
             if (saved){
@@ -1418,7 +1419,7 @@ void ImageEditor::rotateRight() {
                 reload();
                 rotateRightJpg();
             });
-    } else if (extension == ".png" || extension == ".PNG") {
+    } else if (realTurnOrMiror(extension)) {
         rotateRightPng();
         data->addAction([this, nbr, saved]() {
             if (saved){
@@ -1472,7 +1473,7 @@ void ImageEditor::mirrorUpDown() {
     int nbr = data->imagesData.imageNumber;
     bool saved = data->saved;
 
-    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
+    if (exifTurnOrMiror(extension)) {
         mirrorUpDownJpg();
         data->addAction([this, nbr, saved]() {
             if (saved){
@@ -1488,7 +1489,7 @@ void ImageEditor::mirrorUpDown() {
                 reload();
                 mirrorUpDownJpg();
             });
-    } else if (extension == ".png" || extension == ".PNG") {
+    } else if (realTurnOrMiror(extension)) {
         mirrorUpDownPng();
         data->addAction([this, nbr, saved]() {
             if (saved){
@@ -1515,7 +1516,7 @@ void ImageEditor::mirrorLeftRight() {
     bool saved = data->saved;
 
 
-    if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG") {
+    if (exifTurnOrMiror(extension)) {
         mirrorLeftRightJpg();
         data->addAction([this, nbr, saved]() {
             if (saved){
@@ -1531,7 +1532,7 @@ void ImageEditor::mirrorLeftRight() {
                 reload();
                 mirrorLeftRightJpg();
             });
-    } else if (extension == ".png" || extension == ".PNG") {
+    } else if (realTurnOrMiror(extension)) {
         mirrorLeftRightPng();
         data->addAction([this, nbr, saved]() {
             if (saved){

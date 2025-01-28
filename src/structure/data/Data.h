@@ -13,8 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include "../../display/box/Box.h"
-#include <heif.h>
-
+#include "../../display/conversion/Conversion.h"
 
 #include "../../structure/folders/Folders.h"
 #include "../../structure/sizes/Sizes.h"
@@ -129,5 +128,7 @@ private:
     void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
 
 };
+
+
 
 

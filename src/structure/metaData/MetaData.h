@@ -43,12 +43,6 @@ public:
     bool modifyXmpValue(const std::string& key, const std::string& newValue);
     bool modifyIptcValue(const std::string& key, const std::string& newValue);
 
-    // Sauvegarder en binaire
-    void save(std::ofstream& out) const;
-
-    // Charger à partir d'un fichier binaire
-    void load(std::ifstream& in);
-
     void setOrCreateExifData(std::string& imagePath);
 
 

@@ -218,7 +218,6 @@ void MetaData::loadData(const std::string& imagePath){
             iptcMetaData = image->iptcData();
 
             dataLoaded = true;
-
         }
     } catch (const Exiv2::Error& e){
         std::cerr << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what() << std::endl;
@@ -228,19 +227,23 @@ void MetaData::loadData(const std::string& imagePath){
 }
 
 // Fonction pour sauvegarder les métadonnées EXIF dans une image
-bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData)
-{
+bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData){
     try
     {
-        // Charger l'image
+#ifdef _WIN32
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        std::wstring wImagePath = converter.from_bytes(imagePath);
+        std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(wImagePath);
+#else
         std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(imagePath);
-        image->readMetadata();
+#endif
 
-        // Ajouter ou remplacer les métadonnées EXIF
+        image->readMetadata();
         image->setExifData(exifData);
 
-        // Sauvegarder les métadonnées dans l'image
         image->writeMetadata();
+
+
         return true;
     } catch (const Exiv2::Error& e)
     {
@@ -252,14 +255,17 @@ bool saveXmpData(const std::string& imagePath, const Exiv2::XmpData& exifData)
 {
     try
     {
-        // Charger l'image
+#ifdef _WIN32
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        std::wstring wImagePath = converter.from_bytes(imagePath);
+        std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(wImagePath);
+#else
         std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(imagePath);
+#endif
         image->readMetadata();
 
-        // Ajouter ou remplacer les métadonnées EXIF
         image->setXmpData(exifData);
 
-        // Sauvegarder les métadonnées dans l'image
         image->writeMetadata();
         return true;
     } catch (const Exiv2::Error& e)
@@ -272,14 +278,17 @@ bool saveIptcData(const std::string& imagePath, const Exiv2::IptcData& exifData)
 {
     try
     {
-        // Charger l'image
+#ifdef _WIN32
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        std::wstring wImagePath = converter.from_bytes(imagePath);
+        std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(wImagePath);
+#else
         std::unique_ptr<Exiv2::Image> image = Exiv2::ImageFactory::open(imagePath);
+#endif
         image->readMetadata();
 
-        // Ajouter ou remplacer les métadonnées EXIF
         image->setIptcData(exifData);
 
-        // Sauvegarder les métadonnées dans l'image
         image->writeMetadata();
         return true;
     } catch (const Exiv2::Error& e)
@@ -351,217 +360,6 @@ void displayIptcData(const Exiv2::IptcData& data)
     }
 }
 
-void MetaData::load(std::ifstream& in){
-    std::cerr << "Chargement des métadonnées" << std::endl;
-    // Load exifMetaData
-    // size_t exifSize;
-    // in.read(reinterpret_cast<char*>(&exifSize), sizeof(exifSize));
-    // // std::cerr << "bug0" << exifSize << std::endl;
-    // if (in.fail()) {
-    //     throw std::runtime_error("Failed to read exifSize");
-    // }
-    // std::cerr << "bug1" << std::endl;
-
-    // for (size_t i = 0; i < exifSize; ++i) {
-    //     try {
-    //         size_t keySize, valueSize;
-    //         in.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
-    //         if (in.fail() || keySize == 0 || keySize > in.tellg()) {
-    //             throw std::runtime_error("Invalid keySize");
-    //         }
-
-    //         std::string key(keySize, '\0');
-    //         in.read(&key[0], keySize);
-    //         if (in.fail()) {
-    //             throw std::runtime_error("Failed to read key");
-    //         }
-
-    //         in.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
-    //         if (in.fail() || valueSize == 0 || valueSize > in.tellg()) {
-    //             throw std::runtime_error("Invalid valueSize");
-    //         }
-
-    //         std::string value(valueSize, '\0');
-    //         in.read(&value[0], valueSize);
-    //         if (in.fail()) {
-    //             throw std::runtime_error("Failed to read value");
-    //         }
-
-    //         Exiv2::Exifdatum datum = Exiv2::Exifdatum(Exiv2::ExifKey(key));
-    //         datum.setValue(value);
-    //         exifMetaData.add(datum);
-    //     } catch (const std::exception& e) {
-    //         std::cerr << "Erreur lors de la lecture des métadonnées EXIF : " << e.what() << std::endl;
-    //         // Continue to the next entry
-    //     }
-
-    // }
-    std::cerr << "bug2" << std::endl;
-
-    // Load xmpMetaData
-    size_t xmpSize;
-    in.read(reinterpret_cast<char*>(&xmpSize), sizeof(xmpSize));
-
-    if (xmpSize != 0){
-        std::cerr << "xmpSize : " << xmpSize << std::endl;
-    }
-
-    if (in.fail()) {
-        throw std::runtime_error("Failed to read xmpSize");
-    }
-
-    for (size_t i = 0; i < xmpSize; ++i) {
-        try {
-            size_t keySize, valueSize;
-            in.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
-            if (in.fail() || keySize == 0 || keySize > in.tellg()) {
-                throw std::runtime_error("Invalid keySize");
-            }
-
-            std::string key(keySize, '\0');
-            in.read(&key[0], keySize);
-            if (in.fail()) {
-                throw std::runtime_error("Failed to read key");
-            }
-
-            in.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
-            if (in.fail() || valueSize == 0 || valueSize > in.tellg()) {
-                throw std::runtime_error("Invalid valueSize");
-            }
-
-            std::string value(valueSize, '\0');
-            in.read(&value[0], valueSize);
-            if (in.fail()) {
-                throw std::runtime_error("Failed to read value");
-            }
-
-            Exiv2::Xmpdatum datum = Exiv2::Xmpdatum(Exiv2::XmpKey(key));
-            datum.setValue(value);
-            xmpMetaData.add(datum);
-        } catch (const std::exception& e) {
-            std::cerr << "Erreur lors de la lecture des métadonnées XMP : " << e.what() << std::endl;
-        }
-    }
-
-    // Load iptcMetaData
-    size_t iptcSize;
-    in.read(reinterpret_cast<char*>(&iptcSize), sizeof(iptcSize));
-
-    if (iptcSize != 0){
-        std::cerr << "iptcSize : " << iptcSize << std::endl;
-    }
-
-    if (iptcSize >= 1000){
-        return;
-    }
-    if (in.fail()) {
-        throw std::runtime_error("Failed to read iptcSize");
-    }
-
-    for (size_t i = 0; i < iptcSize; ++i) {
-        try {
-            size_t keySize, valueSize;
-            in.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
-            if (in.fail() || keySize == 0 || keySize > in.tellg()) {
-                throw std::runtime_error("Invalid keySize");
-            }
-
-            std::string key(keySize, '\0');
-            in.read(&key[0], keySize);
-            if (in.fail()) {
-                throw std::runtime_error("Failed to read key");
-            }
-
-            in.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
-            if (in.fail() || valueSize == 0 || valueSize > in.tellg()) {
-                throw std::runtime_error("Invalid valueSize");
-            }
-
-            std::string value(valueSize, '\0');
-            in.read(&value[0], valueSize);
-            if (in.fail()) {
-                throw std::runtime_error("Failed to read value");
-            }
-
-            Exiv2::Iptcdatum datum = Exiv2::Iptcdatum(Exiv2::IptcKey(key));
-            datum.setValue(value);
-            iptcMetaData.add(datum);
-        } catch (const std::exception& e) {
-            std::cerr << "Erreur lors de la lecture des métadonnées IPTC : " << e.what() << std::endl;
-        }
-    }
-}
-
-void MetaData::save(std::ofstream& out) const
-{
-
-    // Save exifMetaData
-    // size_t exifSize = 0;
-    // for (const auto& datum : exifMetaData){
-    //     // std::cerr << datum.key() << std::endl;
-    //     if (datum.key() == "Exif.Image.Orientation"){
-    //         exifSize = 1;
-    //         break;
-    //     }
-    // }
-    // out.write(reinterpret_cast<const char*>(&exifSize), sizeof(exifSize));
-    // for (const auto& datum : exifMetaData){
-    //     if (datum.key() != "Exif.Image.Orientation"){
-    //         continue;
-    //     }
-
-    //     std::string key = datum.key();
-    //     std::string value = datum.toString();
-    //     std::cerr << key << " :: " << value << std::endl;
-    //     size_t keySize = key.size();
-    //     size_t valueSize = value.size();
-    //     out.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
-    //     out.write(key.c_str(), keySize);
-    //     out.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
-    //     out.write(value.c_str(), valueSize);
-    // }
-
-    // Save xmpMetaData
-    size_t xmpSize = xmpMetaData.count();
-    // size_t xmpSize = 0;
-
-    if (xmpSize != 0){
-        std::cerr << "xmpSize : " << xmpSize << std::endl;
-    }
-
-    out.write(reinterpret_cast<const char*>(&xmpSize), sizeof(xmpSize));
-    for (const auto& datum : xmpMetaData)
-    {
-        std::string key = datum.key();
-        std::string value = datum.toString();
-        size_t keySize = key.size();
-        size_t valueSize = value.size();
-        out.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
-        out.write(key.c_str(), keySize);
-        out.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
-        out.write(value.c_str(), valueSize);
-    }
-
-    // Save iptcMetaData
-    size_t iptcSize = iptcMetaData.size();
-    // size_t iptcSize = 0;
-
-    if (iptcSize != 0){
-        std::cerr << "iptcSize : " << iptcSize << std::endl;
-    }
-    out.write(reinterpret_cast<const char*>(&iptcSize), sizeof(iptcSize));
-    for (const auto& datum : iptcMetaData)
-    {
-        std::string key = datum.key();
-        std::string value = datum.toString();
-        size_t keySize = key.size();
-        size_t valueSize = value.size();
-        out.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
-        out.write(key.c_str(), keySize);
-        out.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
-        out.write(value.c_str(), valueSize);
-    }
-}
 
 void MetaData::setExifData(const Exiv2::ExifData data)
 {
