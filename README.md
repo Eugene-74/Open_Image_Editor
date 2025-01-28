@@ -1,4 +1,4 @@
-# Posibilities
+# Posibilitiées
 
 | Action               | JPEG/JPG | HEIC/HEIF | TIFF | WEBP | PNG | BMP | SVG | RAW | GIF |
 | -------------------- | -------- | --------- | ---- | ---- | --- | --- | --- | --- | --- |
@@ -11,31 +11,37 @@
 
 
 
-# Shortcut
+# Raccourcis Clavier
 
-Left Arrow -> previous Image
+### Navigation
+- **⬅️ Left Arrow** : Image précédente  
+- **➡️ Right Arrow** : Image suivante  
 
-Right Arrow -> next Image
+---
 
+### Rotation
+- **Ctrl + ⬅️ Left Arrow** : Tourner l'image vers la gauche  
+- **Ctrl + ➡️ Right Arrow** : Tourner l'image vers la droite  
 
+---
 
-Ctrl + Left Arrow -> turn Image to the left
+### Miroir
+- **Ctrl + ⬆️ Up Arrow** : Miroir vertical de l'image  
+- **Ctrl + ⬇️ Bottom Arrow** : Miroir horizontal de l'image  
 
-Ctrl + Right Arrow -> turn Image to the Right
+---
 
-Ctrl + Up Arrow -> vertical mirror Image
+### Gestion des images
+- **Ctrl + D** ou **Suppr** ou **Backspace** : Pré-suppression de l'image  
 
-Ctrl + Bottom Arrow -> horizontal mirror image
+---
 
+### Sauvegarde et annulation
+- **Ctrl + S** : Sauvegarder  
+- **Ctrl + Z** : Annuler (Undo)  
+- **Ctrl + Shift + Z** : Refaire (Redo)  
 
+---
 
-
-Ctrl + D or Suppr or Backspace -> pre delete Image
-
-Ctrl + S -> save
-
-Ctrl + Z -> unDo
-
-Ctrl + Shift + Z -> reDo
-
-Escape -> go to last window
+### Autres
+- **Escape** : Retourner à la dernière fenêtre
