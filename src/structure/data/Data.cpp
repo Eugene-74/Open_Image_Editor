@@ -306,9 +306,8 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim)
         Qt::KeepAspectRatio);
 
     std::hash<std::string> hasher;
-    size_t hashValue = hasher(imagePath);
+    size_t hashValue = hasher(fs::path(imagePath).filename().string());
 
-    // std::string extension = fs::path(imagePath).extension().string();
     std::string extension = ".png";
 
 
@@ -361,7 +360,8 @@ void Data::createThumbnailIfNotExists(const std::string& imagePath,
 bool Data::hasThumbnail(const std::string& imagePath, const int maxDim)
 {
     std::hash<std::string> hasher;
-    size_t hashValue = hasher(imagePath);
+    size_t hashValue = hasher(fs::path(imagePath).filename().string());
+
     // std::string extension = fs::path(imagePath).extension().string();
     std::string extension = ".png";
 
@@ -407,7 +407,8 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
     const int size)
 {
     std::hash<std::string> hasher;
-    size_t hashValue = hasher(imagePath);
+    size_t hashValue = hasher(fs::path(imagePath).filename().string());
+
     // std::string extension = fs::path(imagePath).extension().string();
     std::string extension = ".png";
 

@@ -155,7 +155,6 @@ void ImageBooth::keyReleaseEvent(QKeyEvent* event) {
     switch (event->key()) {
 
     case Qt::Key_Escape:
-        // switchToImageEditor();
         switchToMainWindow();
         break;
 

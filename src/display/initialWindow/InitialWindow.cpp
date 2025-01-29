@@ -68,6 +68,8 @@ void InitialWindow::createImageEditor(Data* data) {
     layout->addWidget(imageEditor);
 
     imageEditor->setFocus();
+    imageEditor->setFocusPolicy(Qt::StrongFocus);
+
 
     connect(imageEditor, &ImageEditor::switchToImageBooth, this, &InitialWindow::showImageBooth);
     connect(imageEditor, &ImageEditor::switchToMainWindow, this, &InitialWindow::showMainWindow);
@@ -79,6 +81,8 @@ void InitialWindow::createImageBooth(Data* data) {
     layout->addWidget(imageBooth);
 
     imageBooth->setFocus();
+    imageBooth->setFocusPolicy(Qt::StrongFocus);
+
 
     connect(imageBooth, &ImageBooth::switchToImageEditor, this, &InitialWindow::showImageEditor);
     connect(imageBooth, &ImageBooth::switchToMainWindow, this, &InitialWindow::showMainWindow);
@@ -93,6 +97,7 @@ void InitialWindow::createMainWindow(Data* data) {
     layout->addWidget(mainWindow);
 
     mainWindow->setFocus();
+    mainWindow->setFocusPolicy(Qt::StrongFocus);
 
     connect(mainWindow, &MainWindow::switchToImageBooth, this, &InitialWindow::showImageBooth);
     connect(mainWindow, &MainWindow::switchToImageEditor, this, &InitialWindow::showImageEditor);
@@ -101,21 +106,18 @@ void InitialWindow::createMainWindow(Data* data) {
 void InitialWindow::clearImageEditor() {
     layout->removeWidget(imageEditor);
     imageEditor->clear();
-    // delete imageEditor;
     imageEditor = nullptr;
 }
 
 void InitialWindow::clearImageBooth() {
     layout->removeWidget(imageBooth);
     imageBooth->clear();
-    // delete imageBooth;
     imageBooth = nullptr;
 }
 
 void InitialWindow::clearMainWindow() {
     layout->removeWidget(mainWindow);
     mainWindow->clear();
-    // delete mainWindow;
     mainWindow = nullptr;
 }
 
