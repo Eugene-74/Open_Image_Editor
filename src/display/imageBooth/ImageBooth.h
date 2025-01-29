@@ -29,6 +29,10 @@ public:
     void clear();
 
 private:
+    // TODO Sauvegarder autre part si on ne veux pas perdre
+    std::vector<int> imagesSelected;
+    int imageShiftSelected = -1;
+
     Data* data;
     int imageNumber;
     int loadedImageNumber = 0;

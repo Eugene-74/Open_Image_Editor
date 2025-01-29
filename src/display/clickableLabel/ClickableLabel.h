@@ -14,11 +14,17 @@ class ClickableLabel : public QLabel {
     Q_OBJECT
 
 public:
+    void select(std::string color);
+    void unSelect();
+
     explicit ClickableLabel(Data* data, const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
 
 signals:
     void clicked();
     void leftClicked();
+    void rightClicked();
+    void shiftLeftClicked();
+
 
 protected:
     void enterEvent(QEnterEvent* event) override;
@@ -27,15 +33,14 @@ protected:
     void mouseReleaseEvent(QMouseEvent* event) override;  // Override mouse release event
 
 
-
-
-
 private:
+
     QPixmap defaultPixmap;
 
 
     int border = 0;
     int border_radius = 5;
+    bool selected = false;
 
 public:
     void updateStyleSheet();

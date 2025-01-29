@@ -50,10 +50,17 @@ void ClickableLabel::mousePressEvent(QMouseEvent* event) {
 void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
     emit clicked();
     if (event->button() == Qt::LeftButton) {
-        emit leftClicked();
-        hover_background_color = HOVER_BACKGROUND_COLOR;
-        updateStyleSheet();
+        if (event->modifiers() & Qt::ShiftModifier) {
+            emit shiftLeftClicked();
+        } else{
+            emit leftClicked();
+            hover_background_color = HOVER_BACKGROUND_COLOR;
+            updateStyleSheet();
+        }
+    } else if (event->button() == Qt::RightButton) {
+        emit rightClicked();
     }
+
     QLabel::mouseReleaseEvent(event);
 }
 
@@ -75,4 +82,18 @@ void ClickableLabel::updateStyleSheet() {
         }
     )").arg(border).arg(border_radius).arg(border_color).arg(hover_border_color).arg(background_color).arg(hover_background_color);
     this->setStyleSheet(styleSheet);
+}
+
+
+void ClickableLabel::select(std::string color){
+    selected = true;
+    background_color = QString::fromStdString(color);
+    updateStyleSheet();
+}
+
+void ClickableLabel::unSelect(){
+    selected = false;
+    background_color = "transparent";
+    updateStyleSheet();
+
 }

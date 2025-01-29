@@ -41,7 +41,7 @@ if(WIN32)
 
     set(HEIF_INCLUDE_DIRS "C:/msys64/mingw64/include/libheif")
     
-    # set(LIBRAW_INCLUDE_DIRS "C:/msys64/mingw64/include/libraw")
+    set(LIBRAW_INCLUDE_DIRS "C:/msys64/mingw64/include/libraw")
     # set(LIBRAW_LIBRARIES "C:/msys64/mingw64/lib/libraw.dll.a")
 
     # Inclure les répertoires d'en-têtes

@@ -266,8 +266,8 @@ bool Data::loadInCache(const std::string imagePath, bool setSize,
     // std::cerr << "loaded in cache  bis : " << imagePath << std::endl;
     // std::cerr << "big !! Image size: " << static_cast<double>(image.sizeInBytes()) / (1024 * 1024) << " MB" << std::endl;
 
-    // (*imageCache)[imagePath].image = image;
-    // (*imageCache)[imagePath].imagePath = imagePath;
+    (*imageCache)[imagePath].image = image;
+    (*imageCache)[imagePath].imagePath = imagePath;
 
     createThumbnailIfNotExists(imagePath, 128);
     createThumbnailIfNotExists(imagePath, 256);
