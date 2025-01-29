@@ -78,6 +78,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     bool square, bool crop, bool force){
 
     QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail, force);
+    // std::cout << "Image size in MB: " << static_cast<double>(image.sizeInBytes()) / (1024 * 1024) << " MB" << std::endl;
 
     if (crop){
         int imageId = imagesData.getImageIdByName(imagePath);
@@ -126,32 +127,24 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     bool setSize, int thumbnail, bool force){
 
-
-    std::map<std::string, QImageAndPath>* cache = imageCache;
-
-    auto it = cache->find(imagePath);
-    if (it != cache->end())
-    {
+    auto it = imageCache->find(imagePath);
+    if (it != imageCache->end()){
         return it->second.image;
     }
 
-    if (!force)
-    {
-        it = cache->find(getThumbnailPath(imagePath, 512));
-        if (it != cache->end())
-        {
+    if (!force){
+        it = imageCache->find(getThumbnailPath(imagePath, 512));
+        if (it != imageCache->end()){
             return it->second.image;
         }
 
-        it = cache->find(getThumbnailPath(imagePath, 256));
-        if (it != cache->end())
-        {
+        it = imageCache->find(getThumbnailPath(imagePath, 256));
+        if (it != imageCache->end()){
             return it->second.image;
         }
 
-        it = cache->find(getThumbnailPath(imagePath, 128));
-        if (it != cache->end())
-        {
+        it = imageCache->find(getThumbnailPath(imagePath, 128));
+        if (it != imageCache->end()){
             return it->second.image;
         }
     }
@@ -160,10 +153,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 
     QResource ressource(QString::fromStdString(imagePath));
 
-
     QImage image;
-
-
 
     if (ressource.isValid()){
         image.load(QString::fromStdString(imagePathbis));
@@ -204,6 +194,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
             }
         } else{
             image.load(QString::fromStdString(imagePathbis));
+            // TODO l'image est charger directement trop grosse
         }
 
         if (image.isNull())
@@ -211,21 +202,35 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
             return QImage();
         }
 
-        if (setSize)
-        {
+        if (setSize){
             image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         }
     }
+    // TODO cache pose des probleme de mémoire !!! car imageBooth vide rien
+    // if (static_cast<double>(image.sizeInBytes()) / (1024 * 1024) < 10){
+    (*imageCache)[imagePathbis].image = image;
+    (*imageCache)[imagePathbis].imagePath = imagePath;
+    // } else{
+    //     std::cerr << "loaded big image in cache : " << imagePath << std::endl;
+    //     std::cerr << "Image size: " << static_cast<double>(image.sizeInBytes()) / (1024 * 1024) << " MB" << std::endl;
 
-    (*cache)[imagePathbis].image = image;
-    (*cache)[imagePathbis].imagePath = imagePath;
+    // }
+
+    size_t cacheSize = 0;
+    for (const auto& pair : *imageCache) {
+        cacheSize += pair.second.image.sizeInBytes();
+    }
+    std::cerr << "Image cache size: " << static_cast<double>(cacheSize) / (1024 * 1024) << " MB" << std::endl;
+
+    // std::cerr << "Current cache contents:" << std::endl;
+    // for (const auto& pair : *imageCache) {
+    //     std::cerr << "Image path: " << pair.second.imagePath << ", Size: " << pair.second.image.sizeInBytes() << static_cast<double>(cacheSize) / (1024 * 1024) << " MB" << std::endl;
+    // }
     return image;
+
 }
 
-void Data::loadInCacheAsync(std::string imagePath,
-    std::function<void()> callback, bool setSize,
-    QSize size, bool force)
-{
+void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force){
     futures[QString::fromStdString(imagePath)] = threadPool.enqueue(
         &Data::loadImageTask, this, imagePath, setSize, size, force, callback);
 }
@@ -258,9 +263,11 @@ bool Data::loadInCache(const std::string imagePath, bool setSize,
     {
         image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
-    // std::cerr << "loaded in cache : " << imagePath << std::endl;
-    (*imageCache)[imagePath].image = image;
-    (*imageCache)[imagePath].imagePath = imagePath;
+    // std::cerr << "loaded in cache  bis : " << imagePath << std::endl;
+    // std::cerr << "big !! Image size: " << static_cast<double>(image.sizeInBytes()) / (1024 * 1024) << " MB" << std::endl;
+
+    // (*imageCache)[imagePath].image = image;
+    // (*imageCache)[imagePath].imagePath = imagePath;
 
     createThumbnailIfNotExists(imagePath, 128);
     createThumbnailIfNotExists(imagePath, 256);
@@ -286,10 +293,8 @@ bool Data::getLoadedImage(std::string imagePath, QImage& image)
 }
 
 void Data::createThumbnails(const std::vector<std::string>& imagePaths,
-    const int maxDim)
-{
-    for (const auto& imagePath : imagePaths)
-    {
+    const int maxDim){
+    for (const auto& imagePath : imagePaths){
         createThumbnail(imagePath, maxDim);
     }
 }
@@ -345,24 +350,15 @@ void Data::createThumbnailsIfNotExists(
 }
 
 void Data::createThumbnailIfNotExists(const std::string& imagePath,
-    const int maxDim)
-{
-    if (!hasThumbnail(imagePath, maxDim))
-    {
-        // std::cout << "creating Thumbnail for: " << imagePath << std::endl;
+    const int maxDim){
+    if (!hasThumbnail(imagePath, maxDim)){
         createThumbnail(imagePath, maxDim);
-    } else
-    {
-        // std::cout << "Thumbnail already exists for: " << maxDim << " : " <<
-        // imagePath << std::endl;
     }
 }
-bool Data::hasThumbnail(const std::string& imagePath, const int maxDim)
-{
+bool Data::hasThumbnail(const std::string& imagePath, const int maxDim){
     std::hash<std::string> hasher;
     size_t hashValue = hasher(fs::path(imagePath).filename().string());
 
-    // std::string extension = fs::path(imagePath).extension().string();
     std::string extension = ".png";
 
     std::string outputImage;
@@ -380,8 +376,6 @@ bool Data::hasThumbnail(const std::string& imagePath, const int maxDim)
         outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" +
             std::to_string(hashValue) + extension;
     }
-
-    // Check if the thumbnail file exists
     return fs::exists(outputImage);
 }
 
@@ -430,19 +424,20 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
     return outputImage;
 }
 
-bool Data::unloadFromCache(std::string imagePath)
-{
-    if (!imageCache)
-    {
+bool Data::unloadFromCache(std::string imagePath){
+    if (!imageCache){
         std::cerr << "imageCache is not initialized" << std::endl;
         return false;
     }
     auto it = imageCache->find(imagePath);
 
-    if (it != imageCache->end())
-    {
+    if (it != imageCache->end()){
         imageCache->erase(it);
+        // TODO ajouter le clear des metaDAta et juste sauvegarder la rotation
+        // imageData.metaData.clear();
+
         return true;
+
     }
     return false;
 }
@@ -821,48 +816,41 @@ void Data::clearActions()
     lastActions.clear();
 }
 
-void Data::sortImagesData(QProgressDialog& progressDialog){
+void Data::sortImagesData(QProgressDialog& progressDialog) {
+
+    progressDialog.setLabelText("Loading imagesData ...");
+    progressDialog.setValue(0);
+    progressDialog.setMaximum(imagesData.get()->size());
+    QApplication::processEvents();
 
     int progress = 0;
 
-    progressDialog.setMaximum(imagesData.get()->size() * 2);
-
-    // Check that all the data are loaded before sorting using the existing thread pool
-    std::vector<std::future<void>> futures;
     for (auto& imageData : *imagesData.get()) {
-        futures.push_back(threadPool.enqueue([&imageData, &progressDialog, &progress]() {
-            imageData.loadData();
-            }));
+        imageData.loadData();
+        progress++;
+        progressDialog.setValue(progress);
     }
 
-    // Wait for all the data to be loaded
-    for (auto& future : futures) {
-        future.get();
-    }
+    progressDialog.setLabelText("Sorting ...");
+    progressDialog.setValue(0);
+    int n = imagesData.get()->size();
+    // TODO mieux estimer X( estimatedSteps
+    int estimatedSteps = static_cast<int>(n * std::log(n) * 3);
+    progressDialog.setMaximum(estimatedSteps);
+    progressDialog.show();
+    QApplication::processEvents();
 
-    // Sort the images data using multiple threads
     auto& data = *imagesData.get();
-
-    size_t chunkSize = data.size() / numThreads;
-    std::vector<std::future<void>> sortFutures;
-
-    for (size_t i = 0; i < numThreads; ++i) {
-        sortFutures.push_back(threadPool.enqueue([&, i]() {
-            auto begin = data.begin() + i * chunkSize;
-            auto end = (i == numThreads - 1) ? data.end() : begin + chunkSize;
-            std::sort(begin, end, [](const ImageData& a, const ImageData& b) {
-                return a.getMetaData().getExifData()["Exif.Image.DateTime"].toString() > b.getMetaData().getExifData()["Exif.Image.DateTime"].toString();
-                });
-            }));
-    }
-
-    for (auto& future : sortFutures) {
-        future.get();
-    }
-
-    // Merge sorted chunks
-    std::inplace_merge(data.begin(), data.begin() + chunkSize, data.end(), [](const ImageData& a, const ImageData& b) {
+    std::sort(data.begin(), data.end(), [&progress, &progressDialog](const ImageData& a, const ImageData& b) {
+        progress++;
+        progressDialog.setValue(progress);
         return a.getMetaData().getExifData()["Exif.Image.DateTime"].toString() > b.getMetaData().getExifData()["Exif.Image.DateTime"].toString();
+
         });
+    // for (auto& imageData : *imagesData.get()) {
+    //     imageData.metaData.clear();
+    // }
+
 }
+
 

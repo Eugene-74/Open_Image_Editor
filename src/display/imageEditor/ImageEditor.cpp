@@ -1366,7 +1366,6 @@ void ImageEditor::checkLoadedImage() {
     for (const auto& imagePath : toUnload) {
         data->unloadFromCache(imagePath);
         data->unloadFromFutures(imagePath);
-
     }
 
 }

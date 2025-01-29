@@ -100,7 +100,10 @@ void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
 
 void ImageData::loadData() {
     try {
-        metaData.loadData(folders.name);
+        if (!metaData.dataLoaded){
+            metaData.loadData(folders.name);
+            metaData.dataLoaded = true;
+        }
     } catch (const Exiv2::Error& e) {
         std::cerr << "Error loading metadata for image: " << folders.name << std::endl;
         handleExiv2Error(e);

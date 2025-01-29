@@ -12,14 +12,13 @@
 #include <string>
 #include <vector>
 
-ImagesData addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& progressDialog);
+void addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& progressDialog);
 std::string getDirectoryFromUser(QWidget* parent);
 
 
-bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string imagePaths, ImagesData* imagesData, QProgressDialog& progressDialog);
+bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string imagePaths, QProgressDialog& progressDialog);
 void countImagesFromFolder(const std::string path, int& nbrImage);
 bool loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage, QProgressDialog& progressDialog);
-bool loadImagesMetaData(ImagesData* imagesData, QProgressDialog& progressDialog);
 bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog);
 
 

@@ -32,10 +32,11 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
         data->sizes.imagesBoothSizes->linesLayoutMargins[3]);  // bas
     auto start = std::chrono::high_resolution_clock::now();
 
-    for (int i = 0;
-        i < data->sizes.imagesBoothSizes->heightImageNumber * LINE_LOADED; i++) {
+    for (int i = 0;i < data->sizes.imagesBoothSizes->heightImageNumber * LINE_LOADED; i++) {
         createLine();
     }
+
+
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
@@ -87,23 +88,15 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             false, 0, true);
         data->loadInCacheAsync(imagePath, [this, imagePath, imageButton]() {
             done += 1;
+            // Cree toutes les thubnails vue qu'elle n'existe pas
             data->createAllThumbnail(imagePath, 512);
 
-            if (IMAGE_BOOTH_IMAGE_QUALITY == 128) {
-                data->unloadFromCache(data->getThumbnailPath(imagePath, 256));
-                data->unloadFromCache(data->getThumbnailPath(imagePath, 512));
-            } else if (IMAGE_BOOTH_IMAGE_QUALITY == 256) {
-                data->unloadFromCache(data->getThumbnailPath(imagePath, 128));
-                data->unloadFromCache(data->getThumbnailPath(imagePath, 512));
-            } else if (IMAGE_BOOTH_IMAGE_QUALITY == 512) {
-                data->unloadFromCache(data->getThumbnailPath(imagePath, 128));
-                data->unloadFromCache(data->getThumbnailPath(imagePath, 256));
-            }
             data->unloadFromCache(imagePath);
 
-            QImage qImage = data->loadImage(this, imagePath, this->size(), true,
-                IMAGE_BOOTH_IMAGE_QUALITY, true, true);
+            // TODO Remplis la memoire !!! fait 3 Mo alors que l'image fait 0,166 Mo
+            QImage qImage = data->loadImage(this, imagePath, this->size(), true, IMAGE_BOOTH_IMAGE_QUALITY, true, true);
 
+            // Remplis pas la memoire
             QMetaObject::invokeMethod(
                 QApplication::instance(),
                 [imageButton, qImage]() {
@@ -156,6 +149,12 @@ void ImageBooth::keyReleaseEvent(QKeyEvent* event) {
 
     case Qt::Key_Escape:
         switchToMainWindow();
+        break;
+
+    case Qt::Key_I:
+        for (const auto& cache : *data->imageCache) {
+            std::cout << "Image: " << cache.first << " Size: " << static_cast<double>(cache.second.image.sizeInBytes()) / (1024 * 1024) << " MB" << std::endl;
+        }
         break;
 
     default:

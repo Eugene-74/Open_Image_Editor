@@ -58,6 +58,7 @@ public:
 
 
     void loadData(const std::string& imagePath);
+    void clear();
 };
 
 

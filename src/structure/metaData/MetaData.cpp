@@ -386,3 +386,11 @@ Exiv2::IptcData MetaData::getIptcData()
 {
     return iptcMetaData;
 }
+
+
+void MetaData::clear(){
+
+    exifMetaData.clear();
+    xmpMetaData.clear();
+    iptcMetaData.clear();
+}
