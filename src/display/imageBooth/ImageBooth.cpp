@@ -108,6 +108,18 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             });
     }
 
+    if (std::find(imagesSelected.begin(), imagesSelected.end(), nbr) != imagesSelected.end()) {
+        imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+    }
+
+    if (nbr == imageShiftSelected) {
+        if (imageShiftSelectedSelect){
+            imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT);
+        } else{
+            imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT);
+        }
+    }
+
     connect(imageButton, &ClickableLabel::leftClicked, [this, nbr]() {
         data->imagesData.setImageNumber(nbr);
         switchToImageEditor();

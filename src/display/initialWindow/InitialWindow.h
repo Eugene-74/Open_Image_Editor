@@ -12,6 +12,8 @@
 #include "../../display/imageBooth/ImageBooth.h"
 #include "../../display/mainWindow/MainWindow.h"
 
+#include "../../functions/date/Date.h"
+
 
 
 class ImageEditor;

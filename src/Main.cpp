@@ -10,6 +10,23 @@ int main(int argc, char* argv[]) {
     auto start = std::chrono::high_resolution_clock::now();
     QApplication app(argc, argv);
 
+    // fichier log avec Qt debug
+    QDir logDir("logs");
+    if (!logDir.exists()) {
+        logDir.mkpath(".");
+    }
+    static QFile logFile("logs/application.log");
+    logFile.open(QIODevice::WriteOnly | QIODevice::Append);
+    static QTextStream logStream(&logFile);
+    qInstallMessageHandler([](QtMsgType type, const QMessageLogContext& context, const QString& msg) {
+        logStream << msg << Qt::endl;
+        logStream.flush();
+        });
+
+    auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::tm* now_tm = std::localtime(&now);
+    qDebug() << "Application started at:" << getCurrentFormattedDate();
+
     // Définir le style sur Fusion
     app.setStyle(QStyleFactory::create("Fusion"));
 
@@ -39,6 +56,5 @@ int main(int argc, char* argv[]) {
 
     return app.exec();
 }
-
 
 

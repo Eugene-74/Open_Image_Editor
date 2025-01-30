@@ -3,6 +3,7 @@
 
 
 InitialWindow::InitialWindow() {
+    qDebug() << "InitialWindow started at:" << getCurrentFormattedDate();
 
     data = new Data();
 
