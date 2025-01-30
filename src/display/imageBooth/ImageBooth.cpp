@@ -69,7 +69,12 @@ void ImageBooth::createLine() {
     for (int i = 0; i < nbr; i++) {
         if (imageNumber >= 0 && imageNumber < data->imagesData.get()->size()) {
             std::string imagePath = data->imagesData.get()->at(imageNumber).folders.name;
-            data->imagesData.get()->at(imageNumber).loadData();
+
+
+            if (data->imagesData.get()->at(imageNumber).orientation == 0) {
+                std::cerr << "Orientation " << data->imagesData.get()->at(imageNumber).orientation << std::endl;
+                data->imagesData.get()->at(imageNumber).loadData();
+            }
             lineLayout->addWidget(createImage(imagePath, imageNumber));
             imageNumber += 1;
         }
@@ -96,7 +101,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         data->loadInCacheAsync(imagePath, [this, imagePath, imageButton]() {
             done += 1;
 
-            data->createAllThumbnail(imagePath, 512);
+            data->createAllThumbnailIfNotExists(imagePath, 512);
 
             data->unloadFromCache(imagePath);
 
@@ -116,7 +121,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             });
     }
 
-    if (std::find(imagesSelected.begin(), imagesSelected.end(), nbr) != imagesSelected.end()) {
+    if (std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr) != data->imagesSelected.end()) {
         imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
     }
 
@@ -134,13 +139,13 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         });
 
     connect(imageButton, &ClickableLabel::ctrlLeftClicked, [this, nbr, imageButton]() {
-        auto it = std::find(imagesSelected.begin(), imagesSelected.end(), nbr);
-        if (it != imagesSelected.end()) {
+        auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
+        if (it != data->imagesSelected.end()) {
             imageButton->unSelect();
-            imagesSelected.erase(it);
+            data->imagesSelected.erase(it);
         } else {
             imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
-            imagesSelected.push_back(nbr);
+            data->imagesSelected.push_back(nbr);
         }
         });
 
@@ -155,17 +160,17 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                 if (label) {
                     if (imageShiftSelectedSelect){
                         label->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
-                        imagesSelected.push_back(i);
+                        data->imagesSelected.push_back(i);
                     } else{
                         label->unSelect();
-                        imagesSelected.erase(std::remove(imagesSelected.begin(), imagesSelected.end(), i), imagesSelected.end());
+                        data->imagesSelected.erase(std::remove(data->imagesSelected.begin(), data->imagesSelected.end(), i), data->imagesSelected.end());
                     }
                 }
             }
             imageShiftSelected = -1;
         } else{
-            auto it = std::find(imagesSelected.begin(), imagesSelected.end(), nbr);
-            if (it != imagesSelected.end()){
+            auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
+            if (it != data->imagesSelected.end()){
                 imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT);
                 imageShiftSelectedSelect = false;
             } else{
@@ -268,7 +273,7 @@ ClickableLabel* ImageBooth::createImageDelete() {
     connect(imageDelete, &ClickableLabel::clicked, [this]() {
         });
 
-    if (imagesSelected.empty()){
+    if (data->imagesSelected.empty()){
         imageDelete->setDisabled(true);
     }
 
@@ -300,7 +305,7 @@ ClickableLabel* ImageBooth::createImageExport() {
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
         });
 
-    if (imagesSelected.empty()){
+    if (data->imagesSelected.empty()){
         imageExportNew->setDisabled(true);
     }
 
@@ -317,7 +322,7 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
 
     connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() {
         });
-    if (imagesSelected.empty()){
+    if (data->imagesSelected.empty()){
         imageRotateRightNew->setDisabled(true);
     }
 
@@ -336,7 +341,7 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
     connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() {
         });
 
-    if (imagesSelected.empty()){
+    if (data->imagesSelected.empty()){
         imageRotateLeftNew->setDisabled(true);
     }
     return imageRotateLeftNew;
@@ -353,7 +358,7 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
     connect(imageMirrorUpDownNew, &ClickableLabel::clicked, [this]() {
         });
 
-    if (imagesSelected.empty()){
+    if (data->imagesSelected.empty()){
         imageMirrorUpDownNew->setDisabled(true);
     }
     return imageMirrorUpDownNew;
@@ -371,7 +376,7 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
     connect(imageMirrorLeftRightNew, &ClickableLabel::clicked, [this]() {
         });
 
-    if (imagesSelected.empty()){
+    if (data->imagesSelected.empty()){
         imageMirrorLeftRightNew->setDisabled(true);
     }
 
@@ -406,7 +411,7 @@ ClickableLabel* ImageBooth::createImageConversion() {
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
         });
 
-    if (imagesSelected.empty()){
+    if (data->imagesSelected.empty()){
         imageConversionNew->setDisabled(true);
     }
 

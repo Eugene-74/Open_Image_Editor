@@ -239,8 +239,7 @@ void Data::loadImageTask(std::string imagePath, bool setSize, QSize size,
     bool force, std::function<void()> callback)
 {
     loadInCache(imagePath, setSize, size, force);
-    if (callback)
-    {
+    if (callback){
         QMetaObject::invokeMethod(QApplication::instance(), callback,
             Qt::QueuedConnection);
     }
@@ -379,20 +378,27 @@ bool Data::hasThumbnail(const std::string& imagePath, const int maxDim){
     return fs::exists(outputImage);
 }
 
-void Data::createAllThumbnail(const std::string& imagePath, const int size)
-{
-    std::vector<std::string> imagePaths;
+void Data::createAllThumbnailIfNotExists(const std::string& imagePath, const int size){
+    if (size > 128){
+        createThumbnailIfNotExists(imagePath, 128);
+    }
+    if (size > 256){
+        createThumbnailIfNotExists(imagePath, 256);
+    }
+    if (size > 512){
+        createThumbnailIfNotExists(imagePath, 512);
+    }
+}
 
-    if (size > 128)
-    {
+
+void Data::createAllThumbnail(const std::string& imagePath, const int size){
+    if (size > 128){
         createThumbnail(imagePath, 128);
     }
-    if (size > 256)
-    {
+    if (size > 256){
         createThumbnail(imagePath, 256);
     }
-    if (size > 512)
-    {
+    if (size > 512){
         createThumbnail(imagePath, 512);
     }
 }
@@ -558,57 +564,49 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
         }
     }
 }
-QImage Data::rotateQImage(QImage image, std::string imagePath)
-{
+
+QImage Data::rotateQImage(QImage image, std::string imagePath){
     ImageData* imageData = imagesData.getImageData(imagePath);
-    if (imageData != nullptr)
-    {
+    if (imageData != nullptr){
         Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
-        if (exifData.empty())
-        {
-        } else
-        {
-            if (exifData["Exif.Image.Orientation"].count() != 0)
+        if (exifData.empty()){
+        } else{
+            int orientation = imageData->orientation;
+
+            // int orientation = exifData["Exif.Image.Orientation"].toInt64();
+            switch (orientation)
             {
-#ifdef _WIN32
-                int orientation = exifData["Exif.Image.Orientation"].toLong();
-#else
-                int orientation = exifData["Exif.Image.Orientation"].toInt64();
-#endif
-                // int orientation = exifData["Exif.Image.Orientation"].toInt64();
-                switch (orientation)
-                {
-                case 1:
-                    // No transformation needed
-                    break;
-                case 2:
-                    image = image.mirrored(true, false); // Horizontal mirror
-                    break;
-                case 3:
-                    image = image.transformed(QTransform().rotate(180));
-                    break;
-                case 4:
-                    image = image.mirrored(false, true); // Vertical mirror
-                    break;
-                case 5:
-                    image = image.mirrored(true, false)
-                        .transformed(QTransform().rotate(
-                            90)); // Horizontal mirror + 90 degrees
-                    break;
-                case 6:
-                    image = image.transformed(QTransform().rotate(90));
-                    break;
-                case 7:
-                    image = image.mirrored(true, false)
-                        .transformed(QTransform().rotate(
-                            -90)); // Horizontal mirror + -90 degrees
-                    break;
-                case 8:
-                    image = image.transformed(QTransform().rotate(-90));
-                    break;
-                default:
-                    break;
-                }
+            case 1:
+                // No transformation needed
+                break;
+            case 2:
+                image = image.mirrored(true, false); // Horizontal mirror
+                break;
+            case 3:
+                image = image.transformed(QTransform().rotate(180));
+                break;
+            case 4:
+                image = image.mirrored(false, true); // Vertical mirror
+                break;
+            case 5:
+                image = image.mirrored(true, false)
+                    .transformed(QTransform().rotate(
+                        90)); // Horizontal mirror + 90 degrees
+                break;
+            case 6:
+                image = image.transformed(QTransform().rotate(90));
+                break;
+            case 7:
+                image = image.mirrored(true, false)
+                    .transformed(QTransform().rotate(
+                        -90)); // Horizontal mirror + -90 degrees
+                break;
+            case 8:
+                image = image.transformed(QTransform().rotate(-90));
+                break;
+            default:
+                break;
+
             }
         }
     }

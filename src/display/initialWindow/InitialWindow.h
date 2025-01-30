@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QScreen>
 #include <QVBoxLayout>
+#include <QDebug>
+
 #include <QDesktopServices>
 
 #include "../../structure/imagesData/ImagesData.h"

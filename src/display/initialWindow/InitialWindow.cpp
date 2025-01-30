@@ -14,7 +14,14 @@ InitialWindow::InitialWindow() {
     data->imagesData = imagesData;
     data->deletedImagesData = deletedImagesData;
 
-    data->loadData();
+
+    // data->loadData();
+
+    try {
+        data->loadData();
+    } catch (const std::exception& e) {
+        qDebug() << "Error loading data: " << e.what();
+    }
 
     const QList<QScreen*> screens = QGuiApplication::screens();
     QScreen* screen = QGuiApplication::primaryScreen();
@@ -140,6 +147,7 @@ void InitialWindow::showImageBooth() {
     if (mainWindow != nullptr){
         clearMainWindow();
     }
+
     createImageBooth(data);
 }
 

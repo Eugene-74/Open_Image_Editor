@@ -29,7 +29,6 @@ public:
     void clear();
 
 private:
-    std::vector<int> imagesSelected;
     int imageShiftSelected = -1;
     bool imageShiftSelectedSelect;
 

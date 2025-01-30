@@ -14,7 +14,6 @@ const QString HOME_PATH = QStandardPaths::writableLocation(QStandardPaths::HomeL
 const QString CACHE_PATH = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 
 
-const QString IMAGE_PATH_LOADING = ":/loading.png";
 
 const int PREVIEW_NBR = 3;
 const int PRE_LOAD_RADIUS = 5; // on en precharge 2 de plus comme ça l'utilisateut ne vois meme pas les images charger
@@ -63,6 +62,7 @@ const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = 
 const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
 const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
 
+const QString IMAGE_PATH_LOADING = ":/icons/loading.png";
 
 const QString ICON_PATH_DELETE = ":/icons/delete.png";
 const QString ICON_PATH_SAVE = ":/icons/save.png";

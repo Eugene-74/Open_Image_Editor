@@ -61,6 +61,11 @@ public:
     ThreadPool threadPool = ThreadPool(numThreads);
     std::map<QString, std::future<void>> futures;
 
+
+    std::vector<int> imagesSelected;
+
+
+
     Data() : imageCache(new std::map<std::string, QImageAndPath>()) {}
 
 
@@ -87,13 +92,13 @@ public:
     void createThumbnails(const std::vector<std::string>& imagePaths, const int maxDim);
     void createThumbnail(const std::string& imagePath, const int maxDim);
 
+    void createThumbnailIfNotExists(const std::string& imagePath, const int maxDim);
     void createThumbnailsIfNotExists(const std::vector<std::string>& imagePaths, const int maxDim);
 
-    void createThumbnailIfNotExists(const std::string& imagePath, const int maxDim);
+    void createAllThumbnail(const std::string& imagePath, const int maxDim);
+    void createAllThumbnailIfNotExists(const std::string& imagePath, const int maxDim);
 
     bool hasThumbnail(const std::string& imagePath, const int maxDim);
-
-    void createAllThumbnail(const std::string& path, const int maxDim);
 
     std::string getThumbnailPath(const std::string& imagePath, const int size);
 

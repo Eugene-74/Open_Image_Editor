@@ -71,7 +71,7 @@ int MetaData::getImageOrientation()
             // return entry.toInt64();
         }
     }
-    return 1; // Retourne -1 si l'orientation n'est pas trouvée
+    return 1; // Retourne 1 si l'orientation n'est pas trouvée
 }
 
 // Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas

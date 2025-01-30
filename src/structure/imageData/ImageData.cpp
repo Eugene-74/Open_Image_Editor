@@ -6,6 +6,7 @@ ImageData& ImageData::operator=(const ImageData& other) {
         folders = other.folders;
         metaData = other.metaData;
         cropSizes = other.cropSizes;
+        orientation = other.orientation;
     }
     return *this;
 }
@@ -99,9 +100,13 @@ void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
 }
 
 void ImageData::loadData() {
+    std::cerr << "Loading metadata for image: " << folders.name << std::endl;
     try {
         if (!metaData.dataLoaded){
             metaData.loadData(folders.name);
+
+            orientation = metaData.getImageOrientation();
+
             metaData.dataLoaded = true;
         }
     } catch (const Exiv2::Error& e) {
@@ -144,9 +149,11 @@ void ImageData::setOrCreateExifData() {
 
 void ImageData::save(std::ofstream& out) const {
 
-    size_t pathLength = folders.name.size();
-    out.write(reinterpret_cast<const char*>(&pathLength), sizeof(pathLength));
-    out.write(folders.name.c_str(), pathLength);
+    out.write(reinterpret_cast<const char*>(&orientation), sizeof(orientation));
+
+    // size_t pathLength = folders.name.size();
+    // out.write(reinterpret_cast<const char*>(&pathLength), sizeof(pathLength));
+    // out.write(folders.name.c_str(), pathLength);
     folders.save(out);
 
     size_t cropSizesSize = cropSizes.size();
@@ -161,10 +168,12 @@ void ImageData::save(std::ofstream& out) const {
 
 void ImageData::load(std::ifstream& in) {
 
-    size_t pathLength;
-    in.read(reinterpret_cast<char*>(&pathLength), sizeof(pathLength));
-    folders.name.resize(pathLength);
-    in.read(&folders.name[0], pathLength);
+    in.read(reinterpret_cast<char*>(&orientation), sizeof(orientation));
+    std::cerr << "Orientation: " << orientation << std::endl;
+    // size_t pathLength;
+    // in.read(reinterpret_cast<char*>(&pathLength), sizeof(pathLength));
+    // folders.name.resize(pathLength);
+    // in.read(&folders.name[0], pathLength);
     folders.load(in);
 
     size_t cropSizesSize;

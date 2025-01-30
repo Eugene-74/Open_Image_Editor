@@ -17,10 +17,15 @@ public:
     MetaData metaData;
     std::vector<std::vector<QPoint>> cropSizes;
 
-    ImageData() : folders(Folders()), metaData(MetaData()), cropSizes() {}
+    int orientation = 0;
 
+
+
+    ImageData() : folders(Folders()), metaData(MetaData()), cropSizes(), orientation() {}
+
+    // !! necessaire sinon push_back ne fonctionne pas
     ImageData(const ImageData& other)
-        : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes) {
+        : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation) {
     }
 
     ImageData(const Folders c) : folders(c) {}
