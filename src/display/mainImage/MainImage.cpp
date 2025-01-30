@@ -191,8 +191,9 @@ void MainImage::cropImage() {
             QPoint(imageCropRect.left(), imageCropRect.top()),
             QPoint(imageCropRect.right(), imageCropRect.bottom())
         };
+        int orientation = data->imagesData.getCurrentImageData()->orientation;
 
-        int orientation = data->imagesData.getCurrentImageData()->getImageOrientation();
+        // int orientation = data->imagesData.getCurrentImageData()->getImageOrientation();
         std::vector<QPoint> adjustedCropPoints = adjustPointsForOrientation(cropPoints, orientation, qImageReel.size());
 
         data->imagesData.getCurrentImageData()->cropSizes.push_back(adjustedCropPoints);

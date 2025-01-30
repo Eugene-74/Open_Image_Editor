@@ -72,7 +72,6 @@ void ImageBooth::createLine() {
 
 
             if (data->imagesData.get()->at(imageNumber).orientation == 0) {
-                std::cerr << "Orientation " << data->imagesData.get()->at(imageNumber).orientation << std::endl;
                 data->imagesData.get()->at(imageNumber).loadData();
             }
             lineLayout->addWidget(createImage(imagePath, imageNumber));

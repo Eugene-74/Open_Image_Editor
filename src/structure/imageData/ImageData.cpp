@@ -134,7 +134,7 @@ int ImageData::getImageOrientation() {
 }
 
 void ImageData::turnImage(int rotation) {
-
+    orientation = rotation;
     metaData.modifyExifValue("Exif.Image.Orientation", std::to_string(rotation));
     // metaData.modifyExifValue("Exif.Thumbnail.Orientation", std::to_string(rotation));
     // metaData.modifyXmpValue("Xmp.tiff.Orientation", std::to_string(rotation));
@@ -169,7 +169,6 @@ void ImageData::save(std::ofstream& out) const {
 void ImageData::load(std::ifstream& in) {
 
     in.read(reinterpret_cast<char*>(&orientation), sizeof(orientation));
-    std::cerr << "Orientation: " << orientation << std::endl;
     // size_t pathLength;
     // in.read(reinterpret_cast<char*>(&pathLength), sizeof(pathLength));
     // folders.name.resize(pathLength);

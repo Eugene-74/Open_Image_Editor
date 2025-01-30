@@ -113,7 +113,9 @@ void ImageEditor::rotateLeftJpg() {
     if (!isTurnable(imageData->getImagePath())) {
         return;
     }
-    int orientation = imageData->getImageOrientation();
+    int orientation = imageData->orientation;
+    // int orientation = imageData->getImageOrientation();
+
     switch (orientation) {
     case 1:
         orientation = 8;
@@ -157,8 +159,8 @@ void ImageEditor::rotateRightJpg() {
     if (!isTurnable(imageData->getImagePath())) {
         return;
     }
-
-    int orientation = imageData->getImageOrientation();
+    int orientation = imageData->orientation;
+    // int orientation = imageData->getImageOrientation();
 
     switch (orientation) {
     case 1:
@@ -1576,8 +1578,8 @@ void ImageEditor::mirrorUpDownJpg() {
     if (!isTurnable(imageData->getImagePath())) {
         return;
     }
-
-    int orientation = imageData->getImageOrientation();
+    int orientation = imageData->orientation;
+    // int orientation = imageData->getImageOrientation();
 
     switch (orientation) {
     case 1:
@@ -1622,8 +1624,8 @@ void ImageEditor::mirrorLeftRightJpg() {
     if (!isTurnable(imageData->getImagePath())) {
         return;
     }
-
-    int orientation = imageData->getImageOrientation();
+    int orientation = imageData->orientation;
+    // int orientation = imageData->getImageOrientation();
 
     switch (orientation) {
     case 1:

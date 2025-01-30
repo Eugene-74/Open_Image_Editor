@@ -78,7 +78,6 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     bool square, bool crop, bool force){
 
     QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail, force);
-    // std::cout << "Image size in MB: " << static_cast<double>(image.sizeInBytes()) / (1024 * 1024) << " MB" << std::endl;
 
     if (crop){
         int imageId = imagesData.getImageIdByName(imagePath);
@@ -105,17 +104,15 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
             }
         }
     }
-    if (square)
-    {
-
+    if (square){
         int cropSize = std::min(image.width(), image.height());
         int xOffset = (image.width() - cropSize) / 2;
         int yOffset = (image.height() - cropSize) / 2;
 
         image = image.copy(xOffset, yOffset, cropSize, cropSize);
     }
-    if (rotation)
-    {
+    if (rotation){
+        // TODO changer pour eviter le find de l'imageData
         image = rotateQImage(image, imagePath);
     }
     return image;
@@ -573,7 +570,6 @@ QImage Data::rotateQImage(QImage image, std::string imagePath){
         } else{
             int orientation = imageData->orientation;
 
-            // int orientation = exifData["Exif.Image.Orientation"].toInt64();
             switch (orientation)
             {
             case 1:
