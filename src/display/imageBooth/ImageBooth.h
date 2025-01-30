@@ -38,10 +38,13 @@ private:
     int loadedImageNumber = 0;
     int done = 0;
 
-
+    int maxVisibleLines = data->sizes.imagesBoothSizes->heightImageNumber + 3;
+    std::vector<QLabel*> imageWidgets;
 
 
     QScrollArea* scrollArea;
+
+
 
     QVBoxLayout* mainLayout;
     QVBoxLayout* linesLayout;
@@ -69,6 +72,13 @@ private:
     ClickableLabel* imageEditExif;
     ClickableLabel* imageConversion;
 
+    std::vector<QHBoxLayout*> lineLayouts;
+
+    void onScroll(int value);
+
+    bool isLineVisible(int lineIndex);
+
+
 
     void createButtons();
 
@@ -85,6 +95,8 @@ private:
     void createLine();
     ClickableLabel* createImage(std::string imagePath, int nbr);
     void setImageNumber(int nbr);
+    void updateVisibleImages();
+
 
 signals:
     void switchToImageEditor();

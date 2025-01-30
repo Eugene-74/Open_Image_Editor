@@ -1179,7 +1179,9 @@ void ImageEditor::saveImage() {
     data->saved = true;
 
     data->imagesData.setImageNumber(id);
+
     reload();
+
 }
 
 

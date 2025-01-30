@@ -112,7 +112,6 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
         image = image.copy(xOffset, yOffset, cropSize, cropSize);
     }
     if (rotation){
-        // TODO changer pour eviter le find de l'imageData
         image = rotateQImage(image, imagePath);
     }
     return image;
@@ -565,45 +564,34 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
 QImage Data::rotateQImage(QImage image, std::string imagePath){
     ImageData* imageData = imagesData.getImageData(imagePath);
     if (imageData != nullptr){
-        Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
-        if (exifData.empty()){
-        } else{
-            int orientation = imageData->orientation;
+        int orientation = imageData->orientation;
 
-            switch (orientation)
-            {
-            case 1:
-                // No transformation needed
-                break;
-            case 2:
-                image = image.mirrored(true, false); // Horizontal mirror
-                break;
-            case 3:
-                image = image.transformed(QTransform().rotate(180));
-                break;
-            case 4:
-                image = image.mirrored(false, true); // Vertical mirror
-                break;
-            case 5:
-                image = image.mirrored(true, false)
-                    .transformed(QTransform().rotate(
-                        90)); // Horizontal mirror + 90 degrees
-                break;
-            case 6:
-                image = image.transformed(QTransform().rotate(90));
-                break;
-            case 7:
-                image = image.mirrored(true, false)
-                    .transformed(QTransform().rotate(
-                        -90)); // Horizontal mirror + -90 degrees
-                break;
-            case 8:
-                image = image.transformed(QTransform().rotate(-90));
-                break;
-            default:
-                break;
+        switch (orientation)
+        {
+        case 2:
+            image = image.mirrored(true, false);
+            break;
+        case 3:
+            image = image.transformed(QTransform().rotate(180));
+            break;
+        case 4:
+            image = image.mirrored(false, true);
+            break;
+        case 5:
+            image = image.mirrored(true, false).transformed(QTransform().rotate(90));
+            break;
+        case 6:
+            image = image.transformed(QTransform().rotate(90));
+            break;
+        case 7:
+            image = image.mirrored(true, false).transformed(QTransform().rotate(-90));
+            break;
+        case 8:
+            image = image.transformed(QTransform().rotate(-90));
+            break;
+        default:
+            break;
 
-            }
         }
     }
     return image;
@@ -847,4 +835,6 @@ void Data::sortImagesData(QProgressDialog& progressDialog) {
 
 }
 
-
+void Data::clearCache(){
+    imageCache->clear();
+}

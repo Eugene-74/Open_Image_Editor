@@ -57,10 +57,8 @@ int MetaData::getImageHeight()
     return -1; // Retourne -1 si la hauteur n'est pas trouvée
 }
 // Fonction pour récupérer l'orientation de l'image (rotation)
-int MetaData::getImageOrientation()
-{
-    for (auto& entry : exifMetaData)
-    {
+int MetaData::getImageOrientation(){
+    for (auto& entry : exifMetaData){
         if (entry.key() == "Exif.Image.Orientation")
         {
 #ifdef _WIN32

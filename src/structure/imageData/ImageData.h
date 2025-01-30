@@ -19,8 +19,6 @@ public:
 
     int orientation = 0;
 
-
-
     ImageData() : folders(Folders()), metaData(MetaData()), cropSizes(), orientation() {}
 
     // !! necessaire sinon push_back ne fonctionne pas

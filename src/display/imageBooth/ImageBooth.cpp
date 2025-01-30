@@ -2,11 +2,15 @@
 
 #include <QScrollBar>
 
+
+
 ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
-
     imageNumber = 0;
+
+    data->clearCache();
+
 
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
@@ -31,6 +35,8 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     linesLayout = new QVBoxLayout(scrollWidget);
     scrollArea->setWidget(scrollWidget);
 
+    scrollWidget->setMinimumHeight(data->sizes.imagesBoothSizes->realImageSize.height() * data->imagesData.get()->size() / data->sizes.imagesBoothSizes->widthImageNumber);
+
     linesLayout->setAlignment(Qt::AlignTop);
     linesLayout->setSpacing(data->sizes.imagesBoothSizes->linesLayoutSpacing);
     linesLayout->setContentsMargins(
@@ -38,32 +44,50 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
         data->sizes.imagesBoothSizes->linesLayoutMargins[1],   // haut
         data->sizes.imagesBoothSizes->linesLayoutMargins[2],   // droite
         data->sizes.imagesBoothSizes->linesLayoutMargins[3]);  // bas
+
     auto start = std::chrono::high_resolution_clock::now();
 
-    for (int i = 0;i < data->sizes.imagesBoothSizes->heightImageNumber * LINE_LOADED; i++) {
+    int index = 0;
+    for (int i = 0; i < maxVisibleLines; ++i) {
+
         createLine();
     }
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration = end - start;
-    std::cout << "Execution time: " << duration.count() << " seconds pour " <<
-        data->sizes.imagesBoothSizes->heightImageNumber * LINE_LOADED * data->sizes.imagesBoothSizes->widthImageNumber << " images"
-        << std::endl;
-
-    connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged,
-        [this](int value) {
-            if (value >= scrollArea->verticalScrollBar()->maximum() - 500) {
-                createLine();
-            }
-        });
+    connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, this, &ImageBooth::onScroll);
 }
+
+void ImageBooth::updateVisibleImages() {
+    scrollArea->viewport()->update();
+    scrollArea->viewport()->repaint();
+    QRect visibleRect = scrollArea->viewport()->rect();
+    int startIndex = visibleRect.top() / data->sizes.imagesBoothSizes->realImageSize.height();
+    int endIndex = visibleRect.bottom() / data->sizes.imagesBoothSizes->realImageSize.height();
+
+    while (isLineVisible(lineLayouts.size() - 3)) {
+        createLine();
+    }
+}
+
+bool ImageBooth::isLineVisible(int lineIndex) {
+    QRect visibleRect = scrollArea->viewport()->rect();
+    int lineTop = lineIndex * data->sizes.imagesBoothSizes->realImageSize.height();
+    int lineBottom = lineTop + data->sizes.imagesBoothSizes->realImageSize.height();
+
+    // std::cerr << "visibleRect.top(): " << visibleRect.top() + scrollArea->verticalScrollBar()->value() << std::endl;
+    // std::cerr << "visibleRect.bottom(): " << visibleRect.bottom() + scrollArea->verticalScrollBar()->value() << std::endl;
+    // std::cerr << "lineTop: " << lineTop << std::endl;
+    // std::cerr << "lineBottom: " << lineBottom << std::endl;
+
+    return (lineBottom > visibleRect.top() + scrollArea->verticalScrollBar()->value() && lineTop < visibleRect.bottom() + scrollArea->verticalScrollBar()->value());
+}
+
 
 void ImageBooth::createLine() {
     QHBoxLayout* lineLayout = new QHBoxLayout();
     lineLayout->setAlignment(Qt::AlignLeft);
 
     linesLayout->addLayout(lineLayout);
-
+    lineLayouts.push_back(lineLayout);
     int nbr = data->sizes.imagesBoothSizes->widthImageNumber;
 
     for (int i = 0; i < nbr; i++) {
@@ -75,9 +99,15 @@ void ImageBooth::createLine() {
                 data->imagesData.get()->at(imageNumber).loadData();
             }
             lineLayout->addWidget(createImage(imagePath, imageNumber));
+
             imageNumber += 1;
         }
     }
+}
+
+// Slot to handle scrolling
+void ImageBooth::onScroll(int value) {
+    updateVisibleImages();
 }
 
 ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {

@@ -60,6 +60,5 @@ public:
 
 
     int getImageIdByName(std::string imagePath);
-
 };
 

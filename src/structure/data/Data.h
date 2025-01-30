@@ -68,6 +68,7 @@ public:
 
     Data() : imageCache(new std::map<std::string, QImageAndPath>()) {}
 
+    void clearCache();
 
     void preDeleteImage(int imageNbr);
     void unPreDeleteImage(int imageNbr);

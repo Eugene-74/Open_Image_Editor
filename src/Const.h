@@ -19,7 +19,7 @@ const int PREVIEW_NBR = 3;
 const int PRE_LOAD_RADIUS = 5; // on en precharge 2 de plus comme ça l'utilisateut ne vois meme pas les images charger
 const int TIME_BEFORE_FULL_QUALITY = 200;
 
-const int LINE_LOADED = 2; // fois ou l'on charge un tableau d'image (2 = 2 tableau pres charger)
+// const int LINE_LOADED = 1; // fois ou l'on charge un tableau d'image (2 = 2 tableau pres charger)
 
 
 const QString CLICK_BACKGROUND_COLOR = "#9c9c9c";
