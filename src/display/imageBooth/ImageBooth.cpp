@@ -11,13 +11,21 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
 
-    mainLayout = new QHBoxLayout(centralWidget);
+    mainLayout = new QVBoxLayout(centralWidget);
+    actionButtonLayout = new QHBoxLayout();
+    actionButtonLayout->setAlignment(Qt::AlignCenter);
+    mainLayout->addLayout(actionButtonLayout);
+
+    createButtons();
+
+    scrollLayout = new QHBoxLayout();
+    mainLayout->addLayout(scrollLayout);
 
     scrollArea = new QScrollArea(centralWidget);
     scrollArea->setWidgetResizable(true);
     scrollArea->setFixedSize(data->sizes.imagesBoothSizes->scrollAreaSize);
-
-    mainLayout->addWidget(scrollArea);
+    actionButtonLayout->setAlignment(Qt::AlignCenter);
+    scrollLayout->addWidget(scrollArea);
 
     QWidget* scrollWidget = new QWidget();
     linesLayout = new QVBoxLayout(scrollWidget);
@@ -191,6 +199,14 @@ void ImageBooth::clear() {
         }
         delete scrollArea;
         scrollArea = nullptr;
+
+        while (QLayoutItem* item = actionButtonLayout->takeAt(0)) {
+            if (QWidget* widget = item->widget()) {
+                widget->deleteLater();
+            }
+            delete item;
+        }
+        actionButtonLayout->deleteLater();
         });
 }
 
@@ -212,4 +228,187 @@ void ImageBooth::keyReleaseEvent(QKeyEvent* event) {
     default:
         QWidget::keyReleaseEvent(event);
     }
+}
+
+
+void ImageBooth::createButtons(){
+    imageRotateRight = createImageRotateRight();
+    imageRotateLeft = createImageRotateLeft();
+    imageMirrorLeftRight = createImageMirrorLeftRight();
+    imageMirrorUpDown = createImageMirrorUpDown();
+
+    imageDelete = createImageDelete();
+    imageSave = createImageSave();
+    imageExport = createImageExport();
+
+    imageEditExif = createImageEditExif();
+
+    imageConversion = createImageConversion();
+
+
+    actionButtonLayout->addWidget(imageRotateRight);
+    actionButtonLayout->addWidget(imageRotateLeft);
+    actionButtonLayout->addWidget(imageMirrorLeftRight);
+    actionButtonLayout->addWidget(imageMirrorUpDown);
+    actionButtonLayout->addWidget(imageDelete);
+    actionButtonLayout->addWidget(imageSave);
+    actionButtonLayout->addWidget(imageExport);
+    actionButtonLayout->addWidget(imageConversion);
+    actionButtonLayout->addWidget(imageEditExif);
+}
+
+ClickableLabel* ImageBooth::createImageDelete() {
+
+    if (data->imagesData.get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageDelete = new ClickableLabel(data, ICON_PATH_DELETE, this, actionSize);
+
+    connect(imageDelete, &ClickableLabel::clicked, [this]() {
+        });
+
+    if (imagesSelected.empty()){
+        imageDelete->setDisabled(true);
+    }
+
+    return imageDelete;
+}
+
+ClickableLabel* ImageBooth::createImageSave() {
+
+    if (data->imagesData.get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageSaveNew = new ClickableLabel(data, ICON_PATH_SAVE, this, actionSize);
+
+    connect(imageSaveNew, &ClickableLabel::clicked, [this]() {
+        });
+
+    return imageSaveNew;
+}
+
+ClickableLabel* ImageBooth::createImageExport() {
+
+    if (data->imagesData.get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, this, actionSize);
+
+    connect(imageExportNew, &ClickableLabel::clicked, [this]() {
+        });
+
+    if (imagesSelected.empty()){
+        imageExportNew->setDisabled(true);
+    }
+
+    return imageExportNew;
+}
+
+ClickableLabel* ImageBooth::createImageRotateRight() {
+
+    if (data->imagesData.get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, this, actionSize);
+
+    connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() {
+        });
+    if (imagesSelected.empty()){
+        imageRotateRightNew->setDisabled(true);
+    }
+
+    return imageRotateRightNew;
+}
+
+
+ClickableLabel* ImageBooth::createImageRotateLeft() {
+
+    if (data->imagesData.get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, this, actionSize);
+
+    connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() {
+        });
+
+    if (imagesSelected.empty()){
+        imageRotateLeftNew->setDisabled(true);
+    }
+    return imageRotateLeftNew;
+}
+
+ClickableLabel* ImageBooth::createImageMirrorUpDown() {
+
+    if (data->imagesData.get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, this, actionSize);
+
+    connect(imageMirrorUpDownNew, &ClickableLabel::clicked, [this]() {
+        });
+
+    if (imagesSelected.empty()){
+        imageMirrorUpDownNew->setDisabled(true);
+    }
+    return imageMirrorUpDownNew;
+}
+
+
+ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
+
+    if (data->imagesData.get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, this, actionSize);
+
+    connect(imageMirrorLeftRightNew, &ClickableLabel::clicked, [this]() {
+        });
+
+    if (imagesSelected.empty()){
+        imageMirrorLeftRightNew->setDisabled(true);
+    }
+
+    return imageMirrorLeftRightNew;
+}
+
+
+
+
+ClickableLabel* ImageBooth::createImageEditExif() {
+    if (data->imagesData.get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, this, actionSize);
+
+    connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
+        });
+
+    imageEditExifNew->setDisabled(true);
+
+    return imageEditExifNew;
+}
+
+ClickableLabel* ImageBooth::createImageConversion() {
+    if (data->imagesData.get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, this, actionSize);
+
+    connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
+        });
+
+    if (imagesSelected.empty()){
+        imageConversionNew->setDisabled(true);
+    }
+
+    return imageConversionNew;
 }

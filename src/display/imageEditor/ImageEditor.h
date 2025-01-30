@@ -110,7 +110,6 @@ private:
     ClickableLabel* createImageDelete();
     ClickableLabel* createImageSave();
     ClickableLabel* createImageExport();
-
     ClickableLabel* createImageEditExif();
     ClickableLabel* createImageConversion();
 

@@ -339,8 +339,6 @@ void ImageEditor::createButtons() {
     actionButtonLayout->addWidget(imageSave);
     actionButtonLayout->addWidget(imageExport);
     actionButtonLayout->addWidget(imageConversion);
-
-
     actionButtonLayout->addWidget(imageEditExif);
 
     buttonImageBefore = createImageBefore();
@@ -675,7 +673,7 @@ ClickableLabel* ImageEditor::createImageDelete() {
         return nullptr;
     }
 
-    ClickableLabel* imageDelete = new ClickableLabel(data, ":/delete.png", this, actionSize);
+    ClickableLabel* imageDelete = new ClickableLabel(data, ICON_PATH_DELETE, this, actionSize);
 
     if (data->isDeleted(data->imagesData.getImageNumber())) {
 
@@ -694,7 +692,7 @@ ClickableLabel* ImageEditor::createImageSave() {
         return nullptr;
     }
 
-    ClickableLabel* imageSaveNew = new ClickableLabel(data, ":/save.png", this, actionSize);
+    ClickableLabel* imageSaveNew = new ClickableLabel(data, ICON_PATH_SAVE, this, actionSize);
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() { this->
         saveImage();
@@ -710,7 +708,7 @@ ClickableLabel* ImageEditor::createImageExport() {
         return nullptr;
     }
 
-    ClickableLabel* imageExportNew = new ClickableLabel(data, ":/export.png", this, actionSize);
+    ClickableLabel* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, this, actionSize);
 
     connect(imageExportNew, &ClickableLabel::clicked, [this]() { this->
         exportImage();
@@ -726,7 +724,7 @@ ClickableLabel* ImageEditor::createImageRotateRight() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ":/rotateRight.png", this, actionSize);
+    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, this, actionSize);
 
     if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageRotateRightNew->setDisabled(true);
@@ -750,7 +748,7 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ":/rotateLeft.png", this, actionSize);
+    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, this, actionSize);
 
     if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageRotateLeftNew->setDisabled(true);
@@ -770,7 +768,7 @@ ClickableLabel* ImageEditor::createImageMirrorUpDown() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ":/mirrorUpDown.png", this, actionSize);
+    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, this, actionSize);
 
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageMirrorUpDownNew->setDisabled(true);
@@ -792,7 +790,7 @@ ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ":/mirrorLeftRight.png", this, actionSize);
+    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, this, actionSize);
 
 
 
@@ -818,7 +816,7 @@ ClickableLabel* ImageEditor::createImageEditExif() {
         return nullptr;
     }
 
-    ClickableLabel* imageEditExifNew = new ClickableLabel(data, ":/editExif.png", this, actionSize);
+    ClickableLabel* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, this, actionSize);
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
 
@@ -845,7 +843,7 @@ ClickableLabel* ImageEditor::createImageConversion() {
         return nullptr;
     }
 
-    ClickableLabel* imageConversionNew = new ClickableLabel(data, ":/conversion.png", this, actionSize);
+    ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, this, actionSize);
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
         launchConversionDialog(QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()));
@@ -861,7 +859,7 @@ ClickableLabel* ImageEditor::createImageBefore() {
         return nullptr;
     }
 
-    ClickableLabel* buttonImageBeforeNew = new ClickableLabel(data, ":/before.png", this, actionSize);
+    ClickableLabel* buttonImageBeforeNew = new ClickableLabel(data, ICON_PATH_BEFORE, this, actionSize);
 
     buttonImageBeforeNew->setFixedSize(actionSize);
 
@@ -882,7 +880,7 @@ ClickableLabel* ImageEditor::createImageNext() {
         return nullptr;
     }
 
-    ClickableLabel* buttonImageNextNew = new ClickableLabel(data, ":/next.png", this, actionSize);
+    ClickableLabel* buttonImageNextNew = new ClickableLabel(data, ICON_PATH_NEXT, this, actionSize);
 
     if (data->imagesData.getImageNumber() == data->imagesData.get()->size() - 1) {
         buttonImageNextNew->setDisabled(true);

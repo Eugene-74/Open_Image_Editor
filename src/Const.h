@@ -62,3 +62,27 @@ const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = 
 
 const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
 const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
+
+
+const QString ICON_PATH_DELETE = ":/icons/delete.png";
+const QString ICON_PATH_SAVE = ":/icons/save.png";
+const QString ICON_PATH_EXPORT = ":/icons/export.png";
+const QString ICON_PATH_ROTATE_RIGHT = ":/icons/rotateRight.png";
+const QString ICON_PATH_ROTATE_LEFT = ":/icons/rotateLeft.png";
+const QString ICON_PATH_MIRROR_UP_DOWN = ":/icons/mirrorUpDown.png";
+const QString ICON_PATH_MIRROR_LEFT_RIGHT = ":/icons/mirrorLeftRight.png";
+const QString ICON_PATH_EDIT_EXIF = ":/icons/editExif.png";
+const QString ICON_PATH_CONVERSION = ":/icons/conversion.png";
+const QString ICON_PATH_BEFORE = ":/icons/before.png";
+const QString ICON_PATH_NEXT = ":/icons/next.png";
+
+const QString ICON_PATH_IMAGE_BOOTH = ":/icons/imageBooth.png";
+const QString ICON_PATH_IMAGE_EDITOR = ":/icons/imageEditor.png";
+const QString ICON_PATH_OPTION_ADD_IMAGES = ":/icons/addImages.png";
+
+
+const QString ICON_PATH_DISCORD = ":/icons/discord.png";
+const QString ICON_PATH_GITHUB = ":/icons/github.png";
+const QString ICON_PATH_OPTION = ":/icons/option.png";
+
+

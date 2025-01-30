@@ -29,7 +29,6 @@ public:
     void clear();
 
 private:
-    // TODO Sauvegarder autre part si on ne veux pas perdre
     std::vector<int> imagesSelected;
     int imageShiftSelected = -1;
     bool imageShiftSelectedSelect;
@@ -40,13 +39,49 @@ private:
     int loadedImageNumber = 0;
     int done = 0;
 
+
+
+
     QScrollArea* scrollArea;
 
-    QHBoxLayout* mainLayout;
+    QVBoxLayout* mainLayout;
     QVBoxLayout* linesLayout;
 
     QSize imageSize = data->sizes.imagesBoothSizes->imageSize;
+    QSize actionSize = data->sizes.imagesEditorSizes->actionSize;
     QSize realImageSize = data->sizes.imagesBoothSizes->realImageSize;
+
+    QHBoxLayout* scrollLayout;
+
+    QHBoxLayout* actionButtonLayout;
+
+
+
+    ClickableLabel* imageRotateRight;
+    ClickableLabel* imageRotateLeft;
+
+    ClickableLabel* imageMirrorUpDown;
+    ClickableLabel* imageMirrorLeftRight;
+
+    ClickableLabel* imageDelete;
+    ClickableLabel* imageSave;
+    ClickableLabel* imageExport;
+
+    ClickableLabel* imageEditExif;
+    ClickableLabel* imageConversion;
+
+
+    void createButtons();
+
+    ClickableLabel* createImageRotateRight();
+    ClickableLabel* createImageRotateLeft();
+    ClickableLabel* createImageMirrorUpDown();
+    ClickableLabel* createImageMirrorLeftRight();
+    ClickableLabel* createImageDelete();
+    ClickableLabel* createImageSave();
+    ClickableLabel* createImageExport();
+    ClickableLabel* createImageEditExif();
+    ClickableLabel* createImageConversion();
 
     void createLine();
     ClickableLabel* createImage(std::string imagePath, int nbr);

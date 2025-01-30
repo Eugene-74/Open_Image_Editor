@@ -1,5 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
-    <qresource prefix="/">
+    <qresource prefix="/icons/">
         <file>before.png</file>
         <file>next.png</file>
         <file>rotateLeft.png</file>
