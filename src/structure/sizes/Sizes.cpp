@@ -38,8 +38,7 @@ Sizes::ImagesEditorSizes::ImagesEditorSizes(Sizes* parent) : parentSizes(parent)
         - QSize(0, 100);
 }
 
-Sizes::ImagesBoothSizes::ImagesBoothSizes(Sizes* parent) : parentSizes(parent)
-{
+Sizes::ImagesBoothSizes::ImagesBoothSizes(Sizes* parent) : parentSizes(parent){
 
     if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height())
     {
@@ -55,8 +54,8 @@ Sizes::ImagesBoothSizes::ImagesBoothSizes(Sizes* parent) : parentSizes(parent)
     scrollAreaSize = QSize(parentSizes->screenGeometry.width() * 5 / 6 + linesLayoutMargins[0] + linesLayoutMargins[2] // marge gauche et droite
         - (parentSizes->screenGeometry.width() * 5 / 6) % realImageSize.width() + linesLayoutSpacing + 10,
 
-        parentSizes->screenGeometry.height() * 5 / 6 + linesLayoutMargins[1] + linesLayoutMargins[3] // marge haut et bas
-        - (parentSizes->screenGeometry.height() * 5 / 6) % realImageSize.height() + linesLayoutSpacing);
+        parentSizes->screenGeometry.height() * 9 / 12 + linesLayoutMargins[1] + linesLayoutMargins[3] // marge haut et bas
+        - (parentSizes->screenGeometry.height() * 9 / 12) % realImageSize.height() + linesLayoutSpacing);
 
     widthImageNumber = scrollAreaSize.width() / realImageSize.width();
     heightImageNumber = scrollAreaSize.height() / realImageSize.height();

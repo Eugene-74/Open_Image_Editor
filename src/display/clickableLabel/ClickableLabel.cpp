@@ -52,6 +52,9 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         if (event->modifiers() & Qt::ShiftModifier) {
             emit shiftLeftClicked();
+        } else if (event->modifiers() & Qt::ControlModifier){
+            emit ctrlLeftClicked();
+
         } else{
             emit leftClicked();
             hover_background_color = HOVER_BACKGROUND_COLOR;
@@ -85,15 +88,16 @@ void ClickableLabel::updateStyleSheet() {
 }
 
 
-void ClickableLabel::select(std::string color){
+void ClickableLabel::select(std::string backgroundColor, std::string hoverBackgroundColor){
     selected = true;
-    background_color = QString::fromStdString(color);
+    background_color = QString::fromStdString(backgroundColor);
+    hover_background_color = QString::fromStdString(hoverBackgroundColor);
     updateStyleSheet();
 }
 
 void ClickableLabel::unSelect(){
     selected = false;
     background_color = "transparent";
+    hover_background_color = "#b3b3b3";
     updateStyleSheet();
-
 }

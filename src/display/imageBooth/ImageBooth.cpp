@@ -36,8 +36,6 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
         createLine();
     }
 
-
-
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
     std::cout << "Execution time: " << duration.count() << " seconds pour " <<
@@ -87,13 +85,9 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING, this, imageSize,
             false, 0, true);
 
-        if (std::find(imagesSelected.begin(), imagesSelected.end(), nbr) != imagesSelected.end()){
-            imageButton->select("red");
-        }
-
         data->loadInCacheAsync(imagePath, [this, imagePath, imageButton]() {
             done += 1;
-            // Cree toutes les thubnails vue qu'elle n'existe pas
+
             data->createAllThumbnail(imagePath, 512);
 
             data->unloadFromCache(imagePath);
@@ -101,7 +95,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             // TODO Remplis la memoire !!! fait 3 Mo alors que l'image fait 0,166 Mo
             QImage qImage = data->loadImage(this, imagePath, this->size(), true, IMAGE_BOOTH_IMAGE_QUALITY, true, true);
 
-            // Remplis pas la memoire
             QMetaObject::invokeMethod(
                 QApplication::instance(),
                 [imageButton, qImage]() {
@@ -120,35 +113,48 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         switchToImageEditor();
         });
 
-    connect(imageButton, &ClickableLabel::rightClicked, [this, nbr, imageButton]() {
-        // data->imagesData.setImageNumber(nbr);
-        // switchToImageEditor();
-        std::cerr << "Selected clicked" << std::endl;
-        imageButton->select("red");
+    connect(imageButton, &ClickableLabel::ctrlLeftClicked, [this, nbr, imageButton]() {
+        auto it = std::find(imagesSelected.begin(), imagesSelected.end(), nbr);
+        if (it != imagesSelected.end()) {
+            imageButton->unSelect();
+            imagesSelected.erase(it);
+        } else {
+            imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+            imagesSelected.push_back(nbr);
+        }
         });
 
     connect(imageButton, &ClickableLabel::shiftLeftClicked, [this, nbr, imageButton]() {
+        // selectione tout entre les 2 click
         if (imageShiftSelected >= 0){
-            // if (!imagesSelected.empty()) {
+
             int start = std::min(imageShiftSelected, nbr);
             int end = std::max(imageShiftSelected, nbr);
             for (int i = start; i <= end; ++i) {
-                // On cherche tous les autres icon entre les 2 selection
                 ClickableLabel* label = qobject_cast<ClickableLabel*>(linesLayout->itemAt(i / data->sizes.imagesBoothSizes->widthImageNumber)->layout()->itemAt(i % data->sizes.imagesBoothSizes->widthImageNumber)->widget());
                 if (label) {
-                    label->select("red");
-                    imagesSelected.push_back(i);
+                    if (imageShiftSelectedSelect){
+                        label->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+                        imagesSelected.push_back(i);
+                    } else{
+                        label->unSelect();
+                        imagesSelected.erase(std::remove(imagesSelected.begin(), imagesSelected.end(), i), imagesSelected.end());
+                    }
                 }
             }
             imageShiftSelected = -1;
         } else{
+            auto it = std::find(imagesSelected.begin(), imagesSelected.end(), nbr);
+            if (it != imagesSelected.end()){
+                imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT);
+                imageShiftSelectedSelect = false;
+            } else{
+                imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT);
+                imageShiftSelectedSelect = true;
+            }
             imageShiftSelected = nbr;
-            imageButton->select("blue");
         }
         });
-
-
-
     return imageButton;
 }
 
@@ -162,8 +168,8 @@ void ImageBooth::setImageNumber(int nbr) {
 
     imageNumber = nbr;
 }
+
 void ImageBooth::clear() {
-    // stopAndDeleteTimers();
     QTimer::singleShot(100, this, [this]() {
         while (QLayoutItem* item = linesLayout->takeAt(0)) {
             if (QWidget* widget = item->widget()) {
@@ -176,7 +182,6 @@ void ImageBooth::clear() {
         });
 }
 
-
 void ImageBooth::keyReleaseEvent(QKeyEvent* event) {
 
     switch (event->key()) {
@@ -186,6 +191,7 @@ void ImageBooth::keyReleaseEvent(QKeyEvent* event) {
         break;
 
     case Qt::Key_I:
+        // Debug
         for (const auto& cache : *data->imageCache) {
             std::cout << "Image: " << cache.first << " Size: " << static_cast<double>(cache.second.image.sizeInBytes()) / (1024 * 1024) << " MB" << std::endl;
         }

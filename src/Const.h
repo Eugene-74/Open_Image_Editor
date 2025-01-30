@@ -31,7 +31,9 @@ const QString BACKGROUND_COLOR = "transparent";
 
 const QString IMAGE_EDITOR_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Editor Window";
 const QString IMAGE_BOOTH_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Booth Window";
-const int IMAGE_BOOTH_IMAGE_QUALITY = 256;
+const QString MAIN_WINDOW_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Booth Window";
+
+const int IMAGE_BOOTH_IMAGE_QUALITY = 256; //128 or 256 or 512
 
 
 const std::string THUMBNAIL_PATH_OPTION = "thumbnail save path";
@@ -51,3 +53,12 @@ const std::vector<std::string> TURNABLE_IMAGE_EXTENSIONS = { ".jpg", ".jpeg",".p
 const std::vector<std::string> MIRORABLE_IMAGE_EXTENSIONS = { ".jpg", ".jpeg",".png",".webp",".heic",".tiff",".bmp" };
 const std::vector<std::string> METADA_ACTION_IMAGE_EXTENSIONS = { ".jpg", ".jpeg",  ".heic",".webp",".svg" ,".tiff" };
 const std::vector<std::string> REAL_ACTION_IMAGE_EXTENSIONS = { ".png",".bmp" };
+
+const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED = "red";
+const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED = "red";
+
+const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = "blue";
+const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = "blue";
+
+const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
+const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";

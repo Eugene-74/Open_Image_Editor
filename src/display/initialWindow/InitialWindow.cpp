@@ -70,7 +70,6 @@ void InitialWindow::createImageEditor(Data* data) {
     imageEditor->setFocus();
     imageEditor->setFocusPolicy(Qt::StrongFocus);
 
-
     connect(imageEditor, &ImageEditor::switchToImageBooth, this, &InitialWindow::showImageBooth);
     connect(imageEditor, &ImageEditor::switchToMainWindow, this, &InitialWindow::showMainWindow);
 }
@@ -83,7 +82,6 @@ void InitialWindow::createImageBooth(Data* data) {
     imageBooth->setFocus();
     imageBooth->setFocusPolicy(Qt::StrongFocus);
 
-
     connect(imageBooth, &ImageBooth::switchToImageEditor, this, &InitialWindow::showImageEditor);
     connect(imageBooth, &ImageBooth::switchToMainWindow, this, &InitialWindow::showMainWindow);
 }
@@ -91,7 +89,6 @@ void InitialWindow::createImageBooth(Data* data) {
 
 
 void InitialWindow::createMainWindow(Data* data) {
-    std::cerr << "createMainWindow" << std::endl;
     mainWindow = new MainWindow(data, this);
 
     layout->addWidget(mainWindow);

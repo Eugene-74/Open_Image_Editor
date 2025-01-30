@@ -1,7 +1,7 @@
 #include "MainWindow.h"
 
 MainWindow::MainWindow(Data* dat, QWidget* parent) : QMainWindow(parent), data(dat) {
-    parent->setWindowTitle(IMAGE_EDITOR_WINDOW_NAME);
+    parent->setWindowTitle(MAIN_WINDOW_WINDOW_NAME);
 
 
     QWidget* centralWidget = new QWidget(parent);

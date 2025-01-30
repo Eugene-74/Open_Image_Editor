@@ -14,7 +14,7 @@ class ClickableLabel : public QLabel {
     Q_OBJECT
 
 public:
-    void select(std::string color);
+    void select(std::string backgroundColor, std::string hoverBackgroundColor);
     void unSelect();
 
     explicit ClickableLabel(Data* data, const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
@@ -24,6 +24,8 @@ signals:
     void leftClicked();
     void rightClicked();
     void shiftLeftClicked();
+    void ctrlLeftClicked();
+
 
 
 protected:

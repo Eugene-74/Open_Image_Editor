@@ -32,6 +32,8 @@ private:
     // TODO Sauvegarder autre part si on ne veux pas perdre
     std::vector<int> imagesSelected;
     int imageShiftSelected = -1;
+    bool imageShiftSelectedSelect;
+
 
     Data* data;
     int imageNumber;

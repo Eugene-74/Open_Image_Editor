@@ -10,8 +10,6 @@ int main(int argc, char* argv[]) {
     auto start = std::chrono::high_resolution_clock::now();
     QApplication app(argc, argv);
 
-    // QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
     // Définir le style sur Fusion
     app.setStyle(QStyleFactory::create("Fusion"));
 
