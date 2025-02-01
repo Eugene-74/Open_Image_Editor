@@ -38,13 +38,15 @@ private:
     int loadedImageNumber = 0;
     int done = 0;
 
-    int maxVisibleLines = data->sizes.imagesBoothSizes->heightImageNumber + 3;
+    int lastLineNbr = 0;
+
+    int maxVisibleLines = data->sizes.imagesBoothSizes->heightImageNumber + 2;
     std::vector<QLabel*> imageWidgets;
 
 
     QScrollArea* scrollArea;
 
-
+    QSpacerItem* spacer;
 
     QVBoxLayout* mainLayout;
     QVBoxLayout* linesLayout;

@@ -35,7 +35,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     linesLayout = new QVBoxLayout(scrollWidget);
     scrollArea->setWidget(scrollWidget);
 
-    scrollWidget->setMinimumHeight(data->sizes.imagesBoothSizes->realImageSize.height() * data->imagesData.get()->size() / data->sizes.imagesBoothSizes->widthImageNumber);
+    scrollWidget->setMinimumHeight(data->sizes.imagesBoothSizes->realImageSize.height() * (data->imagesData.get()->size() / data->sizes.imagesBoothSizes->widthImageNumber));
 
     linesLayout->setAlignment(Qt::AlignTop);
     linesLayout->setSpacing(data->sizes.imagesBoothSizes->linesLayoutSpacing);
@@ -45,11 +45,11 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
         data->sizes.imagesBoothSizes->linesLayoutMargins[2],   // droite
         data->sizes.imagesBoothSizes->linesLayoutMargins[3]);  // bas
 
-    auto start = std::chrono::high_resolution_clock::now();
+    spacer = new QSpacerItem(0, 0);
+    linesLayout->insertSpacerItem(0, spacer);
 
     int index = 0;
     for (int i = 0; i < maxVisibleLines; ++i) {
-
         createLine();
     }
 
@@ -57,15 +57,80 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
 }
 
 void ImageBooth::updateVisibleImages() {
-    scrollArea->viewport()->update();
-    scrollArea->viewport()->repaint();
     QRect visibleRect = scrollArea->viewport()->rect();
-    int startIndex = visibleRect.top() / data->sizes.imagesBoothSizes->realImageSize.height();
-    int endIndex = visibleRect.bottom() / data->sizes.imagesBoothSizes->realImageSize.height();
 
-    while (isLineVisible(lineLayouts.size() - 3)) {
-        createLine();
+    int spacerHeight = scrollArea->verticalScrollBar()->value();
+    int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
+    spacerHeight = (spacerHeight / imageHeight) * imageHeight;
+
+    int lineNbr = spacerHeight / imageHeight;
+    int difLineNbr = lineNbr - lastLineNbr;
+
+    if (difLineNbr == 0){
+        return;
     }
+
+    // TODO changer si on a plus que 1 page de changement !
+
+    else if (difLineNbr > 0){
+        // MET LE PREMIER EN DERNIER
+        for (int i = 0;i < difLineNbr;i++){
+            QHBoxLayout* firstLineLayout = qobject_cast<QHBoxLayout*>(linesLayout->takeAt(1)->layout());
+            linesLayout->insertLayout(linesLayout->count(), firstLineLayout);
+            linesLayout->invalidate();
+            for (int j = 0;j < firstLineLayout->count();j++){
+                // std::cerr << maxVisibleLines << std::endl;
+                int imageNbr = (lineNbr - difLineNbr + i + maxVisibleLines) * data->sizes.imagesBoothSizes->widthImageNumber + j;
+                ClickableLabel* label = qobject_cast<ClickableLabel*>(firstLineLayout->itemAt(j)->widget());
+                if (label) {
+                    if (imageNbr >= 0 && imageNbr < data->imagesData.get()->size()) {
+                        label->clear();
+                        std::cerr << "image Nbr " << imageNbr << std::endl;
+                        imageNumber = imageNbr;
+                        ClickableLabel* newLabel = createImage(data->imagesData.get()->at(imageNbr).folders.name, imageNbr);
+                        firstLineLayout->replaceWidget(label, newLabel);
+                        delete label;
+                    } else{
+                        label->hide();
+                    }
+                }
+            }
+        }
+    } else if (difLineNbr < 0){
+        //  MET LE DERNIER EN PREMIER
+        for (int i = 0;i < -difLineNbr;i++){
+            QHBoxLayout* lastLineLayout = qobject_cast<QHBoxLayout*>(linesLayout->takeAt(linesLayout->count() - 1)->layout());
+            linesLayout->insertLayout(1, lastLineLayout);
+            linesLayout->invalidate();
+            for (int j = 0;j < lastLineLayout->count();j++){
+                // std::cerr << maxVisibleLines << std::endl;
+                int imageNbr = (lineNbr + difLineNbr + i) * data->sizes.imagesBoothSizes->widthImageNumber + j;
+                ClickableLabel* label = qobject_cast<ClickableLabel*>(lastLineLayout->itemAt(j)->widget());
+                if (label) {
+                    if (imageNbr >= 0 && imageNbr < data->imagesData.get()->size()) {
+                        label->clear();
+                        std::cerr << "image Nbr " << imageNbr << std::endl;
+                        imageNumber = imageNbr;
+                        ClickableLabel* newLabel = createImage(data->imagesData.get()->at(imageNbr).folders.name, imageNbr);
+                        lastLineLayout->replaceWidget(label, newLabel);
+                        delete label;
+                    } else{
+                        label->hide();
+                    }
+                }
+            }
+        }
+    }
+    spacer->changeSize(0, spacerHeight);
+    linesLayout->invalidate();
+    lastLineNbr = lineNbr;
+
+
+    // TODO changer la ligne deplacer
+
+    // while (isLineVisible(lineLayouts.size() - 3)) {
+    //     createLine();
+    // }
 }
 
 bool ImageBooth::isLineVisible(int lineIndex) {
