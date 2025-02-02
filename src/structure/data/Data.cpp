@@ -122,9 +122,10 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
 
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     bool setSize, int thumbnail, bool force){
-
+    std::cerr << "load image " << imagePath << " : " << thumbnail << " : " << force << std::endl;
     auto it = imageCache->find(imagePath);
     if (it != imageCache->end()){
+        std::cerr << "is in cahce image " << imagePath << " : " << thumbnail << std::endl;
         return it->second.image;
     }
 
@@ -136,6 +137,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 
         it = imageCache->find(getThumbnailPath(imagePath, 256));
         if (it != imageCache->end()){
+            std::cerr << "loaded image " << imagePath << " : " << thumbnail << std::endl;
             return it->second.image;
         }
 
@@ -179,22 +181,23 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                 createThumbnail(imagePath, 512);
             }
         }
-        if (HEICOrHEIF(imagePath)) {
+        std::cerr << "load image " << imagePathbis << std::endl;
+
+        if (HEICOrHEIF(imagePathbis)) {
             if (thumbnail == 0){
-                image = readHEICAndHEIF(imagePath);
+                image = readHEICAndHEIF(imagePathbis);
             }
-        } else if (isRAW(imagePath)) {
+        } else if (isRAW(imagePathbis)) {
             if (thumbnail == 0){
                 std::cerr << imagePath << std::endl;
-                image = readRAW(imagePath);
+                image = readRAW(imagePathbis);
             }
         } else{
             image.load(QString::fromStdString(imagePathbis));
-            // TODO l'image est charger directement trop grosse
         }
 
-        if (image.isNull())
-        {
+        if (image.isNull()){
+            std::cerr << "Could not open or find the image" << std::endl;
             return QImage();
         }
 
@@ -203,14 +206,8 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         }
     }
     // TODO cache pose des probleme de mémoire !!! car imageBooth vide rien
-    // if (static_cast<double>(image.sizeInBytes()) / (1024 * 1024) < 10){
     (*imageCache)[imagePathbis].image = image;
     (*imageCache)[imagePathbis].imagePath = imagePath;
-    // } else{
-    //     std::cerr << "loaded big image in cache : " << imagePath << std::endl;
-    //     std::cerr << "Image size: " << static_cast<double>(image.sizeInBytes()) / (1024 * 1024) << " MB" << std::endl;
-
-    // }
 
     size_t cacheSize = 0;
     for (const auto& pair : *imageCache) {
@@ -244,25 +241,11 @@ bool Data::loadInCache(const std::string imagePath, bool setSize,
     const QSize size, bool force)
 {
     QImage image;
-    if (!force && isInCache(imagePath))
-    {
+    if (!force && isInCache(imagePath)){
         return true;
     }
-    image.load(QString::fromStdString(imagePath));
-    if (image.isNull())
-    {
-        return false;
-    }
 
-    if (setSize)
-    {
-        image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    }
-    // std::cerr << "loaded in cache  bis : " << imagePath << std::endl;
-    // std::cerr << "big !! Image size: " << static_cast<double>(image.sizeInBytes()) / (1024 * 1024) << " MB" << std::endl;
-
-    (*imageCache)[imagePath].image = image;
-    (*imageCache)[imagePath].imagePath = imagePath;
+    loadImageNormal(nullptr, imagePath, size, setSize, 0, true);
 
     createThumbnailIfNotExists(imagePath, 128);
     createThumbnailIfNotExists(imagePath, 256);
@@ -347,7 +330,10 @@ void Data::createThumbnailsIfNotExists(
 void Data::createThumbnailIfNotExists(const std::string& imagePath,
     const int maxDim){
     if (!hasThumbnail(imagePath, maxDim)){
+        std::cerr << "Creating thumbnail: " << imagePath << std::endl;
         createThumbnail(imagePath, maxDim);
+    } else{
+        std::cerr << "Thumbnail already exists: " << imagePath << std::endl;
     }
 }
 bool Data::hasThumbnail(const std::string& imagePath, const int maxDim){

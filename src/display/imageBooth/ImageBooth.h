@@ -12,6 +12,9 @@
 #include "../../display/clickableLabel/ClickableLabel.h"
 #include "../../display/initialWindow/InitialWindow.h"
 
+
+// #include "../../Const.h"
+
 class ImageBooth : public QMainWindow
 {
     Q_OBJECT
@@ -39,6 +42,8 @@ private:
     int done = 0;
 
     int lastLineNbr = 0;
+
+    QTimer* imageOpenTimer = new QTimer(this);
 
     int maxVisibleLines = data->sizes.imagesBoothSizes->heightImageNumber + 2;
     std::vector<QLabel*> imageWidgets;

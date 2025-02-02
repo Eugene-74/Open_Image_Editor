@@ -1319,6 +1319,7 @@ void ImageEditor::startImageOpen() {
 
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
         data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [this]() {
+            std::cerr << "Image loaded" << std::endl;
             reloadImageLabel();
             });
         imageOpenTimer->stop();
