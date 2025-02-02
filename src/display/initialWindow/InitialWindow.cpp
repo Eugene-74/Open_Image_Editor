@@ -129,7 +129,7 @@ void InitialWindow::clearMainWindow() {
 
 
 void InitialWindow::showImageEditor() {
-    std::cerr << "showImageEditor" << std::endl;
+    qDebug() << "showImageEditor";
     if (imageBooth != nullptr){
         clearImageBooth();
     }
@@ -140,7 +140,7 @@ void InitialWindow::showImageEditor() {
 }
 
 void InitialWindow::showImageBooth() {
-    std::cerr << "showImageBooth" << std::endl;
+    qDebug() << "showImageBooth";
     if (imageEditor != nullptr){
         clearImageEditor();
     }
@@ -152,7 +152,7 @@ void InitialWindow::showImageBooth() {
 }
 
 void InitialWindow::showMainWindow() {
-    std::cerr << "showMainWindow" << std::endl;
+    qDebug() << "showMainWindow";
     if (imageEditor != nullptr){
         clearImageEditor();
     }
@@ -215,7 +215,7 @@ void InitialWindow::openOption() {
     std::map<std::string, std::string> options = showOptionsDialog(this, "Options", DEFAULT_OPTIONS);
 
     for (const auto& [key, value] : options) {
-        std::cerr << key << " : " << value << std::endl;
+        qDebug() << key << " : " << value;
     }
 }
 

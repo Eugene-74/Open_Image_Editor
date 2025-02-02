@@ -85,7 +85,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     ImagesData* imagesData = new  ImagesData(std::vector<ImageData>{});
 
     if (!loadImagesFromFolder(imagePaths, imagePaths, imagesData, loaded, progressDialog)){
-        std::cerr << "loadImagesFromFolder failed" << std::endl;
+        qDebug() << "loadImagesFromFolder failed : " << imagePaths;
         return false;
     }
 
@@ -252,11 +252,10 @@ bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progres
         std::string jsonFilePath = imageData->getImagePath() + ".json";
 
         if (fs::exists(jsonFilePath)){
-            std::cerr << "json found" << std::endl;
+            qDebug() << "json found : " << jsonFilePath.c_str();
             std::map<std::string, std::string> jsonMap = openJsonFile(jsonFilePath);
 
             for (const auto& [key, value] : jsonMap){
-                std::cerr << key << " : " << value << std::endl;
                 if (!key.empty() && !value.empty())
                 {
                     std::string exifKey = mapJsonKeyToExifKey(key);

@@ -12,12 +12,12 @@ ImageData& ImageData::operator=(const ImageData& other) {
 }
 
 void ImageData::print() const {
-    std::cerr << "Image : " << folders.name
+    qDebug() << "Image : " << folders.name
         << " fichiers : ";
     for (const auto& file : folders.folders) {
-        std::cerr << " " << file.name;
+        qDebug() << " " << file.name;
     }
-    std::cerr << " " << std::endl;
+    qDebug() << " ";
 }
 
 std::string ImageData::get() const {
@@ -87,7 +87,7 @@ std::string ImageData::getImageExtension() {
 }
 
 void ImageData::handleExiv2Error(const Exiv2::Error& e) {
-    std::cerr << "Exiv2 error: " << e.what() << std::endl;
+    qDebug() << "Exiv2 error: " << e.what();
 }
 
 void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
@@ -100,7 +100,6 @@ void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
 }
 
 void ImageData::loadData() {
-    std::cerr << "Loading metadata for image: " << folders.name << std::endl;
     try {
         if (!metaData.dataLoaded){
             metaData.loadData(folders.name);
@@ -110,7 +109,7 @@ void ImageData::loadData() {
             metaData.dataLoaded = true;
         }
     } catch (const Exiv2::Error& e) {
-        std::cerr << "Error loading metadata for image: " << folders.name << std::endl;
+        qDebug() << "Error loading metadata for image: " << folders.name;
         handleExiv2Error(e);
     }
 }
@@ -151,9 +150,6 @@ void ImageData::save(std::ofstream& out) const {
 
     out.write(reinterpret_cast<const char*>(&orientation), sizeof(orientation));
 
-    // size_t pathLength = folders.name.size();
-    // out.write(reinterpret_cast<const char*>(&pathLength), sizeof(pathLength));
-    // out.write(folders.name.c_str(), pathLength);
     folders.save(out);
 
     size_t cropSizesSize = cropSizes.size();

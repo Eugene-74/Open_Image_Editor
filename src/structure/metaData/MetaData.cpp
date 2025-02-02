@@ -102,7 +102,7 @@ bool MetaData::modifyExifValue(const std::string& key, const std::string& newVal
             return true;
         } catch (const Exiv2::Error& e)
         {
-            std::cerr << "Erreur lors de l'ajout de la clé : " << e.what() << std::endl;
+            qDebug() << "Erreur lors de l'ajout de la clé : " << e.what();
             return false;
         }
     }
@@ -137,7 +137,7 @@ bool MetaData::modifyXmpValue(const std::string& key, const std::string& newValu
             return true;
         } catch (const Exiv2::Error& e)
         {
-            std::cerr << "Erreur lors de l'ajout de la clé : " << e.what() << std::endl;
+            qDebug() << "Erreur lors de l'ajout de la clé : " << e.what();
             return false;
         }
     }
@@ -171,7 +171,7 @@ bool MetaData::modifyIptcValue(const std::string& key, const std::string& newVal
             return true;
         } catch (const Exiv2::Error& e)
         {
-            std::cerr << "Erreur lors de l'ajout de la clé : " << e.what() << std::endl;
+            qDebug() << "Erreur lors de l'ajout de la clé : " << e.what();
             return false;
         }
     }
@@ -218,9 +218,9 @@ void MetaData::loadData(const std::string& imagePath){
             dataLoaded = true;
         }
     } catch (const Exiv2::Error& e){
-        std::cerr << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what() << std::endl;
+        qDebug() << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what();
     } catch (const std::exception& e) {
-        std::cerr << "Erreur : " << e.what() << std::endl;
+        qDebug() << "Erreur : " << e.what();
     }
 }
 
@@ -245,7 +245,7 @@ bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData)
         return true;
     } catch (const Exiv2::Error& e)
     {
-        std::cerr << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what() << std::endl;
+        qDebug() << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what();
         return false;
     }
 }
@@ -268,7 +268,7 @@ bool saveXmpData(const std::string& imagePath, const Exiv2::XmpData& exifData)
         return true;
     } catch (const Exiv2::Error& e)
     {
-        std::cerr << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what() << std::endl;
+        qDebug() << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what();
         return false;
     }
 }
@@ -291,7 +291,7 @@ bool saveIptcData(const std::string& imagePath, const Exiv2::IptcData& exifData)
         return true;
     } catch (const Exiv2::Error& e)
     {
-        std::cerr << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what() << std::endl;
+        qDebug() << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what();
         return false;
     }
 }
@@ -301,15 +301,15 @@ void displayExifData(const Exiv2::ExifData& data)
 {
     if (data.empty())
     {
-        std::cerr << "Aucune métadonnée EXIF disponible." << std::endl;
+        qDebug() << "Aucune métadonnée EXIF disponible.";
     }
-    std::cerr << "métadonnée : " << std::endl;
+    qDebug() << "métadonnée : ";
 
     for (const auto& item : data)
     {
         if (item.key().substr(0, 10) == "Exif.Image")
         {
-            std::cerr << item.key() << " : " << item.value() << std::endl;
+            qDebug() << item.key() << " : " << item.value().toString();
         }
     }
 }
@@ -319,14 +319,14 @@ void displayXmpData(const Exiv2::XmpData& data)
 {
     if (data.empty())
     {
-        std::cerr << "Aucune métadonnée Xmp disponible." << std::endl;
+        qDebug() << "Aucune métadonnée Xmp disponible.";
     }
+
+    qDebug() << "métadonnée : ";
 
     for (const auto& item : data)
     {
-        // if (item.key().substr(0, 10) == "Exif.Image") {
-        std::cerr << item.key() << " : " << item.value() << std::endl;
-        // }
+        qDebug() << item.key() << " : " << item.value().toString();
     }
 }
 
@@ -347,14 +347,14 @@ void displayIptcData(const Exiv2::IptcData& data)
 {
     if (data.empty())
     {
-        std::cerr << "Aucune métadonnée Iptc disponible." << std::endl;
+        qDebug() << "Aucune métadonnée Iptc disponible.";
     }
+
+    qDebug() << "métadonnée : ";
 
     for (const auto& item : data)
     {
-        // if (item.key().substr(0, 10) == "Exif.Image") {
-        std::cerr << item.key() << " : " << item.value() << std::endl;
-        // }
+        qDebug() << item.key() << " : " << item.value().toString();
     }
 }
 

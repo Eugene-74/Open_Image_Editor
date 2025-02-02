@@ -68,7 +68,6 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
                     data->loadInCacheAsync(data->imagesData.getImageData(imageNbr)->getImagePath(), nullptr);
                 }
             }
-            std::cerr << "load asyc : " << std::endl;
         }
         });
 
@@ -96,19 +95,16 @@ void ImageBooth::updateVisibleImages() {
 
     else if (difLineNbr > 0){
         // MET LE PREMIER EN DERNIER
-        auto start = std::chrono::high_resolution_clock::now();
         for (int i = 0;i < difLineNbr;i++){
             QHBoxLayout* firstLineLayout = qobject_cast<QHBoxLayout*>(linesLayout->takeAt(1)->layout());
             linesLayout->insertLayout(linesLayout->count(), firstLineLayout);
             linesLayout->invalidate();
             for (int j = 0;j < firstLineLayout->count();j++){
-                // std::cerr << maxVisibleLines << std::endl;
                 int imageNbr = (lineNbr - difLineNbr + i + maxVisibleLines) * data->sizes.imagesBoothSizes->widthImageNumber + j;
                 ClickableLabel* label = qobject_cast<ClickableLabel*>(firstLineLayout->itemAt(j)->widget());
                 if (label) {
                     if (imageNbr >= 0 && imageNbr < data->imagesData.get()->size()) {
                         label->clear();
-                        // std::cerr << "image Nbr " << imageNbr << std::endl;
                         imageNumber = imageNbr;
                         ClickableLabel* newLabel = createImage(data->imagesData.get()->at(imageNbr).folders.name, imageNbr);
                         // ClickableLabel* newLabel = createImage(IMAGE_PATH_LOADING.toStdString(), imageNbr);
@@ -122,10 +118,6 @@ void ImageBooth::updateVisibleImages() {
             }
 
         }
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double, std::milli> elapsed = end - start;
-
-        std::cerr << "Temps d'exécution: " << elapsed.count() << " ms" << std::endl;
     } else if (difLineNbr < 0){
         //  MET LE DERNIER EN PREMIER
         for (int i = 0;i < -difLineNbr;i++){
@@ -167,11 +159,6 @@ bool ImageBooth::isLineVisible(int lineIndex) {
     QRect visibleRect = scrollArea->viewport()->rect();
     int lineTop = lineIndex * data->sizes.imagesBoothSizes->realImageSize.height();
     int lineBottom = lineTop + data->sizes.imagesBoothSizes->realImageSize.height();
-
-    // std::cerr << "visibleRect.top(): " << visibleRect.top() + scrollArea->verticalScrollBar()->value() << std::endl;
-    // std::cerr << "visibleRect.bottom(): " << visibleRect.bottom() + scrollArea->verticalScrollBar()->value() << std::endl;
-    // std::cerr << "lineTop: " << lineTop << std::endl;
-    // std::cerr << "lineBottom: " << lineBottom << std::endl;
 
     return (lineBottom > visibleRect.top() + scrollArea->verticalScrollBar()->value() && lineTop < visibleRect.bottom() + scrollArea->verticalScrollBar()->value());
 }
@@ -215,7 +202,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
         loadedImageNumber += 1;
     } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_QUALITY)) {
-        std::cerr << "hasThumbnail : " << imagePath << std::endl;
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
             this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
         loadedImageNumber += 1;

@@ -16,7 +16,7 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
 
 
         if (image.isNull()) {
-            std::cerr << "Could not open or find the image" << std::endl;
+            qDebug() << "Could not open or find the image : " << QString::fromStdString(inputPath);
             return false;
         }
 
@@ -26,7 +26,7 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
 
         // Sauvegarder l'image dans le nouveau format avec Qt
         if (!image.save(QString::fromStdString(outputPath))) {
-            std::cerr << "Could not write the image" << std::endl;
+            qDebug() << "Could not write the image : " << QString::fromStdString(outputPath);
             return false;
         }
 
@@ -45,16 +45,16 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
         std::cout << "Image converted successfully with metadata" << std::endl;
         return true;
     } catch (const Exiv2::Error& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        qDebug() << "Error: " << e.what();
         return false;
     }
 }
 
 QImage readHEICAndHEIF(const std::string& filename) {
     struct heif_context* ctx = heif_context_alloc();
-    struct heif_error err = heif_context_read_from_file(ctx, filename.c_str(), nullptr);
+    struct heif_error err = heif_context_read_from_file(ctx, filename, nullptr);
     if (err.code != heif_error_Ok) {
-        std::cerr << "Erreur : Impossible de lire le fichier HEIC/HEIF " << filename << std::endl;
+        qDebug() << "Erreur : Impossible de lire le fichier HEIC/HEIF : " << filename;
         heif_context_free(ctx);
         return QImage();
     }
@@ -62,7 +62,7 @@ QImage readHEICAndHEIF(const std::string& filename) {
     struct heif_image_handle* handle;
     err = heif_context_get_primary_image_handle(ctx, &handle);
     if (err.code != heif_error_Ok) {
-        std::cerr << "Erreur : Impossible d'obtenir le handle de l'image" << std::endl;
+        qDebug() << "Erreur : Impossible d'obtenir le handle de l'image : " << filename;
         heif_context_free(ctx);
         return QImage();
     }
@@ -70,7 +70,7 @@ QImage readHEICAndHEIF(const std::string& filename) {
     struct heif_image* img;
     err = heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGB, nullptr);
     if (err.code != heif_error_Ok) {
-        std::cerr << "Erreur : Impossible de décoder l'image" << std::endl;
+        qDebug() << "Erreur : Impossible de décoder l'image : " << filename;
         heif_image_handle_release(handle);
         heif_context_free(ctx);
         return QImage();
@@ -114,7 +114,7 @@ void launchConversionDialog(const QString& inputImagePath) {
 
             // Convertir l'image avec les métadonnées
             if (!convertImageWithMetadata(inputImagePath.toStdString(), outputImagePath.toStdString())) {
-                std::cerr << "Erreur : Impossible de convertir l'image avec les métadonnées" << std::endl;
+                qDebug() << "Erreur : Impossible de convertir l'image avec les métadonnées : " << inputImagePath << " -> " << outputImagePath;
                 return;
             }
 
@@ -129,28 +129,22 @@ void launchConversionDialog(const QString& inputImagePath) {
 
 // TODO non fonctionel
 QImage readRAW(const std::string& filename) {
-    std::cerr << " begin :: : " << filename << std::endl;
-
     try {
         LibRaw rawProcessor;
         if (rawProcessor.open_file(filename.c_str()) != LIBRAW_SUCCESS) {
-            std::cerr << "Erreur : Impossible de lire le fichier RAW " << filename << std::endl;
             throw std::runtime_error("Erreur : Impossible de lire le fichier RAW");
         }
 
         if (rawProcessor.unpack() != LIBRAW_SUCCESS) {
-            std::cerr << "Erreur : Impossible de décompresser le fichier RAW " << filename << std::endl;
             throw std::runtime_error("Erreur : Impossible de décompresser le fichier RAW");
         }
 
         if (rawProcessor.dcraw_process() != LIBRAW_SUCCESS) {
-            std::cerr << "Erreur : Impossible de traiter le fichier RAW " << filename << std::endl;
             throw std::runtime_error("Erreur : Impossible de traiter le fichier RAW");
         }
 
         libraw_processed_image_t* image = rawProcessor.dcraw_make_mem_image();
         if (!image) {
-            std::cerr << "Erreur : Impossible de créer une image à partir du fichier RAW " << filename << std::endl;
             throw std::runtime_error("Erreur : Impossible de créer une image à partir du fichier RAW");
         }
 
@@ -158,17 +152,15 @@ QImage readRAW(const std::string& filename) {
         if (image->type == LIBRAW_IMAGE_BITMAP) {
             qImage = QImage(image->data, image->width, image->height, QImage::Format_RGB888).copy();
         } else {
-            std::cerr << "Erreur : Format d'image non supporté " << filename << std::endl;
             throw std::runtime_error("Erreur : Format d'image non supporté");
         }
 
         libraw_dcraw_clear_mem(image);
 
-        std::cerr << " end :: : " << filename << std::endl;
 
         return qImage;
     } catch (const std::exception& e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
+        qDebug() << "Exception: " << e.what();
         return QImage();
     }
 }

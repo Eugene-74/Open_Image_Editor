@@ -7,6 +7,7 @@
 #include <ctime>
 #include <fstream>
 #include <codecvt>
+#include <QDebug>
 class MetaData
 {
 public:

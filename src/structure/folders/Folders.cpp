@@ -85,12 +85,12 @@ void Folders::addFile(std::string name)
 }
 
 void Folders::print() const{
-    std::cerr << "Folder : {" << name << ",";
+    qDebug() << "Folder : {" << name << ",";
 
     for (const auto& folder : folders){
-        std::cerr << "[" << folder.name << "]";
+        qDebug() << "[" << folder.name << "]";
     }
-    std::cerr << "}" << std::endl;
+    qDebug() << "}";
     for (const auto& folder : folders)
     {
         folder.print();
@@ -107,9 +107,6 @@ void addSubfolders(Folders& rootFolder, const std::string& path) {
                 rootFolder.addFolder(folderName);
                 addSubfolders(rootFolder.folders.back(), entry.path().string());
             }
-            // else{
-            //     std::cerr << "Folder does not contain image" << entry.path().string() << std::endl;
-            // }
         }
     }
 }
@@ -127,9 +124,6 @@ void addFilesToTree(Folders* currentFolder, const std::string& path)
             currentFolder->addFolder(folderName);
             currentFolder = &currentFolder->folders.back();
         }
-        // else{
-        //     std::cerr << "Folder already exist" << folderName << std::endl;
-        // }
     }
     addSubfolders(*currentFolder, path);
 }
@@ -168,15 +162,3 @@ bool containImage(const std::string& path)
     }
     return false;
 }
-
-
-// std::string Folders::getParentPath(){
-//     std::string path;
-//     Folders* current = this;
-//     while (current->parent != nullptr) {
-//         std::cerr << "current->parent->name : " << current->parent->name << std::endl;
-//         path = current->parent->name + "/" + path;
-//         current = current->parent;
-//     }
-//     return path;
-// }

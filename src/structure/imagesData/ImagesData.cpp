@@ -25,11 +25,10 @@ int ImagesData::getImageNumber() {
 }
 
 void ImagesData::print() const {
-    std::cerr << "ImagesData : \n";
+    qDebug() << "ImagesData : \n";
     for (const ImageData& valeur : imagesData) {
-        std::cerr << valeur.get();
+        qDebug() << valeur.get();
     }
-    std::cerr << std::endl;
 }
 
 void ImagesData::addImage(ImageData& imageD) {

@@ -1123,11 +1123,8 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
     case Qt::Key_Z:
         if (event->modifiers() & Qt::ControlModifier) {
             if (event->modifiers() & Qt::ShiftModifier) {
-                std::cerr << "redo" << std::endl;
-
                 data->reDoAction();
             } else {
-                std::cerr << "undo" << std::endl;
                 data->unDoAction();
             }
         }
@@ -1196,7 +1193,7 @@ void ImageEditor::exportImage() {
     bool dateInName = (result["Date in image Name"] == "true");
 
     if (exportPath == "") {
-        std::cerr << "No export path selected" << std::endl;
+        qDebug() << "No export path selected";
         return;
     }
 
@@ -1319,7 +1316,6 @@ void ImageEditor::startImageOpen() {
 
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
         data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [this]() {
-            std::cerr << "Image loaded" << std::endl;
             reloadImageLabel();
             });
         imageOpenTimer->stop();
@@ -1468,7 +1464,7 @@ void ImageEditor::rotateLeftPng() {
     QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->folders.name, QSize(0, 0), false);
     image = image.transformed(QTransform().rotate(-90));
     if (!image.save(outputPath)) {
-        std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
+        qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
     }
     data->unloadFromCache(data->imagesData.getCurrentImageData()->folders.name);
     data->loadInCache(data->imagesData.getCurrentImageData()->folders.name);
@@ -1481,7 +1477,7 @@ void ImageEditor::rotateRightPng() {
     QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->folders.name, QSize(0, 0), false);
     image = image.transformed(QTransform().rotate(90));
     if (!image.save(outputPath)) {
-        std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
+        qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
     }
     data->unloadFromCache(data->imagesData.getCurrentImageData()->folders.name);
     data->loadInCache(data->imagesData.getCurrentImageData()->folders.name);
@@ -1671,7 +1667,7 @@ void ImageEditor::mirrorLeftRightPng() {
     QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->folders.name, QSize(0, 0), false);
     image = image.mirrored(true, false);
     if (!image.save(outputPath)) {
-        std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
+        qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
     }
     data->unloadFromCache(data->imagesData.getCurrentImageData()->folders.name);
     data->loadInCache(data->imagesData.getCurrentImageData()->folders.name);
@@ -1684,7 +1680,7 @@ void ImageEditor::mirrorUpDownPng() {
     QImage image = data->loadImage(this, data->imagesData.getCurrentImageData()->folders.name, QSize(0, 0), false);
     image = image.mirrored(false, true);
     if (!image.save(outputPath)) {
-        std::cerr << "Erreur lors de la sauvegarde de l'image." << std::endl;
+        qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
     }
     data->unloadFromCache(data->imagesData.getCurrentImageData()->folders.name);
     data->loadInCache(data->imagesData.getCurrentImageData()->folders.name);

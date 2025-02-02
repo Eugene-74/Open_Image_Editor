@@ -221,7 +221,7 @@ void MainImage::cropImage() {
 
         imageCropted();
     } else {
-        std::cerr << "Erreur : data ou getCurrentImageData() est nul" << std::endl;
+        qDebug() << "Erreur : data ou getCurrentImageData() est nul";
     }
     data->saved = false;
 }

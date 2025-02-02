@@ -12,7 +12,7 @@ void Data::preDeleteImage(int imageNbr){
     imageData = imagesData.getImageData(imageNbr);
 
     deletedImagesData.addImage(*imageData);
-    std::cerr << "image deleted : " << imageNbr << std::endl;
+    qDebug() << "image deleted : " << imageNbr;
     deletedImagesData.print();
 }
 void Data::unPreDeleteImage(int imageNbr){
@@ -50,7 +50,7 @@ void Data::removeDeletedImages(){
         }
     }
 
-    std::cerr << "All images deleted" << std::endl;
+    qDebug() << "All images deleted";
 }
 
 bool Data::isDeleted(int imageNbr){
@@ -122,10 +122,8 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
 
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     bool setSize, int thumbnail, bool force){
-    std::cerr << "load image " << imagePath << " : " << thumbnail << " : " << force << std::endl;
     auto it = imageCache->find(imagePath);
     if (it != imageCache->end()){
-        std::cerr << "is in cahce image " << imagePath << " : " << thumbnail << std::endl;
         return it->second.image;
     }
 
@@ -137,7 +135,6 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 
         it = imageCache->find(getThumbnailPath(imagePath, 256));
         if (it != imageCache->end()){
-            std::cerr << "loaded image " << imagePath << " : " << thumbnail << std::endl;
             return it->second.image;
         }
 
@@ -181,7 +178,6 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                 createThumbnail(imagePath, 512);
             }
         }
-        std::cerr << "load image " << imagePathbis << std::endl;
 
         if (HEICOrHEIF(imagePathbis)) {
             if (thumbnail == 0){
@@ -189,7 +185,6 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
             }
         } else if (isRAW(imagePathbis)) {
             if (thumbnail == 0){
-                std::cerr << imagePath << std::endl;
                 image = readRAW(imagePathbis);
             }
         } else{
@@ -197,7 +192,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         }
 
         if (image.isNull()){
-            std::cerr << "Could not open or find the image" << std::endl;
+            qDebug() << "Could not open or find the image : " << imagePathbis;
             return QImage();
         }
 
@@ -213,12 +208,8 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     for (const auto& pair : *imageCache) {
         cacheSize += pair.second.image.sizeInBytes();
     }
-    std::cerr << "Image cache size: " << static_cast<double>(cacheSize) / (1024 * 1024) << " MB" << std::endl;
+    qDebug() << "Image cache size: " << static_cast<double>(cacheSize) / (1024 * 1024) << " MB";
 
-    // std::cerr << "Current cache contents:" << std::endl;
-    // for (const auto& pair : *imageCache) {
-    //     std::cerr << "Image path: " << pair.second.imagePath << ", Size: " << pair.second.image.sizeInBytes() << static_cast<double>(cacheSize) / (1024 * 1024) << " MB" << std::endl;
-    // }
     return image;
 
 }
@@ -313,10 +304,8 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim)
     {
         fs::create_directories(fs::path(outputImage).parent_path());
     }
-    if (!thumbnail.save(QString::fromStdString(outputImage)))
-    {
-        std::cerr << "Error: Could not save thumbnail: " << outputImage
-            << std::endl;
+    if (!thumbnail.save(QString::fromStdString(outputImage))){
+        qDebug() << "Error: Could not save thumbnail: " << outputImage;
     }
 }
 void Data::createThumbnailsIfNotExists(
@@ -330,10 +319,8 @@ void Data::createThumbnailsIfNotExists(
 void Data::createThumbnailIfNotExists(const std::string& imagePath,
     const int maxDim){
     if (!hasThumbnail(imagePath, maxDim)){
-        std::cerr << "Creating thumbnail: " << imagePath << std::endl;
+        qDebug() << "Creating thumbnail: " << imagePath;
         createThumbnail(imagePath, maxDim);
-    } else{
-        std::cerr << "Thumbnail already exists: " << imagePath << std::endl;
     }
 }
 bool Data::hasThumbnail(const std::string& imagePath, const int maxDim){
@@ -414,7 +401,7 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
 
 bool Data::unloadFromCache(std::string imagePath){
     if (!imageCache){
-        std::cerr << "imageCache is not initialized" << std::endl;
+        qDebug() << "imageCache is not initialized : " << imagePath;
         return false;
     }
     auto it = imageCache->find(imagePath);
@@ -446,8 +433,6 @@ void Data::exportImages(std::string exportPath, bool dateInName){
     rootFolders.print();
 
     firstFolder = findFirstFolderWithAllImages(imagesData, rootFolders);
-
-    std::cerr << "firstFolder : " << firstFolder->name << std::endl;
 
     exportPath += "/" + firstFolder->name;
 
@@ -600,7 +585,7 @@ void Data::createFolders(Folders* currentFolders, std::string folderPath){
 }
 
 void Data::saveData(){
-    std::cerr << "Saving data" << std::endl;
+    qDebug() << "Saving data";
 
     std::string filePath = IMAGESDATA_SAVE_DATA_PATH;
     std::ofstream outFile(filePath, std::ios::binary);
@@ -612,11 +597,8 @@ void Data::saveData(){
             // Essayez de créer les répertoires nécessaires
             if (!fs::create_directories(fs::path(filePath).parent_path()))
             {
-                std::cerr << "Couldn't create directories for save file." << std::endl;
+                qDebug() << "Couldn't create directories for save file : " << fs::path(filePath).parent_path();
                 return;
-            } else
-            {
-                std::cerr << "Directories created" << std::endl;
             }
         }
 
@@ -624,7 +606,7 @@ void Data::saveData(){
         outFile.open(filePath, std::ios::binary);
         if (!outFile)
         {
-            std::cerr << "Couldn't open save file." << std::endl;
+            qDebug() << "Couldn't open save file : " << filePath;
             return;
         }
     }
@@ -671,35 +653,21 @@ void Data::loadData(){
     std::ifstream inFile(filePath, std::ios::binary);
     if (!inFile)
     {
-        std::cerr << "Couldn't open load file." << std::endl;
+        qDebug() << "Couldn't open load file : " << filePath;
         return;
     }
 
-    // Deserialize imagesData
     size_t imagesDataSize;
     inFile.read(reinterpret_cast<char*>(&imagesDataSize), sizeof(imagesDataSize));
     for (size_t i = 0; i < imagesDataSize; ++i){
         ImageData imageData;
         imageData.load(inFile);
-        if (!imageData.cropSizes.empty()) {
-            std::cerr << "Image 1 " << imageData.folders.name << " has crop sizes." << std::endl;
-        }
-        // Do not usea addImage because it will check for duplicates and it takes times
-        imagesData.get()->push_back(imageData);
 
-        // Check for crop sizes in each ImageData
-        for (const auto& imageData : *imagesData.get()) {
-            if (!imageData.cropSizes.empty()) {
-                std::cerr << "Image 2 " << imageData.folders.name << " has crop sizes." << std::endl;
-            } else {
-                // std::cerr << "Image " << imageData.imagePath << " does not have crop sizes." << std::endl;
-            }
-        }
+        imagesData.get()->push_back(imageData);
     }
 
 
 
-    // Deserialize deletedImagesData
     size_t deletedImagesDataSize;
     inFile.read(reinterpret_cast<char*>(&deletedImagesDataSize),
         sizeof(deletedImagesDataSize));
@@ -710,7 +678,6 @@ void Data::loadData(){
         deletedImagesData.addImage(imageData);
     }
 
-    // Deserialize options
     options.clear();
     size_t optionsSize;
     inFile.read(reinterpret_cast<char*>(&optionsSize), sizeof(optionsSize));
