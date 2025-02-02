@@ -52,7 +52,7 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
 
 QImage readHEICAndHEIF(const std::string& filename) {
     struct heif_context* ctx = heif_context_alloc();
-    struct heif_error err = heif_context_read_from_file(ctx, filename, nullptr);
+    struct heif_error err = heif_context_read_from_file(ctx, filename.c_str(), nullptr);
     if (err.code != heif_error_Ok) {
         qDebug() << "Erreur : Impossible de lire le fichier HEIC/HEIF : " << filename;
         heif_context_free(ctx);
