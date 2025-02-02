@@ -57,7 +57,7 @@ public:
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
     bool saved = true;
 
-    QThreadPool* qThreadPool = QThreadPool::globalInstance();
+    // QThreadPool* qThreadPool = QThreadPool::globalInstance();
 
     std::vector<int> imagesSelected;
 

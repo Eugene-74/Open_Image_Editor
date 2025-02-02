@@ -12,27 +12,23 @@
 #include <string>
 #include <vector>
 
-class ThumbnailTask : public QRunnable {
+class ThumbnailTask : public QObject, public QRunnable {
+    Q_OBJECT
+
 public:
-    ThumbnailTask(Data* data, ImagesData* imagesData, int start, int end
-        // , QProgressDialog* progressDialog
-    )
-        : data(data), imagesData(imagesData), start(start), end(end)
-        // , progressDialog(progressDialog)
-    {
+    ThumbnailTask(Data* data, ImagesData* imagesData, int start, int end)
+        : data(data), imagesData(imagesData), start(start), end(end) {
     }
 
     void run() override;
-
 private:
     Data* data;
     ImagesData* imagesData;
     int start;
     int end;
-    // QProgressDialog* progressDialog;
 };
 
-void addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& progressDialog);
+bool addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& progressDialog);
 std::string getDirectoryFromUser(QWidget* parent);
 
 

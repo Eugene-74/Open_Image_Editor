@@ -57,23 +57,6 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
     int lineNbr = spacerHeight / imageHeight;
 
-    connect(imageOpenTimer, &QTimer::timeout, this, [this, lineNbr]() {
-        imageOpenTimer->stop();
-        for (int i = 0; i < PRE_LOAD_RADIUS_IMAGE_BOOTH; i++) {
-            for (int j = 0;j < data->sizes.imagesBoothSizes->widthImageNumber;j++){
-                int imageNbr = lineNbr + maxVisibleLines + j + i * data->sizes.imagesBoothSizes->widthImageNumber;
-
-                if (imageNbr < data->imagesData.get()->size()
-                    && imageNbr >= 0) {
-                    data->loadInCacheAsync(data->imagesData.getImageData(imageNbr)->getImagePath(), nullptr);
-                }
-            }
-        }
-        });
-
-    imageOpenTimer->setInterval(TIME_BEFORE_FULL_QUALITY_IMAGE_BOOTH);
-    // imageOpenTimer->start();
-
     connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, this, &ImageBooth::onScroll);
 }
 
@@ -125,7 +108,7 @@ void ImageBooth::updateVisibleImages() {
             linesLayout->insertLayout(1, lastLineLayout);
             linesLayout->invalidate();
             for (int j = 0;j < lastLineLayout->count();j++){
-                int imageNbr = (lineNbr + difLineNbr + i + 1) * data->sizes.imagesBoothSizes->widthImageNumber + j;
+                int imageNbr = (lineNbr - difLineNbr + i) * data->sizes.imagesBoothSizes->widthImageNumber + j;
                 ClickableLabel* label = qobject_cast<ClickableLabel*>(lastLineLayout->itemAt(j)->widget());
                 if (label) {
                     if (imageNbr >= 0 && imageNbr < data->imagesData.get()->size()) {
@@ -133,8 +116,6 @@ void ImageBooth::updateVisibleImages() {
                         imageNumber = imageNbr;
 
                         ClickableLabel* newLabel = createImage(data->imagesData.get()->at(imageNbr).folders.name, imageNbr);
-                        // ClickableLabel* newLabel = createImage(IMAGE_PATH_LOADING.toStdString(), imageNbr);
-
 
                         lastLineLayout->replaceWidget(label, newLabel);
                         delete label;
@@ -148,10 +129,6 @@ void ImageBooth::updateVisibleImages() {
     spacer->changeSize(0, spacerHeight);
     linesLayout->invalidate();
     lastLineNbr = lineNbr;
-
-    // imageOpenTimer->stop();
-    imageOpenTimer->setInterval(TIME_BEFORE_FULL_QUALITY_IMAGE_BOOTH);
-    // imageOpenTimer->start();
 
 }
 

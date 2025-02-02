@@ -43,8 +43,6 @@ private:
 
     int lastLineNbr = 0;
 
-    QTimer* imageOpenTimer = new QTimer(this);
-
     int maxVisibleLines = data->sizes.imagesBoothSizes->heightImageNumber + 2;
     std::vector<QLabel*> imageWidgets;
 
