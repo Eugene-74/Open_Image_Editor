@@ -74,8 +74,6 @@ void ImageBooth::updateVisibleImages() {
         return;
     }
 
-    // TODO changer si on a plus que 1 page de changement !
-
     else if (difLineNbr > 0){
         // MET LE PREMIER EN DERNIER
         for (int i = 0;i < difLineNbr;i++){
@@ -108,7 +106,9 @@ void ImageBooth::updateVisibleImages() {
             linesLayout->insertLayout(1, lastLineLayout);
             linesLayout->invalidate();
             for (int j = 0;j < lastLineLayout->count();j++){
-                int imageNbr = (lineNbr - difLineNbr + i) * data->sizes.imagesBoothSizes->widthImageNumber + j;
+                // std::cerr << "image line : " << lineNbr + difLineNbr + i + 1 << std::endl;
+                // TODO bug quand on va trop vite
+                int imageNbr = (lineNbr + difLineNbr + i + 1) * data->sizes.imagesBoothSizes->widthImageNumber + j;
                 ClickableLabel* label = qobject_cast<ClickableLabel*>(lastLineLayout->itemAt(j)->widget());
                 if (label) {
                     if (imageNbr >= 0 && imageNbr < data->imagesData.get()->size()) {
@@ -164,7 +164,6 @@ void ImageBooth::createLine() {
     }
 }
 
-// Slot to handle scrolling
 void ImageBooth::onScroll(int value) {
     updateVisibleImages();
 }
@@ -193,7 +192,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
             data->unloadFromCache(imagePath);
 
-            // TODO Remplis la memoire !!! fait 3 Mo alors que l'image fait 0,166 Mo
             QImage qImage = data->loadImage(this, imagePath, this->size(), true, IMAGE_BOOTH_IMAGE_QUALITY, true, true);
 
             QMetaObject::invokeMethod(
@@ -231,32 +229,76 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         if (it != data->imagesSelected.end()) {
             imageButton->unSelect();
             data->imagesSelected.erase(it);
+
+            data->addAction([this, imageButton, nbr]() {
+                imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+                data->imagesSelected.push_back(nbr);
+                },
+                [this, imageButton, nbr]() {
+                    imageButton->unSelect();
+                    auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
+                    if (it != data->imagesSelected.end()){
+                        data->imagesSelected.erase(it);
+                    }
+                });
         } else {
             imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
             data->imagesSelected.push_back(nbr);
+
+            data->addAction(
+                [this, nbr]() {
+                    // TODO déplcer au bon endroit
+                    ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                    if (imageButton != nullptr){
+                        imageButton->unSelect();
+                    }
+                    auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
+                    if (it != data->imagesSelected.end()){
+                        data->imagesSelected.erase(it);
+                    }
+                },
+                [this, nbr]() {
+                    // TODO déplcer au bon endroit
+                    ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                    if (imageButton != nullptr){
+                        imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+                    }
+                    data->imagesSelected.push_back(nbr);
+                });
         }
         });
 
     connect(imageButton, &ClickableLabel::shiftLeftClicked, [this, nbr, imageButton]() {
-        // selectione tout entre les 2 click
+        // select all image beetwen the 2 nbr
         if (imageShiftSelected >= 0){
+            // std::vector<int> addedNbr;
+            // std::vector<int> deletedNbr;
 
             int start = std::min(imageShiftSelected, nbr);
             int end = std::max(imageShiftSelected, nbr);
             for (int i = start; i <= end; ++i) {
-                ClickableLabel* label = qobject_cast<ClickableLabel*>(linesLayout->itemAt(i / data->sizes.imagesBoothSizes->widthImageNumber)->layout()->itemAt(i % data->sizes.imagesBoothSizes->widthImageNumber)->widget());
-                if (label) {
+
+                auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), i);
+                if (it != data->imagesSelected.end()) {
+                    if (!imageShiftSelectedSelect){
+                        data->imagesSelected.erase(it);
+                        // deletedNbr.push_back(i);
+                    }
+                } else{
                     if (imageShiftSelectedSelect){
-                        label->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
                         data->imagesSelected.push_back(i);
-                    } else{
-                        label->unSelect();
-                        data->imagesSelected.erase(std::remove(data->imagesSelected.begin(), data->imagesSelected.end(), i), data->imagesSelected.end());
+                        // addedNbr.push_back(i);
                     }
                 }
             }
+
+
+            // udate icons status (selected or not)
+            updateImages();
+
             imageShiftSelected = -1;
         } else{
+            // select the first image
             auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
             if (it != data->imagesSelected.end()){
                 imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT);
@@ -269,6 +311,52 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         }
         });
     return imageButton;
+}
+
+ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr){
+    int spacerHeight = scrollArea->verticalScrollBar()->value();
+    int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
+    spacerHeight = (spacerHeight / imageHeight) * imageHeight;
+    int firstImageNbr = spacerHeight / imageHeight * data->sizes.imagesBoothSizes->widthImageNumber;
+    int lastImageNbr = spacerHeight / imageHeight + maxVisibleLines * data->sizes.imagesBoothSizes->widthImageNumber;
+    // TODO verif last image nbr
+    std::cerr << firstImageNbr << " : " << lastImageNbr << " :: " << imageNbr;
+    if (imageNbr >= firstImageNbr && imageNbr <= lastImageNbr){
+        std::cerr << " : good" << std::endl;
+        int imageLine = imageNbr / data->sizes.imagesBoothSizes->widthImageNumber;
+        int imageNbrInLine = imageNbr - imageLine * data->sizes.imagesBoothSizes->widthImageNumber;
+        std::cerr << imageLine << ":" << imageNbrInLine << std::endl;
+        QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(imageLine + 1)->layout());
+        ClickableLabel* imageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(imageNbrInLine)->widget());
+
+        return imageButton;
+    }
+    return nullptr;
+}
+
+void ImageBooth::updateImages(){
+    int spacerHeight = scrollArea->verticalScrollBar()->value();
+    int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
+    spacerHeight = (spacerHeight / imageHeight) * imageHeight;
+
+    int lineNbr = spacerHeight / imageHeight;
+
+    for (int i = 1;i < linesLayout->count();i++){
+        QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
+        for (int j = 0;j < lineLayout->count();j++){
+            int imageNbr = (lineNbr + i - 1) * data->sizes.imagesBoothSizes->widthImageNumber + j;
+
+            ClickableLabel* imageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
+
+            auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNbr);
+            if (it != data->imagesSelected.end()) {
+                imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+            } else{
+                imageButton->unSelect();
+            }
+
+        }
+    }
 }
 
 void ImageBooth::setImageNumber(int nbr) {
@@ -315,6 +403,16 @@ void ImageBooth::keyReleaseEvent(QKeyEvent* event) {
         // Debug
         for (const auto& cache : *data->imageCache) {
             std::cout << "Image: " << cache.first << " Size: " << static_cast<double>(cache.second.image.sizeInBytes()) / (1024 * 1024) << " MB" << std::endl;
+        }
+        break;
+
+    case Qt::Key_Z:
+        if (event->modifiers() & Qt::ControlModifier) {
+            if (event->modifiers() & Qt::ShiftModifier) {
+                data->reDoAction();
+            } else {
+                data->unDoAction();
+            }
         }
         break;
 

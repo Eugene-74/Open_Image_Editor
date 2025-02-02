@@ -83,6 +83,9 @@ private:
 
     bool isLineVisible(int lineIndex);
 
+    void updateImages();
+    ClickableLabel* getClickableLabelIfExist(int imageNbr);
+
 
 
     void createButtons();
