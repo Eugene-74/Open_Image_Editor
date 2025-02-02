@@ -105,6 +105,7 @@ void ImageData::loadData() {
             metaData.loadData(folders.name);
 
             orientation = metaData.getImageOrientation();
+            date = metaData.getTimestamp();
 
             metaData.dataLoaded = true;
         }

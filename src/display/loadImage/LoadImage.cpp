@@ -91,9 +91,6 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     data->imagesData = *imagesData;
 
-
-
-
     progressDialog.setValue(0);
     progressDialog.show();
     progressDialog.setLabelText("Loading images googleData...");
@@ -104,7 +101,6 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     progressDialog.setValue(0);
     progressDialog.show();
     progressDialog.setLabelText("Loading images thumbnail...");
-
 
     for (int i = 0; i < imagesData->get()->size(); ++i) {
         if (progressDialog.wasCanceled()) {
@@ -121,13 +117,9 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
         QApplication::processEvents();
     }
 
-
-
-
-
-
     return true;
 }
+
 
 std::string readFile(const std::string& filePath)
 {

@@ -35,7 +35,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     linesLayout = new QVBoxLayout(scrollWidget);
     scrollArea->setWidget(scrollWidget);
 
-    scrollWidget->setMinimumHeight(data->sizes.imagesBoothSizes->realImageSize.height() * (data->imagesData.get()->size() / data->sizes.imagesBoothSizes->widthImageNumber));
+    scrollWidget->setMinimumHeight(data->sizes.imagesBoothSizes->realImageSize.height() * (data->imagesData.get()->size() / data->sizes.imagesBoothSizes->widthImageNumber) + 1);
 
     linesLayout->setAlignment(Qt::AlignTop);
     linesLayout->setSpacing(data->sizes.imagesBoothSizes->linesLayoutSpacing);

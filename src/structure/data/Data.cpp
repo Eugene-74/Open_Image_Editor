@@ -214,20 +214,13 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 
 }
 
+
+
 void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force){
-    futures[QString::fromStdString(imagePath)] = threadPool.enqueue(
-        &Data::loadImageTask, this, imagePath, setSize, size, force, callback);
+    LoadImageTask* task = new LoadImageTask(this, imagePath, setSize, size, force, callback);
+    qThreadPool->start(task);
 }
 
-void Data::loadImageTask(std::string imagePath, bool setSize, QSize size,
-    bool force, std::function<void()> callback)
-{
-    loadInCache(imagePath, setSize, size, force);
-    if (callback){
-        QMetaObject::invokeMethod(QApplication::instance(), callback,
-            Qt::QueuedConnection);
-    }
-}
 bool Data::loadInCache(const std::string imagePath, bool setSize,
     const QSize size, bool force)
 {
@@ -419,12 +412,13 @@ bool Data::unloadFromCache(std::string imagePath){
 
 bool Data::unloadFromFutures(std::string imagePath)
 {
-    auto it = futures.find(QString::fromStdString(imagePath));
-    if (it != futures.end())
-    {
-        futures.erase(it);
-        return true;
-    }
+
+    // auto it = futures.find(QString::fromStdString(imagePath));
+    // if (it != futures.end())
+    // {
+    //     futures.erase(it);
+    //     return true;
+    // }
     return false;
 }
 void Data::exportImages(std::string exportPath, bool dateInName){
@@ -698,10 +692,8 @@ void Data::loadData(){
     inFile.close();
 }
 
-void Data::cancelTasks()
-{
-    threadPool.shutdown();
-    futures.clear();
+void Data::cancelTasks(){
+    qThreadPool->clear();
 }
 
 void Data::addAction(std::function<void()> unDo, std::function<void()> reDo)
@@ -790,4 +782,13 @@ void Data::sortImagesData(QProgressDialog& progressDialog) {
 
 void Data::clearCache(){
     imageCache->clear();
+}
+
+
+void LoadImageTask::run() {
+    data->loadInCache(imagePath, setSize, size, force);
+    if (callback){
+        QMetaObject::invokeMethod(QApplication::instance(), callback,
+            Qt::QueuedConnection);
+    }
 }

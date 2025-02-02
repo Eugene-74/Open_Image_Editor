@@ -38,6 +38,7 @@ public:
     int getImageHeight();
 
     int getImageOrientation();
+    long getTimestamp();
 
 
     bool modifyExifValue(const std::string& key, const std::string& newValue);

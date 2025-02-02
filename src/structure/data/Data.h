@@ -17,7 +17,6 @@
 
 #include "../../structure/folders/Folders.h"
 #include "../../structure/sizes/Sizes.h"
-#include "../../structure/threadPool/ThreadPool.h"
 
 
 #include <QFileDialog>
@@ -40,6 +39,7 @@ public:
 
 class Data {
 public:
+
     ImagesData imagesData;
     ImagesData deletedImagesData;
 
@@ -57,10 +57,7 @@ public:
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
     bool saved = true;
 
-    unsigned int numThreads = std::max(1u, std::thread::hardware_concurrency() / 2); // Reserve 2 threads for UI
-    ThreadPool threadPool = ThreadPool(numThreads);
-    std::map<QString, std::future<void>> futures;
-
+    QThreadPool* qThreadPool = QThreadPool::globalInstance();
 
     std::vector<int> imagesSelected;
 
@@ -125,14 +122,29 @@ private:
     std::vector<Actions> lastActions = {};
     std::vector<Actions> lastActionsDone = {};
 
-
-    void loadImageTask(std::string imagePath, bool setSize, QSize size, bool force, std::function<void()> callback);
     QImage rotateQImage(QImage image, std::string imagePath);
 
     Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
     void createFolders(Folders* currentFolders, std::string path);
     void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
 
+};
+
+class LoadImageTask : public QRunnable {
+public:
+    LoadImageTask(Data* data, const std::string& imagePath, bool setSize, QSize size, bool force, std::function<void()> callback)
+        : data(data), imagePath(imagePath), setSize(setSize), size(size), force(force), callback(callback) {
+    }
+
+    void run() override;
+
+private:
+    Data* data;
+    std::string imagePath;
+    bool setSize;
+    QSize size;
+    bool force;
+    std::function<void()> callback;
 };
 
 

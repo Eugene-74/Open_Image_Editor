@@ -18,6 +18,8 @@ public:
     std::vector<std::vector<QPoint>> cropSizes;
 
     int orientation = 0;
+    long date = 0;
+
 
     ImageData() : folders(Folders()), metaData(MetaData()), cropSizes(), orientation() {}
 

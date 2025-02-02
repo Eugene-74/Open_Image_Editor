@@ -72,6 +72,15 @@ int MetaData::getImageOrientation(){
     return 1; // Retourne 1 si l'orientation n'est pas trouvée
 }
 
+long MetaData::getTimestamp(){
+    for (auto& entry : exifMetaData){
+        if (entry.key() == "Exif.Photo.DateTimeOriginal"){
+            return entry.toLong();
+        }
+    }
+    return 0; // Retourne 0 si la date n'est pas trouvée
+}
+
 // Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
 bool MetaData::modifyExifValue(const std::string& key, const std::string& newValue)
 {
