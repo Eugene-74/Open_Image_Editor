@@ -12,6 +12,26 @@
 #include <string>
 #include <vector>
 
+class ThumbnailTask : public QRunnable {
+public:
+    ThumbnailTask(Data* data, ImagesData* imagesData, int start, int end
+        // , QProgressDialog* progressDialog
+    )
+        : data(data), imagesData(imagesData), start(start), end(end)
+        // , progressDialog(progressDialog)
+    {
+    }
+
+    void run() override;
+
+private:
+    Data* data;
+    ImagesData* imagesData;
+    int start;
+    int end;
+    // QProgressDialog* progressDialog;
+};
+
 void addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& progressDialog);
 std::string getDirectoryFromUser(QWidget* parent);
 

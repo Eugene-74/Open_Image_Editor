@@ -410,9 +410,7 @@ bool Data::unloadFromCache(std::string imagePath){
     return false;
 }
 
-bool Data::unloadFromFutures(std::string imagePath)
-{
-
+bool Data::unloadFromFutures(std::string imagePath){
     // auto it = futures.find(QString::fromStdString(imagePath));
     // if (it != futures.end())
     // {
@@ -693,7 +691,8 @@ void Data::loadData(){
 }
 
 void Data::cancelTasks(){
-    qThreadPool->clear();
+    // TODO handle
+    // qThreadPool->clear();
 }
 
 void Data::addAction(std::function<void()> unDo, std::function<void()> reDo)

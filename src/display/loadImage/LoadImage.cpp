@@ -1,5 +1,21 @@
 #include "LoadImage.h"
 
+
+void ThumbnailTask::run() {
+    for (int i = start; i < end; ++i) {
+        // if (progressDialog->wasCanceled()) {
+        //     return;
+        // }
+        ImageData* imageData = imagesData->getImageData(i);
+        data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
+        data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
+        data->createThumbnailIfNotExists(imageData->getImagePath(), 512);
+        data->unloadFromCache(imageData->getImagePath());
+        // progressDialog->setValue(i);
+        // QMetaObject::invokeMethod(QApplication::instance(), "processEvents", Qt::QueuedConnection);
+    }
+}
+
 void addImagesFromFolder(Data* data, QWidget* parent){
 
     QProgressDialog progressDialog(parent);
@@ -100,22 +116,43 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     progressDialog.setValue(0);
     progressDialog.show();
-    progressDialog.setLabelText("Loading images thumbnail...");
+    progressDialog.setLabelText("Loading images thumbnail... (this will lag ~ 50 image / s)");
+    QApplication::processEvents();
+    int totalImages = imagesData->get()->size();
+    int numThreads = QThreadPool::globalInstance()->maxThreadCount();
+    int imagesPerThread = totalImages / numThreads;
 
-    for (int i = 0; i < imagesData->get()->size(); ++i) {
-        if (progressDialog.wasCanceled()) {
-            return false;
-        }
-        ImageData* imageData = imagesData->getImageData(i);
-        // TODO cree une fonction et utiliser le threadpool si possible
-        data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
-        data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
-        data->createThumbnailIfNotExists(imageData->getImagePath(), 512);
+    int numOperation = totalImages / 100;
 
-        data->unloadFromCache(imageData->getImagePath());
-        progressDialog.setValue(i);
-        QApplication::processEvents();
+    // ThumbnailTask* task = new ThumbnailTask(data, imagesData, 0, imagesData->get()->size(), &progressDialog);
+    // QThreadPool::globalInstance()->start(task);
+
+    for (int i = 0; i < numThreads; ++i) {
+        int start = i * imagesPerThread;
+        int end = (i == numThreads - 1) ? totalImages : start + imagesPerThread;
+        ThumbnailTask* task = new ThumbnailTask(data, imagesData, start, end
+            // , &progressDialog
+        );
+        QThreadPool::globalInstance()->start(task);
     }
+
+    QThreadPool::globalInstance()->waitForDone();
+
+
+    // for (int i = 0; i < imagesData->get()->size(); ++i) {
+    //     // TODO cree une fonction et utiliser le threadpool si possible
+    //     if (progressDialog.wasCanceled()) {
+    //         return false;
+    //     }
+    //     ImageData* imageData = imagesData->getImageData(i);
+    //     data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
+    //     data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
+    //     data->createThumbnailIfNotExists(imageData->getImagePath(), 512);
+
+    //     data->unloadFromCache(imageData->getImagePath());
+    //     progressDialog.setValue(i);
+    //     QApplication::processEvents();
+    // }
 
     return true;
 }
