@@ -1,6 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
+cd ..
+
 mkdir build
 cd build
 
