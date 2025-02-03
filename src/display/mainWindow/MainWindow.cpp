@@ -15,9 +15,9 @@ MainWindow::MainWindow(Data* dat, QWidget* parent) : QMainWindow(parent), data(d
 
     switchLayout = new QHBoxLayout();
 
-    ClickableLabel* switchToBooth = new ClickableLabel(data, ICON_PATH_IMAGE_BOOTH, this, QSize(300, 300), false, 0, true);
-    ClickableLabel* switchToEditor = new ClickableLabel(data, ICON_PATH_IMAGE_EDITOR, this, QSize(300, 300), false, 0, true);
-    ClickableLabel* addImages = new ClickableLabel(data, ICON_PATH_OPTION_ADD_IMAGES, this, QSize(300, 300), false, 0, true);
+    ClickableLabel* switchToBooth = new ClickableLabel(data, ICON_PATH_IMAGE_BOOTH, TOOL_TIP_OPEN_IMAGE_BOOTH, this, QSize(300, 300), false, 0, true);
+    ClickableLabel* switchToEditor = new ClickableLabel(data, ICON_PATH_IMAGE_EDITOR, TOOL_TIP_OPEN_IMAGE_EDITOR, this, QSize(300, 300), false, 0, true);
+    ClickableLabel* addImages = new ClickableLabel(data, ICON_PATH_OPTION_ADD_IMAGES, TOOL_TIP_ADD_IMAGES, this, QSize(300, 300), false, 0, true);
 
     connect(switchToBooth, &ClickableLabel::clicked, this, [this](){
         if (data->imagesData.get()->size() <= 0){

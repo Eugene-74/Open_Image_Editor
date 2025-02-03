@@ -1,6 +1,10 @@
 #include "ClickableLabel.h"
-ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square, bool force)
+ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QString toolTip, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square, bool force)
     : QLabel(parent) {
+
+    if (toolTip != "") {
+        setToolTip(toolTip);
+    }
 
     QImage qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail, true, square, true, force);
 

@@ -27,6 +27,17 @@ int main(int argc, char* argv[]) {
     std::tm* now_tm = std::localtime(&now);
     qDebug() << "Application started at:" << getCurrentFormattedDate();
 
+
+    // ouvrir le fichier de traduction
+    QTranslator translator;
+    QString locale = QLocale::system().name();
+    qDebug() << "System locale:" << locale;
+    if (translator.load(":/translations/Open_Image_Editor_" + locale)) {
+        app.installTranslator(&translator);
+    } else {
+        qDebug() << "Translation file not found for locale:" << locale;
+    }
+
     // Définir le style sur Fusion
     app.setStyle(QStyleFactory::create("Fusion"));
 

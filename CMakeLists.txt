@@ -42,7 +42,7 @@ if(WIN32)
     set(HEIF_INCLUDE_DIRS "C:/msys64/mingw64/include/libheif")
     
     set(LIBRAW_INCLUDE_DIRS "C:/msys64/mingw64/include/libraw")
-    # set(LIBRAW_LIBRARIES "C:/msys64/mingw64/lib/libraw.dll.a")
+    set(LIBRAW_LIBRARIES "C:/msys64/mingw64/lib/libraw.dll.a")
 
     # Inclure les répertoires d'en-têtes
     include_directories(${OpenCV_INCLUDE_DIRS})
@@ -67,6 +67,7 @@ if(WIN32)
     # Génération Qt
     qt6_wrap_cpp(MOC_SOURCES ${HEADERS})
     qt6_add_resources(QRC_SOURCES ${RESOURCE_FILES})
+
 
     # Création de l'exécutable
     add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})

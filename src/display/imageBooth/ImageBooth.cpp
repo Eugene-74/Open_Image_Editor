@@ -200,15 +200,15 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     ClickableLabel* imageButton;
     if (data->isInCache(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_QUALITY))) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
-            this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
+            "", this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
         loadedImageNumber += 1;
     } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_QUALITY)) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
-            this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
+            "", this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
         loadedImageNumber += 1;
     } else {
-        imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING, this, imageSize,
-            false, 0, true);
+        imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING,
+            "", this, imageSize, false, 0, true);
 
         data->loadInCacheAsync(imagePath, [this, imagePath, imageButton]() {
             done += 1;
@@ -570,7 +570,7 @@ ClickableLabel* ImageBooth::createImageDelete() {
         return nullptr;
     }
 
-    ClickableLabel* imageDelete = new ClickableLabel(data, ICON_PATH_DELETE, this, actionSize);
+    ClickableLabel* imageDelete = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_IMAGE_BOOTH_DELETE, this, actionSize);
 
     connect(imageDelete, &ClickableLabel::clicked, [this]() {
         });
@@ -588,7 +588,7 @@ ClickableLabel* ImageBooth::createImageSave() {
         return nullptr;
     }
 
-    ClickableLabel* imageSaveNew = new ClickableLabel(data, ICON_PATH_SAVE, this, actionSize);
+    ClickableLabel* imageSaveNew = new ClickableLabel(data, ICON_PATH_SAVE, TOOL_IMAGE_BOOTH_SAVE, this, actionSize);
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() {
         });
@@ -602,7 +602,7 @@ ClickableLabel* ImageBooth::createImageExport() {
         return nullptr;
     }
 
-    ClickableLabel* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, this, actionSize);
+    ClickableLabel* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, TOOL_IMAGE_BOOTH_EXPORT, this, actionSize);
 
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
         });
@@ -620,7 +620,7 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, this, actionSize);
+    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_IMAGE_BOOTH_ROTATE_RIGHT, this, actionSize);
 
     connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() {
         });
@@ -638,7 +638,7 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, this, actionSize);
+    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, TOOL_IMAGE_BOOTH_ROTATE_LEFT, this, actionSize);
 
     connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() {
         });
@@ -655,7 +655,7 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, this, actionSize);
+    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, TOOL_IMAGE_BOOTH_MIRROR_UP_DOWN, this, actionSize);
 
     connect(imageMirrorUpDownNew, &ClickableLabel::clicked, [this]() {
         });
@@ -673,7 +673,7 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, this, actionSize);
+    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, TOOL_IMAGE_BOOTH_MIRROR_LEFT_RIGHT, this, actionSize);
 
     connect(imageMirrorLeftRightNew, &ClickableLabel::clicked, [this]() {
         });
@@ -693,7 +693,7 @@ ClickableLabel* ImageBooth::createImageEditExif() {
         return nullptr;
     }
 
-    ClickableLabel* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, this, actionSize);
+    ClickableLabel* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, TOOL_IMAGE_BOOTH_EDIT_EXIF, this, actionSize);
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
         });
@@ -708,7 +708,7 @@ ClickableLabel* ImageBooth::createImageConversion() {
         return nullptr;
     }
 
-    ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, this, actionSize);
+    ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, TOOL_IMAGE_BOOTH_CONVERSION, this, actionSize);
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
         });

@@ -17,7 +17,7 @@ public:
     void select(std::string backgroundColor, std::string hoverBackgroundColor);
     void unSelect();
 
-    explicit ClickableLabel(Data* data, const QString& i, QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
+    explicit ClickableLabel(Data* data, const QString& i, QString toolTip = "", QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
 
 signals:
     void clicked();
@@ -38,7 +38,6 @@ protected:
 private:
 
     QPixmap defaultPixmap;
-
 
     int border = 0;
     int border_radius = 5;
