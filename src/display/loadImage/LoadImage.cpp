@@ -1,6 +1,5 @@
 #include "LoadImage.h"
 
-
 void ThumbnailTask::run() {
     for (int i = start; i < end; ++i) {
         ImageData* imageData = imagesData->getImageData(i);
@@ -11,25 +10,22 @@ void ThumbnailTask::run() {
     }
 }
 
-void addImagesFromFolder(Data* data, QWidget* parent){
-
+void addImagesFromFolder(Data* data, QWidget* parent) {
     QProgressDialog progressDialog(parent);
     // Necessaire : sinon s'affiche tout seul au bout de 5 s
     progressDialog.show();
     progressDialog.hide();
 
-    if (!addSelectedFilesToFolders(data, parent, progressDialog)){
+    if (!addSelectedFilesToFolders(data, parent, progressDialog)) {
         return;
     }
-    if (data->imagesData.get()->size() <= 0){
+    if (data->imagesData.get()->size() <= 0) {
         return;
     }
 
     auto start = std::chrono::high_resolution_clock::now();
 
-
     data->sortImagesData(progressDialog);
-
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;
@@ -38,37 +34,32 @@ void addImagesFromFolder(Data* data, QWidget* parent){
     data->saveData();
 }
 
-
 // Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
-bool addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& progressDialog){
+bool addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& progressDialog) {
     fileSelector fileSelector;
 
     QStringList selectedFiles;
 
     selectedFiles = fileSelector.openDirectoryDialog();
 
-    if (selectedFiles.isEmpty()){
+    if (selectedFiles.isEmpty()) {
         return false;
     }
 
-    for (const QString& fileName : selectedFiles){
+    for (const QString& fileName : selectedFiles) {
         startLoadingImagesFromFolder(parent, data, fileName.toStdString(), progressDialog);
     }
     return true;
-
 }
 
-std::string getDirectoryFromUser(QWidget* parent)
-{
+std::string getDirectoryFromUser(QWidget* parent) {
     QFileDialog dialog(parent);
     dialog.setFileMode(QFileDialog::Directory);
     dialog.setOption(QFileDialog::ShowDirsOnly, true);
 
-    if (dialog.exec())
-    {
+    if (dialog.exec()) {
         QStringList selectedDirectories = dialog.selectedFiles();
-        if (!selectedDirectories.isEmpty())
-        {
+        if (!selectedDirectories.isEmpty()) {
             return selectedDirectories.first().toStdString();
         }
     }
@@ -76,8 +67,7 @@ std::string getDirectoryFromUser(QWidget* parent)
 }
 
 // Charges dans un imagesData toutes les données des images dans un dossier et ses sous dossier
-bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string imagePaths, QProgressDialog& progressDialog){
-
+bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string imagePaths, QProgressDialog& progressDialog) {
     int nbrImage = 0;
 
     data->rootFolders = Folders("");
@@ -90,7 +80,6 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     countImagesFromFolder(imagePaths, nbrImage);
 
-
     progressDialog.setLabelText("Loading images...");
     progressDialog.setCancelButtonText("Cancel");
     progressDialog.setRange(0, nbrImage);
@@ -100,9 +89,9 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     int loaded = 0;
 
-    ImagesData* imagesData = new  ImagesData(std::vector<ImageData>{});
+    ImagesData* imagesData = new ImagesData(std::vector<ImageData>{});
 
-    if (!loadImagesFromFolder(imagePaths, imagePaths, imagesData, loaded, progressDialog)){
+    if (!loadImagesFromFolder(imagePaths, imagePaths, imagesData, loaded, progressDialog)) {
         qDebug() << "loadImagesFromFolder failed : " << imagePaths;
         return false;
     }
@@ -112,7 +101,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     progressDialog.setValue(0);
     progressDialog.show();
     progressDialog.setLabelText("Loading images googleData...");
-    if (!loadImagesMetaDataOfGoogle(imagesData, progressDialog)){
+    if (!loadImagesMetaDataOfGoogle(imagesData, progressDialog)) {
         return false;
     }
 
@@ -131,7 +120,6 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     QObject::connect(&watcher, &QFutureWatcher<void>::progressValueChanged, &progressDialog, &QProgressDialog::setValue);
     QObject::connect(&watcher, &QFutureWatcher<void>::finished, &progressDialog, &QProgressDialog::reset);
 
-
     QFuture<void> future = QtConcurrent::run([&]() {
         for (int i = 0; i < numThreads; ++i) {
             int start = i * imagesPerThread;
@@ -139,11 +127,9 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
             ThumbnailTask* task = new ThumbnailTask(data, imagesData, start, end);
 
             QThreadPool::globalInstance()->start(task);
-        }
-        });
+        } });
 
     watcher.setFuture(future);
-
 
     while (QThreadPool::globalInstance()->activeThreadCount() > 0) {
         int thumbnailsCreated = 0;
@@ -160,17 +146,14 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
         progressDialog.setValue(thumbnailsCreated);
         QCoreApplication::processEvents();
         qDebug() << "Number of thumbnails not created: " << thumbnailsCreated << "/" << nbrImage;
-
     }
 
     return true;
 }
 
-
-std::string readFile(const std::string& filePath){
+std::string readFile(const std::string& filePath) {
     std::ifstream file(filePath);
-    if (!file.is_open())
-    {
+    if (!file.is_open()) {
         throw std::runtime_error("Could not open file: " + filePath);
     }
 
@@ -179,28 +162,23 @@ std::string readFile(const std::string& filePath){
     return buffer.str();
 }
 
-std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString)
-{
+std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString) {
     std::map<std::string, std::string> resultMap;
     std::string key, value;
     std::istringstream jsonStream(jsonString);
     char ch;
 
-    while (jsonStream >> ch)
-    {
-        if (ch == '"')
-        {
+    while (jsonStream >> ch) {
+        if (ch == '"') {
             std::getline(jsonStream, key, '"');
-            jsonStream >> ch; // skip ':'
-            jsonStream >> ch; // skip space or '"'
-            if (ch == '"')
-            {
+            jsonStream >> ch;  // skip ':'
+            jsonStream >> ch;  // skip space or '"'
+            if (ch == '"') {
                 std::getline(jsonStream, value, '"');
-            } else
-            {
+            } else {
                 jsonStream.putback(ch);
                 std::getline(jsonStream, value, ',');
-                value.pop_back(); // remove trailing comma
+                value.pop_back();  // remove trailing comma
             }
             resultMap[key] = value;
         }
@@ -210,29 +188,22 @@ std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString)
 }
 // }
 
-std::map<std::string, std::string> openJsonFile(std::string filePath)
-{
+std::map<std::string, std::string> openJsonFile(std::string filePath) {
     std::string jsonString = readFile(filePath);
     std::map<std::string, std::string> jsonMap = parseJsonToMap(jsonString);
     return jsonMap;
 }
 
 // Conte toutes les images dans un dossier et ses sous dossier
-void countImagesFromFolder(const std::string path, int& nbrImage)
-{
-
+void countImagesFromFolder(const std::string path, int& nbrImage) {
     int i = 0;
-    for (const auto& entry : fs::directory_iterator(path))
-    {
-        if (fs::is_regular_file(entry.status()))
-        {
 
-            if (isImage(entry.path().string()))
-            {
+    for (const auto& entry : fs::directory_iterator(path)) {
+        if (fs::is_regular_file(entry.status())) {
+            if (isImage(entry.path().string())) {
                 nbrImage += 1;
             }
         } else if (fs::is_directory(entry.status())) {
-
             countImagesFromFolder(entry.path().string(), nbrImage);
 
             i += 1;
@@ -241,21 +212,20 @@ void countImagesFromFolder(const std::string path, int& nbrImage)
 }
 
 // Charges concrètement dans un imagesData toutes les données des images dans un dossier et ses sous dossier
-bool loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage, QProgressDialog& progressDialog){
-    for (const auto& entry : fs::directory_iterator(path)){
-        if (progressDialog.wasCanceled()){
+bool loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage, QProgressDialog& progressDialog) {
+    for (const auto& entry : fs::directory_iterator(path)) {
+        if (progressDialog.wasCanceled()) {
             return false;
         }
-        if (fs::is_regular_file(entry.status())){
-            if (isImage(entry.path().string())){
-
+        if (fs::is_regular_file(entry.status())) {
+            if (isImage(entry.path().string())) {
                 fs::path relativePath = fs::relative(entry.path(), fs::path(initialPath).parent_path());
 
                 Folders folders;
                 ImageData* imageData = imagesData->getImageData(entry.path().string());
-                if (imageData != nullptr){
+                if (imageData != nullptr) {
                     folders = imageData->folders;
-                } else{
+                } else {
                     folders = Folders(entry.path().string());
                 }
                 folders.addFolder(fs::absolute(entry.path()).parent_path().string());
@@ -268,18 +238,17 @@ bool loadImagesFromFolder(const std::string initialPath, const std::string path,
                 progressDialog.setValue(nbrImage);
                 QApplication::processEvents();
             }
-        } else if (fs::is_directory(entry.status())){
+        } else if (fs::is_directory(entry.status())) {
             loadImagesFromFolder(initialPath, entry.path().string(), imagesData, nbrImage, progressDialog);
         }
     }
     return true;
 }
 
-
-bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog){
+bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog) {
     progressDialog.setMaximum(imagesData->get()->size());
 
-    for (int i = 0; i < imagesData->get()->size(); ++i){
+    for (int i = 0; i < imagesData->get()->size(); ++i) {
         // TODO not working for now
         // if (progressDialog.wasCanceled()){
         //     return false;
@@ -311,8 +280,7 @@ bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progres
     return true;
 }
 
-std::string mapJsonKeyToExifKey(const std::string& jsonKey)
-{
+std::string mapJsonKeyToExifKey(const std::string& jsonKey) {
     static const std::map<std::string, std::string> keyMap = {
         // TODO mettre tous les nécessaires
         // {"title", "Exif.Image.ImageDescription"}, // inutile
@@ -323,14 +291,13 @@ std::string mapJsonKeyToExifKey(const std::string& jsonKey)
         {"geoData.altitude", "Exif.GPSInfo.GPSAltitude"},
         {"googlePhotosOrigin.mobileUpload.deviceModel", "Exif.Image.Model"},
         {"googlePhotosOrigin.mobileUpload.deviceType", "Exif.Image.Make"},
-        {"googlePhotosOrigin.mobileUpload.deviceSoftwareVersion", "Exif.Image.Software"} };
+        {"googlePhotosOrigin.mobileUpload.deviceSoftwareVersion", "Exif.Image.Software"}};
 
     std::string lowerJsonKey = jsonKey;
     std::transform(lowerJsonKey.begin(), lowerJsonKey.end(), lowerJsonKey.begin(), ::tolower);
 
     auto it = keyMap.find(lowerJsonKey);
-    if (it != keyMap.end())
-    {
+    if (it != keyMap.end()) {
         return it->second;
     }
     return "";
