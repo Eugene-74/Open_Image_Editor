@@ -1,6 +1,6 @@
 unset GTK_PATH
 
-cd ..
+# cd ..
 
 
 # Créer un répertoire de build et y naviguer

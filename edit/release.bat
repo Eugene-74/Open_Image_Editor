@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-cd ..
+@REM cd ..
 
 mkdir build
 cd build
