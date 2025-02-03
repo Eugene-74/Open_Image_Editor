@@ -26,7 +26,7 @@ copy ..\..\build\%EXECUTABLE% .
 windeployqt6.exe %EXECUTABLE%
 
 @REM NON trouver jsp pk mais necessaire
-xcopy C:\msys64\mingw64\bin\libjpeg-8.dll .
+@REM xcopy C:\msys64\mingw64\bin\libjpeg-8.dll .
 
 C:\mingw-bundledlls\mingw-bundledlls C:\Users\eugen\Documents\MesDocuments\git\Open_Image_Editor\release\bin\%EXECUTABLE% > dependencies.txt
 
