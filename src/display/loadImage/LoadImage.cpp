@@ -179,8 +179,6 @@ std::string readFile(const std::string& filePath){
     return buffer.str();
 }
 
-// std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString) {
-
 std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString)
 {
     std::map<std::string, std::string> resultMap;
@@ -282,30 +280,31 @@ bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progres
     progressDialog.setMaximum(imagesData->get()->size());
 
     for (int i = 0; i < imagesData->get()->size(); ++i){
-        if (progressDialog.wasCanceled()){
-            return false;
-        }
-        ImageData* imageData = imagesData->getImageData(i);
-        std::string jsonFilePath = imageData->getImagePath() + ".json";
+        // TODO not working for now
+        // if (progressDialog.wasCanceled()){
+        //     return false;
+        // }
+        // ImageData* imageData = imagesData->getImageData(i);
+        // std::string jsonFilePath = imageData->getImagePath() + ".json";
 
-        if (fs::exists(jsonFilePath)){
-            qDebug() << "json found : " << jsonFilePath.c_str();
-            std::map<std::string, std::string> jsonMap = openJsonFile(jsonFilePath);
+        // if (fs::exists(jsonFilePath)){
+        //     qDebug() << "json found : " << jsonFilePath.c_str();
+        //     std::map<std::string, std::string> jsonMap = openJsonFile(jsonFilePath);
 
-            for (const auto& [key, value] : jsonMap){
-                if (!key.empty() && !value.empty())
-                {
-                    std::string exifKey = mapJsonKeyToExifKey(key);
-                    if (exifKey != "")
-                    {
-                        imageData->metaData.modifyExifValue(exifKey, value);
-                    }
-                }
-            }
-            imageData->saveMetaData();
-        } else{
-            // displayExifData(imageData->metaData.exifMetaData);
-        }
+        //     for (const auto& [key, value] : jsonMap){
+        //         if (!key.empty() && !value.empty())
+        //         {
+        //             std::string exifKey = mapJsonKeyToExifKey(key);
+        //             if (exifKey != "")
+        //             {
+        //                 imageData->metaData.modifyExifValue(exifKey, value);
+        //             }
+        //         }
+        //     }
+        //     imageData->saveMetaData();
+        // } else{
+        //     // displayExifData(imageData->metaData.exifMetaData);
+        // }
         progressDialog.setValue(i);
         QApplication::processEvents();
     }
