@@ -43,7 +43,7 @@ private:
 
     int lastLineNbr = 0;
 
-    int maxVisibleLines = data->sizes.imagesBoothSizes->heightImageNumber + 2;
+    int maxVisibleLines = data->sizes.imagesBoothSizes->heightImageNumber + 1;
     std::vector<QLabel*> imageWidgets;
 
 
@@ -81,12 +81,16 @@ private:
 
     void onScroll(int value);
 
-    bool isLineVisible(int lineIndex);
 
     void updateImages();
     ClickableLabel* getClickableLabelIfExist(int imageNbr);
 
+    void gotToImage(int nbr);
+    void addNbrToSelectedImages(int nbr);
+    void removeNbrToSelectedImages(int nbr);
 
+    bool isLineVisible(int lineIndex);
+    bool isImageVisible(int imageIndex);
 
     void createButtons();
 

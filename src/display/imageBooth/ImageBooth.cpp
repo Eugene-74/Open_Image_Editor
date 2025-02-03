@@ -70,9 +70,17 @@ void ImageBooth::updateVisibleImages() {
     int lineNbr = spacerHeight / imageHeight;
     int difLineNbr = lineNbr - lastLineNbr;
 
+    // std::cerr << "lineNbr : " << lineNbr << " : " << lastLineNbr << " : " << difLineNbr << std::endl;
+
     if (difLineNbr == 0){
         return;
     }
+    // TODO marche pas
+        // if (difLineNbr > maxVisibleLines){
+        //     difLineNbr = maxVisibleLines;
+        // } else if (difLineNbr < -maxVisibleLines){
+        //     difLineNbr = -maxVisibleLines;
+        // }
 
     else if (difLineNbr > 0){
         // MET LE PREMIER EN DERNIER
@@ -132,12 +140,29 @@ void ImageBooth::updateVisibleImages() {
 
 }
 
+// Check if a line is visible
 bool ImageBooth::isLineVisible(int lineIndex) {
     QRect visibleRect = scrollArea->viewport()->rect();
     int lineTop = lineIndex * data->sizes.imagesBoothSizes->realImageSize.height();
     int lineBottom = lineTop + data->sizes.imagesBoothSizes->realImageSize.height();
 
     return (lineBottom > visibleRect.top() + scrollArea->verticalScrollBar()->value() && lineTop < visibleRect.bottom() + scrollArea->verticalScrollBar()->value());
+}
+
+// Check if a, image is visible
+bool ImageBooth::isImageVisible(int imageIndex) {
+    int spacerHeight = scrollArea->verticalScrollBar()->value();
+    int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
+    spacerHeight = (spacerHeight / imageHeight) * imageHeight;
+
+    int firstImageNbr = spacerHeight / imageHeight * data->sizes.imagesBoothSizes->widthImageNumber;
+    int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->sizes.imagesBoothSizes->widthImageNumber;
+    // TODO verif last image nbr
+    if (imageIndex >= firstImageNbr && imageIndex <= lastImageNbr){
+        return true;
+    }
+
+    return false;
 }
 
 
@@ -230,16 +255,32 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             imageButton->unSelect();
             data->imagesSelected.erase(it);
 
-            data->addAction([this, imageButton, nbr]() {
-                imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
-                data->imagesSelected.push_back(nbr);
-                },
-                [this, imageButton, nbr]() {
-                    imageButton->unSelect();
-                    auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
-                    if (it != data->imagesSelected.end()){
-                        data->imagesSelected.erase(it);
+            data->addAction(
+                [this, nbr]() {
+                    if (!isImageVisible(nbr)){
+                        gotToImage(nbr);
                     }
+                    QTimer::singleShot(TIME_UNDO_VISUALISATION, [this, nbr]() {
+                        ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                        if (imageButton != nullptr){
+                            imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+                            std::cerr << "select" << std::endl;
+                        }
+                        addNbrToSelectedImages(nbr);
+                        });
+                },
+                [this, nbr]() {
+                    if (!isImageVisible(nbr)){
+                        gotToImage(nbr);
+                    }
+                    QTimer::singleShot(TIME_UNDO_VISUALISATION, [this, nbr]() {
+                        ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                        if (imageButton != nullptr){
+                            imageButton->unSelect();
+                            std::cerr << "unselect" << std::endl;
+                        }
+                        removeNbrToSelectedImages(nbr);
+                        });
                 });
         } else {
             imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
@@ -247,23 +288,32 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
             data->addAction(
                 [this, nbr]() {
-                    // TODO déplcer au bon endroit
-                    ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
-                    if (imageButton != nullptr){
-                        imageButton->unSelect();
+                    int time = 0;
+                    if (!isImageVisible(nbr)){
+                        gotToImage(nbr);
+                        int time = TIME_UNDO_VISUALISATION;
                     }
-                    auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
-                    if (it != data->imagesSelected.end()){
-                        data->imagesSelected.erase(it);
-                    }
+                    QTimer::singleShot(time, [this, nbr]() {
+                        ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                        if (imageButton != nullptr){
+                            imageButton->unSelect();
+                        }
+                        removeNbrToSelectedImages(nbr);
+                        });
                 },
                 [this, nbr]() {
-                    // TODO déplcer au bon endroit
-                    ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
-                    if (imageButton != nullptr){
-                        imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+                    int time = 0;
+                    if (!isImageVisible(nbr)){
+                        gotToImage(nbr);
+                        int time = TIME_UNDO_VISUALISATION;
                     }
-                    data->imagesSelected.push_back(nbr);
+                    QTimer::singleShot(time, [this, nbr]() {
+                        ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                        if (imageButton != nullptr){
+                            imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+                        }
+                        addNbrToSelectedImages(nbr);
+                        });
                 });
         }
         });
@@ -271,8 +321,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     connect(imageButton, &ClickableLabel::shiftLeftClicked, [this, nbr, imageButton]() {
         // select all image beetwen the 2 nbr
         if (imageShiftSelected >= 0){
-            // std::vector<int> addedNbr;
-            // std::vector<int> deletedNbr;
+            std::vector<int> modifiedNbr;
 
             int start = std::min(imageShiftSelected, nbr);
             int end = std::max(imageShiftSelected, nbr);
@@ -282,19 +331,59 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                 if (it != data->imagesSelected.end()) {
                     if (!imageShiftSelectedSelect){
                         data->imagesSelected.erase(it);
-                        // deletedNbr.push_back(i);
+                        modifiedNbr.push_back(i);
                     }
                 } else{
                     if (imageShiftSelectedSelect){
                         data->imagesSelected.push_back(i);
-                        // addedNbr.push_back(i);
+                        modifiedNbr.push_back(i);
                     }
+
                 }
             }
 
-
-            // udate icons status (selected or not)
             updateImages();
+
+            bool select = *&imageShiftSelectedSelect;
+            data->addAction(
+                [this, modifiedNbr, select]() {
+                    int time = 0;
+                    int minNbr = *std::min_element(modifiedNbr.begin(), modifiedNbr.end());
+                    if (!isImageVisible(minNbr)){
+                        gotToImage(minNbr);
+                        int time = TIME_UNDO_VISUALISATION;
+                    }
+                    QTimer::singleShot(time, [this, modifiedNbr, select]() {
+                        for (auto nbr : modifiedNbr){
+                            if (select){
+                                removeNbrToSelectedImages(nbr);
+                            } else{
+                                addNbrToSelectedImages(nbr);
+                            }
+                        }
+                        updateImages();
+                        });
+                },
+                [this, modifiedNbr, select]() {
+                    int time = 0;
+                    int minNbr = *std::min_element(modifiedNbr.begin(), modifiedNbr.end());
+                    if (!isImageVisible(minNbr)){
+                        gotToImage(minNbr);
+                        int time = TIME_UNDO_VISUALISATION;
+                    }
+                    QTimer::singleShot(time, [this, modifiedNbr, select]() {
+
+                        for (auto nbr : modifiedNbr){
+                            if (select){
+                                addNbrToSelectedImages(nbr);
+                            } else{
+                                removeNbrToSelectedImages(nbr);
+                            }
+                        }
+                        updateImages();
+                        });
+                });
+
 
             imageShiftSelected = -1;
         } else{
@@ -313,20 +402,46 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     return imageButton;
 }
 
+// Go to the line of the image nbr
+void ImageBooth::gotToImage(int nbr) {
+    int imageLine = nbr / data->sizes.imagesBoothSizes->widthImageNumber;
+    int spacerHeight = imageLine * data->sizes.imagesBoothSizes->realImageSize.height();
+    scrollArea->verticalScrollBar()->setValue(spacerHeight);
+    updateVisibleImages();
+    QCoreApplication::processEvents();
+}
+
+// add a nbr from the selected images
+void ImageBooth::addNbrToSelectedImages(int nbr) {
+    auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
+    if (it == data->imagesSelected.end()) {
+        data->imagesSelected.push_back(nbr);
+    }
+}
+
+// remove a nbr from the selected images
+void ImageBooth::removeNbrToSelectedImages(int nbr) {
+    auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
+    if (it != data->imagesSelected.end()) {
+        data->imagesSelected.erase(it);
+    }
+}
+
 ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr){
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
+
     int firstImageNbr = spacerHeight / imageHeight * data->sizes.imagesBoothSizes->widthImageNumber;
-    int lastImageNbr = spacerHeight / imageHeight + maxVisibleLines * data->sizes.imagesBoothSizes->widthImageNumber;
+    int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->sizes.imagesBoothSizes->widthImageNumber;
     // TODO verif last image nbr
-    std::cerr << firstImageNbr << " : " << lastImageNbr << " :: " << imageNbr;
     if (imageNbr >= firstImageNbr && imageNbr <= lastImageNbr){
-        std::cerr << " : good" << std::endl;
+        int firstImageLine = firstImageNbr / data->sizes.imagesBoothSizes->widthImageNumber;
         int imageLine = imageNbr / data->sizes.imagesBoothSizes->widthImageNumber;
+
+        int imageRelativeLine = imageLine - firstImageLine;
         int imageNbrInLine = imageNbr - imageLine * data->sizes.imagesBoothSizes->widthImageNumber;
-        std::cerr << imageLine << ":" << imageNbrInLine << std::endl;
-        QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(imageLine + 1)->layout());
+        QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(imageRelativeLine + 1)->layout());
         ClickableLabel* imageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(imageNbrInLine)->widget());
 
         return imageButton;
@@ -334,6 +449,7 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr){
     return nullptr;
 }
 
+// udate icons status (selected or not)
 void ImageBooth::updateImages(){
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();

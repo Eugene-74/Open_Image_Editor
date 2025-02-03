@@ -22,6 +22,9 @@ const int TIME_BEFORE_FULL_QUALITY = 200;
 const int TIME_BEFORE_FULL_QUALITY_IMAGE_BOOTH = 500;
 const int PRE_LOAD_RADIUS_IMAGE_BOOTH = 5;
 
+
+const int TIME_UNDO_VISUALISATION = 500;
+
 // const int LINE_LOADED = 1; // fois ou l'on charge un tableau d'image (2 = 2 tableau pres charger)
 
 

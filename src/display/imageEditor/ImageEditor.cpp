@@ -1214,41 +1214,67 @@ void ImageEditor::deleteImage() {
 
     if (data->isDeleted(nbr)) {
         data->unPreDeleteImage(nbr);
+        data->addAction(
+            [this, nbr, saved]() {
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr, saved]() {
+                    if (saved){
+                        data->saved = true;
+                    }
+                    data->preDeleteImage(nbr);
+                    reload();
+                    });
 
-        data->addAction([this, nbr, saved]() {
-            if (saved){
-                data->saved = true;
-            }
-            data->preDeleteImage(nbr);
-            data->imagesData.imageNumber = nbr;
-            reload();
             },
             [this, nbr]() {
-                data->saved = false;
-
-                data->unPreDeleteImage(nbr);
-                data->imagesData.imageNumber = nbr;
-                reload();
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr]() {
+                    data->saved = false;
+                    data->unPreDeleteImage(nbr);
+                    });
             });
 
         updateButtons();
     } else {
         data->preDeleteImage(nbr);
-        data->addAction([this, nbr, saved]() {
-            if (saved){
-                data->saved = true;
-            }
-
-            data->unPreDeleteImage(nbr);
-            data->imagesData.imageNumber = nbr;
-            reload();
+        data->addAction(
+            [this, nbr, saved]() {
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr, saved]() {
+                    if (saved){
+                        data->saved = true;
+                    }
+                    data->unPreDeleteImage(nbr);
+                    reload();
+                    });
             },
             [this, nbr]() {
-                data->saved = false;
-
-                data->preDeleteImage(nbr);
-                data->imagesData.imageNumber = nbr;
-                reload();
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr]() {
+                    data->saved = false;
+                    data->preDeleteImage(nbr);
+                    reload();
+                    });
             });
         updateButtons();
     }
@@ -1383,35 +1409,61 @@ void ImageEditor::rotateLeft() {
     if (exifTurnOrMiror(extension)) {
 
         rotateLeftJpg();
-        data->addAction([this, nbr, saved]() {
-            if (saved){
-                data->saved = true;
-            }
-            data->imagesData.imageNumber = nbr;
-            reload();
-            rotateRightJpg();
+        data->addAction(
+            [this, nbr, saved]() {
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr, saved]() {
+                    if (saved){
+                        data->saved = true;
+                    }
+                    rotateRightJpg();
+                    });
             },
             [this, nbr]() {
-                data->saved = false;
-                data->imagesData.imageNumber = nbr;
-                reload();
-                rotateLeftJpg();
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr]() {
+                    data->saved = false;
+                    rotateLeftJpg();
+                    });
             });
     } else if (realTurnOrMiror(extension)) {
         rotateLeftPng();
-        data->addAction([this, nbr, saved]() {
-            if (saved){
-                data->saved = true;
-            }
-            data->imagesData.imageNumber = nbr;
-            reload();
-            rotateRightPng();
+        data->addAction(
+            [this, nbr, saved]() {
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr, saved]() {
+                    if (saved){
+                        data->saved = true;
+                    }
+                    rotateRightPng();
+                    });
             },
             [this, nbr]() {
-                data->saved = false;
-                data->imagesData.imageNumber = nbr;
-                reload();
-                rotateLeftPng();
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr]() {
+                    data->saved = false;
+                    rotateLeftPng();
+                    });
             });
     }
     data->saved = false;
@@ -1423,35 +1475,62 @@ void ImageEditor::rotateRight() {
 
     if (exifTurnOrMiror(extension)) {
         rotateRightJpg();
-        data->addAction([this, nbr, saved]() {
-            if (saved){
-                data->saved = true;
-            }
-            data->imagesData.imageNumber = nbr;
-            reload();
-            rotateLeftJpg();
+        data->addAction(
+            [this, nbr, saved]() {
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr, saved]() {
+                    if (saved){
+                        data->saved = true;
+                    }
+                    reload();
+                    rotateLeftJpg();
+                    });
             },
             [this, nbr]() {
-                data->saved = false;
-                data->imagesData.imageNumber = nbr;
-                reload();
-                rotateRightJpg();
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr]() {
+                    data->saved = false;
+                    rotateRightJpg();
+                    });
             });
     } else if (realTurnOrMiror(extension)) {
         rotateRightPng();
-        data->addAction([this, nbr, saved]() {
-            if (saved){
-                data->saved = true;
-            }
-            data->imagesData.imageNumber = nbr;
-            reload();
-            rotateLeftJpg();
+        data->addAction(
+            [this, nbr, saved]() {
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr, saved]() {
+                    if (saved){
+                        data->saved = true;
+                    }
+                    rotateLeftJpg();
+                    });
             },
             [this, nbr]() {
-                data->saved = false;
-                data->imagesData.imageNumber = nbr;
-                reload();
-                rotateRightPng();
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr]() {
+                    data->saved = false;
+                    rotateRightPng();
+                    });
             });
     }
     data->saved = false;
@@ -1493,35 +1572,61 @@ void ImageEditor::mirrorUpDown() {
 
     if (exifTurnOrMiror(extension)) {
         mirrorUpDownJpg();
-        data->addAction([this, nbr, saved]() {
-            if (saved){
-                data->saved = true;
-            }
-            data->imagesData.imageNumber = nbr;
-            reload();
-            mirrorUpDownJpg();
+        data->addAction(
+            [this, nbr, saved]() {
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr, saved]() {
+                    if (saved){
+                        data->saved = true;
+                    }
+                    mirrorUpDownJpg();
+                    });
             },
             [this, nbr]() {
-                data->saved = false;
-                data->imagesData.imageNumber = nbr;
-                reload();
-                mirrorUpDownJpg();
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr]() {
+                    data->saved = false;
+                    mirrorUpDownJpg();
+                    });
             });
     } else if (realTurnOrMiror(extension)) {
         mirrorUpDownPng();
-        data->addAction([this, nbr, saved]() {
-            if (saved){
-                data->saved = true;
-            }
-            data->imagesData.imageNumber = nbr;
-            reload();
-            mirrorUpDownPng();
+        data->addAction(
+            [this, nbr, saved]() {
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr, saved]() {
+                    if (saved){
+                        data->saved = true;
+                    }
+                    mirrorUpDownPng();
+                    });
             },
             [this, nbr]() {
-                data->saved = false;
-                data->imagesData.imageNumber = nbr;
-                reload();
-                mirrorUpDownPng();
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr]() {
+                    data->saved = false;
+                    mirrorUpDownPng();
+                    });
             });
     }
     data->saved = false;
@@ -1536,35 +1641,61 @@ void ImageEditor::mirrorLeftRight() {
 
     if (exifTurnOrMiror(extension)) {
         mirrorLeftRightJpg();
-        data->addAction([this, nbr, saved]() {
-            if (saved){
-                data->saved = true;
-            }
-            data->imagesData.imageNumber = nbr;
-            reload();
-            mirrorLeftRightJpg();
+        data->addAction(
+            [this, nbr, saved]() {
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr, saved]() {
+                    if (saved){
+                        data->saved = true;
+                    }
+                    mirrorLeftRightJpg();
+                    });
             },
             [this, nbr]() {
-                data->saved = false;
-                data->imagesData.imageNumber = nbr;
-                reload();
-                mirrorLeftRightJpg();
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr]() {
+                    data->saved = false;
+                    mirrorLeftRightJpg();
+                    });
             });
     } else if (realTurnOrMiror(extension)) {
         mirrorLeftRightPng();
-        data->addAction([this, nbr, saved]() {
-            if (saved){
-                data->saved = true;
-            }
-            data->imagesData.imageNumber = nbr;
-            reload();
-            mirrorLeftRightPng();
+        data->addAction(
+            [this, nbr, saved]() {
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr, saved]() {
+                    if (saved){
+                        data->saved = true;
+                    }
+                    mirrorLeftRightPng();
+                    });
             },
             [this, nbr]() {
-                data->saved = false;
-                data->imagesData.imageNumber = nbr;
-                reload();
-                mirrorLeftRightPng();
+                int time = 0;
+                if (data->imagesData.imageNumber != nbr){
+                    data->imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                QTimer::singleShot(time, [this, nbr]() {
+                    data->saved = false;
+                    mirrorLeftRightPng();
+                    });
             });
     }
     data->saved = false;

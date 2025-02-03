@@ -707,8 +707,7 @@ void Data::addAction(std::function<void()> unDo, std::function<void()> reDo)
     }
 }
 
-void Data::addActionDone(Actions action)
-{
+void Data::addActionDone(Actions action){
     lastActionsDone.emplace_back(action);
     if (lastActionsDone.size() > 100)
     {
@@ -716,10 +715,9 @@ void Data::addActionDone(Actions action)
     }
 }
 
-void Data::reDoAction()
-{
-    if (!lastActionsDone.empty())
-    {
+void Data::reDoAction(){
+    if (!lastActionsDone.empty()){
+        std::cerr << "reDoAction" << std::endl;
         auto action = lastActionsDone.back();
         addAction(action.unDo, action.reDo);
         lastActionsDone.pop_back();
@@ -727,10 +725,9 @@ void Data::reDoAction()
     }
 }
 
-void Data::unDoAction()
-{
-    if (!lastActions.empty())
-    {
+void Data::unDoAction(){
+    if (!lastActions.empty()){
+        std::cerr << "unDoAction" << std::endl;
         auto action = lastActions.back();
         addActionDone(action);
         lastActions.pop_back();

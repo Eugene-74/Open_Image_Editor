@@ -202,21 +202,40 @@ void MainImage::cropImage() {
 
         bool saved = data->saved;
 
-        data->addAction([this, nbr, saved]() {
-            if (saved){
-                data->saved = true;
-            }
-            data->imagesData.getCurrentImageData()->cropSizes.pop_back();
-            data->imagesData.imageNumber = nbr;
-            // TODO reload marche pas bien
-            // parent->reload();
+        data->addAction(
+            [this, nbr, saved]() {
+                showErrorMessage(this, "Erreur : impossible de unDo (it's normal)");
+
+                // int time = 0;
+                // if (data->imagesData.imageNumber != nbr){
+                //     data->imagesData.imageNumber = nbr;
+                //     // parent->reload();
+                //     time = TIME_UNDO_VISUALISATION;
+                // }
+                // QTimer::singleShot(time, [this, nbr, saved]() {
+                //     if (saved){
+                //         data->saved = true;
+                //     }
+                //     data->imagesData.getCurrentImageData()->cropSizes.pop_back();
+                //     // parent->reload();
+
+                //     });
             },
             [this, nbr, adjustedCropPoints]() {
-                data->saved = false;
-                data->imagesData.getCurrentImageData()->cropSizes.push_back(adjustedCropPoints);
-                data->imagesData.imageNumber = nbr;
-                // TODO reload marche pas bien
-                // parent->reload();
+                showErrorMessage(this, "Erreur : impossible de reDo (it's normal)");
+                // int time = 0;
+                // if (data->imagesData.imageNumber != nbr){
+                //     data->imagesData.imageNumber = nbr;
+                //     // TODO reload fait crash apres le premier ctrl + Z
+                //     // parent->reload();
+                //     time = TIME_UNDO_VISUALISATION;
+                // }
+                // QTimer::singleShot(time, [this, nbr, adjustedCropPoints]() {
+                //     data->saved = false;
+                //     data->imagesData.getCurrentImageData()->cropSizes.push_back(adjustedCropPoints);
+                //     // parent->reload();
+
+                //     });
             });
 
         imageCropted();

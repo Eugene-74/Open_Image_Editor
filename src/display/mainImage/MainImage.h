@@ -10,6 +10,8 @@
 
 #include "../../Const.h"
 #include "../../structure/data/Data.h"
+#include "../../display/box/Box.h"
+
 
 class ImageEditor;
 
