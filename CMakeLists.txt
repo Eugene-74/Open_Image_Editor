@@ -41,16 +41,16 @@ if(WIN32)
 
     set(HEIF_INCLUDE_DIRS "C:/msys64/mingw64/include/libheif")
     
-    set(LIBRAW_INCLUDE_DIRS "C:/msys64/mingw64/include/libraw")
-    set(LIBRAW_LIBRARIES "C:/msys64/mingw64/lib/libraw.dll.a")
+    # set(LIBRAW_INCLUDE_DIRS "C:/msys64/mingw64/include/libraw")
+    # set(LIBRAW_LIBRARIES "C:/msys64/mingw64/lib/libraw.dll.a")
 
     # Inclure les répertoires d'en-têtes
     include_directories(${OpenCV_INCLUDE_DIRS})
     include_directories(${EXIV2_INCLUDE_DIRS})
     include_directories(${HEIF_INCLUDE_DIRS})
     message(STATUS "HEIF library: ${HEIF_INCLUDE_DIRS}")
-    include_directories(${LIBRAW_INCLUDE_DIRS})
-    message(STATUS "LibRaw library: ${LIBRAW_INCLUDE_DIRS}")
+    # include_directories(${LIBRAW_INCLUDE_DIRS})
+    # message(STATUS "LibRaw library: ${LIBRAW_INCLUDE_DIRS}")
 
     # Utiliser ccache si disponible
     find_program(CCACHE_PROGRAM ccache)
@@ -88,7 +88,7 @@ if(WIN32)
         ${OpenCV_LIBS}
         ${EXIV2_LIBRARIES}
         ${HEIF_LIBRARIES}
-        ${LIBRAW_LIBRARIES}
+        # ${LIBRAW_LIBRARIES}
     )
 
     add_custom_target(update_translations

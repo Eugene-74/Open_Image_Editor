@@ -13,6 +13,7 @@ const QString DOCUMENTS_PATH = QStandardPaths::writableLocation(QStandardPaths::
 const QString PICTURES_PATH = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
 const QString HOME_PATH = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 const QString CACHE_PATH = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+const QString APPDATA_PATH = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
 const int PREVIEW_NBR = 3;
 const int PRE_LOAD_RADIUS = 5;  // on en precharge 2 de plus comme ça l'utilisateut ne vois meme pas les images charger
@@ -37,7 +38,12 @@ const int IMAGE_BOOTH_IMAGE_QUALITY = 256;  // 128 or 256 or 512
 
 const std::string THUMBNAIL_PATH_OPTION = "thumbnail save path";
 
+#ifdef _WIN32
+const std::string SAVE_PATH = APPDATA_PATH.toStdString() + "/." + APP_NAME;
+#else
 const std::string SAVE_PATH = HOME_PATH.toStdString() + "/." + APP_NAME;
+#endif
+
 const std::string IMAGESDATA_SAVE_DATA_PATH = SAVE_PATH + "/save." + APP_NAME;
 
 const std::map<std::string, Option> DEFAULT_OPTIONS = {
@@ -99,12 +105,14 @@ const QString TOOL_IMAGE_BOOTH_MIRROR_LEFT_RIGHT = "Miror LEFT-RIGHT the selecte
 const QString TOOL_IMAGE_BOOTH_EDIT_EXIF = "Edit exif data of selected images";
 const QString TOOL_IMAGE_BOOTH_CONVERSION = "Convert the selected images";
 
-const QString TOOL_IMAGE_EDITOR_DELETE = QObject::tr("Delete the image");
-const QString TOOL_IMAGE_EDITOR_SAVE = QObject::tr("Save modification");
-const QString TOOL_IMAGE_EDITOR_EXPORT = QObject::tr("Export the images");
-const QString TOOL_IMAGE_EDITOR_ROTATE_RIGHT = QObject::tr("Rotate to the right the image");
-const QString TOOL_IMAGE_EDITOR_ROTATE_LEFT = QObject::tr("Rotate to the left the image");
-const QString TOOL_IMAGE_EDITOR_MIRROR_UP_DOWN = QObject::tr("Miror UP-DOWN the image");
-const QString TOOL_IMAGE_EDITOR_MIRROR_LEFT_RIGHT = QObject::tr("Miror LEFT-RIGHT the image");
-const QString TOOL_IMAGE_EDITOR_EDIT_EXIF = QObject::tr("Edit exif data of the image");
+const QString TOOL_IMAGE_EDITOR_DELETE = "Delete the image";
+const QString TOOL_IMAGE_EDITOR_SAVE = "Save modification";
+const QString TOOL_IMAGE_EDITOR_EXPORT = "Export the images";
+const QString TOOL_IMAGE_EDITOR_ROTATE_RIGHT = "Rotate to the right the image";
+const QString TOOL_IMAGE_EDITOR_ROTATE_LEFT = "Rotate to the left the image";
+const QString TOOL_IMAGE_EDITOR_MIRROR_UP_DOWN = "Miror UP-DOWN the image";
+const QString TOOL_IMAGE_EDITOR_MIRROR_LEFT_RIGHT = "Miror LEFT-RIGHT the image";
+const QString TOOL_IMAGE_EDITOR_EDIT_EXIF = "Edit exif data of the image";
+// const QString TOOL_IMAGE_EDITOR_CONVERSION = "Convert the image";
+#include <QObject>
 const QString TOOL_IMAGE_EDITOR_CONVERSION = QObject::tr("Convert the image");

@@ -1,32 +1,33 @@
 #pragma once
-#include <string>
-#include <iostream>
-#include <QImage>
-#include <exiv2/exiv2.hpp>
-#include <QApplication>
-#include <QDialog>
-#include <QComboBox>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QStringList>
-#include <QFileInfo>
-
 #include <heif.h>
-#include <libraw/libraw.h>
+
+#include <QApplication>
+#include <QComboBox>
+#include <QDialog>
+#include <QFileInfo>
+#include <QImage>
+#include <QPushButton>
+#include <QStringList>
+#include <QVBoxLayout>
+#include <exiv2/exiv2.hpp>
+#include <iostream>
+#include <string>
+// #include <libraw/libraw.h>
 
 #include "../../functions/verification/Verification.h"
 
 class ConversionDialog : public QDialog {
     Q_OBJECT
 
-public:
-    ConversionDialog(QWidget* parent = nullptr) : QDialog(parent) {
+   public:
+    ConversionDialog(QWidget* parent = nullptr)
+        : QDialog(parent) {
         setWindowTitle("Choose Output File Type");
 
         QVBoxLayout* layout = new QVBoxLayout(this);
 
         // Liste des formats de sortie possibles
-        QStringList formats = { ".png", ".jpeg", ".jpg", ".bmp", ".gif", ".tiff", ".webp" };
+        QStringList formats = {".png", ".jpeg", ".jpg", ".bmp", ".gif", ".tiff", ".webp"};
 
         // ComboBox pour choisir le format de sortie
         comboBox = new QComboBox(this);
@@ -44,16 +45,11 @@ public:
         return comboBox->currentText();
     }
 
-private:
+   private:
     QComboBox* comboBox;
 };
 
-
-
 void launchConversionDialog(const QString& inputImagePath);
-
 
 QImage readHEICAndHEIF(const std::string& filename);
 QImage readRAW(const std::string& filename);
-
-

@@ -1,7 +1,5 @@
 #include "Conversion.h"
 
-
-
 bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath) {
     try {
         QImage image;
@@ -10,10 +8,9 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
             image = readHEICAndHEIF(inputPath);
         } else if (isRAW(inputPath)) {
             image = readRAW(inputPath);
-        } else{
+        } else {
             image.load(QString::fromStdString(inputPath));
         }
-
 
         if (image.isNull()) {
             qDebug() << "Could not open or find the image : " << QString::fromStdString(inputPath);
@@ -108,7 +105,7 @@ void launchConversionDialog(const QString& inputImagePath) {
     ConversionDialog dialog;
     if (dialog.exec() == QDialog::Accepted) {
         // Récupérer le format sélectionné
-        QString selectedFormat = dialog.getSelectedFormat().mid(1); // Retirer le point (.) du format
+        QString selectedFormat = dialog.getSelectedFormat().mid(1);  // Retirer le point (.) du format
 
         // Vérifier si le format sélectionné est différent du format actuel
         if (selectedFormat != currentExtension) {
@@ -129,39 +126,37 @@ void launchConversionDialog(const QString& inputImagePath) {
     }
 }
 
-
 // TODO non fonctionel
 QImage readRAW(const std::string& filename) {
     try {
-        LibRaw rawProcessor;
-        if (rawProcessor.open_file(filename.c_str()) != LIBRAW_SUCCESS) {
-            throw std::runtime_error("Erreur : Impossible de lire le fichier RAW");
-        }
+        // LibRaw rawProcessor;
+        // if (rawProcessor.open_file(filename.c_str()) != LIBRAW_SUCCESS) {
+        //     throw std::runtime_error("Erreur : Impossible de lire le fichier RAW");
+        // }
 
-        if (rawProcessor.unpack() != LIBRAW_SUCCESS) {
-            throw std::runtime_error("Erreur : Impossible de décompresser le fichier RAW");
-        }
+        // if (rawProcessor.unpack() != LIBRAW_SUCCESS) {
+        //     throw std::runtime_error("Erreur : Impossible de décompresser le fichier RAW");
+        // }
 
-        if (rawProcessor.dcraw_process() != LIBRAW_SUCCESS) {
-            throw std::runtime_error("Erreur : Impossible de traiter le fichier RAW");
-        }
+        // if (rawProcessor.dcraw_process() != LIBRAW_SUCCESS) {
+        //     throw std::runtime_error("Erreur : Impossible de traiter le fichier RAW");
+        // }
 
-        libraw_processed_image_t* image = rawProcessor.dcraw_make_mem_image();
-        if (!image) {
-            throw std::runtime_error("Erreur : Impossible de créer une image à partir du fichier RAW");
-        }
+        // libraw_processed_image_t* image = rawProcessor.dcraw_make_mem_image();
+        // if (!image) {
+        //     throw std::runtime_error("Erreur : Impossible de créer une image à partir du fichier RAW");
+        // }
 
-        QImage qImage;
-        if (image->type == LIBRAW_IMAGE_BITMAP) {
-            qImage = QImage(image->data, image->width, image->height, QImage::Format_RGB888).copy();
-        } else {
-            throw std::runtime_error("Erreur : Format d'image non supporté");
-        }
+        // QImage qImage;
+        // if (image->type == LIBRAW_IMAGE_BITMAP) {
+        //     qImage = QImage(image->data, image->width, image->height, QImage::Format_RGB888).copy();
+        // } else {
+        //     throw std::runtime_error("Erreur : Format d'image non supporté");
+        // }
 
-        libraw_dcraw_clear_mem(image);
+        // libraw_dcraw_clear_mem(image);
 
-
-        return qImage;
+        return QImage();
     } catch (const std::exception& e) {
         qDebug() << "Exception: " << e.what();
         return QImage();

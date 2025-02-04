@@ -27,10 +27,9 @@ int main(int argc, char* argv[]) {
     QTranslator translator;
     QString locale = QLocale::system().name();
     QString language = locale.section('_', 0, 0);  // Extraire uniquement la partie de la langue
-    qDebug() << "System locale:" << locale;
-    qDebug() << "Language:" << language;
     std::cerr << "System locale:" << locale.toStdString() << std::endl;
     if (translator.load(":/translations/open_image_editor_" + language + ".qm")) {
+        std::cerr << "Translation file loaded for language:" << language.toStdString() << std::endl;
         app.installTranslator(&translator);
     } else {
         std::cerr << "Translation file not found for language:" << language.toStdString() << std::endl;
@@ -38,12 +37,12 @@ int main(int argc, char* argv[]) {
     }
 
     // Vérifier si le fichier de traduction existe
-    QString translationFile = ":/translations/open_image_editor_" + language + ".qm";
-    if (QFile::exists(translationFile)) {
-        std::cerr << "Translation file exists:" << translationFile.toStdString() << std::endl;
-    } else {
-        std::cerr << "Translation file does not exist:" << translationFile.toStdString() << std::endl;
-    }
+    // QString translationFile = ":/translations/open_image_editor_" + language + ".qm";
+    // if (QFile::exists(translationFile)) {
+    //     std::cerr << "Translation file exists:" << translationFile.toStdString() << std::endl;
+    // } else {
+    //     std::cerr << "Translation file does not exist:" << translationFile.toStdString() << std::endl;
+    // }
 
     // Définir le style sur Fusion
     app.setStyle(QStyleFactory::create("Fusion"));
