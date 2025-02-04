@@ -30,7 +30,7 @@ if(WIN32)
     set(ENV{QTFRAMEWORK_BYPASS_LICENSE_CHECK} "1")
 
     # Trouver les packages
-    find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
+    find_package(Qt6 COMPONENTS Core Gui Widgets LinguistTools REQUIRED)
     find_package(OpenCV REQUIRED)
     find_library(EXIV2_LIBRARIES exiv2 REQUIRED)
     find_library(HEIF_LIBRARIES heif REQUIRED)
@@ -69,8 +69,15 @@ if(WIN32)
     qt6_add_resources(QRC_SOURCES ${RESOURCE_FILES})
 
 
+    set(TS_FILES
+        src/ressources/translations/open_image_editor_en.ts
+        src/ressources/translations/open_image_editor_fr.ts
+        # Ajoutez d'autres fichiers de traduction ici
+    )
+    qt6_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+
     # Création de l'exécutable
-    add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
+    add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
 
     # Liaison des bibliothèques
     target_link_libraries(${PROJECT_NAME} 
@@ -82,6 +89,18 @@ if(WIN32)
         ${EXIV2_LIBRARIES}
         ${HEIF_LIBRARIES}
         ${LIBRAW_LIBRARIES}
+    )
+
+    add_custom_target(update_translations
+        COMMAND lupdate-qt6 ${SOURCES} -ts ${TS_FILES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Updating translations"
+    )
+
+    add_custom_target(release_translations
+        COMMAND lrelease-qt6 ${TS_FILES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Releasing translations"
     )
 
     # Support GCC filesystem

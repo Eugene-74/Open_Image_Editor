@@ -1,27 +1,33 @@
 <!DOCTYPE RCC><RCC version="1.0">
-    <qresource prefix="/icons/">
-        <file>before.png</file>
-        <file>next.png</file>
-        <file>rotateLeft.png</file>
-        <file>rotateRight.png</file>
-        <file>delete.png</file>
-        <file>save.png</file>
-        <file>export.png</file>
-        <file>mirrorUpDown.png</file> 
-        <file>mirrorLeftRight.png</file>
-        <file>editExif.png</file>
-        <file>conversion.png</file>
+    <qresource prefix="">
+        <file>icons/before.png</file>
+        <file>icons/next.png</file>
+        <file>icons/rotateLeft.png</file>
+        <file>icons/rotateRight.png</file>
+        <file>icons/delete.png</file>
+        <file>icons/save.png</file>
+        <file>icons/export.png</file>
+        <file>icons/mirrorUpDown.png</file> 
+        <file>icons/mirrorLeftRight.png</file>
+        <file>icons/editExif.png</file>
+        <file>icons/conversion.png</file>
 
 
-        <file>loading.png</file>
 
-        <file>imageBooth.png</file>
-        <file>imageEditor.png</file>
-        <file>addImages.png</file>
+        <file>icons/imageBooth.png</file>
+        <file>icons/imageEditor.png</file>
+        <file>icons/addImages.png</file>
 
 
-        <file>discord.png</file>
-        <file>github.png</file>
-        <file>option.png</file>
+        <file>icons/discord.png</file>
+        <file>icons/github.png</file>
+        <file>icons/option.png</file>
+    </qresource>
+    <qresource prefix="">
+        <file>images/loading.png</file>
+    </qresource>
+    <qresource prefix="">
+        <file>translations/open_image_editor_en.qm</file>
+        <file>translations/open_image_editor_fr.qm</file>
     </qresource>
 </RCC>

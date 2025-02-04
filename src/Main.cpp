@@ -1,12 +1,8 @@
 #include "Main.h"
 
-
-
 namespace fs = std::filesystem;
 
-
 int main(int argc, char* argv[]) {
-
     auto start = std::chrono::high_resolution_clock::now();
     QApplication app(argc, argv);
 
@@ -21,21 +17,32 @@ int main(int argc, char* argv[]) {
     qInstallMessageHandler([](QtMsgType type, const QMessageLogContext& context, const QString& msg) {
         logStream << msg << Qt::endl;
         logStream.flush();
-        });
+    });
 
     auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::tm* now_tm = std::localtime(&now);
     qDebug() << "Application started at:" << getCurrentFormattedDate();
 
-
     // ouvrir le fichier de traduction
     QTranslator translator;
     QString locale = QLocale::system().name();
+    QString language = locale.section('_', 0, 0);  // Extraire uniquement la partie de la langue
     qDebug() << "System locale:" << locale;
-    if (translator.load(":/translations/Open_Image_Editor_" + locale)) {
+    qDebug() << "Language:" << language;
+    std::cerr << "System locale:" << locale.toStdString() << std::endl;
+    if (translator.load(":/translations/open_image_editor_" + language + ".qm")) {
         app.installTranslator(&translator);
     } else {
-        qDebug() << "Translation file not found for locale:" << locale;
+        std::cerr << "Translation file not found for language:" << language.toStdString() << std::endl;
+        qDebug() << "Translation file not found for language:" << language;
+    }
+
+    // Vérifier si le fichier de traduction existe
+    QString translationFile = ":/translations/open_image_editor_" + language + ".qm";
+    if (QFile::exists(translationFile)) {
+        std::cerr << "Translation file exists:" << translationFile.toStdString() << std::endl;
+    } else {
+        std::cerr << "Translation file does not exist:" << translationFile.toStdString() << std::endl;
     }
 
     // Définir le style sur Fusion
@@ -57,7 +64,6 @@ int main(int argc, char* argv[]) {
     lightPalette.setColor(QPalette::Highlight, QColor(0, 120, 215));
     lightPalette.setColor(QPalette::HighlightedText, QColor(255, 255, 255));
 
-
     // Appliquer la palette de couleurs claires
     app.setPalette(lightPalette);
 
@@ -67,5 +73,3 @@ int main(int argc, char* argv[]) {
 
     return app.exec();
 }
-
-
