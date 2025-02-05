@@ -35,12 +35,12 @@ jobs:
           
       - name: Verify GITHUB_TOKEN
         run: |
-          if [ -z "${{ secrets.GITHUB_TOKEN }}" ]; then
+          if [ -z "${{ secrets.MY_GITHUB_TOKEN }}" ]; then
             echo "GITHUB_TOKEN is not defined"
             exit 1
           else
             echo "GITHUB_TOKEN is defined"
-            RESPONSE=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -s -o /dev/null -w "%{http_code}" https://api.github.com/user)
+            RESPONSE=$(curl -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" -s -o /dev/null -w "%{http_code}" https://api.github.com/user)
             if [ "$RESPONSE" -ne 200 ]; then
               echo "GITHUB_TOKEN is invalid"
               exit 1
@@ -63,7 +63,7 @@ jobs:
           files: |
             ./OpenImageEditor.exe
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
         
 
       - name: Upload Release Asset
@@ -75,4 +75,4 @@ jobs:
           asset_name: OpenImageEditor.exe
           asset_content_type: application/octet-stream
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
