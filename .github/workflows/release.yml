@@ -47,6 +47,8 @@ jobs:
           prerelease: false
           files: |
             ./OpenImageEditor.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
 
       - name: Upload Release Asset
@@ -57,3 +59,5 @@ jobs:
           asset_path: OpenImageEditor-$VERSION.exe
           asset_name: OpenImageEditor.exe
           asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
