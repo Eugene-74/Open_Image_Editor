@@ -61,7 +61,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            ./OpenImageEditor.exe
+            OpenImageEditor.exe
         env:
           GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
         
