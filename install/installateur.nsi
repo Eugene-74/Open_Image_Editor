@@ -33,19 +33,19 @@ Section "Installer" SEC00
     WriteUninstaller "$INSTDIR\uninstall.exe"
     
     ; Add registry keys
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\&{INK_APP_NAME}" "DisplayName" "${INK_APP_NAME}"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${INK_APP_NAME}" "UninstallString" "$INSTDIR\uninstall.exe"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${INK_APP_NAME}" "InstallLocation" "$INSTDIR"
-    ; WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${INK_APP_NAME}" "DisplayIcon" "$INSTDIR\ImageEditor.exe"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${INK_APP_NAME}" "Publisher" "Open Image Editor Team (i am alone ;)"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${INK_APP_NAME}" "DisplayVersion" "${APP_VERSION}"
-    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${INK_APP_NAME}" "NoModify" 1
-    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${INK_APP_NAME}" "NoRepair" 1
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\&{LNK_APP_NAME}" "DisplayName" "${LNK_APP_NAME}"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "UninstallString" "$INSTDIR\uninstall.exe"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "InstallLocation" "$INSTDIR"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "DisplayIcon" "$INSTDIR\${LNK_APP_NAME}.exe"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "Publisher" "Open Image Editor Team (i am alone ;)"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "DisplayVersion" "${APP_VERSION}"
+    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "NoModify" 1
+    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "NoRepair" 1
 SectionEnd
 
 
 Section "Create Shortcuts" SEC01
-    CreateShortcut "$DESKTOP\&{INK_APP_NAME}.lnk" "$INSTDIR\launch.vbs" "$INSTDIR\launch.vbs" "$INSTDIR\icon.ico"
+    CreateShortcut "$DESKTOP\&{LNK_APP_NAME}.lnk" "$INSTDIR\launch.vbs" "$INSTDIR\launch.vbs" "$INSTDIR\icon.ico"
 SectionEnd
 
 Section "Uninstall"
@@ -53,13 +53,13 @@ Section "Uninstall"
     RMDir /r "$INSTDIR"
     
     ; Remove registry keys
-    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\&{INK_APP_NAME}"
+    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\&{LNK_APP_NAME}"
     
     ; Remove uninstaller shortcut
     Delete "$SMPROGRAMS\${APP_NAME}\Uninstall.lnk"
 
     ; Remove shortcuts
-    Delete "$DESKTOP\&{INK_APP_NAME}.lnk"
+    Delete "$DESKTOP\&{LNK_APP_NAME}.lnk"
 
     ; Remove user-specific directory
     RMDir /r "$APPDATA\.${APP_NAME}"
