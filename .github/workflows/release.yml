@@ -40,6 +40,13 @@ jobs:
             exit 1
           else
             echo "GITHUB_TOKEN is defined"
+            RESPONSE=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -s -o /dev/null -w "%{http_code}" https://api.github.com/user)
+            if [ "$RESPONSE" -ne 200 ]; then
+              echo "GITHUB_TOKEN is invalid"
+              exit 1
+            else
+              echo "GITHUB_TOKEN is valid"
+            fi
           fi
         
 
