@@ -1,16 +1,10 @@
-# Fichiers et répertoires générés par CMake
-CMakeFiles/
-
-# Répertoires de build
+*~
+.vscode/
 build/
 
 install/nsis_variables.nsh
 include/Version.h
-
-# Fichiers de sauvegarde
-*~
-
-.vscode/
+*.exe
 
 src/ressources/qrc_ressources.cpp
 src/ressources/ressources.rcc
