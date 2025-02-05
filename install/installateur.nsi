@@ -1,7 +1,9 @@
 !include MUI2.nsh
+!include "nsis_variables.nsh"
 
 Name "Image Editor"
-OutFile "..\ImageEditorInstaller.exe"
+; OutFile "..\ImageEditorInstaller.exe"
+OutFile "../${APP_NAME}-${APP_VERSION}.exe"
 InstallDir "$PROGRAMFILES\Open_Image_Editor"
 
 LicenseText "Please read the following license agreement."
@@ -21,6 +23,8 @@ LicenseData "..\build\release\LICENSE"
 
 
 Section "Installer" SEC00
+    DetailPrint "Installing ${APP_NAME} version ${APP_VERSION}"
+
     SectionIn RO
     SetOutPath $INSTDIR
 

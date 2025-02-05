@@ -1,5 +1,15 @@
 cmake_minimum_required(VERSION 3.14)
-project(OpenImageEditor VERSION 1.0.0)
+
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/AppConfig.txt" app_config)
+foreach(config_line IN LISTS app_config)
+    string(REGEX MATCH "([^=]+)=(.*)" _ ${config_line})
+    set(${CMAKE_MATCH_1} ${CMAKE_MATCH_2})
+endforeach()
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/AppConfig.cmake)
+
+project(${APP_NAME} VERSION ${APP_VERSION})
+
 
 if(WIN32)
 
@@ -51,6 +61,29 @@ if(WIN32)
     message(STATUS "HEIF library: ${HEIF_INCLUDE_DIRS}")
     # include_directories(${LIBRAW_INCLUDE_DIRS})
     # message(STATUS "LibRaw library: ${LIBRAW_INCLUDE_DIRS}")
+
+    # Générer Version.h
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Version.h.in
+        ${CMAKE_CURRENT_BINARY_DIR}/../include/Version.h
+        @ONLY
+    )
+    
+    message(STATUS "Source NSIS file: ${CMAKE_CURRENT_SOURCE_DIR}/install/nsis_variables.nsh.in")
+    message(STATUS "Destination NSIS file: ${CMAKE_CURRENT_BINARY_DIR}/install/nsis_variables.nsh")
+    
+
+    # Générer nsis_variables.nsh
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/install/nsis_variables.nsh.in
+        ${CMAKE_CURRENT_BINARY_DIR}/../install/nsis_variables.nsh
+        @ONLY
+        )
+        
+    # Inclure le répertoire du fichier d'en-tête généré
+    include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
+
+
 
     # Utiliser ccache si disponible
     find_program(CCACHE_PROGRAM ccache)
@@ -196,11 +229,9 @@ endif()
 # Configuration de CPACK
 include(CPack)
 
-set(CPACK_PACKAGE_NAME "OpenImageEditor")
-set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+set(CPACK_PACKAGE_VERSION ${APP_VERSION})
+set(CPACK_NSIS_DISPLAY_NAME ${APP_NAME})
+set(CPACK_NSIS_PUBLISHER ${COMPANY_NAME})
 
 set(CPACK_GENERATOR "ZIP")
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")

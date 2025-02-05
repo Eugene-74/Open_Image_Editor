@@ -1,0 +1,6 @@
+#pragma once
+
+#define APP_NAME "@APP_NAME@"
+#define APP_VERSION "@APP_VERSION@"
+#define COMPANY_NAME "@COMPANY_NAME@"
+#define COPYRIGHT_YEAR "@COPYRIGHT_YEAR@"
