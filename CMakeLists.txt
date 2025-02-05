@@ -6,8 +6,6 @@ foreach(config_line IN LISTS app_config)
     set(${CMAKE_MATCH_1} ${CMAKE_MATCH_2})
 endforeach()
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/AppConfig.cmake)
-
 project(${APP_NAME} VERSION ${APP_VERSION})
 
 
@@ -69,10 +67,6 @@ if(WIN32)
         @ONLY
     )
     
-    message(STATUS "Source NSIS file: ${CMAKE_CURRENT_SOURCE_DIR}/install/nsis_variables.nsh.in")
-    message(STATUS "Destination NSIS file: ${CMAKE_CURRENT_BINARY_DIR}/install/nsis_variables.nsh")
-    
-
     # Générer nsis_variables.nsh
     configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/install/nsis_variables.nsh.in
@@ -81,6 +75,7 @@ if(WIN32)
         )
         
     # Inclure le répertoire du fichier d'en-tête généré
+    # TODO marche pas si ?
     include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
 

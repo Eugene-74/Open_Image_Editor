@@ -1,0 +1,53 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Check if release exists
+        id: check_release
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/$VERSION)
+          if [ "$RESPONSE" -eq 200 ]; then
+            echo "Release already exists"
+            exit 0
+          fi
+          echo "Release does not exist"
+
+      - name: Create Release
+        if: steps.check_release.outputs.exists == 'false'
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Release of version ${{ github.ref }}.
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        if: steps.check_release.outputs.exists == 'false'
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: path/to/${APP_NAME}-${APP_VERSION}.exe
+          asset_name: ${APP_NAME}-${APP_VERSION}.exe
+          asset_content_type: application/octet-stream

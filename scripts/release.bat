@@ -60,9 +60,15 @@ cd ..
 cd ..
 cd ..
 
+del /q *.exe
+
 cd install 
 
 makensis installateur.nsi
+
+git tag v%APP_VERSION%
+git push origin v%APP_VERSION%
+
 
 exit /b
 
