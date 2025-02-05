@@ -25,7 +25,7 @@ bool isMirrorable(const std::string& path) {
     return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
 }
 
-bool exifTurnOrMiror(std::string extension){
+bool isExifTurnOrMiror(std::string extension) {
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
     if (std::find(METADA_ACTION_IMAGE_EXTENSIONS.begin(), METADA_ACTION_IMAGE_EXTENSIONS.end(), extension) != METADA_ACTION_IMAGE_EXTENSIONS.end()) {
         return true;
@@ -33,7 +33,7 @@ bool exifTurnOrMiror(std::string extension){
     return false;
 }
 
-bool realTurnOrMiror(std::string extension){
+bool isRealTurnOrMiror(std::string extension) {
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
     if (std::find(REAL_ACTION_IMAGE_EXTENSIONS.begin(), REAL_ACTION_IMAGE_EXTENSIONS.end(), extension) != REAL_ACTION_IMAGE_EXTENSIONS.end()) {
         return true;
@@ -41,15 +41,15 @@ bool realTurnOrMiror(std::string extension){
     return false;
 }
 
-bool HEICOrHEIF(const std::string& path) {
-    std::vector<std::string> extensionsImages = { ".heic", ".heif" };
+bool isHeicOrHeif(const std::string& path) {
+    std::vector<std::string> extensionsImages = {".heic", ".heif"};
     std::string extension = fs::path(path).extension().string();
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
     return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
 }
 
-bool isRAW(const std::string& path) {
-    std::vector<std::string> rawExtensions = { ".cr2", ".nef", ".arw", ".dng", ".rw2", ".orf", ".raf", ".srw" };
+bool isRaw(const std::string& path) {
+    std::vector<std::string> rawExtensions = {".cr2", ".nef", ".arw", ".dng", ".rw2", ".orf", ".raf", ".srw"};
     std::string extension = fs::path(path).extension().string();
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
     return std::find(rawExtensions.begin(), rawExtensions.end(), extension) != rawExtensions.end();

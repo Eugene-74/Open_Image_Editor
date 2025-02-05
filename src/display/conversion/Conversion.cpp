@@ -1,13 +1,16 @@
 #include "Conversion.h"
 
+#include <filesystem>
+namespace fs = std::filesystem;
+
 bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath) {
     try {
         QImage image;
         // Charger l'image avec Qt
-        if (HEICOrHEIF(inputPath)) {
-            image = readHEICAndHEIF(inputPath);
-        } else if (isRAW(inputPath)) {
-            image = readRAW(inputPath);
+        if (isHeicOrHeif(inputPath)) {
+            image = readHeicAndHeif(inputPath);
+        } else if (isRaw(inputPath)) {
+            image = readRaw(inputPath);
         } else {
             image.load(QString::fromStdString(inputPath));
         }
@@ -47,12 +50,13 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
     }
 }
 
-QImage readHEICAndHEIF(const std::string& filename) {
-    std::cerr << "Reading HEIC/HEIF image: " << filename << std::endl;
+QImage readHeicAndHeif(const std::string& filename) {
     struct heif_context* ctx = heif_context_alloc();
     struct heif_error err = heif_context_read_from_file(ctx, filename.c_str(), nullptr);
+
     if (err.code != heif_error_Ok) {
-        qDebug() << "Erreur : Impossible de lire le fichier HEIC/HEIF : " << filename;
+        qDebug() << "Error: Unable to read HEIC/HEIF file: " << filename;
+        qDebug() << "HEIF Error Code:" << err.code << ", Message:" << err.message;
         heif_context_free(ctx);
         return QImage();
     }
@@ -60,7 +64,8 @@ QImage readHEICAndHEIF(const std::string& filename) {
     struct heif_image_handle* handle;
     err = heif_context_get_primary_image_handle(ctx, &handle);
     if (err.code != heif_error_Ok) {
-        qDebug() << "Erreur : Impossible d'obtenir le handle de l'image : " << filename;
+        qDebug() << "Error: Unable to get image handle: " << filename;
+        qDebug() << "HEIF Error Code:" << err.code << ", Message:" << err.message;
         heif_context_free(ctx);
         return QImage();
     }
@@ -68,6 +73,7 @@ QImage readHEICAndHEIF(const std::string& filename) {
     struct heif_image* img;
     err = heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGB, nullptr);
     if (err.code != heif_error_Ok) {
+        std::cerr << "Erreur : Impossible de décoder l'image : " << filename << std::endl;
         qDebug() << "Erreur : Impossible de décoder l'image : " << filename;
         heif_image_handle_release(handle);
         heif_context_free(ctx);
@@ -90,8 +96,6 @@ QImage readHEICAndHEIF(const std::string& filename) {
     heif_image_release(img);
     heif_image_handle_release(handle);
     heif_context_free(ctx);
-
-    std::cerr << "HEIC/HEIF image read successfully : " << std::endl;
 
     return qImage;
 }
@@ -127,7 +131,7 @@ void launchConversionDialog(const QString& inputImagePath) {
 }
 
 // TODO non fonctionel
-QImage readRAW(const std::string& filename) {
+QImage readRaw(const std::string& filename) {
     try {
         // LibRaw rawProcessor;
         // if (rawProcessor.open_file(filename.c_str()) != LIBRAW_SUCCESS) {

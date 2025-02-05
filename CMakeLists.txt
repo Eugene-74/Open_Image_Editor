@@ -34,7 +34,7 @@ if(WIN32)
     find_package(OpenCV REQUIRED)
     find_library(EXIV2_LIBRARIES exiv2 REQUIRED)
     find_library(HEIF_LIBRARIES heif REQUIRED)
-    find_library(LIBRAW_LIBRARIES libraw REQUIRED)
+    # find_library(LIBRAW_LIBRARIES libraw REQUIRED)
 
     message(STATUS "Exiv2 library: ${EXIV2_LIBRARIES}")
 

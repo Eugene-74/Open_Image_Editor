@@ -1,20 +1,18 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
 #include <QApplication>
 #include <filesystem>
+#include <iostream>
+#include <vector>
 
 #include "../../Const.h"
-
 
 bool isImage(const std::string& cheminFichier);
 bool isTurnable(const std::string& cheminFichier);
 bool isMirrorable(const std::string& path);
 
-bool exifTurnOrMiror(std::string extension);
-bool realTurnOrMiror(std::string extension);
+bool isExifTurnOrMiror(std::string extension);
+bool isRealTurnOrMiror(std::string extension);
 
-
-bool HEICOrHEIF(const std::string& path);
-bool isRAW(const std::string& path);
+bool isHeicOrHeif(const std::string& path);
+bool isRaw(const std::string& path);

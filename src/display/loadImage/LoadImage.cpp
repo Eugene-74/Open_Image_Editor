@@ -145,9 +145,8 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
         }
         progressDialog.setValue(thumbnailsCreated);
         QCoreApplication::processEvents();
-        qDebug() << "Number of thumbnails not created: " << thumbnailsCreated << "/" << nbrImage;
+        qDebug() << "Number of thumbnails created: " << thumbnailsCreated << "/" << nbrImage;
     }
-
     return true;
 }
 

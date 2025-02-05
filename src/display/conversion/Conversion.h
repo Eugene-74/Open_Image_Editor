@@ -1,4 +1,5 @@
 #pragma once
+
 #include <heif.h>
 
 #include <QApplication>
@@ -12,7 +13,6 @@
 #include <exiv2/exiv2.hpp>
 #include <iostream>
 #include <string>
-// #include <libraw/libraw.h>
 
 #include "../../functions/verification/Verification.h"
 
@@ -51,5 +51,5 @@ class ConversionDialog : public QDialog {
 
 void launchConversionDialog(const QString& inputImagePath);
 
-QImage readHEICAndHEIF(const std::string& filename);
-QImage readRAW(const std::string& filename);
+QImage readHeicAndHeif(const std::string& filename);
+QImage readRaw(const std::string& filename);
