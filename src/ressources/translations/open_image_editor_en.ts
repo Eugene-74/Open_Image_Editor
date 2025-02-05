@@ -4,7 +4,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../Const.h" line="118"/>
+        <location filename="../../Const.h" line="119"/>
         <source>Convert the image</source>
         <translation type="unfinished"></translation>
     </message>

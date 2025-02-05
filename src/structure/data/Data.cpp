@@ -269,13 +269,13 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
 
     std::string outputImage;
     if (maxDim == 128) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" +
+        outputImage = THUMBNAIL_PATH + "/normal/" +
                       std::to_string(hashValue) + extension;
     } else if (maxDim == 256) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" +
+        outputImage = THUMBNAIL_PATH + "/large/" +
                       std::to_string(hashValue) + extension;
     } else if (maxDim == 512) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" +
+        outputImage = THUMBNAIL_PATH + "/x-large/" +
                       std::to_string(hashValue) + extension;
     }
 
@@ -309,13 +309,13 @@ bool Data::hasThumbnail(const std::string& imagePath, const int maxDim) {
     std::string outputImage;
 
     if (maxDim == 128) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" +
+        outputImage = THUMBNAIL_PATH + "/normal/" +
                       std::to_string(hashValue) + extension;
     } else if (maxDim == 256) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" +
+        outputImage = THUMBNAIL_PATH + "/large/" +
                       std::to_string(hashValue) + extension;
     } else if (maxDim == 512) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" +
+        outputImage = THUMBNAIL_PATH + "/x-large/" +
                       std::to_string(hashValue) + extension;
     }
     return fs::exists(outputImage);
@@ -356,13 +356,13 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
     std::string outputImage;
 
     if (size == 128) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/normal/" +
+        outputImage = THUMBNAIL_PATH + "/normal/" +
                       std::to_string(hashValue) + extension;
     } else if (size == 256) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/large/" +
+        outputImage = THUMBNAIL_PATH + "/large/" +
                       std::to_string(hashValue) + extension;
     } else if (size == 512) {
-        outputImage = options.at(THUMBNAIL_PATH_OPTION).value + "/x-large/" +
+        outputImage = THUMBNAIL_PATH + "/x-large/" +
                       std::to_string(hashValue) + extension;
     }
     return outputImage;

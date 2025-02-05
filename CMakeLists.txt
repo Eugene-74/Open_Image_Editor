@@ -40,6 +40,10 @@ if(WIN32)
     # Trouver les packages
     find_package(Qt6 COMPONENTS Core Gui Widgets LinguistTools REQUIRED)
     find_package(OpenCV REQUIRED)
+    find_package(CURL REQUIRED)
+    find_package(jsoncpp REQUIRED)
+    # TODO essayer : find_package(Exiv2 REQUIRED)
+
     find_library(EXIV2_LIBRARIES exiv2 REQUIRED)
     find_library(HEIF_LIBRARIES heif REQUIRED)
     # find_library(LIBRAW_LIBRARIES libraw REQUIRED)
@@ -89,11 +93,16 @@ if(WIN32)
 
     # Sources et en-têtes
     file(GLOB_RECURSE SOURCES "src/*.cpp")
+    
     file(GLOB_RECURSE HEADERS "src/*.h")
+    file(GLOB_RECURSE INCLUDE_HEADERS "include/*.h")
+    
     set(RESOURCE_FILES src/ressources/ressources.qrc)
 
     # Génération Qt
     qt6_wrap_cpp(MOC_SOURCES ${HEADERS})
+    qt6_wrap_cpp(MOC_SOURCES ${INCLUDE_HEADERS})
+
     qt6_add_resources(QRC_SOURCES ${RESOURCE_FILES})
 
 
@@ -113,6 +122,8 @@ if(WIN32)
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets
+        CURL::libcurl 
+        jsoncpp_lib
         ${OpenCV_LIBS}
         ${EXIV2_LIBRARIES}
         ${HEIF_LIBRARIES}

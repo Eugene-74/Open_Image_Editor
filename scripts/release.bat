@@ -69,6 +69,8 @@ makensis installateur.nsi
 
 cd ..
 
+git pull origin main
+
 gh release delete v%APP_VERSION% --yes
 git tag -d v%APP_VERSION%
 git push origin --delete v%APP_VERSION%

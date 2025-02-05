@@ -14,6 +14,7 @@ const QString PICTURES_PATH = QStandardPaths::writableLocation(QStandardPaths::P
 const QString HOME_PATH = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 const QString CACHE_PATH = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 const QString APPDATA_PATH = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+const QString DOWNLOAD_PATH = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
 
 const int PREVIEW_NBR = 3;
 const int PRE_LOAD_RADIUS = 5;  // on en precharge 2 de plus comme ça l'utilisateut ne vois meme pas les images charger
@@ -36,18 +37,18 @@ const QString MAIN_WINDOW_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : I
 
 const int IMAGE_BOOTH_IMAGE_QUALITY = 256;  // 128 or 256 or 512
 
-const std::string THUMBNAIL_PATH_OPTION = "thumbnail save path";
-
 #ifdef _WIN32
 const std::string SAVE_PATH = APPDATA_PATH.toStdString() + "/." + APP_NAME;
 #else
 const std::string SAVE_PATH = HOME_PATH.toStdString() + "/." + APP_NAME;
 #endif
 
+const std::string THUMBNAIL_PATH = SAVE_PATH + "/thumbnails";
+
 const std::string IMAGESDATA_SAVE_DATA_PATH = SAVE_PATH + "/save." + APP_NAME;
 
 const std::map<std::string, Option> DEFAULT_OPTIONS = {
-    {THUMBNAIL_PATH_OPTION, Option("directory", SAVE_PATH + "/thumbnails")},
+    // {THUMBNAIL_PATH_OPTION, Option("directory", SAVE_PATH + "/thumbnails")},
 };
 
 const std::vector<std::string> IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".svg", ".tiff", ".bmp", ".gif"};
