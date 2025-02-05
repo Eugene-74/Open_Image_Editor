@@ -46,7 +46,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            OpenImageEditor-1.0.17.exe
+            ./OpenImageEditor.exe
         
 
       - name: Upload Release Asset

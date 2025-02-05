@@ -2,7 +2,7 @@
 !include "nsis_variables.nsh"
 
 Name "Image Editor"
-OutFile "../${APP_NAME}-${APP_VERSION}.exe"
+OutFile "../${APP_NAME}.exe"
 InstallDir "$PROGRAMFILES\${APP_NAME}"
 
 LicenseText "Please read the following license agreement."
