@@ -1,24 +1,14 @@
 # Fichiers et répertoires générés par CMake
 CMakeFiles/
-# CMakeCache.txt
-# cmake_install.cmake
-# Makefile
 
 # Répertoires de build
 build/
 
-
-# Fichiers de configuration
-*.cmake
-
-# Fichiers de log
-*.log
+install/nsis_variables.nsh
+include/Version.h
 
 # Fichiers de sauvegarde
 *~
-
-# Fichiers spécifiques à l'IDE
-.vscode/
 
 .vscode/
 

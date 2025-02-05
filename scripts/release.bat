@@ -66,9 +66,18 @@ cd install
 
 makensis installateur.nsi
 
+
+cd ..
+
+gh release delete v%APP_VERSION% --yes
+git tag -d v%APP_VERSION%
+git push origin --delete v%APP_VERSION%
+
 git tag v%APP_VERSION%
 git push origin v%APP_VERSION%
+gh release create v%APP_VERSION% %APP_NAME%.exe --notes "Version %APP_VERSION%"
 
+if exist %APP_NAME%.exe del %APP_NAME%.exe
 
 exit /b
 
