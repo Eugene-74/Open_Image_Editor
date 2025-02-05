@@ -28,9 +28,9 @@ jobs:
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/$VERSION)
           if [ "$RESPONSE" -eq 200 ]; then
             echo "Release already exists"
-            exit 0
-          fi
-          echo "Release does not exist"
+            echo "::set-output name=exists::true"
+          else
+            echo "::set-output name=exists::false"
 
       - name: Create Release
         if: steps.check_release.outputs.exists == 'false'
@@ -48,6 +48,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: path/to/${APP_NAME}-${APP_VERSION}.exe
-          asset_name: ${APP_NAME}-${APP_VERSION}.exe
+          asset_path: OpenImageEditor-$VERSION.exe
+          asset_name: OpenImageEditor.exe
           asset_content_type: application/octet-stream
