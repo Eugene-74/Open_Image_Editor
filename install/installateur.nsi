@@ -1,7 +1,7 @@
 !include MUI2.nsh
 !include "nsis_variables.nsh"
 
-Name "Image Editor"
+Name "${LNK_APP_NAME}"
 OutFile "../${INSTALLER_APP_NAME}-${APP_VERSION}.exe"
 
 InstallDir "$PROGRAMFILES\${APP_NAME}"
@@ -33,7 +33,7 @@ Section "Installer" SEC00
     WriteUninstaller "$INSTDIR\uninstall.exe"
     
     ; Add registry keys
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\&{LNK_APP_NAME}" "DisplayName" "${LNK_APP_NAME}"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "DisplayName" "${LNK_APP_NAME}"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "UninstallString" "$INSTDIR\uninstall.exe"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "InstallLocation" "$INSTDIR"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "DisplayIcon" "$INSTDIR\${LNK_APP_NAME}.exe"
@@ -45,7 +45,7 @@ SectionEnd
 
 
 Section "Create Shortcuts" SEC01
-    CreateShortcut "$DESKTOP\&{LNK_APP_NAME}.lnk" "$INSTDIR\launch.vbs" "$INSTDIR\launch.vbs" "$INSTDIR\icon.ico"
+    CreateShortcut "$DESKTOP\${LNK_APP_NAME}.lnk" "$INSTDIR\launch.vbs" "$INSTDIR\launch.vbs" "$INSTDIR\icon.ico"
 SectionEnd
 
 Section "Uninstall"
@@ -53,13 +53,13 @@ Section "Uninstall"
     RMDir /r "$INSTDIR"
     
     ; Remove registry keys
-    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\&{LNK_APP_NAME}"
+    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}"
     
     ; Remove uninstaller shortcut
     Delete "$SMPROGRAMS\${APP_NAME}\Uninstall.lnk"
 
     ; Remove shortcuts
-    Delete "$DESKTOP\&{LNK_APP_NAME}.lnk"
+    Delete "$DESKTOP\${LNK_APP_NAME}.lnk"
 
     ; Remove user-specific directory
     RMDir /r "$APPDATA\.${APP_NAME}"

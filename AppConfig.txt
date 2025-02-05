@@ -1,5 +1,5 @@
 APP_NAME=OpenImageEditor
-LNK_APP_NAME=Image_Editor
+LNK_APP_NAME=Image Editor
 INSTALLER_APP_NAME=Image_Editor_Installer
 APP_VERSION=1.0.0
 COMPANY_NAME=OpenImageEditor firm
