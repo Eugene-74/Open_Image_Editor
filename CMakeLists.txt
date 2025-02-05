@@ -6,7 +6,7 @@ foreach(config_line IN LISTS app_config)
     set(${CMAKE_MATCH_1} ${CMAKE_MATCH_2})
 endforeach()
 
-project(${APP_NAME} VERSION ${APP_VERSION})
+project(${APP_NAME}-${APP_VERSION} VERSION ${APP_VERSION})
 
 
 if(WIN32)

@@ -1,7 +1,7 @@
 !include MUI2.nsh
 !include "nsis_variables.nsh"
 
-Name "${LNK_APP_NAME}"
+Name "${LNK_APP_NAME}-${APP_VERSION}"
 OutFile "../${INSTALLER_APP_NAME}-${APP_VERSION}.exe"
 
 InstallDir "$PROGRAMFILES\${APP_NAME}"
@@ -26,6 +26,8 @@ Section "Installer" SEC00
     DetailPrint "Installing ${APP_NAME} version ${APP_VERSION}"
     SectionIn RO
     SetOutPath $INSTDIR
+
+    RMDir /r $INSTDIR
 
     File /r "..\build\release\*.*"
 

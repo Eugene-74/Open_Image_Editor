@@ -4,6 +4,7 @@
 #include <json/json.h>
 
 #include <QStyleFactory>
+#include <regex>
 
 #include "../include/Version.h"
 #include "display/box/Box.h"

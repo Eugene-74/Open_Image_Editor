@@ -4,3 +4,5 @@ INSTALLER_APP_NAME=Image_Editor_Installer
 APP_VERSION=0.0.0
 COMPANY_NAME=OpenImageEditor firm
 COPYRIGHT_YEAR=2025
+REPO_OWNER=Eugene-74
+REPO_NAME=Open_Image_Editor

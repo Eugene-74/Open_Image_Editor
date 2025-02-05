@@ -18,12 +18,13 @@ rmdir /s /q release
 mkdir release
 cd release
 
-set EXECUTABLE=%APP_NAME%.exe
+set EXECUTABLE=%APP_NAME%-%APP_VERSION%.exe
 copy ..\..\install\start.bat .
 copy ..\..\install\icon.ico .
 copy ..\..\install\launch.vbs .
 copy ..\..\LICENSE .
 copy ..\..\README.md .
+copy ..\..\AppConfig.txt .
 
 
 
@@ -69,7 +70,7 @@ makensis installateur.nsi
 
 cd ..
 
-git pull origin main
+@REM git pull origin main
 
 gh release delete v%APP_VERSION% --yes
 git tag -d v%APP_VERSION%

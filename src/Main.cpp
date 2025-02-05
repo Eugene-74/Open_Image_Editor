@@ -1,5 +1,7 @@
 #include "Main.h"
 
+#include <QProgressBar>
+
 namespace fs = std::filesystem;
 
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
@@ -8,15 +10,30 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
     return size * nmemb;
 }
 
-std::string getLatestGitHubTag(const std::string& repoOwner, const std::string& repoName) {
+size_t WriteCallbackBis(void* contents, size_t size, size_t nmemb, void* userp) {
+    std::ofstream* out = static_cast<std::ofstream*>(userp);
+    size_t totalSize = size * nmemb;
+    out->write(static_cast<char*>(contents), totalSize);
+    return totalSize;
+}
+
+std::string getLatestGitHubTag() {
     CURL* curl;
     CURLcode res;
     std::string readBuffer;
+
+    const std::string& repoOwner = REPO_OWNER;
+    const std::string& repoName = REPO_NAME;
+    qDebug() << repoOwner << " : " << repoName;
 
     curl = curl_easy_init();
     if (curl) {
         std::string url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/tags";
         std::cerr << "URL: " << url << std::endl;
+
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -24,7 +41,7 @@ std::string getLatestGitHubTag(const std::string& repoOwner, const std::string& 
 
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
-            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+            qDebug() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
         }
         curl_easy_cleanup(curl);
     }
@@ -40,40 +57,52 @@ std::string getLatestGitHubTag(const std::string& repoOwner, const std::string& 
             return root[0]["name"].asString();
         }
     } else {
-        std::cerr << "Failed to parse JSON: " << errs << std::endl;
+        qDebug() << "Failed to parse JSON: " << errs;
     }
 
     return "";
 }
 
-bool downloadFile(const std::string& url, const std::string& outputPath) {
+int progressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded) {
+    QProgressDialog* progressDialog = static_cast<QProgressDialog*>(ptr);
+    if (totalToDownload > 0) {
+        double progress = (nowDownloaded / (double)totalToDownload) * 100.0;
+        progressDialog->setValue((int)progress);
+        QApplication::processEvents();
+    }
+    return 0;
+}
+
+bool downloadFile(const std::string& url, const std::string& outputPath, QProgressDialog* progressDialog) {
     CURL* curl;
     CURLcode res;
-    std::ofstream ofs(outputPath, std::ios::binary);
-
-    if (!ofs.is_open()) {
-        std::cerr << "Erreur : Impossible d'ouvrir le fichier en écriture : " << outputPath << std::endl;
-        return false;
-    }
+    std::ofstream outFile(outputPath, std::ios::binary);
 
     curl = curl_easy_init();
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ofs);
-        res = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallbackBis);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outFile);
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);  // Suivre les redirections
+
+        // Configurer la fonction de callback pour afficher l'avancement
+        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progressCallback);
+        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+        curl_easy_setopt(curl, CURLOPT_XFERINFODATA, progressDialog);
+
+        res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
-            std::cerr << "Erreur lors du téléchargement : " << curl_easy_strerror(res) << std::endl;
-            return false;
+            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
         }
-    } else {
-        std::cerr << "Erreur : Impossible d'initialiser CURL." << std::endl;
-        return false;
+        curl_easy_cleanup(curl);
     }
 
-    return true;
+    outFile.close();
+
+    return res == CURLE_OK;
 }
 
 int main(int argc, char* argv[]) {
@@ -81,7 +110,7 @@ int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
     // Exemple d'utilisation de la fonction
-    std::string latestTag = getLatestGitHubTag("Eugene-74", "Open_Image_Editor");
+    std::string latestTag = getLatestGitHubTag();
 
     int latestMajor = 0, latestMinor = 0, latestPatch = 0;
     if (!latestTag.empty()) {
@@ -95,10 +124,21 @@ int main(int argc, char* argv[]) {
     if (currentMajor < latestMajor || currentMinor < latestMinor || currentPatch < latestPatch) {
         if (showQuestionMessage(nullptr, "A new version of the application is available\nDo you want to open the download page?")) {
             // TODO download and run
-            std::string downloadUrl = "https://github.com/Eugene-74/Open_Image_Editor/releases/download/v1.0.0/Image_Editor_Installer-1.0.0.exe";
-            std::string outputPath = "C:/Users/eugen/Documents/MesDocuments/text.exe";
-            // TODO corriger tout ce que je telecharge fait 0 Ko
-            downloadFile(downloadUrl, outputPath);
+            std::string downloadUrl = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/v1.0.0/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
+            std::string outputPath = SAVE_PATH + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
+            if (!fs::exists(SAVE_PATH)) {
+                fs::create_directories(SAVE_PATH);
+            }
+            QProgressDialog progressDialog;
+            progressDialog.setLabelText("Downloading...");
+            progressDialog.setRange(0, 100);
+            progressDialog.setCancelButton(nullptr);
+            progressDialog.show();
+            downloadFile(downloadUrl, outputPath, &progressDialog);
+
+            std::string command = "\"" + outputPath + "\"";
+            app.exit();               // Stop the application
+            system(command.c_str());  // Launch the downloaded installer
             return 0;
         }
     }
