@@ -32,7 +32,15 @@ jobs:
           else
             echo "::set-output name=exists::false"
           fi
-
+          
+      - name: Verify GITHUB_TOKEN
+        run: |
+          if [ -z "${{ secrets.GITHUB_TOKEN }}" ]; then
+            echo "GITHUB_TOKEN is not defined"
+            exit 1
+          else
+            echo "GITHUB_TOKEN is defined"
+          fi
         
 
       - name: Create Release
