@@ -17,6 +17,11 @@ size_t WriteCallbackBis(void* contents, size_t size, size_t nmemb, void* userp) 
     return totalSize;
 }
 
+void onExit(const std::string& command, const std::string& outputPath) {
+    std::system(command.c_str());
+    fs::remove(outputPath);
+}
+
 std::string getLatestGitHubTag() {
     CURL* curl;
     CURLcode res;
@@ -86,9 +91,8 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallbackBis);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outFile);
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);  // Suivre les redirections
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
-        // Configurer la fonction de callback pour afficher l'avancement
         curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progressCallback);
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
         curl_easy_setopt(curl, CURLOPT_XFERINFODATA, progressDialog);
@@ -105,8 +109,7 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
     return res == CURLE_OK;
 }
 
-void lookForUpdate() {
-    // Exemple d'utilisation de la fonction
+bool lookForUpdate(QCoreApplication* app) {
     std::string latestTag = getLatestGitHubTag();
 
     int latestMajor = 0, latestMinor = 0, latestPatch = 0;
@@ -114,7 +117,6 @@ void lookForUpdate() {
         std::sscanf(latestTag.c_str(), "v%d.%d.%d", &latestMajor, &latestMinor, &latestPatch);
     }
 
-    // Split APP_VERSION into major, minor, and patch integers
     int currentMajor = 0, currentMinor = 0, currentPatch = 0;
     std::sscanf(APP_VERSION, "%d.%d.%d", &currentMajor, &currentMinor, &currentPatch);
 
@@ -135,16 +137,18 @@ void lookForUpdate() {
 
             std::string command = "\"" + outputPath + "\"";
 
-            QCoreApplication::quit();
+            [command, outputPath]() {
+                QProcess::startDetached(QString::fromStdString(command));
+                fs::remove(outputPath);
+            }();
 
-            system(command.c_str());  // Launch the downloaded installer
-
-            fs::remove(outputPath);
+            return true;
         }
     }
 
     qDebug() << "Latest GitHub Tag Version: " << latestMajor << "." << latestMinor << "." << latestPatch;
     qDebug() << "Current App Version: " << currentMajor << "." << currentMinor << "." << currentPatch;
+    return false;
 }
 
 void startLog() {
@@ -183,7 +187,9 @@ int main(int argc, char* argv[]) {
         qDebug() << "Dark mode";
     }
 
-    lookForUpdate();
+    if (lookForUpdate(&app)) {
+        return 0;
+    }
     startLog();
 
     qDebug() << "Application started at:" << getCurrentFormattedDate();
