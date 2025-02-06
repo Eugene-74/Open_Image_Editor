@@ -554,11 +554,21 @@ ClickableLabel* ImageBooth::createImageDelete() {
     ClickableLabel* imageDelete = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_IMAGE_BOOTH_DELETE, this, actionSize);
 
     connect(imageDelete, &ClickableLabel::clicked, [this]() {
+        for (int i = 0; i < data->imagesSelected.size(); i++) {
+            if (data->isDeleted(data->imagesSelected.at(i))) {
+                data->unPreDeleteImage(data->imagesSelected.at(i));
+            } else {
+                data->preDeleteImage(data->imagesSelected.at(i));
+            }
+            data->imagesDeleted.push_back(data->imagesSelected.at(i));
+        }
+        data->imagesSelected.clear();
+        updateImages();
     });
 
-    if (data->imagesSelected.empty()) {
-        imageDelete->setDisabled(true);
-    }
+    // if (data->imagesSelected.empty()) {
+    //     imageDelete->setDisabled(true);
+    // }
 
     return imageDelete;
 }

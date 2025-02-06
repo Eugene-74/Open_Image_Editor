@@ -50,6 +50,7 @@ class Data {
     bool saved = true;
 
     std::vector<int> imagesSelected;
+    std::vector<int> imagesDeleted;
 
     Data()
         : imageCache(new std::map<std::string, QImageAndPath>()) {}
