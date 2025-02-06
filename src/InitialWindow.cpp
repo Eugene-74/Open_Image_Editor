@@ -12,8 +12,6 @@ InitialWindow::InitialWindow() {
     data->imagesData = imagesData;
     data->deletedImagesData = deletedImagesData;
 
-    // data->loadData();
-
     try {
         data->loadData();
     } catch (const std::exception& e) {

@@ -38,8 +38,6 @@ class Data {
     ImagesData imagesData;
     ImagesData deletedImagesData;
 
-    // Folders rootFolders = Folders("/");
-
 #ifdef _WIN32
     Folders rootFolders = Folders("");
 #else
@@ -50,8 +48,6 @@ class Data {
     std::map<std::string, Option> options = DEFAULT_OPTIONS;
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
     bool saved = true;
-
-    // QThreadPool* qThreadPool = QThreadPool::globalInstance();
 
     std::vector<int> imagesSelected;
 

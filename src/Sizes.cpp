@@ -1,8 +1,8 @@
 #include "Sizes.hpp"
 
 Sizes::Sizes() {
-    // Initialisation des membres
     screen = QGuiApplication::primaryScreen();
+
     screenR = screen->availableGeometry();
 #ifdef _WIN32
     pixelRatio = 1;
@@ -19,8 +19,6 @@ Sizes::Sizes() {
 
 Sizes::ImagesEditorSizes::ImagesEditorSizes(Sizes* parent)
     : parentSizes(parent) {
-    // Utilisation de parentSizes pour accéder à screenGeometry
-
     if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height()) {
         actionSize = QSize((parentSizes->screenGeometry.width() * 1 / 24) / parentSizes->pixelRatio, (parentSizes->screenGeometry.width() * 1 / 24) / parentSizes->pixelRatio);
     } else {

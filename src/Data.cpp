@@ -34,12 +34,9 @@ void Data::revocerDeletedImage(int imageNbr) {
 // Supprime de imagesData les images dans deletedImagesData
 void Data::removeDeletedImages() {
     for (const auto& deletedImage : *deletedImagesData.get()) {
-        // Find the image in imagesData
         auto it = std::find(imagesData.get()->begin(), imagesData.get()->end(),
                             deletedImage);
-        // If it exists, remove it from imagesData
         if (it != imagesData.get()->end()) {
-            // imagesData.removeImage(*imagesData.getImageData(it));
             imagesData.get()->erase(it);
             deletedImage.print();
         }
@@ -49,8 +46,6 @@ void Data::removeDeletedImages() {
 }
 
 bool Data::isDeleted(int imageNbr) {
-    // Find the image in deletedImagesData
-
     std::string imagePath = imagesData.getImageData(imageNbr)->folders.name;
 
     auto it = std::find_if(deletedImagesData.get()->begin(),
@@ -71,6 +66,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
                        bool setSize, int thumbnail, bool rotation,
                        bool square, bool crop, bool force) {
     QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail, force);
+    std::string extension = imagesData.getCurrentImageData()->getImageExtension();
 
     if (crop) {
         int imageId = imagesData.getImageIdByName(imagePath);
@@ -86,7 +82,6 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
                     cropRect = cropRect.intersected(imageRect);
 
                     if (cropRect.isValid() && !image.isNull()) {
-                        // Découper l'image en utilisant le rectangle de découpe
                         QImage croppedImage = image.copy(cropRect);
 
                         image = croppedImage;
@@ -103,7 +98,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
         image = image.copy(xOffset, yOffset, cropSize, cropSize);
     }
     if (rotation) {
-        if (isExifTurnOrMiror(imagePath)) {
+        if (isExifTurnOrMiror(extension)) {
             image = rotateQImage(image, imagePath);
         }
     }
@@ -194,7 +189,6 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         }
     }
 
-    // TODO cache pose des probleme de mémoire !!! car imageBooth vide rien
     (*imageCache)[imagePathbis].image = image;
     (*imageCache)[imagePathbis].imagePath = imagePath;
 

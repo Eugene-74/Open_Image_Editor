@@ -98,6 +98,7 @@ void ImageEditor::previousImage(int nbr) {
 }
 
 void ImageEditor::rotateLeftJpg() {
+    qDebug() << "rotateLeftJpg";
     ImagesData* imagesData = &data->imagesData;
 
     ImageData* imageData = imagesData->getCurrentImageData();
@@ -143,6 +144,7 @@ void ImageEditor::rotateLeftJpg() {
     reload();
 }
 void ImageEditor::rotateRightJpg() {
+    qDebug() << "rotateRightJpg";
     ImagesData* imagesData = &data->imagesData;
 
     ImageData* imageData = imagesData->getCurrentImageData();

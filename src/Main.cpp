@@ -191,19 +191,14 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     startLog();
-
     qDebug() << "Application started at:" << getCurrentFormattedDate();
 
-    // ouvrir le fichier de traduction
     QTranslator translator;
     QString locale = QLocale::system().name();
     QString language = locale.section('_', 0, 0);  // Extraire uniquement la partie de la langue
-    std::cerr << "System locale:" << locale.toStdString() << std::endl;
     if (translator.load(":/translations/open_image_editor_" + language + ".qm")) {
-        std::cerr << "Translation file loaded for language:" << language.toStdString() << std::endl;
         app.installTranslator(&translator);
     } else {
-        std::cerr << "Translation file not found for language:" << language.toStdString() << std::endl;
         qDebug() << "Translation file not found for language:" << language;
     }
 
