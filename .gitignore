@@ -3,7 +3,7 @@
 build/
 
 install/nsis_variables.nsh
-include/Version.h
+include/Version.hpp
 *.exe
 
 src/ressources/qrc_ressources.cpp

@@ -1,6 +1,6 @@
-#include "Main.h"
+#include "Main.hpp"
 
-#include <QProgressBar>
+#include <QStyleHints>
 
 namespace fs = std::filesystem;
 
@@ -105,10 +105,7 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
     return res == CURLE_OK;
 }
 
-int main(int argc, char* argv[]) {
-    auto start = std::chrono::high_resolution_clock::now();
-    QApplication app(argc, argv);
-
+void lookForUpdate() {
     // Exemple d'utilisation de la fonction
     std::string latestTag = getLatestGitHubTag();
 
@@ -137,19 +134,27 @@ int main(int argc, char* argv[]) {
             downloadFile(downloadUrl, outputPath, &progressDialog);
 
             std::string command = "\"" + outputPath + "\"";
-            app.exit();               // Stop the application
+
+            QCoreApplication::quit();
+
             system(command.c_str());  // Launch the downloaded installer
-            return 0;
+
+            fs::remove(outputPath);
         }
     }
 
     qDebug() << "Latest GitHub Tag Version: " << latestMajor << "." << latestMinor << "." << latestPatch;
     qDebug() << "Current App Version: " << currentMajor << "." << currentMinor << "." << currentPatch;
+}
 
-    // CREATING LOGS
-    QDir logDir("logs");
+void startLog() {
+    QString logPath = QString::fromUtf8(APPDATA_PATH.toUtf8()) + "/." + QString::fromUtf8(APP_NAME) + "/logs";
+    QDir logDir(logPath);
     if (!logDir.exists()) {
-        logDir.mkpath(".");
+        if (!logDir.mkpath(".")) {
+            qCritical() << "Could not create log directory:" << logDir.absolutePath();
+            return;
+        }
     }
     auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::tm* now_tm = std::localtime(&now);
@@ -158,13 +163,28 @@ int main(int argc, char* argv[]) {
                               .arg(now_tm->tm_mon + 1, 2, 10, QChar('0'))
                               .arg(now_tm->tm_year + 1900);
     static QFile logFile(logFileName);
-    logFile.open(QIODevice::WriteOnly | QIODevice::Append);
+    if (!logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        qCritical() << "Could not open log file for writing:" << logFile.errorString();
+        return;
+    }
     static QTextStream logStream(&logFile);
     qInstallMessageHandler([](QtMsgType type, const QMessageLogContext& context, const QString& msg) {
         logStream << msg << Qt::endl;
         logStream.flush();
         std::cerr << msg.toStdString() << std::endl;
     });
+}
+
+int main(int argc, char* argv[]) {
+    auto start = std::chrono::high_resolution_clock::now();
+    QApplication app(argc, argv);
+
+    if (app.styleHints()->colorScheme() == Qt::ColorScheme::Dark) {
+        qDebug() << "Dark mode";
+    }
+
+    lookForUpdate();
+    startLog();
 
     qDebug() << "Application started at:" << getCurrentFormattedDate();
 
@@ -180,24 +200,6 @@ int main(int argc, char* argv[]) {
         std::cerr << "Translation file not found for language:" << language.toStdString() << std::endl;
         qDebug() << "Translation file not found for language:" << language;
     }
-
-    // Définir le style sur Fusion
-    app.setStyle(QStyleFactory::create("Fusion"));
-    QPalette lightPalette;
-    lightPalette.setColor(QPalette::Window, QColor(255, 255, 255));
-    lightPalette.setColor(QPalette::WindowText, QColor(0, 0, 0));
-    lightPalette.setColor(QPalette::Base, QColor(240, 240, 240));
-    lightPalette.setColor(QPalette::AlternateBase, QColor(255, 255, 255));
-    lightPalette.setColor(QPalette::ToolTipBase, QColor(255, 255, 255));
-    lightPalette.setColor(QPalette::ToolTipText, QColor(0, 0, 0));
-    lightPalette.setColor(QPalette::Text, QColor(0, 0, 0));
-    lightPalette.setColor(QPalette::Button, QColor(255, 255, 255));
-    lightPalette.setColor(QPalette::ButtonText, QColor(0, 0, 0));
-    lightPalette.setColor(QPalette::BrightText, QColor(255, 0, 0));
-    lightPalette.setColor(QPalette::Link, QColor(0, 0, 255));
-    lightPalette.setColor(QPalette::Highlight, QColor(0, 120, 215));
-    lightPalette.setColor(QPalette::HighlightedText, QColor(255, 255, 255));
-    app.setPalette(lightPalette);
 
     InitialWindow window;
 

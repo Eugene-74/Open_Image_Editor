@@ -38,7 +38,7 @@ Section "Installer" SEC00
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "DisplayName" "${LNK_APP_NAME}"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "UninstallString" "$INSTDIR\uninstall.exe"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "InstallLocation" "$INSTDIR"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "DisplayIcon" "$INSTDIR\${LNK_APP_NAME}.exe"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "DisplayIcon" "$INSTDIR\icon.ico"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "Publisher" "Open Image Editor Team (i am alone ;)"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "DisplayVersion" "${APP_VERSION}"
     WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "NoModify" 1

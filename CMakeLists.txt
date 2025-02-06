@@ -66,8 +66,8 @@ if(WIN32)
 
     # Générer Version.h
     configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/Version.h.in
-        ${CMAKE_CURRENT_BINARY_DIR}/../include/Version.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Version.hpp.in
+        ${CMAKE_CURRENT_BINARY_DIR}/../include/Version.hpp
         @ONLY
     )
     
@@ -79,8 +79,7 @@ if(WIN32)
         )
         
     # Inclure le répertoire du fichier d'en-tête généré
-    # TODO marche pas si ?
-    include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
+    include_directories(include)
 
 
 
@@ -94,8 +93,8 @@ if(WIN32)
     # Sources et en-têtes
     file(GLOB_RECURSE SOURCES "src/*.cpp")
     
-    file(GLOB_RECURSE HEADERS "src/*.h")
-    file(GLOB_RECURSE INCLUDE_HEADERS "include/*.h")
+    file(GLOB_RECURSE HEADERS "src/*.hpp")
+    file(GLOB_RECURSE INCLUDE_HEADERS "include/*.hpp")
     
     set(RESOURCE_FILES src/ressources/ressources.qrc)
 
@@ -198,7 +197,7 @@ elseif(UNIX)
 
     # Sources et en-têtes
     file(GLOB_RECURSE SOURCES "src/*.cpp")
-    file(GLOB_RECURSE HEADERS "src/*.h")
+    file(GLOB_RECURSE HEADERS "src/*.hpp")
     set(RESOURCE_FILES src/ressources/ressources.qrc)
 
     # Génération Qt
