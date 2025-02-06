@@ -36,9 +36,6 @@ copy ..\..\%EXECUTABLE% .
 
 windeployqt6.exe %EXECUTABLE%
 
-@REM NON trouver jsp pk mais necessaire
-@REM xcopy C:\msys64\mingw64\bin\libjpeg-8.dll .
-
 C:\mingw-bundledlls\mingw-bundledlls C:\Users\eugen\Documents\MesDocuments\git\Open_Image_Editor\build\release\bin\%EXECUTABLE% > dependencies.txt
 
 :copy_dependencies
@@ -56,7 +53,6 @@ for /f "tokens=*" %%i in ('type dependencies.txt') do (
 del dependencies.txt
 del temp_dependencies.txt
 
-@REM TODO add
 cd ..
 cd ..
 cd ..
@@ -70,8 +66,6 @@ makensis installateur.nsi
 
 cd ..
 
-@REM git pull origin main
-
 gh release delete v%APP_VERSION% --yes
 git tag -d v%APP_VERSION%
 git push origin --delete v%APP_VERSION%
@@ -79,8 +73,6 @@ git push origin --delete v%APP_VERSION%
 git tag v%APP_VERSION%
 git push origin v%APP_VERSION%
 gh release create v%APP_VERSION% %INSTALLER_APP_NAME%-%APP_VERSION%.exe --notes "Version %APP_VERSION%"
-
-@REM if exist %APP_NAME%-%APP_VERSION%.exe del %APP_NAME%-%APP_VERSION%.exe
 
 exit /b
 
