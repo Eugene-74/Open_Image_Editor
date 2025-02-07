@@ -421,7 +421,7 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
 
     int firstImageNbr = spacerHeight / imageHeight * data->sizes.imagesBoothSizes->widthImageNumber;
     int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->sizes.imagesBoothSizes->widthImageNumber;
-    // TODO verif last image nbr
+
     if (imageNbr >= firstImageNbr && imageNbr <= lastImageNbr) {
         int firstImageLine = firstImageNbr / data->sizes.imagesBoothSizes->widthImageNumber;
         int imageLine = imageNbr / data->sizes.imagesBoothSizes->widthImageNumber;

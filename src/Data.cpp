@@ -368,7 +368,6 @@ bool Data::unloadFromCache(std::string imagePath) {
     if (it != imageCache->end()) {
         imageCache->erase(it);
         // TODO ajouter le clear des metaDAta et juste sauvegarder la rotation
-        // imageData.metaData.clear();
 
         return true;
     }
@@ -691,6 +690,7 @@ void Data::sortImagesData(QProgressDialog& progressDialog) {
 
     for (auto& imageData : *imagesData.get()) {
         imageData.loadData();
+        imageData.clearMetaData();
         progress++;
         progressDialog.setValue(progress);
     }
@@ -708,11 +708,11 @@ void Data::sortImagesData(QProgressDialog& progressDialog) {
     std::sort(data.begin(), data.end(), [&progress, &progressDialog](const ImageData& a, const ImageData& b) {
         progress++;
         progressDialog.setValue(progress);
-        return a.getMetaData().getExifData()["Exif.Image.DateTime"].toString() > b.getMetaData().getExifData()["Exif.Image.DateTime"].toString();
+        return a.date > b.date;
     });
-    // for (auto& imageData : *imagesData.get()) {
-    //     imageData.metaData.clear();
-    // }
+    for (auto& imageData : *imagesData.get()) {
+        imageData.metaData.clear();
+    }
 }
 
 void Data::clearCache() {

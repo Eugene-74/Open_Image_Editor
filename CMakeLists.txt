@@ -42,7 +42,6 @@ if(WIN32)
     find_package(OpenCV REQUIRED)
     find_package(CURL REQUIRED)
     find_package(jsoncpp REQUIRED)
-    # TODO essayer : find_package(Exiv2 REQUIRED)
 
     find_library(EXIV2_LIBRARIES exiv2 REQUIRED)
     find_library(HEIF_LIBRARIES heif REQUIRED)

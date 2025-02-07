@@ -100,6 +100,7 @@ void ImageData::loadData() {
 
             orientation = metaData.getImageOrientation();
             date = metaData.getTimestamp();
+            // geo = metaData.getGeoData();
 
             metaData.dataLoaded = true;
         }
@@ -190,4 +191,8 @@ std::vector<std::vector<QPoint>> ImageData::getCropSizes() const {
 
 void ImageData::setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes) {
     this->cropSizes = cropSizes;
+}
+
+void ImageData::clearMetaData() {
+    metaData.clear();
 }

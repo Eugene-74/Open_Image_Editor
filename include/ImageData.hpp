@@ -77,4 +77,7 @@ class ImageData {
     std::vector<std::vector<QPoint>> getCropSizes() const;
 
     void setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes);
+    void clearMetaData();
+
+   private:
 };
