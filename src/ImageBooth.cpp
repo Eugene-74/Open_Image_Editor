@@ -350,8 +350,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                     }
                 }
             }
-
-            updateImages();
+            reload();
 
             bool select = *&imageShiftSelectedSelect;
             data->addAction(
@@ -370,7 +369,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                                 addNbrToSelectedImages(nbr);
                             }
                         }
-                        updateImages();
+                        reload();
                     });
                 },
                 [this, modifiedNbr, select]() {
@@ -388,7 +387,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                                 removeNbrToSelectedImages(nbr);
                             }
                         }
-                        updateImages();
+                        reload();
                     });
                 });
 
@@ -469,7 +468,11 @@ void ImageBooth::updateImages() {
         for (int j = 0; j < lineLayout->count(); j++) {
             int imageNbr = (lineNbr + i - 1) * data->sizes.imagesBoothSizes->widthImageNumber + j;
 
-            ClickableLabel* imageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
+            ClickableLabel* lastImageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
+            ClickableLabel* imageButton = createImage(data->imagesData.get()->at(imageNbr).folders.name, imageNbr);
+
+            lineLayout->replaceWidget(lastImageButton, imageButton);
+            lastImageButton->deleteLater();
 
             auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNbr);
             if (it != data->imagesSelected.end()) {
@@ -583,12 +586,8 @@ ClickableLabel* ImageBooth::createImageDelete() {
             data->imagesDeleted.push_back(data->imagesSelected.at(i));
         }
         data->imagesSelected.clear();
-        updateImages();
+        reload();
     });
-
-    // if (data->imagesSelected.empty()) {
-    //     imageDelete->setDisabled(true);
-    // }
 
     return imageDelete;
 }
@@ -633,9 +632,10 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
     connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() {
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
-            data->rotateRight(data->imagesSelected.at(i), extension, [this]() { reload(); });
+            data->rotateRight(data->imagesSelected.at(i), extension, [this]() {}, false);
         }
         data->imagesSelected.clear();
+        reload();
     });
 
     return imageRotateRightNew;
@@ -651,9 +651,10 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
     connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() {
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
-            data->rotateLeft(data->imagesSelected.at(i), extension, [this]() { reload(); });
-            data->imagesSelected.clear();
+            data->rotateLeft(data->imagesSelected.at(i), extension, [this]() {}, false);
         }
+        data->imagesSelected.clear();
+        reload();
     });
 
     return imageRotateLeftNew;
@@ -669,9 +670,10 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
     connect(imageMirrorUpDownNew, &ClickableLabel::clicked, [this]() {
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
-            data->mirrorUpDown(data->imagesSelected.at(i), extension, [this]() { reload(); });
-            data->imagesSelected.clear();
+            data->mirrorUpDown(data->imagesSelected.at(i), extension, [this]() {}, false);
         }
+        data->imagesSelected.clear();
+        reload();
     });
 
     return imageMirrorUpDownNew;
@@ -687,9 +689,10 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
     connect(imageMirrorLeftRightNew, &ClickableLabel::clicked, [this]() {
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
-            data->mirrorLeftRight(data->imagesSelected.at(i), extension, [this]() { reload(); });
-            data->imagesSelected.clear();
+            data->mirrorLeftRight(data->imagesSelected.at(i), extension, [this]() {}, false);
         }
+        data->imagesSelected.clear();
+        reload();
     });
 
     return imageMirrorLeftRightNew;
@@ -729,4 +732,5 @@ ClickableLabel* ImageBooth::createImageConversion() {
 
 void ImageBooth::reload() {
     qDebug() << "reload";
+    updateImages();
 }

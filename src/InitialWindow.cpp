@@ -99,18 +99,21 @@ void InitialWindow::clearImageEditor() {
     layout->removeWidget(imageEditor);
     imageEditor->clear();
     imageEditor = nullptr;
+    data->clearActions();
 }
 
 void InitialWindow::clearImageBooth() {
     layout->removeWidget(imageBooth);
     imageBooth->clear();
     imageBooth = nullptr;
+    data->clearActions();
 }
 
 void InitialWindow::clearMainWindow() {
     layout->removeWidget(mainWindow);
     mainWindow->clear();
     mainWindow = nullptr;
+    data->clearActions();
 }
 
 void InitialWindow::showImageEditor() {

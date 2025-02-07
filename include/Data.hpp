@@ -109,17 +109,20 @@ class Data {
     void clearActions();
 
     void sortImagesData(QProgressDialog& progressDialog);
-    void rotateLeft(int nbr, std::string extension, std::function<void()> reload);
-    void rotateRight(int nbr, std::string extension, std::function<void()> reload);
 
-    void mirrorLeftRight(int nbr, std::string extension, std::function<void()> reload);
-    void mirrorUpDown(int nbr, std::string extension, std::function<void()> reload);
+    void rotateLeft(int nbr, std::string extension, std::function<void()> reload, bool action = true);
+    void rotateRight(int nbr, std::string extension, std::function<void()> reload, bool action = true);
+
+    void mirrorLeftRight(int nbr, std::string extension, std::function<void()> reload, bool action = true);
+    void mirrorUpDown(int nbr, std::string extension, std::function<void()> reload, bool action = true);
 
     void realRotate(int nbr, int rotation, std::function<void()> reload);
     void exifRotate(int nbr, int rotation, std::function<void()> reload);
 
     void exifMirror(int nbr, bool UpDown, std::function<void()> reload);
     void realMirror(int nbr, bool UpDown, std::function<void()> reload);
+
+    void clearActions();
 
    private:
     std::vector<Actions> lastActions = {};
