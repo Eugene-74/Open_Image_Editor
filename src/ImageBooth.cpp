@@ -91,7 +91,6 @@ void ImageBooth::updateVisibleImages() {
                         label->clear();
                         imageNumber = imageNbr;
                         ClickableLabel* newLabel = createImage(data->imagesData.get()->at(imageNbr).folders.name, imageNbr);
-                        // ClickableLabel* newLabel = createImage(IMAGE_PATH_LOADING.toStdString(), imageNbr);
 
                         firstLineLayout->replaceWidget(label, newLabel);
                         delete label;
@@ -196,6 +195,26 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_QUALITY)) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
+        // imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING,
+        //                                  "", this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
+
+        // data->loadInCacheAsync(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_QUALITY), [this, imagePath, imageButton]() {
+        //     done += 1;
+        //     // TODO changer le widget plutot pour eviter les image enorme
+        //     QImage qImage = data->loadImage(this, imagePath, this->size(), true, IMAGE_BOOTH_IMAGE_QUALITY, true, true);
+
+        //     QMetaObject::invokeMethod(
+        //         QApplication::instance(),
+        //         [imageButton, qImage]() {
+        //             imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(
+        //                 imageButton->size(), Qt::KeepAspectRatio,
+        //                 Qt::SmoothTransformation));
+        //         },
+        //         Qt::QueuedConnection);
+
+        //     loadedImageNumber += 1;
+        // });
+
         loadedImageNumber += 1;
     } else {
         imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING,
@@ -207,6 +226,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             data->createAllThumbnailIfNotExists(imagePath, 512);
 
             data->unloadFromCache(imagePath);
+            // TODO changer le widget plutot pour eviter les image enorme
 
             QImage qImage = data->loadImage(this, imagePath, this->size(), true, IMAGE_BOOTH_IMAGE_QUALITY, true, true);
 
@@ -611,10 +631,12 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
     ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_IMAGE_BOOTH_ROTATE_RIGHT, this, actionSize);
 
     connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() {
+        for (int i = 0; i < data->imagesSelected.size(); i++) {
+            std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
+            data->rotateRight(data->imagesSelected.at(i), extension, [this]() { reload(); });
+        }
+        data->imagesSelected.clear();
     });
-    if (data->imagesSelected.empty()) {
-        imageRotateRightNew->setDisabled(true);
-    }
 
     return imageRotateRightNew;
 }
@@ -627,11 +649,13 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
     ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, TOOL_IMAGE_BOOTH_ROTATE_LEFT, this, actionSize);
 
     connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() {
+        for (int i = 0; i < data->imagesSelected.size(); i++) {
+            std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
+            data->rotateLeft(data->imagesSelected.at(i), extension, [this]() { reload(); });
+            data->imagesSelected.clear();
+        }
     });
 
-    if (data->imagesSelected.empty()) {
-        imageRotateLeftNew->setDisabled(true);
-    }
     return imageRotateLeftNew;
 }
 
@@ -643,11 +667,13 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
     ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, TOOL_IMAGE_BOOTH_MIRROR_UP_DOWN, this, actionSize);
 
     connect(imageMirrorUpDownNew, &ClickableLabel::clicked, [this]() {
+        for (int i = 0; i < data->imagesSelected.size(); i++) {
+            std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
+            data->mirrorUpDown(data->imagesSelected.at(i), extension, [this]() { reload(); });
+            data->imagesSelected.clear();
+        }
     });
 
-    if (data->imagesSelected.empty()) {
-        imageMirrorUpDownNew->setDisabled(true);
-    }
     return imageMirrorUpDownNew;
 }
 
@@ -659,11 +685,12 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
     ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, TOOL_IMAGE_BOOTH_MIRROR_LEFT_RIGHT, this, actionSize);
 
     connect(imageMirrorLeftRightNew, &ClickableLabel::clicked, [this]() {
+        for (int i = 0; i < data->imagesSelected.size(); i++) {
+            std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
+            data->mirrorLeftRight(data->imagesSelected.at(i), extension, [this]() { reload(); });
+            data->imagesSelected.clear();
+        }
     });
-
-    if (data->imagesSelected.empty()) {
-        imageMirrorLeftRightNew->setDisabled(true);
-    }
 
     return imageMirrorLeftRightNew;
 }
@@ -698,4 +725,8 @@ ClickableLabel* ImageBooth::createImageConversion() {
     }
 
     return imageConversionNew;
+}
+
+void ImageBooth::reload() {
+    qDebug() << "reload";
 }

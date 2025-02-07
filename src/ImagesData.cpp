@@ -93,7 +93,7 @@ std::vector<ImageData>* ImagesData::get() {
     return &imagesData;
 }
 
-int ImagesData::getImageIdByName(std::string imagePath) {
+int ImagesData::getImageDataId(std::string imagePath) {
     auto it = std::find_if(imagesData.begin(), imagesData.end(),
                            [&imagePath](const ImageData& imgD) {
                                return imgD.folders.name == imagePath;

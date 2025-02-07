@@ -69,8 +69,8 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     std::string extension = imagesData.getCurrentImageData()->getImageExtension();
 
     if (crop) {
-        int imageId = imagesData.getImageIdByName(imagePath);
-        if (imageId != -1) {
+        ImageData* imageData = imagesData.getImageData(imagePath);
+        if (imageData != nullptr) {
             ImageData* imageData = imagesData.getImageData(imagePath);
             if (imageData != nullptr && !imageData->cropSizes.empty()) {
                 std::vector<QPoint> cropPoints = imageData->cropSizes.back();
@@ -98,7 +98,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
         image = image.copy(xOffset, yOffset, cropSize, cropSize);
     }
     if (rotation) {
-        if (isExifTurnOrMiror(extension)) {
+        if (isExifTurnOrMirror(extension)) {
             image = rotateQImage(image, imagePath);
         }
     }
@@ -111,7 +111,13 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     if (it != imageCache->end()) {
         return it->second.image;
     }
-
+    if (imagePath.at(0) == ':') {
+        if (darkMode) {
+            imagePath.insert(imagePath.find_first_of(':') + 1, "/255-255-255-255");
+        } else {
+            imagePath.insert(imagePath.find_first_of(':') + 1, "/0-0-0-255");
+        }
+    }
     if (!force) {
         it = imageCache->find(getThumbnailPath(imagePath, 512));
         if (it != imageCache->end()) {
@@ -135,12 +141,6 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 
     if (imagePath.at(0) == ':') {
         QResource ressource(QString::fromStdString(imagePath));
-        if (darkMode) {
-            imagePathbis.insert(imagePathbis.find_first_of(':') + 1, "/255-255-255-255");
-        } else {
-            imagePathbis.insert(imagePathbis.find_first_of(':') + 1, "/0-0-0-255");
-        }
-        qDebug() << imagePathbis;
         if (ressource.isValid()) {
             image.load(QString::fromStdString(imagePathbis));
         }
@@ -732,4 +732,477 @@ void LoadImageTask::run() {
         QMetaObject::invokeMethod(QApplication::instance(), callback,
                                   Qt::QueuedConnection);
     }
+}
+
+void Data::rotateLeft(int nbr, std::string extension, std::function<void()> reload) {
+    bool savedBefore = saved;
+
+    if (isExifTurnOrMirror(extension)) {
+        // rotateLeftJpg();
+        exifRotate(nbr, 90, reload);
+
+        addAction(
+            [this, nbr, savedBefore, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                if (savedBefore) {
+                    saved = true;
+                }
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // rotateRightJpg();
+                    exifRotate(nbr, -90, reload);
+                });
+            },
+            [this, nbr, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                saved = false;
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    exifRotate(nbr, 90, reload);
+
+                    // rotateLeftJpg();
+                });
+            });
+    } else if (isRealTurnOrMirror(extension)) {
+        // rotateLeftPng();
+        realRotate(nbr, 90, reload);
+
+        addAction(
+            [this, nbr, savedBefore, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                if (savedBefore) {
+                    saved = true;
+                }
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // rotateRightPng();
+                    realRotate(nbr, -90, reload);
+                });
+            },
+            [this, nbr, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                saved = false;
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // rotateLeftPng();
+                    realRotate(nbr, 90, reload);
+                });
+            });
+    }
+    saved = false;
+}
+
+void Data::rotateRight(int nbr, std::string extension, std::function<void()> reload) {
+    bool savedBefore = saved;
+
+    if (isExifTurnOrMirror(extension)) {
+        // rotateRightJpg();
+        exifRotate(nbr, -90, reload);
+
+        addAction(
+            [this, nbr, savedBefore, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                if (savedBefore) {
+                    saved = true;
+                }
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // rotateLeftJpg();
+                    exifRotate(nbr, 90, reload);
+                });
+            },
+            [this, nbr, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                saved = false;
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // rotateRightJpg();
+                    exifRotate(nbr, -90, reload);
+                });
+            });
+    } else if (isRealTurnOrMirror(extension)) {
+        // rotateRightPng();
+        realRotate(nbr, -90, reload);
+
+        addAction(
+            [this, nbr, savedBefore, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                if (savedBefore) {
+                    saved = true;
+                }
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    realRotate(nbr, 90, reload);
+
+                    // rotateLeftJpg();
+                });
+            },
+            [this, nbr, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                saved = false;
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // rotateRightPng();
+                    realRotate(nbr, -90, reload);
+                });
+            });
+    }
+    saved = false;
+}
+
+void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
+    QString outputPath = QString::fromStdString(imagesData.getCurrentImageData()->folders.name);
+    QImage image = loadImage(nullptr, imagesData.getCurrentImageData()->folders.name, QSize(0, 0), false);
+    image = image.transformed(QTransform().rotate(rotation));
+    if (!image.save(outputPath)) {
+        qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
+    }
+    unloadFromCache(imagesData.getCurrentImageData()->folders.name);
+    loadInCache(imagesData.getCurrentImageData()->folders.name);
+    createAllThumbnail(imagesData.getCurrentImageData()->folders.name, 512);
+    reload();
+}
+
+void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
+    ImageData* imageData = imagesData.getImageData(nbr);
+
+    if (!isTurnable(imageData->getImagePath())) {
+        return;
+    }
+    int orientation = imageData->orientation;
+    if (rotation == 90) {
+        qDebug() << "rotateLeftJpg";
+        switch (orientation) {
+            case 1:
+                orientation = 8;
+                break;
+            case 2:
+                orientation = 7;
+                break;
+            case 3:
+                orientation = 6;
+                break;
+            case 4:
+                orientation = 5;
+                break;
+            case 5:
+                orientation = 2;
+                break;
+            case 6:
+                orientation = 1;
+                break;
+            case 7:
+                orientation = 4;
+                break;
+            case 8:
+                orientation = 3;
+                break;
+            default:
+                break;
+        }
+    }
+    if (rotation == -90) {
+        qDebug() << "rotateRightJpg";
+
+        switch (orientation) {
+            case 1:
+                orientation = 6;
+                break;
+            case 2:
+                orientation = 5;
+                break;
+            case 3:
+                orientation = 8;
+                break;
+            case 4:
+                orientation = 7;
+                break;
+            case 5:
+                orientation = 4;
+                break;
+            case 6:
+                orientation = 3;
+                break;
+            case 7:
+                orientation = 2;
+                break;
+            case 8:
+                orientation = 1;
+                break;
+            default:
+                break;
+        }
+    }
+
+    imageData->turnImage(orientation);
+
+    imageData->saveMetaData();
+
+    reload();
+}
+
+void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> reload) {
+    bool savedBefore = saved;
+
+    if (isExifTurnOrMirror(extension)) {
+        // mirrorUpDownJpg();
+        realMirror(nbr, true, reload);
+        addAction(
+            [this, nbr, savedBefore, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                if (savedBefore) {
+                    saved = true;
+                }
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // mirrorUpDownJpg();
+                    realMirror(nbr, true, reload);
+                });
+            },
+            [this, nbr, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                saved = false;
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // mirrorUpDownJpg();
+                    realMirror(nbr, true, reload);
+                });
+            });
+    } else if (isRealTurnOrMirror(extension)) {
+        // mirrorUpDownPng();
+        realMirror(nbr, true, reload);
+
+        addAction(
+            [this, nbr, savedBefore, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                if (savedBefore) {
+                    saved = true;
+                }
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // mirrorUpDownPng();
+                    realMirror(nbr, true, reload);
+                });
+            },
+            [this, nbr, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                saved = false;
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // mirrorUpDownPng();
+                    realMirror(nbr, true, reload);
+                });
+            });
+    }
+    saved = false;
+}
+
+void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()> reload) {
+    bool savedBefore = saved;
+
+    if (isExifTurnOrMirror(extension)) {
+        // mirrorLeftRightJpg();
+        exifMirror(nbr, false, reload);
+        addAction(
+            [this, nbr, savedBefore, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                if (savedBefore) {
+                    saved = true;
+                }
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // mirrorLeftRightJpg();
+                    exifMirror(nbr, false, reload);
+                });
+            },
+            [this, nbr, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                saved = false;
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // mirrorLeftRightJpg();
+                    exifMirror(nbr, false, reload);
+                });
+            });
+    } else if (isRealTurnOrMirror(extension)) {
+        // mirrorLeftRightPng();
+        realMirror(nbr, false, reload);
+        addAction(
+            [this, nbr, savedBefore, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                if (savedBefore) {
+                    saved = true;
+                }
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // mirrorLeftRightPng();
+                    realMirror(nbr, false, reload);
+                });
+            },
+            [this, nbr, reload]() {
+                int time = 0;
+                if (imagesData.imageNumber != nbr) {
+                    imagesData.imageNumber = nbr;
+                    reload();
+                    time = TIME_UNDO_VISUALISATION;
+                }
+                saved = false;
+                QTimer::singleShot(time, [this, nbr, reload]() {
+                    // mirrorLeftRightPng();
+                    realMirror(nbr, false, reload);
+                });
+            });
+    }
+    saved = false;
+}
+
+void Data::exifMirror(int nbr, bool UpDown, std::function<void()> reload) {
+    ImageData* imageData = imagesData.getImageData(nbr);
+
+    if (!isTurnable(imageData->getImagePath())) {
+        return;
+    }
+    int orientation = imageData->orientation;
+    if (UpDown) {
+        switch (orientation) {
+            case 1:
+                orientation = 4;
+                break;
+            case 3:
+                orientation = 2;
+                break;
+            case 6:
+                orientation = 5;
+                break;
+            case 8:
+                orientation = 7;
+                break;
+            case 2:
+                orientation = 3;
+                break;
+            case 4:
+                orientation = 1;
+                break;
+            case 5:
+                orientation = 6;
+                break;
+            case 7:
+                orientation = 8;
+                break;
+            default:
+                break;
+        }
+    } else {
+        switch (orientation) {
+            case 1:
+                orientation = 2;
+                break;
+            case 3:
+                orientation = 4;
+                break;
+            case 6:
+                orientation = 7;
+                break;
+            case 8:
+                orientation = 5;
+                break;
+            case 2:
+                orientation = 1;
+                break;
+            case 4:
+                orientation = 3;
+                break;
+            case 5:
+                orientation = 8;
+                break;
+            case 7:
+                orientation = 6;
+                break;
+            default:
+                break;
+        }
+    }
+
+    imageData->turnImage(orientation);
+
+    imageData->saveMetaData();
+
+    reload();
+}
+
+void Data::realMirror(int nbr, bool UpDown, std::function<void()> reload) {
+    QString outputPath = QString::fromStdString(imagesData.getCurrentImageData()->folders.name);
+    QImage image = loadImage(nullptr, imagesData.getCurrentImageData()->folders.name, QSize(0, 0), false);
+    if (UpDown) {
+        image = image.mirrored(false, true);
+    } else {
+        image = image.mirrored(true, false);
+    }
+    if (!image.save(outputPath)) {
+        qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
+    }
+    unloadFromCache(imagesData.getCurrentImageData()->folders.name);
+    loadInCache(imagesData.getCurrentImageData()->folders.name);
+    createAllThumbnail(imagesData.getCurrentImageData()->folders.name, 512);
+    reload();
 }

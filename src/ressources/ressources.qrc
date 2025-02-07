@@ -54,9 +54,10 @@
         <file>255-255-255-255/icons/discord.png</file>
         <file>255-255-255-255/icons/github.png</file>
         <file>255-255-255-255/icons/option.png</file>
-    </qresource>
 
-    <qresource prefix="">
+
+
+
         <file>0-0-0-255/icons/before.png</file>
         <file>0-0-0-255/icons/next.png</file>
         <file>0-0-0-255/icons/rotateLeft.png</file>
@@ -79,5 +80,10 @@
         <file>0-0-0-255/icons/discord.png</file>
         <file>0-0-0-255/icons/github.png</file>
         <file>0-0-0-255/icons/option.png</file>
+    </qresource>
+    <qresource prefix="">
+        <file>0-0-0-255/images/loading.png</file>
+        <file>255-255-255-255/images/loading.png</file>
+
     </qresource>
 </RCC>

@@ -50,5 +50,5 @@ class ImagesData {
     // Permet de recuperer imagesData
     std::vector<ImageData>* get();
 
-    int getImageIdByName(std::string imagePath);
+    int getImageDataId(std::string imagePath);
 };

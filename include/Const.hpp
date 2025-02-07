@@ -53,7 +53,7 @@ const std::map<std::string, Option> DEFAULT_OPTIONS = {
 
 const std::vector<std::string> IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".svg", ".tiff", ".bmp", ".gif"};
 const std::vector<std::string> TURNABLE_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".heic", ".webp", ".tiff", ".bmp"};
-const std::vector<std::string> MIRORABLE_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".heic", ".tiff", ".bmp"};
+const std::vector<std::string> MIRRORABLE_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".heic", ".tiff", ".bmp"};
 const std::vector<std::string> METADA_ACTION_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".heic", ".webp", ".tiff"};
 const std::vector<std::string> REAL_ACTION_IMAGE_EXTENSIONS = {".png", ".bmp"};
 
@@ -101,8 +101,8 @@ const QString TOOL_IMAGE_BOOTH_SAVE = "Save modification";
 const QString TOOL_IMAGE_BOOTH_EXPORT = "Export the selected images";
 const QString TOOL_IMAGE_BOOTH_ROTATE_RIGHT = "Rotate to the right the selected images";
 const QString TOOL_IMAGE_BOOTH_ROTATE_LEFT = "Rotate to the left the selected images";
-const QString TOOL_IMAGE_BOOTH_MIRROR_UP_DOWN = "Miror UP-DOWN the selected images";
-const QString TOOL_IMAGE_BOOTH_MIRROR_LEFT_RIGHT = "Miror LEFT-RIGHT the selected images";
+const QString TOOL_IMAGE_BOOTH_MIRROR_UP_DOWN = "Mirror UP-DOWN the selected images";
+const QString TOOL_IMAGE_BOOTH_MIRROR_LEFT_RIGHT = "Mirror LEFT-RIGHT the selected images";
 const QString TOOL_IMAGE_BOOTH_EDIT_EXIF = "Edit exif data of selected images";
 const QString TOOL_IMAGE_BOOTH_CONVERSION = "Convert the selected images";
 
@@ -111,8 +111,8 @@ const QString TOOL_IMAGE_EDITOR_SAVE = "Save modification";
 const QString TOOL_IMAGE_EDITOR_EXPORT = "Export the images";
 const QString TOOL_IMAGE_EDITOR_ROTATE_RIGHT = "Rotate to the right the image";
 const QString TOOL_IMAGE_EDITOR_ROTATE_LEFT = "Rotate to the left the image";
-const QString TOOL_IMAGE_EDITOR_MIRROR_UP_DOWN = "Miror UP-DOWN the image";
-const QString TOOL_IMAGE_EDITOR_MIRROR_LEFT_RIGHT = "Miror LEFT-RIGHT the image";
+const QString TOOL_IMAGE_EDITOR_MIRROR_UP_DOWN = "Mirror UP-DOWN the image";
+const QString TOOL_IMAGE_EDITOR_MIRROR_LEFT_RIGHT = "Mirror LEFT-RIGHT the image";
 const QString TOOL_IMAGE_EDITOR_EDIT_EXIF = "Edit exif data of the image";
 // const QString TOOL_IMAGE_EDITOR_CONVERSION = "Convert the image";
 #include <QObject>

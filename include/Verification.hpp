@@ -11,8 +11,8 @@ bool isImage(const std::string& cheminFichier);
 bool isTurnable(const std::string& cheminFichier);
 bool isMirrorable(const std::string& path);
 
-bool isExifTurnOrMiror(std::string extension);
-bool isRealTurnOrMiror(std::string extension);
+bool isExifTurnOrMirror(std::string extension);
+bool isRealTurnOrMirror(std::string extension);
 
 bool isHeicOrHeif(const std::string& path);
 bool isRaw(const std::string& path);

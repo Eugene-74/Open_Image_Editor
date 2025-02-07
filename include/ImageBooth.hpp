@@ -26,6 +26,7 @@ class ImageBooth : public QMainWindow {
    public:
     ImageBooth(Data* dat, QWidget* parent = nullptr);
     ~ImageBooth() {}
+    void reload();
 
     void clear();
 
