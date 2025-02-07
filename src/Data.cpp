@@ -131,12 +131,19 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 
     std::string imagePathbis = imagePath;
 
-    QResource ressource(QString::fromStdString(imagePath));
-
     QImage image;
 
-    if (ressource.isValid()) {
-        image.load(QString::fromStdString(imagePathbis));
+    if (imagePath.at(0) == ':') {
+        QResource ressource(QString::fromStdString(imagePath));
+        if (darkMode) {
+            imagePathbis.insert(imagePathbis.find_first_of(':') + 1, "/255-255-255-255");
+        } else {
+            imagePathbis.insert(imagePathbis.find_first_of(':') + 1, "/0-0-0-255");
+        }
+        qDebug() << imagePathbis;
+        if (ressource.isValid()) {
+            image.load(QString::fromStdString(imagePathbis));
+        }
 
     } else {
         if (thumbnail == 128) {

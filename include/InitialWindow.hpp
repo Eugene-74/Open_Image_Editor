@@ -57,3 +57,5 @@ class InitialWindow : public QMainWindow {
    protected:
     void closeEvent(QCloseEvent* event) override;
 };
+
+bool isDarkMode();

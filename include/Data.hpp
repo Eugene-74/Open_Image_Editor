@@ -52,6 +52,8 @@ class Data {
     std::vector<int> imagesSelected;
     std::vector<int> imagesDeleted;
 
+    bool darkMode = true;
+
     Data()
         : imageCache(new std::map<std::string, QImageAndPath>()) {}
 

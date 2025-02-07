@@ -11,6 +11,7 @@ InitialWindow::InitialWindow() {
 
     data->imagesData = imagesData;
     data->deletedImagesData = deletedImagesData;
+    data->darkMode = isDarkMode();
 
     try {
         data->loadData();
@@ -184,4 +185,20 @@ void InitialWindow::openOption() {
     for (const auto& [key, value] : options) {
         qDebug() << key << " : " << value;
     }
+}
+
+bool isDarkMode() {
+    bool darkMode = false;
+    HKEY hKey;
+    LONG result = RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", 0, KEY_READ, &hKey);
+    if (result == ERROR_SUCCESS) {
+        DWORD value = 0;
+        DWORD valueSize = sizeof(value);
+        result = RegQueryValueEx(hKey, L"AppsUseLightTheme", nullptr, nullptr, reinterpret_cast<LPBYTE>(&value), &valueSize);
+        if (result == ERROR_SUCCESS) {
+            darkMode = (value == 0);  // 0 means dark mode, 1 means light mode
+        }
+        RegCloseKey(hKey);
+    }
+    return darkMode;
 }

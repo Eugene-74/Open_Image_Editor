@@ -15,7 +15,6 @@ def change_image_color(image_path, output_path, new_color):
 
         new_data = []
         for item in data:
-            # Change all non-transparent pixels
             if item[3] != 0:
                 new_data.append(new_color)
             else:
@@ -26,9 +25,11 @@ def change_image_color(image_path, output_path, new_color):
 
 # Example usage
 # Directory containing the images
-input_directory = 'icons'
-output_directory = 'r-g-b'
+# r,g,b,a=255,255,255,255
+r,g,b,a=0,0,0,255
 
+input_directory = "src/ressources/icons"
+output_directory = "src/ressources/"+str(r)+"-"+str(g)+"-"+str(b)+"-"+str(a)+"/icons"
 # Create output directory if it doesn't exist
 if not os.path.exists(output_directory):
     os.makedirs(output_directory)
@@ -38,4 +39,4 @@ for filename in os.listdir(input_directory):
     if filename.endswith('.png'):
         input_path = os.path.join(input_directory, filename)
         output_path = os.path.join(output_directory, filename)
-        change_image_color(input_path, output_path, (255, 0, 0, 255))  # Change to red color
+        change_image_color(input_path, output_path, (r, g, b, a))  # Change to red color

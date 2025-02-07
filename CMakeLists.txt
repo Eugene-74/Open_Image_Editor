@@ -96,12 +96,17 @@ if(WIN32)
     file(GLOB_RECURSE INCLUDE_HEADERS "include/*.hpp")
     
     set(RESOURCE_FILES src/ressources/ressources.qrc)
+    # list(APPEND RESOURCE_FILES src/ressources/0-0-0-255/ressources.qrc)
+    # list(APPEND RESOURCE_FILES src/ressources/255-255-255-255/ressources.qrc)
+    # set(RESOURCE_FILES src/ressources/255-255-255-255/ressources.qrc)
+
+    qt6_add_resources(QRC_SOURCES ${RESOURCE_FILES})
+
 
     # Génération Qt
     qt6_wrap_cpp(MOC_SOURCES ${HEADERS})
     qt6_wrap_cpp(MOC_SOURCES ${INCLUDE_HEADERS})
 
-    qt6_add_resources(QRC_SOURCES ${RESOURCE_FILES})
 
 
     set(TS_FILES
