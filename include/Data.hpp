@@ -106,8 +106,6 @@ class Data {
     void unDoAction();
     void reDoAction();
 
-    void clearActions();
-
     void sortImagesData(QProgressDialog& progressDialog);
 
     void rotateLeft(int nbr, std::string extension, std::function<void()> reload, bool action = true);

@@ -683,9 +683,6 @@ void Data::unDoAction() {
         action.unDo();
     }
 }
-void Data::clearActions() {
-    lastActions.clear();
-}
 
 void Data::sortImagesData(QProgressDialog& progressDialog) {
     progressDialog.setLabelText("Loading imagesData ...");
@@ -964,7 +961,6 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
 }
 
 void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> reload, bool action) {
-    int nbr = imagesData.imageNumber;
     bool savedBefore = saved;
 
     if (isExifTurnOrMirror(extension)) {
