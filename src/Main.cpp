@@ -110,6 +110,12 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
 }
 
 bool lookForUpdate(QCoreApplication* app) {
+    for (const auto& entry : fs::directory_iterator(SAVE_PATH)) {
+        if (entry.path().extension() == ".exe") {
+            fs::remove(entry.path());
+        }
+    }
+
     std::string latestTag = getLatestGitHubTag();
 
     int latestMajor = 0, latestMinor = 0, latestPatch = 0;
@@ -123,7 +129,7 @@ bool lookForUpdate(QCoreApplication* app) {
     if (currentMajor < latestMajor || currentMinor < latestMinor || currentPatch < latestPatch) {
         if (showQuestionMessage(nullptr, "A new version of the application is available\nDo you want to open the download page?")) {
             // TODO download and run
-            std::string downloadUrl = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/v1.0.0/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
+            std::string downloadUrl = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/v" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
             std::string outputPath = SAVE_PATH + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
             if (!fs::exists(SAVE_PATH)) {
                 fs::create_directories(SAVE_PATH);
@@ -139,7 +145,6 @@ bool lookForUpdate(QCoreApplication* app) {
 
             [command, outputPath]() {
                 QProcess::startDetached(QString::fromStdString(command));
-                fs::remove(outputPath);
             }();
 
             return true;
@@ -152,6 +157,7 @@ bool lookForUpdate(QCoreApplication* app) {
 }
 
 void startLog() {
+    // TODO marche pas
     QString logPath = QString::fromUtf8(APPDATA_PATH.toUtf8()) + "/." + QString::fromUtf8(APP_NAME) + "/logs";
     QDir logDir(logPath);
     if (!logDir.exists()) {
