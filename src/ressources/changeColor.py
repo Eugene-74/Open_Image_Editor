@@ -1,0 +1,41 @@
+from PIL import Image
+import os
+
+def change_image_color(image_path, output_path, new_color):
+    """
+    Change all non-transparent pixels of the image to the specified new color.
+
+    :param image_path: Path to the input image file.
+    :param output_path: Path to save the modified image.
+    :param new_color: Tuple representing the new color (R, G, B, A).
+    """
+    with Image.open(image_path) as img:
+        img = img.convert("RGBA")
+        data = img.getdata()
+
+        new_data = []
+        for item in data:
+            # Change all non-transparent pixels
+            if item[3] != 0:
+                new_data.append(new_color)
+            else:
+                new_data.append(item)
+
+        img.putdata(new_data)
+        img.save(output_path)
+
+# Example usage
+# Directory containing the images
+input_directory = 'icons'
+output_directory = 'r-g-b'
+
+# Create output directory if it doesn't exist
+if not os.path.exists(output_directory):
+    os.makedirs(output_directory)
+
+# Iterate over all files in the input directory
+for filename in os.listdir(input_directory):
+    if filename.endswith('.png'):
+        input_path = os.path.join(input_directory, filename)
+        output_path = os.path.join(output_directory, filename)
+        change_image_color(input_path, output_path, (255, 0, 0, 255))  # Change to red color
