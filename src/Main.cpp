@@ -29,7 +29,6 @@ std::string getLatestGitHubTag() {
 
     const std::string& repoOwner = REPO_OWNER;
     const std::string& repoName = REPO_NAME;
-    qDebug() << repoOwner << " : " << repoName;
 
     curl = curl_easy_init();
     if (curl) {
@@ -157,7 +156,6 @@ bool lookForUpdate(QCoreApplication* app) {
 }
 
 void startLog() {
-    // TODO marche pas
     QString logPath = QString::fromUtf8(APPDATA_PATH.toUtf8()) + "/." + QString::fromUtf8(APP_NAME) + "/logs";
     QDir logDir(logPath);
     if (!logDir.exists()) {
@@ -168,7 +166,7 @@ void startLog() {
     }
     auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::tm* now_tm = std::localtime(&now);
-    QString logFileName = QString("logs/%1-%2-%3.log")
+    QString logFileName = QString(APPDATA_PATH.toUtf8() + "/." + QString::fromUtf8(APP_NAME) + "/logs/%1-%2-%3.log")
                               .arg(now_tm->tm_mday, 2, 10, QChar('0'))
                               .arg(now_tm->tm_mon + 1, 2, 10, QChar('0'))
                               .arg(now_tm->tm_year + 1900);
@@ -189,9 +187,9 @@ int main(int argc, char* argv[]) {
     auto start = std::chrono::high_resolution_clock::now();
     QApplication app(argc, argv);
 
-    if (app.styleHints()->colorScheme() == Qt::ColorScheme::Dark) {
-        qDebug() << "Dark mode";
-    }
+    // if (app.styleHints()->colorScheme() == Qt::ColorScheme::Dark) {
+    //     qDebug() << "Dark mode";
+    // }
 
     if (lookForUpdate(&app)) {
         return 0;
