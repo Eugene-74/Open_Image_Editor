@@ -191,10 +191,10 @@ int main(int argc, char* argv[]) {
     //     qDebug() << "Dark mode";
     // }
 
+    startLog();
     if (lookForUpdate(&app)) {
         return 0;
     }
-    startLog();
     qDebug() << "Application started at:" << getCurrentFormattedDate();
 
     QTranslator translator;

@@ -99,10 +99,10 @@ QImage readHeicAndHeif(const std::string& filename) {
     return qImage;
 }
 
-void launchConversionDialog(const QString& inputImagePath) {
+void launchConversionDialogAndConvert(const QString& inputImagePath) {
     // Obtenir l'extension actuelle de l'image
-    QFileInfo fileInfo(inputImagePath);
-    QString currentExtension = fileInfo.suffix().toLower();
+    // QFileInfo fileInfo(inputImagePath);
+    // QString currentExtension = fileInfo.suffix().toLower();
 
     // Créer et afficher la boîte de dialogue
     ConversionDialog dialog;
@@ -110,22 +110,53 @@ void launchConversionDialog(const QString& inputImagePath) {
         // Récupérer le format sélectionné
         QString selectedFormat = dialog.getSelectedFormat().mid(1);  // Retirer le point (.) du format
 
+        convertion(inputImagePath, selectedFormat);
         // Vérifier si le format sélectionné est différent du format actuel
-        if (selectedFormat != currentExtension) {
-            // Construire le nouveau chemin de l'image avec le nouveau format
-            QString outputImagePath = fileInfo.path() + "/" + fileInfo.completeBaseName() + "." + selectedFormat;
+        // if (selectedFormat != currentExtension) {
+        //     // Construire le nouveau chemin de l'image avec le nouveau format
+        //     QString outputImagePath = fileInfo.path() + "/" + fileInfo.completeBaseName() + "." + selectedFormat;
 
-            // Convertir l'image avec les métadonnées
-            if (!convertImageWithMetadata(inputImagePath.toStdString(), outputImagePath.toStdString())) {
-                qDebug() << "Erreur : Impossible de convertir l'image avec les métadonnées : " << inputImagePath << " -> " << outputImagePath;
-                return;
-            }
+        //     // Convertir l'image avec les métadonnées
+        //     if (!convertImageWithMetadata(inputImagePath.toStdString(), outputImagePath.toStdString())) {
+        //         qDebug() << "Erreur : Impossible de convertir l'image avec les métadonnées : " << inputImagePath << " -> " << outputImagePath;
+        //         return;
+        //     }
 
-            std::cout << "Image convertie avec succès : " << outputImagePath.toStdString() << std::endl;
+        //     std::cout << "Image convertie avec succès : " << outputImagePath.toStdString() << std::endl;
+        //     return;
+        // } else {
+        //     std::cout << "Le format sélectionné est identique au format actuel. Aucune conversion nécessaire." << std::endl;
+        // }
+    }
+}
+
+QString launchConversionDialog() {
+    ConversionDialog dialog;
+    if (dialog.exec() == QDialog::Accepted) {
+        // Récupérer le format sélectionné
+        QString selectedFormat = dialog.getSelectedFormat().mid(1);
+        return selectedFormat;
+    }
+    return nullptr;
+}
+
+void convertion(const QString& inputImagePath, const QString& selectedFormat) {
+    QFileInfo fileInfo(inputImagePath);
+    QString currentExtension = fileInfo.suffix().toLower();
+    if (selectedFormat != currentExtension) {
+        // Construire le nouveau chemin de l'image avec le nouveau format
+        QString outputImagePath = fileInfo.path() + "/" + fileInfo.completeBaseName() + "." + selectedFormat;
+
+        // Convertir l'image avec les métadonnées
+        if (!convertImageWithMetadata(inputImagePath.toStdString(), outputImagePath.toStdString())) {
+            qDebug() << "Erreur : Impossible de convertir l'image avec les métadonnées : " << inputImagePath << " -> " << outputImagePath;
             return;
-        } else {
-            std::cout << "Le format sélectionné est identique au format actuel. Aucune conversion nécessaire." << std::endl;
         }
+
+        std::cout << "Image convertie avec succès : " << outputImagePath.toStdString() << std::endl;
+        return;
+    } else {
+        std::cout << "Le format sélectionné est identique au format actuel. Aucune conversion nécessaire." << std::endl;
     }
 }
 

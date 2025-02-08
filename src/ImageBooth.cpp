@@ -721,11 +721,18 @@ ClickableLabel* ImageBooth::createImageConversion() {
     ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, TOOL_IMAGE_BOOTH_CONVERSION, this, actionSize);
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
+        if (data->imagesSelected.size() > 0) {
+            QString selectedFormat = launchConversionDialog();
+            if (selectedFormat != nullptr) {
+                for (int i = 0; i < data->imagesSelected.size(); i++) {
+                    QString inputImagePath = QString::fromStdString(data->imagesData.getImageData(data->imagesSelected.at(i))->getImagePath());
+                    convertion(inputImagePath, selectedFormat);
+                }
+                data->imagesSelected.clear();
+                reload();
+            }
+        }
     });
-
-    if (data->imagesSelected.empty()) {
-        imageConversionNew->setDisabled(true);
-    }
 
     return imageConversionNew;
 }

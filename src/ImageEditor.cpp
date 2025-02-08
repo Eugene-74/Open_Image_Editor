@@ -682,7 +682,7 @@ ClickableLabel* ImageEditor::createImageConversion() {
     ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, TOOL_IMAGE_EDITOR_CONVERSION, this, actionSize);
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
-        launchConversionDialog(QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()));
+        launchConversionDialogAndConvert(QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()));
     });
 
     return imageConversionNew;

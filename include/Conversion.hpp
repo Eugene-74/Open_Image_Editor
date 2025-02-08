@@ -50,7 +50,9 @@ class ConversionDialog : public QDialog {
     QComboBox* comboBox;
 };
 
-void launchConversionDialog(const QString& inputImagePath);
+void launchConversionDialogAndConvert(const QString& inputImagePath);
+QString launchConversionDialog();
+void convertion(const QString& inputImagePath, const QString& selectedFormat);
 
 QImage readHeicAndHeif(const std::string& filename);
 QImage readRaw(const std::string& filename);
