@@ -587,6 +587,7 @@ ClickableLabel* ImageBooth::createImageDelete() {
         }
         data->imagesSelected.clear();
         reload();
+        // TODO add action with savedBefore()
     });
 
     return imageDelete;

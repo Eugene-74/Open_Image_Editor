@@ -735,21 +735,16 @@ void LoadImageTask::run() {
 }
 
 void Data::rotateLeft(int nbr, std::string extension, std::function<void()> reload, bool action) {
-    bool savedBefore = saved;
-
     if (isExifTurnOrMirror(extension)) {
         exifRotate(nbr, 90, reload);
         if (action) {
             addAction(
-                [this, nbr, savedBefore, reload]() {
+                [this, nbr, reload]() {
                     int time = 0;
                     if (imagesData.imageNumber != nbr) {
                         imagesData.imageNumber = nbr;
                         reload();
                         time = TIME_UNDO_VISUALISATION;
-                    }
-                    if (savedBefore) {
-                        saved = true;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         exifRotate(nbr, -90, reload);
@@ -762,7 +757,6 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
-                    saved = false;
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         exifRotate(nbr, 90, reload);
                     });
@@ -772,15 +766,12 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
         realRotate(nbr, 90, reload);
         if (action) {
             addAction(
-                [this, nbr, savedBefore, reload]() {
+                [this, nbr, reload]() {
                     int time = 0;
                     if (imagesData.imageNumber != nbr) {
                         imagesData.imageNumber = nbr;
                         reload();
                         time = TIME_UNDO_VISUALISATION;
-                    }
-                    if (savedBefore) {
-                        saved = true;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         realRotate(nbr, -90, reload);
@@ -793,7 +784,6 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
-                    saved = false;
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         realRotate(nbr, 90, reload);
                     });
@@ -804,21 +794,18 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
 }
 
 void Data::rotateRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
-    bool savedBefore = saved;
-
     if (isExifTurnOrMirror(extension)) {
+        std::cerr << "exifRotate" << nbr << std::endl;
         exifRotate(nbr, -90, reload);
+
         if (action) {
             addAction(
-                [this, nbr, savedBefore, reload]() {
+                [this, nbr, reload]() {
                     int time = 0;
                     if (imagesData.imageNumber != nbr) {
                         imagesData.imageNumber = nbr;
                         reload();
                         time = TIME_UNDO_VISUALISATION;
-                    }
-                    if (savedBefore) {
-                        saved = true;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         exifRotate(nbr, 90, reload);
@@ -831,7 +818,6 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
-                    saved = false;
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         exifRotate(nbr, -90, reload);
                     });
@@ -841,15 +827,12 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
         realRotate(nbr, -90, reload);
         if (action) {
             addAction(
-                [this, nbr, savedBefore, reload]() {
+                [this, nbr, reload]() {
                     int time = 0;
                     if (imagesData.imageNumber != nbr) {
                         imagesData.imageNumber = nbr;
                         reload();
                         time = TIME_UNDO_VISUALISATION;
-                    }
-                    if (savedBefore) {
-                        saved = true;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         realRotate(nbr, 90, reload);
@@ -862,7 +845,6 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
-                    saved = false;
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         realRotate(nbr, -90, reload);
                     });
@@ -873,15 +855,15 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
 }
 
 void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
-    QString outputPath = QString::fromStdString(imagesData.getCurrentImageData()->folders.name);
-    QImage image = loadImage(nullptr, imagesData.getCurrentImageData()->folders.name, QSize(0, 0), false);
-    image = image.transformed(QTransform().rotate(rotation));
+    QString outputPath = QString::fromStdString(imagesData.getImageData(nbr)->folders.name);
+    QImage image = loadImage(nullptr, imagesData.getImageData(nbr)->folders.name, QSize(0, 0), false);
+    image = image.transformed(QTransform().rotate(-rotation));
     if (!image.save(outputPath)) {
         qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
     }
-    unloadFromCache(imagesData.getCurrentImageData()->folders.name);
-    loadInCache(imagesData.getCurrentImageData()->folders.name);
-    createAllThumbnail(imagesData.getCurrentImageData()->folders.name, 512);
+    unloadFromCache(imagesData.getImageData(nbr)->folders.name);
+    loadInCache(imagesData.getImageData(nbr)->folders.name);
+    createAllThumbnail(imagesData.getImageData(nbr)->folders.name, 512);
     reload();
 }
 
@@ -964,22 +946,17 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
 }
 
 void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> reload, bool action) {
-    bool savedBefore = saved;
-
     if (isExifTurnOrMirror(extension)) {
         realMirror(nbr, true, reload);
 
         if (action) {
             addAction(
-                [this, nbr, savedBefore, reload]() {
+                [this, nbr, reload]() {
                     int time = 0;
                     if (imagesData.imageNumber != nbr) {
                         imagesData.imageNumber = nbr;
                         reload();
                         time = TIME_UNDO_VISUALISATION;
-                    }
-                    if (savedBefore) {
-                        saved = true;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         realMirror(nbr, true, reload);
@@ -992,7 +969,6 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
-                    saved = false;
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         realMirror(nbr, true, reload);
                     });
@@ -1003,15 +979,12 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
 
         if (action) {
             addAction(
-                [this, nbr, savedBefore, reload]() {
+                [this, nbr, reload]() {
                     int time = 0;
                     if (imagesData.imageNumber != nbr) {
                         imagesData.imageNumber = nbr;
                         reload();
                         time = TIME_UNDO_VISUALISATION;
-                    }
-                    if (savedBefore) {
-                        saved = true;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         realMirror(nbr, true, reload);
@@ -1024,7 +997,6 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
-                    saved = false;
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         realMirror(nbr, true, reload);
                     });
@@ -1035,22 +1007,17 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
 }
 
 void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
-    bool savedBefore = saved;
-
     if (isExifTurnOrMirror(extension)) {
         exifMirror(nbr, false, reload);
 
         if (action) {
             addAction(
-                [this, nbr, savedBefore, reload]() {
+                [this, nbr, reload]() {
                     int time = 0;
                     if (imagesData.imageNumber != nbr) {
                         imagesData.imageNumber = nbr;
                         reload();
                         time = TIME_UNDO_VISUALISATION;
-                    }
-                    if (savedBefore) {
-                        saved = true;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         exifMirror(nbr, false, reload);
@@ -1063,7 +1030,6 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
-                    saved = false;
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         exifMirror(nbr, false, reload);
                     });
@@ -1073,15 +1039,12 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
         realMirror(nbr, false, reload);
         if (action) {
             addAction(
-                [this, nbr, savedBefore, reload]() {
+                [this, nbr, reload]() {
                     int time = 0;
                     if (imagesData.imageNumber != nbr) {
                         imagesData.imageNumber = nbr;
                         reload();
                         time = TIME_UNDO_VISUALISATION;
-                    }
-                    if (savedBefore) {
-                        saved = true;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         realMirror(nbr, false, reload);
@@ -1094,7 +1057,6 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
-                    saved = false;
                     QTimer::singleShot(time, [this, nbr, reload]() {
                         realMirror(nbr, false, reload);
                     });
