@@ -52,7 +52,7 @@ InitialWindow::InitialWindow() {
 }
 
 void InitialWindow::closeEvent(QCloseEvent* event) {
-    if (!data->saved) {
+    if (!data->saved && data->deletedImagesData.get()->size() > 0) {
         if (showQuestionMessage(this, "Do you want to save before quit ?")) {
             if (imageEditor != nullptr) {
                 data->removeDeletedImages();

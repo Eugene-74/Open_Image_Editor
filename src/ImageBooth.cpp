@@ -242,6 +242,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             loadedImageNumber += 1;
         });
     }
+    imageButton->border = 3;
 
     if (std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr) != data->imagesSelected.end()) {
         imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
@@ -577,17 +578,64 @@ ClickableLabel* ImageBooth::createImageDelete() {
     ClickableLabel* imageDelete = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_IMAGE_BOOTH_DELETE, this, actionSize);
 
     connect(imageDelete, &ClickableLabel::clicked, [this]() {
+        std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             if (data->isDeleted(data->imagesSelected.at(i))) {
                 data->unPreDeleteImage(data->imagesSelected.at(i));
+                data->imagesDeleted.erase(std::remove(data->imagesDeleted.begin(), data->imagesDeleted.end(), data->imagesSelected.at(i)), data->imagesDeleted.end());
             } else {
                 data->preDeleteImage(data->imagesSelected.at(i));
+                data->imagesDeleted.push_back(data->imagesSelected.at(i));
             }
-            data->imagesDeleted.push_back(data->imagesSelected.at(i));
         }
         data->imagesSelected.clear();
         reload();
-        // TODO add action with savedBefore()
+
+        data->saved = false;
+
+        bool savedBefore = data->saved;
+
+        data->addAction(
+            [this, imagesSelectedBefore, savedBefore]() {
+                if (!isImageVisible(imagesSelectedBefore.at(0))) {
+                    gotToImage(imagesSelectedBefore.at(0));
+                }
+                for (int i = 0; i < imagesSelectedBefore.size(); i++) {
+                    if (data->isDeleted(imagesSelectedBefore.at(i))) {
+                        data->unPreDeleteImage(imagesSelectedBefore.at(i));
+                        auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imagesSelectedBefore.at(i));
+                        if (it != data->imagesSelected.end()) {
+                            data->imagesDeleted.erase(it);
+                        }
+                    } else {
+                        data->preDeleteImage(imagesSelectedBefore.at(i));
+                        data->imagesDeleted.push_back(imagesSelectedBefore.at(i));
+                    }
+                }
+                if (savedBefore) {
+                    data->saved = true;
+                }
+                reload();
+            },
+            [this, imagesSelectedBefore]() {
+                if (!isImageVisible(imagesSelectedBefore.at(0))) {
+                    gotToImage(imagesSelectedBefore.at(0));
+                }
+                for (int i = 0; i < imagesSelectedBefore.size(); i++) {
+                    if (data->isDeleted(imagesSelectedBefore.at(i))) {
+                        data->unPreDeleteImage(imagesSelectedBefore.at(i));
+                        auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imagesSelectedBefore.at(i));
+                        if (it != data->imagesSelected.end()) {
+                            data->imagesDeleted.erase(it);
+                        }
+                    } else {
+                        data->preDeleteImage(imagesSelectedBefore.at(i));
+                        data->imagesDeleted.push_back(imagesSelectedBefore.at(i));
+                    }
+                }
+                data->saved = false;
+                reload();
+            });
     });
 
     return imageDelete;

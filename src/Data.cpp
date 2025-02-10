@@ -790,12 +790,10 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
                 });
         }
     }
-    saved = false;
 }
 
 void Data::rotateRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
     if (isExifTurnOrMirror(extension)) {
-        std::cerr << "exifRotate" << nbr << std::endl;
         exifRotate(nbr, -90, reload);
 
         if (action) {
@@ -851,7 +849,6 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
                 });
         }
     }
-    saved = false;
 }
 
 void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
@@ -875,7 +872,6 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
     }
     int orientation = imageData->orientation;
     if (rotation == 90) {
-        qDebug() << "rotateLeftJpg";
         switch (orientation) {
             case 1:
                 orientation = 8;
@@ -906,8 +902,6 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
         }
     }
     if (rotation == -90) {
-        qDebug() << "rotateRightJpg";
-
         switch (orientation) {
             case 1:
                 orientation = 6;

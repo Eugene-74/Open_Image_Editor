@@ -92,15 +92,13 @@ void ClickableLabel::updateStyleSheet() {
 }
 
 void ClickableLabel::select(std::string backgroundColor, std::string hoverBackgroundColor) {
-    selected = true;
-    background_color = QString::fromStdString(backgroundColor);
-    hover_background_color = QString::fromStdString(hoverBackgroundColor);
+    border_color = QString::fromStdString(backgroundColor);
+    hover_border_color = QString::fromStdString(hoverBackgroundColor);
     updateStyleSheet();
 }
 
 void ClickableLabel::unSelect() {
-    selected = false;
-    background_color = "transparent";
-    hover_background_color = "#b3b3b3";
+    border_color = "transparent";
+    hover_border_color = "#b3b3b3";
     updateStyleSheet();
 }

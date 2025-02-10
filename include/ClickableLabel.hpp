@@ -30,19 +30,16 @@ class ClickableLabel : public QLabel {
     void mousePressEvent(QMouseEvent* event) override;    // Override mouse press event
     void mouseReleaseEvent(QMouseEvent* event) override;  // Override mouse release event
 
-   private:
-    QPixmap defaultPixmap;
-
+   public:
     int border = 0;
     int border_radius = 5;
-    bool selected = false;
-
-   public:
     void updateStyleSheet();
 
-    QString border_color = "transparent";  // #b3b3b3
+    QString border_color = "transparent";
     QString hover_border_color = "#9c9c9c";
 
     QString background_color = "transparent";
     QString hover_background_color = "#b3b3b3";
+    QPixmap defaultPixmap;
+    // private:
 };
