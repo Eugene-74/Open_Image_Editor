@@ -10,6 +10,6 @@ cmake -G "Ninja" ..
 rm -rf CMakeCache.txt CMakeFiles
 cmake --build .
 
-ctest
+ctest --output-on-failure
 
 endlocal

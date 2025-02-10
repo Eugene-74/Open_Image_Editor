@@ -26,20 +26,16 @@ bool isMirrorable(const std::string& path) {
     return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
 }
 
-bool isExifTurnOrMirror(std::string extension) {
-    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-    if (std::find(METADA_ACTION_IMAGE_EXTENSIONS.begin(), METADA_ACTION_IMAGE_EXTENSIONS.end(), extension) != METADA_ACTION_IMAGE_EXTENSIONS.end()) {
-        return true;
-    }
-    return false;
+bool isExifTurnOrMirror(const std::string& extension) {
+    std::string ext = extension;
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+    return std::find(METADA_ACTION_IMAGE_EXTENSIONS.begin(), METADA_ACTION_IMAGE_EXTENSIONS.end(), ext) != METADA_ACTION_IMAGE_EXTENSIONS.end();
 }
 
-bool isRealTurnOrMirror(std::string extension) {
-    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-    if (std::find(REAL_ACTION_IMAGE_EXTENSIONS.begin(), REAL_ACTION_IMAGE_EXTENSIONS.end(), extension) != REAL_ACTION_IMAGE_EXTENSIONS.end()) {
-        return true;
-    }
-    return false;
+bool isRealTurnOrMirror(const std::string& extension) {
+    std::string ext = extension;
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+    return std::find(REAL_ACTION_IMAGE_EXTENSIONS.begin(), REAL_ACTION_IMAGE_EXTENSIONS.end(), ext) != REAL_ACTION_IMAGE_EXTENSIONS.end();
 }
 
 bool isHeicOrHeif(const std::string& path) {
