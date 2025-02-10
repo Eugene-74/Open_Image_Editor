@@ -28,7 +28,7 @@ class ConversionDialog : public QDialog {
         QVBoxLayout* layout = new QVBoxLayout(this);
 
         // Liste des formats de sortie possibles
-        QStringList formats = {".png", ".jpeg", ".jpg", ".bmp", ".gif", ".tiff", ".webp"};
+        QStringList formats = {".png", ".jpeg", ".jpg", ".jpe", ".bmp", ".gif", ".tiff", ".webp"};
 
         // ComboBox pour choisir le format de sortie
         comboBox = new QComboBox(this);
@@ -46,8 +46,9 @@ class ConversionDialog : public QDialog {
         return comboBox->currentText();
     }
 
-   private:
     QComboBox* comboBox;
+
+   private:
 };
 
 void launchConversionDialogAndConvert(const QString& inputImagePath);

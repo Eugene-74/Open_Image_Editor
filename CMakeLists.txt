@@ -15,9 +15,13 @@ if(WIN32)
     # Chemin Qt
     set(CMAKE_PREFIX_PATH "C:/msys64/mingw64")
 
-    # Définir les compilateurs
-    set(CMAKE_C_COMPILER "C:/msys64/mingw64/bin/gcc.exe")
-    set(CMAKE_CXX_COMPILER "C:/msys64/mingw64/bin/g++.exe")
+    # Définir les compilateurs uniquement s'ils ne sont pas déjà définis
+    if(NOT CMAKE_C_COMPILER)
+        set(CMAKE_C_COMPILER "C:/msys64/mingw64/bin/gcc.exe")
+    endif()
+    if(NOT CMAKE_CXX_COMPILER)
+        set(CMAKE_CXX_COMPILER "C:/msys64/mingw64/bin/g++.exe")
+    endif()
 
     # Ajouter les répertoires d'inclusion et de liaison
     include_directories("C:/msys64/mingw64/include")
@@ -92,7 +96,7 @@ if(WIN32)
     # Sources et en-têtes
     file(GLOB_RECURSE SOURCES "src/*.cpp")
     
-    file(GLOB_RECURSE HEADERS "src/*.hpp")
+    # file(GLOB_RECURSE HEADERS "src/*.hpp")
     file(GLOB_RECURSE INCLUDE_HEADERS "include/*.hpp")
     
     set(RESOURCE_FILES src/ressources/ressources.qrc)
@@ -104,7 +108,7 @@ if(WIN32)
 
 
     # Génération Qt
-    qt6_wrap_cpp(MOC_SOURCES ${HEADERS})
+    # qt6_wrap_cpp(MOC_SOURCES ${HEADERS})
     qt6_wrap_cpp(MOC_SOURCES ${INCLUDE_HEADERS})
 
 
@@ -234,6 +238,15 @@ elseif(UNIX)
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif()
+
+# Include the test configuration file
+include(CTestConfig.cmake)
+
+# Enable testing
+enable_testing()
+
+# Inclure les tests
+add_subdirectory(tests)
 
 # Configuration de CPACK
 include(CPack)

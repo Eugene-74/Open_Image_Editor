@@ -9,3 +9,4 @@ include/Version.hpp
 src/ressources/qrc_ressources.cpp
 src/ressources/ressources.rcc
 
+src/ressources/test
