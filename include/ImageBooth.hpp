@@ -9,6 +9,7 @@
 #include <QVBoxLayout>
 #include <vector>
 
+#include "Box.hpp"
 #include "ClickableLabel.hpp"
 #include "Data.hpp"
 #include "InitialWindow.hpp"

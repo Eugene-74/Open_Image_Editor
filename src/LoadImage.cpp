@@ -110,6 +110,9 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     progressDialog.setLabelText("Loading images thumbnail...");
     QApplication::processEvents();
 
+    // TODO ne marche pas bien si il y a deja des thumbnail
+    fs::remove(fs::path(THUMBNAIL_PATH));
+
     // TODO utilise le threadPool mais fait beug l'application
     int totalImages = imagesData->get()->size();
     int numThreads = QThreadPool::globalInstance()->maxThreadCount();
@@ -133,7 +136,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     while (QThreadPool::globalInstance()->activeThreadCount() > 0) {
         int thumbnailsCreated = 0;
-
+        // TODO attendre un peu pour eviter la surcharge
         // TODO marche mais pas dutout optimiser X(
         for (int i = 0; i < totalImages; ++i) {
             ImageData* imageData = imagesData->getImageData(i);

@@ -53,8 +53,8 @@ const std::map<std::string, Option> DEFAULT_OPTIONS = {
 
 const std::vector<std::string> IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".jpe", ".png", ".heic", ".heif", ".webp", ".svg", ".tiff", ".bmp"};
 const std::vector<std::string> TURNABLE_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".jpe", ".png", ".heic", ".webp", ".tiff", ".bmp"};
-const std::vector<std::string> MIRRORABLE_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".jpe", ".png", ".webp", ".heic", ".tiff", ".bmp"};
-const std::vector<std::string> METADA_ACTION_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".jpe", ".heic", ".webp", ".tiff"};
+const std::vector<std::string> MIRRORABLE_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".jpe", ".png", ".webp", ".heic", ".heif", ".tiff", ".bmp"};
+const std::vector<std::string> METADA_ACTION_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".jpe", ".heic", ".heif", ".webp", ".tiff"};
 const std::vector<std::string> REAL_ACTION_IMAGE_EXTENSIONS = {".png", ".bmp"};
 
 const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED = "red";
