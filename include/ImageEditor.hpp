@@ -55,20 +55,8 @@ class ImageEditor : public QMainWindow {
     void rotateLeft();
     void rotateRight();
 
-    void rotateLeftJpg();
-    void rotateRightJpg();
-
-    void rotateLeftPng();
-    void rotateRightPng();
-
     void mirrorUpDown();
     void mirrorLeftRight();
-
-    void mirrorUpDownJpg();
-    void mirrorLeftRightJpg();
-
-    void mirrorUpDownPng();
-    void mirrorLeftRightPng();
 
     void createPreview();
     void updatePreview();

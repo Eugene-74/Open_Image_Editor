@@ -98,25 +98,33 @@ void ImageEditor::previousImage(int nbr) {
 }
 
 void ImageEditor::reload() {
-    ImagesData* imagesData = &data->imagesData;
-
-    updateButtons();
-    updatePreview();
-
-    if (exifEditor) {
-        populateMetadataFields();
+    if (bigImage) {
+        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes.imagesEditorSizes->bigImage), false, 0, false, true);
+        bigImageLabelNew->setFixedSize(data->sizes.imagesEditorSizes->bigImage);
+        mainLayout->replaceWidget(bigImageLabel, bigImageLabelNew);
+        bigImageLabel->deleteLater();
+        bigImageLabel = bigImageLabelNew;
     } else {
-        for (int i = 0; i < infoLayout->count(); ++i) {
-            QWidget* widget = infoLayout->itemAt(i)->widget();
-            if (widget) {
-                widget->hide();
+        ImagesData* imagesData = &data->imagesData;
+
+        updateButtons();
+        updatePreview();
+
+        if (exifEditor) {
+            populateMetadataFields();
+        } else {
+            for (int i = 0; i < infoLayout->count(); ++i) {
+                QWidget* widget = infoLayout->itemAt(i)->widget();
+                if (widget) {
+                    widget->hide();
+                }
             }
         }
-    }
 
-    if (imagesData->get()->size() <= 0) {
-        addImagesFromFolder(data, this);
-        return;
+        if (imagesData->get()->size() <= 0) {
+            addImagesFromFolder(data, this);
+            return;
+        }
     }
 }
 
@@ -239,6 +247,8 @@ void ImageEditor::createButtons() {
 
 void ImageEditor::updateButtons() {
     if (data->imagesData.get()->size() <= 0) {
+        return;
+    } else if (bigImage) {
         return;
     }
 
@@ -777,7 +787,7 @@ void ImageEditor::reloadImageLabel() {
 
 void ImageEditor::keyPressEvent(QKeyEvent* event) {
     qDebug() << "keyPressEvent called with key:" << event->key();
-    if (bigImage || exifEditor) {
+    if (exifEditor) {
         return;
     }
     switch (event->key()) {
@@ -851,7 +861,7 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
 }
 
 void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
-    if (bigImage || exifEditor) {
+    if (exifEditor) {
         return;
     }
     switch (event->key()) {
@@ -961,9 +971,6 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
 }
 
 void ImageEditor::wheelEvent(QWheelEvent* event) {
-    if (bigImage) {
-        return;
-    }
     int numDegrees = event->angleDelta().y() / 8;
     int numSteps = numDegrees / 15;
 
