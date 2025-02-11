@@ -46,7 +46,7 @@ if(WIN32)
     find_package(OpenCV REQUIRED)
     find_package(CURL REQUIRED)
     find_package(jsoncpp REQUIRED)
-
+    find_package(dlib REQUIRED)
     find_library(EXIV2_LIBRARIES exiv2 REQUIRED)
     find_library(HEIF_LIBRARIES heif REQUIRED)
     # find_library(LIBRAW_LIBRARIES libraw REQUIRED)
@@ -64,6 +64,8 @@ if(WIN32)
     include_directories(${EXIV2_INCLUDE_DIRS})
     include_directories(${HEIF_INCLUDE_DIRS})
     message(STATUS "HEIF library: ${HEIF_INCLUDE_DIRS}")
+
+    include_directories(${dlib_INCLUDE_DIRS})
     # include_directories(${LIBRAW_INCLUDE_DIRS})
     # message(STATUS "LibRaw library: ${LIBRAW_INCLUDE_DIRS}")
 
@@ -131,6 +133,7 @@ if(WIN32)
         Qt6::Widgets
         CURL::libcurl 
         jsoncpp_lib
+        dlib::dlib
         ${OpenCV_LIBS}
         ${EXIV2_LIBRARIES}
         ${HEIF_LIBRARIES}

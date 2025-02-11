@@ -241,10 +241,35 @@ void MainImage::cropImage() {
 void MainImage::paintEvent(QPaintEvent* event) {
     QLabel::paintEvent(event);
 
+    QPainter painter(this);
     if (drawingRectangle) {
-        QPainter painter(this);
         painter.setPen(Qt::DashLine);
         painter.drawRect(QRect(cropStart, cropEnd));
+    }
+
+    painter.setPen(QPen(Qt::blue, 2));
+
+    // Calculate the scale of the displayed image
+    QSize scaledSize = qImage.size();
+    scaledSize.scale(this->size(), Qt::KeepAspectRatio);
+
+    double xScale = static_cast<double>(scaledSize.width()) / qImage.width();
+    double yScale = static_cast<double>(scaledSize.height()) / qImage.height();
+
+    // Calculate the offset if the image is centered in the widget
+    int xOffset = (this->width() - scaledSize.width()) / 2;
+    int yOffset = (this->height() - scaledSize.height()) / 2;
+
+    for (const auto& face : faces) {
+        // Adjust the coordinates of the face rectangle
+        int x = static_cast<int>(face.x * xScale) + xOffset;
+        int y = static_cast<int>(face.y * yScale) + yOffset;
+        int width = static_cast<int>(face.width * xScale);
+        int height = static_cast<int>(face.height * yScale);
+
+        qDebug() << "Drawing face at" << x << y << width << height;
+        QRect rect(x, y, width, height);
+        painter.drawRect(rect);
     }
 }
 
@@ -299,4 +324,49 @@ std::vector<QPoint> MainImage::adjustPointsForOrientation(const std::vector<QPoi
     }
 
     return adjustedPoints;
+}
+
+void MainImage::detectFaces() {
+    // Extract the Haar cascade file from resources
+    QTemporaryFile tempFile;
+    if (tempFile.open()) {
+        QFile resourceFile(":/haarcascade_frontalface_default.xml");
+        if (resourceFile.open(QIODevice::ReadOnly)) {
+            tempFile.write(resourceFile.readAll());
+            tempFile.close();
+            resourceFile.close();
+        } else {
+            qDebug() << "Error opening resource file";
+            return;
+        }
+    } else {
+        qDebug() << "Error creating temporary file";
+        return;
+    }
+
+    // Load the Haar cascade file
+    cv::CascadeClassifier faceCascade;
+    if (!faceCascade.load(tempFile.fileName().toStdString())) {
+        qDebug() << "Error loading Haar cascade file";
+        return;
+    }
+
+    // Convert QImage to cv::Mat
+    cv::Mat image = cv::Mat(qImage.height(), qImage.width(), CV_8UC4, const_cast<uchar*>(qImage.bits()), qImage.bytesPerLine()).clone();
+    if (image.empty()) {
+        qDebug() << "Error loading image";
+        return;
+    }
+
+    // Convert the image to grayscale
+    cv::Mat grayImage;
+    cv::cvtColor(image, grayImage, cv::COLOR_BGR2GRAY);
+
+    // Detect faces with adjusted parameters
+    faceCascade.detectMultiScale(grayImage, faces, 1.3, 4, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(50, 50));
+
+    // Update the display
+    update();
+
+    qDebug() << "Detected" << faces.size() << "faces";
 }

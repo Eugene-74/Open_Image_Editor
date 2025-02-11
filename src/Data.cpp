@@ -66,7 +66,6 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
                        bool setSize, int thumbnail, bool rotation,
                        bool square, bool crop, bool force) {
     QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail, force);
-    std::string extension = imagesData.getCurrentImageData()->getImageExtension();
 
     if (crop) {
         ImageData* imageData = imagesData.getImageData(imagePath);
@@ -90,6 +89,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
             }
         }
     }
+
     if (square) {
         int cropSize = std::min(image.width(), image.height());
         int xOffset = (image.width() - cropSize) / 2;
@@ -97,11 +97,15 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
 
         image = image.copy(xOffset, yOffset, cropSize, cropSize);
     }
-    if (rotation) {
+
+    if (rotation && imagePath.at(0) != ':') {
+        // TODO pas ouf ça
+        std::string extension = imagesData.getCurrentImageData()->getImageExtension();
         if (isExifTurnOrMirror(extension)) {
             image = rotateQImage(image, imagePath);
         }
     }
+
     return image;
 }
 
@@ -111,6 +115,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     if (it != imageCache->end()) {
         return it->second.image;
     }
+
     if (imagePath.at(0) == ':') {
         if (darkMode) {
             imagePath.insert(imagePath.find_first_of(':') + 1, "/255-255-255-255");
@@ -118,6 +123,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
             imagePath.insert(imagePath.find_first_of(':') + 1, "/0-0-0-255");
         }
     }
+
     if (!force) {
         it = imageCache->find(getThumbnailPath(imagePath, 512));
         if (it != imageCache->end()) {
@@ -200,6 +206,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     (*imageCache)[imagePathbis].imagePath = imagePath;
 
     size_t cacheSize = 0;
+
     for (const auto& pair : *imageCache) {
         cacheSize += pair.second.image.sizeInBytes();
     }

@@ -29,6 +29,8 @@
     <qresource prefix="">
         <file>translations/open_image_editor_en.qm</file>
         <file>translations/open_image_editor_fr.qm</file>
+        
+        <file>haarcascade_frontalface_default.xml</file>
     </qresource>
 
     <qresource prefix="">

@@ -747,6 +747,8 @@ MainImage* ImageEditor::createImageLabel() {
 
     MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, mainImageSize, false);
 
+    // imageLabelNew->detectFaces();
+
     connect(imageLabelNew, &MainImage::leftClicked, [this]() {
         if (!bigImage) {
             openBigImageLabel();

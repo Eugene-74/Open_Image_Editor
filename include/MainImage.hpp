@@ -4,6 +4,11 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QResource>
+#include <QTemporaryFile>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/objdetect.hpp>
+#include <opencv2/opencv.hpp>
 
 #include "Box.hpp"
 #include "Const.hpp"
@@ -16,6 +21,8 @@ class MainImage : public QLabel {
     Q_OBJECT
 
    public:
+    void detectFaces();
+
     explicit MainImage(Data* data, const QString& i, ImageEditor* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
 
    signals:
@@ -34,6 +41,8 @@ class MainImage : public QLabel {
     void paintEvent(QPaintEvent* event) override;
 
    private:
+    std::vector<cv::Rect> faces;
+
     ImageEditor* parent;
 
     QString imagePath;

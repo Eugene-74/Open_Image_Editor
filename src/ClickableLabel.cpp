@@ -21,6 +21,7 @@ ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QString too
         scaledSize.scale(size, Qt::KeepAspectRatio);
         setFixedSize(scaledSize);
     }
+
     this->setAlignment(Qt::AlignCenter);
 
     setMouseTracking(true);
