@@ -35,6 +35,7 @@ class Actions {
 
 class Data {
    public:
+    QApplication* app;
     ImagesData imagesData;
     ImagesData deletedImagesData;
 

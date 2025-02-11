@@ -23,7 +23,7 @@ class InitialWindow : public QMainWindow {
    public:
     Data* data;
 
-    InitialWindow();
+    InitialWindow(Data* data);
     qreal pixelRatio;
     QSize screenGeometry;
 
