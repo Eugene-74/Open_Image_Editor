@@ -64,7 +64,7 @@ std::vector<Person> detectFaces(std::string imagePath, QImage image) {
         array2d<unsigned char> img;
         cv::Mat mat = QImageToCvMat(image);
 
-        int newSize = 1;
+        int newSize = std::max(1, std::min(mat.cols, mat.rows) / 1000);
         float invNewSize = 1.0f / newSize;
 
         cv::Mat resizedMat;

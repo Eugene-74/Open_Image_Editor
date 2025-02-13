@@ -22,7 +22,7 @@ class MainImage : public QLabel {
     Q_OBJECT
 
    public:
-    std::vector<Person> persons;
+   bool personsEditor = false;
 
     explicit MainImage(Data* data, const QString& i, ImageEditor* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
 

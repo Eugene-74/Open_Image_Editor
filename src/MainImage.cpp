@@ -236,7 +236,7 @@ void MainImage::paintEvent(QPaintEvent* event) {
         painter.setPen(Qt::DashLine);
         painter.drawRect(QRect(cropStart, cropEnd));
     }
-    if (!persons.empty()) {
+    if (personsEditor && !data->imagesData.getCurrentImageData()->persons.empty()) {
         painter.setPen(QPen(Qt::blue, 2));
 
         QSize scaledSize = qImage.size();
@@ -248,7 +248,7 @@ void MainImage::paintEvent(QPaintEvent* event) {
         int xOffset = (this->width() - scaledSize.width()) / 2;
         int yOffset = (this->height() - scaledSize.height()) / 2;
 
-        for (const auto& person : persons) {
+        for (const auto& person : data->imagesData.getCurrentImageData()->persons) {
             cv::Rect face = person.face;
             int x = static_cast<int>(face.x * xScale) + xOffset;
             int y = static_cast<int>(face.y * yScale) + yOffset;

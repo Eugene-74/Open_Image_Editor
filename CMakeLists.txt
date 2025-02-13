@@ -70,27 +70,22 @@ if(WIN32)
         @ONLY
     )
     
-    # Générer nsis_variables.nsh
     configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/install/nsis_variables.nsh.in
         ${CMAKE_CURRENT_BINARY_DIR}/../install/nsis_variables.nsh
         @ONLY
         )
         
-    # Inclure le répertoire du fichier d'en-tête généré
     include_directories(include)
 
-    # Utiliser ccache si disponible
     find_program(CCACHE_PROGRAM ccache)
     if(CCACHE_PROGRAM)
         set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
         set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
     endif()
 
-    # Sources et en-têtes
     file(GLOB_RECURSE SOURCES "src/*.cpp")
     
-    # file(GLOB_RECURSE HEADERS "src/*.hpp")
     file(GLOB_RECURSE INCLUDE_HEADERS "include/*.hpp")
     
     set(RESOURCE_FILES src/ressources/ressources.qrc)
@@ -143,10 +138,10 @@ if(WIN32)
         target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs)
     endif()
 
-    set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API "ON")
+    # set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API "ON")
 
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+    # set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+    # set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 
 elseif(UNIX)

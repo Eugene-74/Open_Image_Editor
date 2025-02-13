@@ -419,7 +419,7 @@ void ImageBooth::setImageNumber(int nbr) {
 }
 
 void ImageBooth::clear() {
-    QTimer::singleShot(100, this, [this]() {
+    QTimer::singleShot(0, this, [this]() {
         while (QLayoutItem* item = linesLayout->takeAt(0)) {
             if (QWidget* widget = item->widget()) {
                 widget->deleteLater();

@@ -92,9 +92,9 @@ void ClickableLabel::updateStyleSheet() {
     this->setStyleSheet(styleSheet);
 }
 
-void ClickableLabel::select(std::string backgroundColor, std::string hoverBackgroundColor) {
-    border_color = QString::fromStdString(backgroundColor);
-    hover_border_color = QString::fromStdString(hoverBackgroundColor);
+void ClickableLabel::select(std::string borderColor, std::string hoverBorderColor) {
+    border_color = QString::fromStdString(borderColor);
+    hover_border_color = QString::fromStdString(hoverBorderColor);
     updateStyleSheet();
 }
 

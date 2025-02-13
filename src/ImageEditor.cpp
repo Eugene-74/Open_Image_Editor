@@ -258,91 +258,51 @@ void ImageEditor::updateButtons() {
     }
 
     if (imageRotateRight) {
-        ClickableLabel* imageRotateRightNew = createImageRotateRight();
-
-        actionButtonLayout->replaceWidget(imageRotateRight, imageRotateRightNew);
-
-        imageRotateRight->hide();
-        imageRotateRight->deleteLater();
-
-        imageRotateRight = imageRotateRightNew;
+        if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
+            imageRotateRight->setDisabled(true);
+        } else {
+            if (!imageRotateRight->isEnabled())
+                imageRotateRight->setEnabled(true);
+        }
     }
     if (imageRotateLeft) {
-        ClickableLabel* imageRotateLeftNew = createImageRotateLeft();
-
-        actionButtonLayout->replaceWidget(imageRotateLeft, imageRotateLeftNew);
-
-        imageRotateLeft->hide();
-        imageRotateLeft->deleteLater();
-
-        imageRotateLeft = imageRotateLeftNew;
+        if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
+            imageRotateLeft->setDisabled(true);
+        } else {
+            if (!imageRotateLeft->isEnabled())
+                imageRotateLeft->setEnabled(true);
+        }
     }
     if (imageMirrorLeftRight) {
-        ClickableLabel* imageMirrorLeftRightNew = createImageMirrorLeftRight();
-
-        actionButtonLayout->replaceWidget(imageMirrorLeftRight, imageMirrorLeftRightNew);
-
-        imageMirrorLeftRight->hide();
-        imageMirrorLeftRight->deleteLater();
-
-        imageMirrorLeftRight = imageMirrorLeftRightNew;
+        if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
+            imageMirrorLeftRight->setDisabled(true);
+        } else {
+            if (!imageMirrorLeftRight->isEnabled())
+                imageMirrorLeftRight->setEnabled(true);
+        }
     }
     if (imageMirrorUpDown) {
-        ClickableLabel* imageMirrorUpDownNew = createImageMirrorUpDown();
-
-        actionButtonLayout->replaceWidget(imageMirrorUpDown, imageMirrorUpDownNew);
-
-        imageMirrorUpDown->hide();
-        imageMirrorUpDown->deleteLater();
-
-        imageMirrorUpDown = imageMirrorUpDownNew;
+        if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
+            imageMirrorUpDown->setDisabled(true);
+        } else {
+            if (!imageMirrorUpDown->isEnabled())
+                imageMirrorUpDown->setEnabled(true);
+        }
     }
-
     if (imageDelete) {
-        ClickableLabel* imageDeleteNew = createImageDelete();
-
-        actionButtonLayout->replaceWidget(imageDelete, imageDeleteNew);
-
-        imageDelete->hide();
-        imageDelete->deleteLater();
-
-        imageDelete = imageDeleteNew;
-    }
-    if (imageSave) {
-        ClickableLabel* imageSaveNew = createImageSave();
-
-        actionButtonLayout->replaceWidget(imageSave, imageSaveNew);
-
-        imageSave->hide();
-        imageSave->deleteLater();
-
-        imageSave = imageSaveNew;
-    }
-    if (imageExport) {
-        ClickableLabel* imageExportNew = createImageExport();
-
-        actionButtonLayout->replaceWidget(imageExport, imageExportNew);
-
-        imageExport->hide();
-        imageExport->deleteLater();
-
-        imageExport = imageExportNew;
-    }
-    if (exifEditor) {
-        if (imageEditExif) {
-            ClickableLabel* imageEditExifNew = createImageEditExif();
-
-            actionButtonLayout->replaceWidget(imageEditExif, imageEditExifNew);
-
-            imageEditExif->hide();
-            imageEditExif->deleteLater();
-
-            imageEditExif = imageEditExifNew;
+        if (data->isDeleted(data->imagesData.getImageNumber())) {
+            imageDelete->background_color = "#700c13";
+            imageDelete->updateStyleSheet();
+        } else {
+            imageDelete->background_color = "transparent";
+            imageDelete->updateStyleSheet();
         }
     }
     if (buttonImageBefore) {
         if (data->imagesData.getImageNumber() == 0) {
             buttonImageBefore->setDisabled(true);
+        } else {
+            buttonImageBefore->setEnabled(true);
         }
     }
 
@@ -352,24 +312,16 @@ void ImageEditor::updateButtons() {
     if (buttonImageNext) {
         if (data->imagesData.getImageNumber() == data->imagesData.get()->size() - 1) {
             buttonImageNext->setDisabled(true);
-        }
-    }
-
-    if (data->imagesData.getImageNumber() != 0) {
-        if (!buttonImageBefore->isEnabled())
-            buttonImageBefore->setEnabled(true);
-    }
-
-    if (data->imagesData.getImageNumber() != data->imagesData.get()->size() - 1) {
-        if (!buttonImageNext->isEnabled())
+        } else {
             buttonImageNext->setEnabled(true);
+        }
     }
 }
 
 void ImageEditor::clear() {
     stopImageOpen();
 
-    QTimer::singleShot(100, this, [this]() {
+    QTimer::singleShot(0, this, [this]() {
         if (imageLabelLayout) {
             QLayoutItem* item;
             while ((item = imageLabelLayout->takeAt(0)) != nullptr) {
@@ -546,17 +498,17 @@ ClickableLabel* ImageEditor::createImageDelete() {
         return nullptr;
     }
 
-    ClickableLabel* imageDelete = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_TIP_IMAGE_EDITOR_DELETE, this, actionSize);
+    ClickableLabel* imageDeleteNew = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_TIP_IMAGE_EDITOR_DELETE, this, actionSize);
 
     if (data->isDeleted(data->imagesData.getImageNumber())) {
-        imageDelete->background_color = "#700c13";
-        imageDelete->updateStyleSheet();
+        imageDeleteNew->background_color = "#700c13";
+        imageDeleteNew->updateStyleSheet();
     }
-    connect(imageDelete, &ClickableLabel::clicked, [this]() {
+    connect(imageDeleteNew, &ClickableLabel::clicked, [this]() {
         this->deleteImage();
     });
 
-    return imageDelete;
+    return imageDeleteNew;
 }
 
 ClickableLabel* ImageEditor::createImageSave() {
@@ -709,16 +661,21 @@ ClickableLabel* ImageEditor::createImagePersons() {
     }
 
     ClickableLabel* imagePersonsNew = new ClickableLabel(data, ICON_PATH_EDIT_PERSONS, TOOL_TIP_IMAGE_EDITOR_EDIT_PERSONS, this, actionSize);
+    imagePersonsNew->border = 2;
 
-    connect(imagePersonsNew, &ClickableLabel::clicked, [this]() {
+    connect(imagePersonsNew, &ClickableLabel::clicked, [this, imagePersonsNew]() {
         if (!personsEditor) {
             personsEditor = true;
+            imagePersonsNew->select("red", "red");
+
+            imageLabel->personsEditor = true;
         } else {
             personsEditor = false;
+            imagePersonsNew->unSelect();
+            imageLabel->personsEditor = false;
         }
-        reload();
+        imageLabel->update();
     });
-
     return imagePersonsNew;
 }
 ClickableLabel* ImageEditor::createImageBefore() {
@@ -779,37 +736,31 @@ MainImage* ImageEditor::createImageLabel() {
     }
 
     MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, mainImageSize, false);
+    imageLabelNew->personsEditor = personsEditor;
 
     startDlib();
+
     std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
 
     ImageData* imageData = data->imagesData.getCurrentImageData();
 
-    if (personsEditor) {
-        if (!imageData->persons.empty()) {
-            imageLabelNew->persons = imageData->persons;
-            imageLabelNew->update();
-        }
+    auto it = data->imageCache->find(currentImagePath);
+    if (it == data->imageCache->end()) {
+        return imageLabelNew;
     }
 
     int imageNbr = data->imagesData.getImageNumber();
     if (!imageData->isPersonsLoaded && imageData->persons.empty()) {
-        qDebug() << "No persons detected";
+        qDebug() << "No persons detected yet";
         imageData->isPersonsLoaded = true;
-        if (data->imageCache->find(currentImagePath) == data->imageCache->end()) {
-            data->loadInCache(currentImagePath);
-        }
         QImage image = data->imageCache->at(currentImagePath).image;
         image = data->rotateQImage(image, currentImagePath);
-        QPointer<MainImage> safeImageLabelNew = imageLabelNew;
-        detectFacesAsync(currentImagePath, image, [this, safeImageLabelNew, imageNbr](std::vector<Person> persons) {
-            if (safeImageLabelNew) {
-                safeImageLabelNew->persons = persons;
-                if (personsEditor) {
-                    safeImageLabelNew->update();
+        detectFacesAsync(currentImagePath, image, [this, imageNbr](std::vector<Person> persons) {
+            if (data->imagesData.getImageNumber() == imageNbr) {
+                if (this->personsEditor) {
+                    imageLabel->update();
                 }
             }
-            qDebug() << "persons detected:" << persons.size();
             data->imagesData.getImageData(imageNbr)->persons = persons;
         });
     }
@@ -1079,7 +1030,6 @@ void ImageEditor::exportImage() {
 
 void ImageEditor::deleteImage() {
     int nbr = data->imagesData.getImageNumber();
-
     bool saved = data->saved;
 
     if (data->isDeleted(nbr)) {
