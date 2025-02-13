@@ -2,7 +2,7 @@
 
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
-    std::cerr << "Downloaded: " << size * nmemb << " bytes" << std::endl;
+    qDebug() << "Downloaded: " << size * nmemb << " bytes";
     return size * nmemb;
 }
 
@@ -24,8 +24,6 @@ std::string getLatestGitHubTag() {
     curl = curl_easy_init();
     if (curl) {
         std::string url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/tags";
-        std::cerr << "URL: " << url << std::endl;
-
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
@@ -89,7 +87,7 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
 
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
-            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+            qDebug() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
         }
         curl_easy_cleanup(curl);
     }
@@ -212,6 +210,7 @@ InitialWindow::InitialWindow() {
             data->loadData();
         } catch (const std::exception& e) {
             qDebug() << "Error loading data: " << e.what();
+            showErrorMessage(nullptr, "Error loading data: data corrupted");
         }
 
         const QList<QScreen*> screens = QGuiApplication::screens();

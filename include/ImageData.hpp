@@ -22,11 +22,11 @@ class ImageData {
     long date = 0;
 
     ImageData()
-        : folders(Folders()), metaData(MetaData()), cropSizes(), orientation() {}
+        : folders(Folders()), metaData(MetaData()), cropSizes(), orientation(), date(), persons() {}
 
     // !! necessaire sinon push_back ne fonctionne pas
     ImageData(const ImageData& other)
-        : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation) {
+        : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), persons(other.persons) {
     }
 
     ImageData(const Folders c)

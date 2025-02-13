@@ -151,37 +151,34 @@ void ImageData::save(std::ofstream& out) const {
         out.write(reinterpret_cast<const char*>(&innerSize), sizeof(innerSize));
         out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
     }
+    size_t personsSize = persons.size();
+    out.write(reinterpret_cast<const char*>(&personsSize), sizeof(personsSize));
+    for (const auto& person : persons) {
+        person.save(out);
+    }
 }
 
 void ImageData::load(std::ifstream& in) {
     in.read(reinterpret_cast<char*>(&orientation), sizeof(orientation));
-    // size_t pathLength;
-    // in.read(reinterpret_cast<char*>(&pathLength), sizeof(pathLength));
-    // folders.name.resize(pathLength);
-    // in.read(&folders.name[0], pathLength);
     folders.load(in);
 
     size_t cropSizesSize;
     in.read(reinterpret_cast<char*>(&cropSizesSize), sizeof(cropSizesSize));
     if (cropSizesSize >= 1) {
-        qDebug() << "imagePath:" << folders.name;
-
-        qDebug() << "cropSizesSize:" << cropSizesSize;
-
         cropSizes.resize(cropSizesSize);
         for (size_t i = 0; i < cropSizesSize; ++i) {
             size_t innerSize;
             in.read(reinterpret_cast<char*>(&innerSize), sizeof(innerSize));
-            qDebug() << "innerSize for cropSize" << i << ":" << innerSize;
-
             cropSizes[i].resize(innerSize);
             in.read(reinterpret_cast<char*>(cropSizes[i].data()), innerSize * sizeof(QPoint));
-
-            // Debug output for the points
-            for (size_t j = 0; j < innerSize; ++j) {
-                qDebug() << "Point" << j << ":" << cropSizes[i][j];
-            }
         }
+    }
+
+    size_t personsSize;
+    in.read(reinterpret_cast<char*>(&personsSize), sizeof(personsSize));
+    persons.resize(personsSize);
+    for (auto& person : persons) {
+        person.load(in);
     }
 }
 

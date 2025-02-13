@@ -3,6 +3,27 @@
 using namespace dlib;
 using namespace std;
 
+void Person::save(std::ofstream& out) const {
+    size_t nameSize = name.size();
+    out.write(reinterpret_cast<const char*>(&nameSize), sizeof(nameSize));
+    out.write(name.c_str(), nameSize);
+    out.write(reinterpret_cast<const char*>(&face.x), sizeof(face.x));
+    out.write(reinterpret_cast<const char*>(&face.y), sizeof(face.y));
+    out.write(reinterpret_cast<const char*>(&face.width), sizeof(face.width));
+    out.write(reinterpret_cast<const char*>(&face.height), sizeof(face.height));
+}
+
+void Person::load(std::ifstream& in) {
+    size_t nameSize;
+    in.read(reinterpret_cast<char*>(&nameSize), sizeof(nameSize));
+    name.resize(nameSize);
+    in.read(&name[0], nameSize);
+    in.read(reinterpret_cast<char*>(&face.x), sizeof(face.x));
+    in.read(reinterpret_cast<char*>(&face.y), sizeof(face.y));
+    in.read(reinterpret_cast<char*>(&face.width), sizeof(face.width));
+    in.read(reinterpret_cast<char*>(&face.height), sizeof(face.height));
+}
+
 bool is_slow_cpu() {
     auto start = std::chrono::high_resolution_clock::now();
     volatile double sum = 0;
@@ -48,18 +69,18 @@ std::vector<Person> detectFaces(std::string imagePath, QImage image) {
         float invNewSize = 1.0f / newSize;
 
         if (invNewSize <= 0) {
-            std::cerr << "Error: invNewSize must be greater than 0" << std::endl;
+            qDebug() << "Error: invNewSize must be greater than 0";
             return {};
         }
 
         cv::Mat resizedMat;
         cv::resize(mat, resizedMat, cv::Size(), invNewSize, invNewSize);
 
-        std::cout << "Image dimensions: " << mat.cols << "x" << mat.rows << std::endl;
+        qDebug() << "Image dimensions: " << mat.cols << "x" << mat.rows;
         cv::Mat gray;
         cv::cvtColor(resizedMat, gray, cv::COLOR_BGR2GRAY);
 
-        std::cout << "resized Image dimensions: " << resizedMat.cols << "x" << resizedMat.rows << std::endl;
+        qDebug() << "resized Image dimensions: " << resizedMat.cols << "x" << resizedMat.rows;
 
         // Convert to dlib::cv_image
         dlib::cv_image<unsigned char> dlibImage(gray);
@@ -71,7 +92,7 @@ std::vector<Person> detectFaces(std::string imagePath, QImage image) {
         std::vector<rectangle> dets = detector(dlibImage);
 
         // Print the number of faces detected
-        std::cout << "Number of faces detected: " << dets.size() << std::endl;
+        qDebug() << "Number of faces detected: " << dets.size();
         // std::vector<cv::Rect> faces;
         std::vector<Person> persons;
 
@@ -89,14 +110,15 @@ std::vector<Person> detectFaces(std::string imagePath, QImage image) {
 
         // return faces;
     } catch (std::exception& e) {
-        std::cout << "Exception: " << e.what() << std::endl;
+        qDebug() << "Exception: " << e.what();
     }
     return {};
 }
 
 void detectFacesAsync(std::string imagePath, QImage image, std::function<void(std::vector<Person>)> callback) {
     std::thread([=]() {
-        auto faces = detectFaces(imagePath, image);
-        callback(faces);
+        auto persons = detectFaces(imagePath, image);
+        qDebug() << "Detected bid faces:" << persons.size();
+        callback(persons);
     }).detach();
 }

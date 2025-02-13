@@ -6,6 +6,7 @@
 #include <QScreen>
 #include <QVBoxLayout>
 
+#include "Box.hpp"
 #include "Data.hpp"
 #include "Date.hpp"
 #include "FaceRecognition.hpp"

@@ -72,7 +72,6 @@ QImage readHeicAndHeif(const std::string& filename) {
     struct heif_image* img;
     err = heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGB, nullptr);
     if (err.code != heif_error_Ok) {
-        std::cerr << "Erreur : Impossible de décoder l'image : " << filename << std::endl;
         qDebug() << "Erreur : Impossible de décoder l'image : " << filename;
         heif_image_handle_release(handle);
         heif_context_free(ctx);

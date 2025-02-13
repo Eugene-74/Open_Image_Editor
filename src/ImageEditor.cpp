@@ -764,17 +764,33 @@ MainImage* ImageEditor::createImageLabel() {
     std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
 
     // imageLabelNew->detectFaces();
+    ImageData* imageData = data->imagesData.getCurrentImageData();
 
-    try {
-        QImage image = data->imageCache->at(currentImagePath).image;
-        image = data->rotateQImage(image, currentImagePath);
-        auto persons = detectFaces(currentImagePath, image);
-        if (!persons.empty()) {
-            imageLabelNew->persons = persons;
-        }
+    if (!imageData->persons.empty()) {
+        imageLabelNew->persons = imageData->persons;
         imageLabelNew->update();
-    } catch (const std::exception& e) {
-        std::cerr << "Error detecting faces: " << e.what() << std::endl;
+    }
+
+    int imageNbr = data->imagesData.getImageNumber();
+    if (imageData->persons.empty()) {
+        qDebug() << "No persons detected";
+        if (data->imageCache->find(currentImagePath) == data->imageCache->end()) {
+            qDebug() << "Image not inZ cache, loading...";
+            data->loadInCache(currentImagePath);
+        }
+        QImage image = data->imageCache->at(currentImagePath).image;
+        qDebug() << "image size:" << image.size();
+        image = data->rotateQImage(image, currentImagePath);
+        QPointer<MainImage> safeImageLabelNew = imageLabelNew;
+        detectFacesAsync(currentImagePath, image, [this, safeImageLabelNew, imageNbr](std::vector<Person> persons) {
+            // do something with persons
+            if (safeImageLabelNew) {
+                safeImageLabelNew->persons = persons;
+                safeImageLabelNew->update();
+            }
+            qDebug() << "persons detected:" << persons.size();
+            data->imagesData.getImageData(imageNbr)->persons = persons;
+        });
     }
 
     connect(imageLabelNew, &MainImage::leftClicked, [this]() {

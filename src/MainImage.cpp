@@ -22,6 +22,7 @@ MainImage::MainImage(Data* data, const QString& imagePath, ImageEditor* parent, 
     setMouseTracking(true);
 
     updateStyleSheet();
+    // update();
 }
 
 void MainImage::updateStyleSheet() {
@@ -246,34 +247,37 @@ void MainImage::paintEvent(QPaintEvent* event) {
         painter.setPen(Qt::DashLine);
         painter.drawRect(QRect(cropStart, cropEnd));
     }
+    if (!persons.empty()) {
+        painter.setPen(QPen(Qt::blue, 2));
 
-    painter.setPen(QPen(Qt::blue, 2));
+        // Calculate the scale of the displayed image
+        QSize scaledSize = qImage.size();
+        scaledSize.scale(this->size(), Qt::KeepAspectRatio);
 
-    // Calculate the scale of the displayed image
-    QSize scaledSize = qImage.size();
-    scaledSize.scale(this->size(), Qt::KeepAspectRatio);
+        double xScale = static_cast<double>(scaledSize.width()) / qImage.width();
+        double yScale = static_cast<double>(scaledSize.height()) / qImage.height();
 
-    double xScale = static_cast<double>(scaledSize.width()) / qImage.width();
-    double yScale = static_cast<double>(scaledSize.height()) / qImage.height();
+        // Calculate the offset if the image is centered in the widget
+        int xOffset = (this->width() - scaledSize.width()) / 2;
+        int yOffset = (this->height() - scaledSize.height()) / 2;
 
-    // Calculate the offset if the image is centered in the widget
-    int xOffset = (this->width() - scaledSize.width()) / 2;
-    int yOffset = (this->height() - scaledSize.height()) / 2;
+        for (const auto& person : persons) {
+            cv::Rect face = person.face;
+            // Adjust the coordinates of the face rectangle
+            int x = static_cast<int>(face.x * xScale) + xOffset;
+            int y = static_cast<int>(face.y * yScale) + yOffset;
+            int width = static_cast<int>(face.width * xScale);
+            int height = static_cast<int>(face.height * yScale);
 
-    for (const auto& person : persons) {
-        cv::Rect face = person.face;
-        // Adjust the coordinates of the face rectangle
-        int x = static_cast<int>(face.x * xScale) + xOffset;
-        int y = static_cast<int>(face.y * yScale) + yOffset;
-        int width = static_cast<int>(face.width * xScale);
-        int height = static_cast<int>(face.height * yScale);
+            // qDebug() << "Drawing face at" << x << y << width << height;
+            QRect rect(x, y, width, height);
+            painter.drawRect(rect);
 
-        // qDebug() << "Drawing face at" << x << y << width << height;
-        QRect rect(x, y, width, height);
-        painter.drawRect(rect);
-
-        QString name = QString::fromStdString(person.name);
-        painter.drawText(x, y + height + 15, name);
+            QString name = QString::fromStdString(person.name);
+            painter.drawText(x, y + height + 15, name);
+        }
+    } else {
+        qDebug() << "persons empty";
     }
 }
 
