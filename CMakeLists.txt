@@ -65,7 +65,8 @@ if(WIN32)
     include_directories(${HEIF_INCLUDE_DIRS})
     message(STATUS "HEIF library: ${HEIF_INCLUDE_DIRS}")
 
-    include_directories(${dlib_INCLUDE_DIRS})
+    # include_directories(${dlib_INCLUDE_DIRS})
+    
     # include_directories(${LIBRAW_INCLUDE_DIRS})
     # message(STATUS "LibRaw library: ${LIBRAW_INCLUDE_DIRS}")
 
@@ -102,9 +103,6 @@ if(WIN32)
     file(GLOB_RECURSE INCLUDE_HEADERS "include/*.hpp")
     
     set(RESOURCE_FILES src/ressources/ressources.qrc)
-    # list(APPEND RESOURCE_FILES src/ressources/0-0-0-255/ressources.qrc)
-    # list(APPEND RESOURCE_FILES src/ressources/255-255-255-255/ressources.qrc)
-    # set(RESOURCE_FILES src/ressources/255-255-255-255/ressources.qrc)
 
     qt6_add_resources(QRC_SOURCES ${RESOURCE_FILES})
 
@@ -116,8 +114,8 @@ if(WIN32)
 
 
     set(TS_FILES
-        src/ressources/translations/open_image_editor_en.ts
-        src/ressources/translations/open_image_editor_fr.ts
+        # src/ressources/translations/open_image_editor_en.ts
+        # src/ressources/translations/open_image_editor_fr.ts
         # Ajoutez d'autres fichiers de traduction ici
     )
     qt6_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})

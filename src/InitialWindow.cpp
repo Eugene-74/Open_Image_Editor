@@ -196,6 +196,8 @@ InitialWindow::InitialWindow() {
             qDebug() << "Translation file not found for language:" << language;
         }
 
+        // startDlib();
+
         data = new Data();
 
         ImagesData imagesData(std::vector<ImageData>{});

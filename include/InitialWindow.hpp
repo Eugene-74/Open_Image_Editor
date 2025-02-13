@@ -8,6 +8,7 @@
 
 #include "Data.hpp"
 #include "Date.hpp"
+#include "FaceRecognition.hpp"
 #include "ImageBooth.hpp"
 #include "ImageEditor.hpp"
 #include "ImagesData.hpp"

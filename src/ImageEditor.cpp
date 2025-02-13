@@ -1,5 +1,8 @@
 #include "ImageEditor.hpp"
 
+#include "FaceRecognition.hpp"
+// using anet_type = dlib::loss_mmod<dlib::con<1, 9, 9, 1, 1, dlib::relu<dlib::con<32, 7, 7, 2, 2, dlib::relu<dlib::con<32, 7, 7, 2, 2, dlib::input_rgb_image_pyramid<dlib::pyramid_down<6>>>>>>>>;
+
 ImageEditor::ImageEditor(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_EDITOR_WINDOW_NAME);
@@ -757,7 +760,22 @@ MainImage* ImageEditor::createImageLabel() {
 
     MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, mainImageSize, false);
 
+    startDlib();
+    std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
+
     // imageLabelNew->detectFaces();
+
+    try {
+        QImage image = data->imageCache->at(currentImagePath).image;
+        image = data->rotateQImage(image, currentImagePath);
+        auto persons = detectFaces(currentImagePath, image);
+        if (!persons.empty()) {
+            imageLabelNew->persons = persons;
+        }
+        imageLabelNew->update();
+    } catch (const std::exception& e) {
+        std::cerr << "Error detecting faces: " << e.what() << std::endl;
+    }
 
     connect(imageLabelNew, &MainImage::leftClicked, [this]() {
         if (!bigImage) {

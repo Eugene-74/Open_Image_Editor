@@ -260,16 +260,20 @@ void MainImage::paintEvent(QPaintEvent* event) {
     int xOffset = (this->width() - scaledSize.width()) / 2;
     int yOffset = (this->height() - scaledSize.height()) / 2;
 
-    for (const auto& face : faces) {
+    for (const auto& person : persons) {
+        cv::Rect face = person.face;
         // Adjust the coordinates of the face rectangle
         int x = static_cast<int>(face.x * xScale) + xOffset;
         int y = static_cast<int>(face.y * yScale) + yOffset;
         int width = static_cast<int>(face.width * xScale);
         int height = static_cast<int>(face.height * yScale);
 
-        qDebug() << "Drawing face at" << x << y << width << height;
+        // qDebug() << "Drawing face at" << x << y << width << height;
         QRect rect(x, y, width, height);
         painter.drawRect(rect);
+
+        QString name = QString::fromStdString(person.name);
+        painter.drawText(x, y + height + 15, name);
     }
 }
 
@@ -327,6 +331,7 @@ std::vector<QPoint> MainImage::adjustPointsForOrientation(const std::vector<QPoi
 }
 
 void MainImage::detectFaces() {
+    auto start = std::chrono::high_resolution_clock::now();
     // Extract the Haar cascade file from resources
     QTemporaryFile tempFile;
     if (tempFile.open()) {
@@ -363,10 +368,22 @@ void MainImage::detectFaces() {
     cv::cvtColor(image, grayImage, cv::COLOR_BGR2GRAY);
 
     // Detect faces with adjusted parameters
+    std::vector<cv::Rect> faces;
+
     faceCascade.detectMultiScale(grayImage, faces, 1.3, 4, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(50, 50));
 
     // Update the display
     update();
 
     qDebug() << "Detected" << faces.size() << "faces";
+
+    for (auto face : faces) {
+        Person person;
+        person.face = face;
+        persons.push_back(person);
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "detecting faces " << elapsed.count() << " seconds." << std::endl;
 }

@@ -33,6 +33,12 @@ class Actions {
     std::function<void()> reDo;
 };
 
+// class Person {
+//    public:
+//     cv::Rect face;
+//     int id;
+// };
+
 class Data {
    public:
     QApplication* app;
@@ -122,12 +128,11 @@ class Data {
     void realMirror(int nbr, bool UpDown, std::function<void()> reload);
 
     void clearActions();
+    QImage rotateQImage(QImage image, std::string imagePath);
 
    private:
     std::vector<Actions> lastActions = {};
     std::vector<Actions> lastActionsDone = {};
-
-    QImage rotateQImage(QImage image, std::string imagePath);
 
     Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
     void createFolders(Folders* currentFolders, std::string path);

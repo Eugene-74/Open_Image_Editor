@@ -2,18 +2,21 @@
 
 #include <filesystem>
 #include <iostream>
+#include <opencv2/opencv.hpp>
 #include <vector>
 
+#include "FaceRecognition.hpp"
 #include "Folders.hpp"
 #include "MetaData.hpp"
+
 namespace fs = std::filesystem;
 
 class ImageData {
    public:
-    // std::string imagePath;
     Folders folders;
     MetaData metaData;
     std::vector<std::vector<QPoint>> cropSizes;
+    std::vector<Person> persons;
 
     int orientation = 0;
     long date = 0;

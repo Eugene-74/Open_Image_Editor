@@ -13,6 +13,7 @@
 #include "Box.hpp"
 #include "Const.hpp"
 #include "Data.hpp"
+#include "FaceRecognition.hpp"
 #include "ImageEditor.hpp"
 
 class ImageEditor;
@@ -22,6 +23,8 @@ class MainImage : public QLabel {
 
    public:
     void detectFaces();
+    // std::vector<cv::Rect> faces;
+    std::vector<Person> persons;
 
     explicit MainImage(Data* data, const QString& i, ImageEditor* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
 
@@ -41,8 +44,6 @@ class MainImage : public QLabel {
     void paintEvent(QPaintEvent* event) override;
 
    private:
-    std::vector<cv::Rect> faces;
-
     ImageEditor* parent;
 
     QString imagePath;
