@@ -47,6 +47,7 @@ if(WIN32)
     find_package(CURL REQUIRED)
     find_package(jsoncpp REQUIRED)
     find_package(dlib REQUIRED)
+
     find_library(EXIV2_LIBRARIES exiv2 REQUIRED)
     find_library(HEIF_LIBRARIES heif REQUIRED)
     # find_library(LIBRAW_LIBRARIES libraw REQUIRED)
@@ -56,19 +57,11 @@ if(WIN32)
 
     set(HEIF_INCLUDE_DIRS "C:/msys64/mingw64/include/libheif")
     
-    # set(LIBRAW_INCLUDE_DIRS "C:/msys64/mingw64/include/libraw")
-    # set(LIBRAW_LIBRARIES "C:/msys64/mingw64/lib/libraw.dll.a")
-
     # Inclure les répertoires d'en-têtes
     include_directories(${OpenCV_INCLUDE_DIRS})
     include_directories(${EXIV2_INCLUDE_DIRS})
     include_directories(${HEIF_INCLUDE_DIRS})
     message(STATUS "HEIF library: ${HEIF_INCLUDE_DIRS}")
-
-    # include_directories(${dlib_INCLUDE_DIRS})
-    
-    # include_directories(${LIBRAW_INCLUDE_DIRS})
-    # message(STATUS "LibRaw library: ${LIBRAW_INCLUDE_DIRS}")
 
     # Générer Version.h
     configure_file(
@@ -86,8 +79,6 @@ if(WIN32)
         
     # Inclure le répertoire du fichier d'en-tête généré
     include_directories(include)
-
-
 
     # Utiliser ccache si disponible
     find_program(CCACHE_PROGRAM ccache)
@@ -116,7 +107,6 @@ if(WIN32)
     set(TS_FILES
         # src/ressources/translations/open_image_editor_en.ts
         # src/ressources/translations/open_image_editor_fr.ts
-        # Ajoutez d'autres fichiers de traduction ici
     )
     qt6_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 
@@ -135,7 +125,6 @@ if(WIN32)
         ${OpenCV_LIBS}
         ${EXIV2_LIBRARIES}
         ${HEIF_LIBRARIES}
-        # ${LIBRAW_LIBRARIES}
     )
 
     add_custom_target(update_translations
@@ -150,15 +139,12 @@ if(WIN32)
         COMMENT "Releasing translations"
     )
 
-    # Support GCC filesystem
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs)
     endif()
 
-    # Activer l'incrémentation des builds
     set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API "ON")
 
-    # Réduire les niveaux d'optimisation pour les builds de développement
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
