@@ -140,25 +140,32 @@ void ImageData::setOrCreateExifData() {
 }
 
 void ImageData::save(std::ofstream& out) const {
-    out.write(reinterpret_cast<const char*>(&orientation), sizeof(orientation));
+    try {
+        out.write(reinterpret_cast<const char*>(&orientation), sizeof(orientation));
 
-    folders.save(out);
+        folders.save(out);
 
-    size_t cropSizesSize = cropSizes.size();
-    out.write(reinterpret_cast<const char*>(&cropSizesSize), sizeof(cropSizesSize));
-    for (const auto& cropSize : cropSizes) {
-        size_t innerSize = cropSize.size();
-        out.write(reinterpret_cast<const char*>(&innerSize), sizeof(innerSize));
-        out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
-    }
-    size_t personsSize = persons.size();
-    out.write(reinterpret_cast<const char*>(&personsSize), sizeof(personsSize));
-    for (const auto& person : persons) {
-        person.save(out);
+        size_t cropSizesSize = cropSizes.size();
+        out.write(reinterpret_cast<const char*>(&cropSizesSize), sizeof(cropSizesSize));
+        for (const auto& cropSize : cropSizes) {
+            size_t innerSize = cropSize.size();
+            out.write(reinterpret_cast<const char*>(&innerSize), sizeof(innerSize));
+            out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
+        }
+        out.write(reinterpret_cast<const char*>(&isPersonsLoaded), sizeof(isPersonsLoaded));
+
+        size_t personsSize = persons.size();
+        out.write(reinterpret_cast<const char*>(&personsSize), sizeof(personsSize));
+        for (const auto& person : persons) {
+            person.save(out);
+        }
+    } catch (const std::exception& e) {
+        // qDebug() << e.what();
     }
 }
 
 void ImageData::load(std::ifstream& in) {
+    // try {
     in.read(reinterpret_cast<char*>(&orientation), sizeof(orientation));
     folders.load(in);
 
@@ -173,13 +180,16 @@ void ImageData::load(std::ifstream& in) {
             in.read(reinterpret_cast<char*>(cropSizes[i].data()), innerSize * sizeof(QPoint));
         }
     }
-
+    in.read(reinterpret_cast<char*>(&isPersonsLoaded), sizeof(isPersonsLoaded));
     size_t personsSize;
     in.read(reinterpret_cast<char*>(&personsSize), sizeof(personsSize));
     persons.resize(personsSize);
     for (auto& person : persons) {
         person.load(in);
     }
+    // } catch (const std::exception& e) {
+    //     qDebug() << e.what();
+    // }
 }
 
 std::vector<std::vector<QPoint>> ImageData::getCropSizes() const {

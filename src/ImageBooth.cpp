@@ -466,13 +466,6 @@ void ImageBooth::keyReleaseEvent(QKeyEvent* event) {
             switchToMainWindow();
             break;
 
-        case Qt::Key_I:
-            // Debug
-            for (const auto& cache : *data->imageCache) {
-                std::cout << "Image: " << cache.first << " Size: " << static_cast<double>(cache.second.image.sizeInBytes()) / (1024 * 1024) << " MB" << std::endl;
-            }
-            break;
-
         case Qt::Key_Z:
             if (event->modifiers() & Qt::ControlModifier) {
                 if (event->modifiers() & Qt::ShiftModifier) {
@@ -518,7 +511,7 @@ ClickableLabel* ImageBooth::createImageDelete() {
         return nullptr;
     }
 
-    ClickableLabel* imageDelete = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_IMAGE_BOOTH_DELETE, this, actionSize);
+    ClickableLabel* imageDelete = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_TIP_IMAGE_BOOTH_DELETE, this, actionSize);
 
     connect(imageDelete, &ClickableLabel::clicked, [this]() {
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
@@ -589,7 +582,7 @@ ClickableLabel* ImageBooth::createImageSave() {
         return nullptr;
     }
 
-    ClickableLabel* imageSaveNew = new ClickableLabel(data, ICON_PATH_SAVE, TOOL_IMAGE_BOOTH_SAVE, this, actionSize);
+    ClickableLabel* imageSaveNew = new ClickableLabel(data, ICON_PATH_SAVE, TOOL_TIP_IMAGE_BOOTH_SAVE, this, actionSize);
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() {
     });
@@ -602,7 +595,7 @@ ClickableLabel* ImageBooth::createImageExport() {
         return nullptr;
     }
 
-    ClickableLabel* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, TOOL_IMAGE_BOOTH_EXPORT, this, actionSize);
+    ClickableLabel* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, TOOL_TIP_IMAGE_BOOTH_EXPORT, this, actionSize);
 
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
     });
@@ -619,7 +612,7 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_IMAGE_BOOTH_ROTATE_RIGHT, this, actionSize);
+    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_TIP_IMAGE_BOOTH_ROTATE_RIGHT, this, actionSize);
 
     connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() {
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
@@ -661,7 +654,7 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, TOOL_IMAGE_BOOTH_ROTATE_LEFT, this, actionSize);
+    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, TOOL_TIP_IMAGE_BOOTH_ROTATE_LEFT, this, actionSize);
 
     connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() {
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
@@ -703,7 +696,7 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, TOOL_IMAGE_BOOTH_MIRROR_UP_DOWN, this, actionSize);
+    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, TOOL_TIP_IMAGE_BOOTH_MIRROR_UP_DOWN, this, actionSize);
 
     connect(imageMirrorUpDownNew, &ClickableLabel::clicked, [this]() {
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
@@ -746,7 +739,7 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, TOOL_IMAGE_BOOTH_MIRROR_LEFT_RIGHT, this, actionSize);
+    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, TOOL_TIP_IMAGE_BOOTH_MIRROR_LEFT_RIGHT, this, actionSize);
 
     connect(imageMirrorLeftRightNew, &ClickableLabel::clicked, [this]() {
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
@@ -788,7 +781,7 @@ ClickableLabel* ImageBooth::createImageEditExif() {
         return nullptr;
     }
 
-    ClickableLabel* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, TOOL_IMAGE_BOOTH_EDIT_EXIF, this, actionSize);
+    ClickableLabel* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, TOOL_TIP_IMAGE_BOOTH_EDIT_EXIF, this, actionSize);
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
     });
@@ -803,7 +796,7 @@ ClickableLabel* ImageBooth::createImageConversion() {
         return nullptr;
     }
 
-    ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, TOOL_IMAGE_BOOTH_CONVERSION, this, actionSize);
+    ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, TOOL_TIP_IMAGE_BOOTH_CONVERSION, this, actionSize);
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
         if (data->imagesSelected.size() > 0) {

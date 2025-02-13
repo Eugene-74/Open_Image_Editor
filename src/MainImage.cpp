@@ -276,8 +276,6 @@ void MainImage::paintEvent(QPaintEvent* event) {
             QString name = QString::fromStdString(person.name);
             painter.drawText(x, y + height + 15, name);
         }
-    } else {
-        qDebug() << "persons empty";
     }
 }
 
@@ -332,62 +330,4 @@ std::vector<QPoint> MainImage::adjustPointsForOrientation(const std::vector<QPoi
     }
 
     return adjustedPoints;
-}
-
-void MainImage::detectFaces() {
-    auto start = std::chrono::high_resolution_clock::now();
-    // Extract the Haar cascade file from resources
-    QTemporaryFile tempFile;
-    if (tempFile.open()) {
-        QFile resourceFile(":/haarcascade_frontalface_default.xml");
-        if (resourceFile.open(QIODevice::ReadOnly)) {
-            tempFile.write(resourceFile.readAll());
-            tempFile.close();
-            resourceFile.close();
-        } else {
-            qDebug() << "Error opening resource file";
-            return;
-        }
-    } else {
-        qDebug() << "Error creating temporary file";
-        return;
-    }
-
-    // Load the Haar cascade file
-    cv::CascadeClassifier faceCascade;
-    if (!faceCascade.load(tempFile.fileName().toStdString())) {
-        qDebug() << "Error loading Haar cascade file";
-        return;
-    }
-
-    // Convert QImage to cv::Mat
-    cv::Mat image = cv::Mat(qImage.height(), qImage.width(), CV_8UC4, const_cast<uchar*>(qImage.bits()), qImage.bytesPerLine()).clone();
-    if (image.empty()) {
-        qDebug() << "Error loading image";
-        return;
-    }
-
-    // Convert the image to grayscale
-    cv::Mat grayImage;
-    cv::cvtColor(image, grayImage, cv::COLOR_BGR2GRAY);
-
-    // Detect faces with adjusted parameters
-    std::vector<cv::Rect> faces;
-
-    faceCascade.detectMultiScale(grayImage, faces, 1.3, 4, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(50, 50));
-
-    // Update the display
-    update();
-
-    qDebug() << "Detected" << faces.size() << "faces";
-
-    for (auto face : faces) {
-        Person person;
-        person.face = face;
-        persons.push_back(person);
-    }
-
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
-    std::cout << "detecting faces " << elapsed.count() << " seconds." << std::endl;
 }

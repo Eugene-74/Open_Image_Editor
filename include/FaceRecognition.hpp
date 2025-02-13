@@ -1,14 +1,8 @@
 #pragma once
 
-#include <dlib/clustering.h>
 #include <dlib/dnn.h>
-#include <dlib/dnn/loss.h>
-#include <dlib/gui_widgets.h>
-#include <dlib/image_io.h>
-#include <dlib/image_processing.h>
 #include <dlib/image_processing/frontal_face_detector.h>
 #include <dlib/opencv.h>
-#include <dlib/string.h>
 
 #include <QDebug>
 #include <QFile>

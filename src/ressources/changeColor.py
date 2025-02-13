@@ -34,13 +34,18 @@ def change_image_color_of_folder(input_directory,output_directory,r,g,b,a):
             output_path = os.path.join(output_directory, filename)
             change_image_color(input_path, output_path, (r, g, b, a))  # Change to red color
 
-# r,g,b,a=0,0,0,255
+
+def createIconsAndImages(r,g,b,a):
+    input_directory = "src/ressources/icons"
+    output_directory = "src/ressources/"+str(r)+"-"+str(g)+"-"+str(b)+"-"+str(a)+"/icons"
+    change_image_color_of_folder(input_directory,output_directory,r,g,b,a)
+
+    input_directory = "src/ressources/images"
+    output_directory = "src/ressources/"+str(r)+"-"+str(g)+"-"+str(b)+"-"+str(a)+"/images"
+    change_image_color_of_folder(input_directory,output_directory,r,g,b,a)
+
+r,g,b,a=0,0,0,255
+createIconsAndImages(r,g,b,a)
+
 r,g,b,a=255,255,255,255
-
-input_directory = "src/ressources/icons"
-output_directory = "src/ressources/"+str(r)+"-"+str(g)+"-"+str(b)+"-"+str(a)+"/icons"
-change_image_color_of_folder(input_directory,output_directory,r,g,b,a)
-
-input_directory = "src/ressources/images"
-output_directory = "src/ressources/"+str(r)+"-"+str(g)+"-"+str(b)+"-"+str(a)+"/images"
-change_image_color_of_folder(input_directory,output_directory,r,g,b,a)
+createIconsAndImages(r,g,b,a)

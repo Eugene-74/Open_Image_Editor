@@ -11,7 +11,7 @@ ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QString too
     if (!qImage.isNull()) {
         this->setPixmap(QPixmap::fromImage(qImage).scaled(size - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     } else {
-        this->setText("Erreur");
+        this->setText("Error : null image");
     }
 
     if (setSize)

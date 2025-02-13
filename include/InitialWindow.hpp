@@ -1,4 +1,7 @@
 #pragma once
+#include <curl/curl.h>
+#include <json/json.h>
+
 #include <QApplication>
 #include <QDebug>
 #include <QDesktopServices>
@@ -6,7 +9,10 @@
 #include <QScreen>
 #include <QVBoxLayout>
 
+#include "Version.hpp"
+
 #include "Box.hpp"
+#include "Const.hpp"
 #include "Data.hpp"
 #include "Date.hpp"
 #include "FaceRecognition.hpp"

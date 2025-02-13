@@ -29,7 +29,7 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;
-    std::cout << "Sorting images took " << elapsed.count() << " seconds." << std::endl;
+    qDebug() << "Sorting images took " << elapsed.count() << " seconds.";
 
     data->saveData();
 }

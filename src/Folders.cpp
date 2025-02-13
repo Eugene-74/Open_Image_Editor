@@ -12,12 +12,11 @@ Folders& Folders::operator=(const Folders& other) {
 }
 
 void Folders::save(std::ofstream& out) const {
-    // Save folder name
+    // try {
     size_t folderNameSize = name.size();
     out.write(reinterpret_cast<const char*>(&folderNameSize), sizeof(folderNameSize));
     out.write(name.c_str(), folderNameSize);
 
-    // Save files
     size_t filesCount = files.size();
     out.write(reinterpret_cast<const char*>(&filesCount), sizeof(filesCount));
     for (const auto& file : files) {
@@ -26,22 +25,23 @@ void Folders::save(std::ofstream& out) const {
         out.write(file.c_str(), fileSize);
     }
 
-    // Save subfolders
     size_t foldersCount = folders.size();
     out.write(reinterpret_cast<const char*>(&foldersCount), sizeof(foldersCount));
     for (const auto& folder : folders) {
         folder.save(out);
     }
+    // } catch (const std::exception& e) {
+    // qDebug() << e.what();
+    // }
 }
 
 void Folders::load(std::ifstream& in) {
-    // Load folder name
+    // try {
     size_t folderNameSize;
     in.read(reinterpret_cast<char*>(&folderNameSize), sizeof(folderNameSize));
     name.resize(folderNameSize);
     in.read(&name[0], folderNameSize);
 
-    // Load files
     size_t filesCount;
     in.read(reinterpret_cast<char*>(&filesCount), sizeof(filesCount));
     files.resize(filesCount);
@@ -52,7 +52,6 @@ void Folders::load(std::ifstream& in) {
         in.read(&file[0], fileSize);
     }
 
-    // Load subfolders
     size_t foldersCount;
     in.read(reinterpret_cast<char*>(&foldersCount), sizeof(foldersCount));
     folders.resize(foldersCount);
@@ -60,6 +59,9 @@ void Folders::load(std::ifstream& in) {
         folder.load(in);
         folder.parent = this;
     }
+    // } catch (const std::exception& e) {
+    // qDebug() << e.what();
+    // }
 }
 
 void Folders::addFolder(std::string name) {

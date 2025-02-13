@@ -224,6 +224,8 @@ void ImageEditor::createButtons() {
 
     imageConversion = createImageConversion();
 
+    imagePersons = createImagePersons();
+
     actionButtonLayout->addWidget(imageRotateRight);
     actionButtonLayout->addWidget(imageRotateLeft);
     actionButtonLayout->addWidget(imageMirrorLeftRight);
@@ -232,7 +234,9 @@ void ImageEditor::createButtons() {
     actionButtonLayout->addWidget(imageSave);
     actionButtonLayout->addWidget(imageExport);
     actionButtonLayout->addWidget(imageConversion);
+
     actionButtonLayout->addWidget(imageEditExif);
+    actionButtonLayout->addWidget(imagePersons);
 
     buttonImageBefore = createImageBefore();
     buttonImageNext = createImageNext();
@@ -544,7 +548,7 @@ ClickableLabel* ImageEditor::createImageDelete() {
         return nullptr;
     }
 
-    ClickableLabel* imageDelete = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_IMAGE_EDITOR_DELETE, this, actionSize);
+    ClickableLabel* imageDelete = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_TIP_IMAGE_EDITOR_DELETE, this, actionSize);
 
     if (data->isDeleted(data->imagesData.getImageNumber())) {
         imageDelete->background_color = "#700c13";
@@ -562,7 +566,7 @@ ClickableLabel* ImageEditor::createImageSave() {
         return nullptr;
     }
 
-    ClickableLabel* imageSaveNew = new ClickableLabel(data, ICON_PATH_SAVE, TOOL_IMAGE_EDITOR_SAVE, this, actionSize);
+    ClickableLabel* imageSaveNew = new ClickableLabel(data, ICON_PATH_SAVE, TOOL_TIP_IMAGE_EDITOR_SAVE, this, actionSize);
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() {
         this->saveImage();
@@ -576,7 +580,7 @@ ClickableLabel* ImageEditor::createImageExport() {
         return nullptr;
     }
 
-    ClickableLabel* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, TOOL_IMAGE_EDITOR_EXPORT, this, actionSize);
+    ClickableLabel* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, TOOL_TIP_IMAGE_EDITOR_EXPORT, this, actionSize);
 
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
         this->exportImage();
@@ -590,7 +594,7 @@ ClickableLabel* ImageEditor::createImageRotateRight() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_IMAGE_EDITOR_ROTATE_RIGHT, this, actionSize);
+    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_TIP_IMAGE_EDITOR_ROTATE_RIGHT, this, actionSize);
 
     if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageRotateRightNew->setDisabled(true);
@@ -609,7 +613,7 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, TOOL_IMAGE_EDITOR_ROTATE_LEFT, this, actionSize);
+    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, TOOL_TIP_IMAGE_EDITOR_ROTATE_LEFT, this, actionSize);
 
     if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageRotateLeftNew->setDisabled(true);
@@ -628,7 +632,7 @@ ClickableLabel* ImageEditor::createImageMirrorUpDown() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, TOOL_IMAGE_EDITOR_MIRROR_UP_DOWN, this, actionSize);
+    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, TOOL_TIP_IMAGE_EDITOR_MIRROR_UP_DOWN, this, actionSize);
 
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageMirrorUpDownNew->setDisabled(true);
@@ -647,7 +651,7 @@ ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, TOOL_IMAGE_EDITOR_MIRROR_LEFT_RIGHT, this, actionSize);
+    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, TOOL_TIP_IMAGE_EDITOR_MIRROR_LEFT_RIGHT, this, actionSize);
 
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageMirrorLeftRightNew->setDisabled(true);
@@ -667,7 +671,7 @@ ClickableLabel* ImageEditor::createImageEditExif() {
         return nullptr;
     }
 
-    ClickableLabel* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, TOOL_IMAGE_EDITOR_EDIT_EXIF, this, actionSize);
+    ClickableLabel* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, TOOL_TIP_IMAGE_EDITOR_EDIT_EXIF, this, actionSize);
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
         if (exifEditor) {
@@ -692,7 +696,7 @@ ClickableLabel* ImageEditor::createImageConversion() {
         return nullptr;
     }
 
-    ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, TOOL_IMAGE_EDITOR_CONVERSION, this, actionSize);
+    ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, TOOL_TIP_IMAGE_EDITOR_CONVERSION, this, actionSize);
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
         launchConversionDialogAndConvert(QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()));
@@ -701,6 +705,26 @@ ClickableLabel* ImageEditor::createImageConversion() {
     return imageConversionNew;
 }
 
+ClickableLabel* ImageEditor::createImagePersons() {
+    if (data->imagesData.get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imagePersonsNew = new ClickableLabel(data, ICON_PATH_EDIT_PERSONS, TOOL_TIP_IMAGE_EDITOR_EDIT_PERSONS, this, actionSize);
+
+    connect(imagePersonsNew, &ClickableLabel::clicked, [this]() {
+        if (!personsEditor) {
+            personsEditor = true;
+        } else {
+            personsEditor = false;
+        }
+        reload();
+        // imageLabel->update();
+        // launchConversionDialogAndConvert(QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()));
+    });
+
+    return imagePersonsNew;
+}
 ClickableLabel* ImageEditor::createImageBefore() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -763,33 +787,37 @@ MainImage* ImageEditor::createImageLabel() {
     startDlib();
     std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
 
-    // imageLabelNew->detectFaces();
     ImageData* imageData = data->imagesData.getCurrentImageData();
 
-    if (!imageData->persons.empty()) {
-        imageLabelNew->persons = imageData->persons;
-        imageLabelNew->update();
+    if (personsEditor) {
+        if (!imageData->persons.empty()) {
+            imageLabelNew->persons = imageData->persons;
+            imageLabelNew->update();
+        }
     }
 
     int imageNbr = data->imagesData.getImageNumber();
-    if (imageData->persons.empty()) {
+    // TODO changer pour ne pas recharger des visages dans les images sans visage
+    if (!imageData->isPersonsLoaded && imageData->persons.empty()) {
         qDebug() << "No persons detected";
+        imageData->isPersonsLoaded = true;
         if (data->imageCache->find(currentImagePath) == data->imageCache->end()) {
-            qDebug() << "Image not inZ cache, loading...";
             data->loadInCache(currentImagePath);
         }
         QImage image = data->imageCache->at(currentImagePath).image;
-        qDebug() << "image size:" << image.size();
         image = data->rotateQImage(image, currentImagePath);
         QPointer<MainImage> safeImageLabelNew = imageLabelNew;
         detectFacesAsync(currentImagePath, image, [this, safeImageLabelNew, imageNbr](std::vector<Person> persons) {
             // do something with persons
             if (safeImageLabelNew) {
                 safeImageLabelNew->persons = persons;
-                safeImageLabelNew->update();
+                if (personsEditor) {
+                    safeImageLabelNew->update();
+                }
             }
             qDebug() << "persons detected:" << persons.size();
             data->imagesData.getImageData(imageNbr)->persons = persons;
+            // data->imagesData.getImageData(imageNbr)->isPersonsLoaded = true;
         });
     }
 
@@ -1185,7 +1213,11 @@ void ImageEditor::startImageOpen() {
 
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
         data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [this]() {
-            reloadImageLabel();
+            try {
+                reloadImageLabel();
+            } catch (const std::exception& e) {
+                qDebug() << e.what();
+            }
         });
         imageOpenTimer->stop();
         for (int i = 0; i < PRE_LOAD_RADIUS; i++) {
@@ -1225,7 +1257,6 @@ void ImageEditor::checkLoadedImage() {
     }
     for (const auto& imagePath : toUnload) {
         data->unloadFromCache(imagePath);
-        data->unloadFromFutures(imagePath);
     }
 }
 

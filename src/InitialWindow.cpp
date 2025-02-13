@@ -116,7 +116,6 @@ bool lookForUpdate() {
 
     if (currentMajor < latestMajor || currentMinor < latestMinor || currentPatch < latestPatch) {
         if (showQuestionMessage(nullptr, "A new version of the application is available\nDo you want to open the download page?")) {
-            // TODO download and run
             std::string downloadUrl = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/v" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
             std::string outputPath = SAVE_PATH + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
             if (!fs::exists(SAVE_PATH)) {
@@ -173,8 +172,6 @@ void startLog() {
 }
 
 InitialWindow::InitialWindow() {
-    // qDebug() << "InitialWindow started at:" << getCurrentFormattedDate();
-
     startLog();
 
     QTimer::singleShot(100, this, [this]() {
@@ -242,7 +239,6 @@ InitialWindow::InitialWindow() {
         windowLayout->addLayout(linkLayout);
 
         createMainWindow(data);
-        // qDebug() << "InitialWindow finished at:" << getCurrentFormattedDate();
     });
 }
 
@@ -266,8 +262,26 @@ void InitialWindow::createImageEditor(Data* data) {
     imageEditor->setFocus();
     imageEditor->setFocusPolicy(Qt::StrongFocus);
 
-    connect(imageEditor, &ImageEditor::switchToImageBooth, this, &InitialWindow::showImageBooth);
-    connect(imageEditor, &ImageEditor::switchToMainWindow, this, &InitialWindow::showMainWindow);
+    connect(imageEditor, &ImageEditor::switchToImageBooth, this, [this]() {
+        showImageBooth();
+        this->data->addAction(
+            [this]() {
+                showImageEditor();
+            },
+            [this]() {
+                showImageBooth();
+            });
+    });
+    connect(imageEditor, &ImageEditor::switchToMainWindow, this, [this]() {
+        showMainWindow();
+        this->data->addAction(
+            [this]() {
+                showImageEditor();
+            },
+            [this]() {
+                showMainWindow();
+            });
+    });
 }
 
 void InitialWindow::createImageBooth(Data* data) {
@@ -278,8 +292,26 @@ void InitialWindow::createImageBooth(Data* data) {
     imageBooth->setFocus();
     imageBooth->setFocusPolicy(Qt::StrongFocus);
 
-    connect(imageBooth, &ImageBooth::switchToImageEditor, this, &InitialWindow::showImageEditor);
-    connect(imageBooth, &ImageBooth::switchToMainWindow, this, &InitialWindow::showMainWindow);
+    connect(imageBooth, &ImageBooth::switchToImageEditor, this, [this]() {
+        showImageEditor();
+        this->data->addAction(
+            [this]() {
+                showImageBooth();
+            },
+            [this]() {
+                showImageEditor();
+            });
+    });
+    connect(imageBooth, &ImageBooth::switchToMainWindow, this, [this]() {
+        showMainWindow();
+        this->data->addAction(
+            [this]() {
+                showImageBooth();
+            },
+            [this]() {
+                showMainWindow();
+            });
+    });
 }
 
 void InitialWindow::createMainWindow(Data* data) {
@@ -290,28 +322,43 @@ void InitialWindow::createMainWindow(Data* data) {
     mainWindow->setFocus();
     mainWindow->setFocusPolicy(Qt::StrongFocus);
 
-    connect(mainWindow, &MainWindow::switchToImageBooth, this, &InitialWindow::showImageBooth);
-    connect(mainWindow, &MainWindow::switchToImageEditor, this, &InitialWindow::showImageEditor);
+    connect(mainWindow, &MainWindow::switchToImageBooth, this, [this]() {
+        showImageBooth();
+        this->data->addAction(
+            [this]() {
+                showMainWindow();
+            },
+            [this]() {
+                showImageBooth();
+            });
+    });
+    connect(mainWindow, &MainWindow::switchToImageEditor, this, [this]() {
+        showImageEditor();
+        this->data->addAction(
+            [this]() {
+                showMainWindow();
+            },
+            [this]() {
+                showImageEditor();
+            });
+    });
 }
 void InitialWindow::clearImageEditor() {
     layout->removeWidget(imageEditor);
     imageEditor->clear();
     imageEditor = nullptr;
-    data->clearActions();
 }
 
 void InitialWindow::clearImageBooth() {
     layout->removeWidget(imageBooth);
     imageBooth->clear();
     imageBooth = nullptr;
-    data->clearActions();
 }
 
 void InitialWindow::clearMainWindow() {
     layout->removeWidget(mainWindow);
     mainWindow->clear();
     mainWindow = nullptr;
-    data->clearActions();
 }
 
 void InitialWindow::showImageEditor() {
@@ -349,15 +396,11 @@ void InitialWindow::showMainWindow() {
 }
 
 ClickableLabel* InitialWindow::createImageDiscord() {
-    qDebug() << 11;
-
     ClickableLabel* imageDiscord = new ClickableLabel(data, ICON_PATH_DISCORD, TOOL_TIP_DISCORD, this, QSize(data->sizes.linkButtons.width() / 2, data->sizes.linkButtons.height()), false, 0, true);
-    qDebug() << 12;
 
     connect(imageDiscord, &ClickableLabel::clicked, [this]() {
         QDesktopServices::openUrl(QUrl("https://discord.gg/Q2HhZucmxU"));
     });
-    qDebug() << 13;
 
     return imageDiscord;
 }
@@ -366,7 +409,7 @@ ClickableLabel* InitialWindow::createImageGithub() {
     ClickableLabel* imageGithub = new ClickableLabel(data, ICON_PATH_GITHUB, TOOL_TIP_GITHUB, this, QSize(data->sizes.linkButtons.width() / 2, data->sizes.linkButtons.height()), false, 0, true);
 
     connect(imageGithub, &ClickableLabel::clicked, [this]() {
-        QDesktopServices::openUrl(QUrl("https://github.com/Eugene-74/Easy_Image_Editor"));
+        QDesktopServices::openUrl(QUrl("https://github.com/Eugene-74/Open_Image_Editor"));
     });
 
     return imageGithub;
@@ -401,7 +444,7 @@ bool isDarkMode() {
         DWORD valueSize = sizeof(value);
         result = RegQueryValueEx(hKey, L"AppsUseLightTheme", nullptr, nullptr, reinterpret_cast<LPBYTE>(&value), &valueSize);
         if (result == ERROR_SUCCESS) {
-            darkMode = (value == 0);  // 0 means dark mode, 1 means light mode
+            darkMode = (value == 0);
         }
         RegCloseKey(hKey);
     }

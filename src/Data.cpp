@@ -1,6 +1,6 @@
 #include "Data.hpp"
 
-namespace fs = std::filesystem;  // Alias pour simplifier le code
+namespace fs = std::filesystem;
 
 void Data::preDeleteImage(int imageNbr) {
     ImageData* imageData;
@@ -31,7 +31,7 @@ void Data::revocerDeletedImage(int imageNbr) {
     deletedImagesData.removeImage(*imageData);
 }
 
-// Supprime de imagesData les images dans deletedImagesData
+// Delete in imagesData images that are also in deletedImagesData
 void Data::removeDeletedImages() {
     for (const auto& deletedImage : *deletedImagesData.get()) {
         auto it = std::find(imagesData.get()->begin(), imagesData.get()->end(),
@@ -41,13 +41,11 @@ void Data::removeDeletedImages() {
             deletedImage.print();
         }
     }
-
     qDebug() << "All images deleted";
 }
 
 bool Data::isDeleted(int imageNbr) {
     std::string imagePath = imagesData.getImageData(imageNbr)->folders.name;
-
     auto it = std::find_if(deletedImagesData.get()->begin(),
                            deletedImagesData.get()->end(),
                            [imagePath, this](const ImageData img) {
@@ -76,7 +74,6 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
                 if (cropPoints.size() == 2) {
                     QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
 
-                    // Vérifier que le rectangle de découpe est dans les limites de l'image
                     QRect imageRect(0, 0, image.width(), image.height());
                     cropRect = cropRect.intersected(imageRect);
 
@@ -353,8 +350,6 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
                                    const int size) {
     std::hash<std::string> hasher;
     size_t hashValue = hasher(fs::path(imagePath).filename().string());
-
-    // std::string extension = fs::path(imagePath).extension().string();
     std::string extension = ".png";
 
     std::string outputImage;
@@ -381,22 +376,11 @@ bool Data::unloadFromCache(std::string imagePath) {
 
     if (it != imageCache->end()) {
         imageCache->erase(it);
-        // TODO ajouter le clear des metaDAta et juste sauvegarder la rotation
-
         return true;
     }
     return false;
 }
 
-bool Data::unloadFromFutures(std::string imagePath) {
-    // auto it = futures.find(QString::fromStdString(imagePath));
-    // if (it != futures.end())
-    // {
-    //     futures.erase(it);
-    //     return true;
-    // }
-    return false;
-}
 void Data::exportImages(std::string exportPath, bool dateInName) {
     Folders* firstFolder;
 
@@ -476,7 +460,6 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
                 }
                 image.save(QString::fromStdString(destinationFile));
 
-                // Copy metadata
                 Exiv2::Image::AutoPtr srcImage = Exiv2::ImageFactory::open(imageData.folders.name);
                 srcImage->readMetadata();
                 Exiv2::Image::AutoPtr destImage = Exiv2::ImageFactory::open(destinationFile);
@@ -551,24 +534,19 @@ void Data::saveData() {
     std::string filePath = IMAGESDATA_SAVE_DATA_PATH;
     std::ofstream outFile(filePath, std::ios::binary);
     if (!outFile) {
-        // Vérifiez si le répertoire parent existe
         if (!fs::exists(fs::path(filePath).parent_path())) {
-            // Essayez de créer les répertoires nécessaires
             if (!fs::create_directories(fs::path(filePath).parent_path())) {
                 qDebug() << "Couldn't create directories for save file : " << fs::path(filePath).parent_path();
                 return;
             }
         }
 
-        // Essayez d'ouvrir le fichier à nouveau après avoir créé les répertoires
         outFile.open(filePath, std::ios::binary);
         if (!outFile) {
             qDebug() << "Couldn't open save file : " << filePath;
             return;
         }
     }
-
-    // Serialize imagesData
 
     size_t imagesDataSize = imagesData.get()->size();
     outFile.write(reinterpret_cast<const char*>(&imagesDataSize),
@@ -577,7 +555,6 @@ void Data::saveData() {
         imageData.save(outFile);
     }
 
-    // Serialize deletedImagesData
     size_t deletedImagesDataSize = deletedImagesData.get()->size();
     outFile.write(reinterpret_cast<const char*>(&deletedImagesDataSize),
                   sizeof(deletedImagesDataSize));
@@ -585,7 +562,6 @@ void Data::saveData() {
         imageData.save(outFile);
     }
 
-    // Serialize options
     size_t optionsSize = options.size();
     outFile.write(reinterpret_cast<const char*>(&optionsSize),
                   sizeof(optionsSize));
@@ -598,7 +574,6 @@ void Data::saveData() {
         outFile.write(option.value.c_str(), valueSize);
     }
 
-    // Serialize rootFolders
     rootFolders.save(outFile);
 
     outFile.close();
@@ -672,10 +647,7 @@ void Data::addActionDone(Actions action) {
 }
 
 void Data::reDoAction() {
-    // std::cerr << "reDoAction : " << lastActionsDone.size() << std::endl;
-
     if (lastActionsDone.size() > 0) {
-        // std::cerr << "reDoAction" << std::endl;
         auto action = lastActionsDone.back();
         addAction(action.unDo, action.reDo);
         lastActionsDone.pop_back();
@@ -684,9 +656,7 @@ void Data::reDoAction() {
 }
 
 void Data::unDoAction() {
-    // std::cerr << "unDoAction : " << lastActions.size() << std::endl;
     if (lastActions.size() > 0) {
-        // std::cerr << "unDoAction" << std::endl;
         auto action = lastActions.back();
         addActionDone(action);
         lastActions.pop_back();

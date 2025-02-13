@@ -92,8 +92,10 @@ class ImageEditor : public QMainWindow {
     ClickableLabel* createImageDelete();
     ClickableLabel* createImageSave();
     ClickableLabel* createImageExport();
-    ClickableLabel* createImageEditExif();
     ClickableLabel* createImageConversion();
+
+    ClickableLabel* createImageEditExif();
+    ClickableLabel* createImagePersons();
 
     ClickableLabel* createImageBefore();
     ClickableLabel* createImageNext();
@@ -104,6 +106,8 @@ class ImageEditor : public QMainWindow {
     void closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEditor);
 
     bool exifEditor = false;
+    bool personsEditor = false;
+
     Data* data;
 
     QLineEdit* nameEdit;
@@ -143,8 +147,10 @@ class ImageEditor : public QMainWindow {
     ClickableLabel* imageSave;
     ClickableLabel* imageExport;
 
-    ClickableLabel* imageEditExif;
     ClickableLabel* imageConversion;
+
+    ClickableLabel* imageEditExif;
+    ClickableLabel* imagePersons;
 
     QTimer* imageOpenTimer = new QTimer(this);
 

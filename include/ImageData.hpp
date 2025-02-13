@@ -17,6 +17,7 @@ class ImageData {
     MetaData metaData;
     std::vector<std::vector<QPoint>> cropSizes;
     std::vector<Person> persons;
+    bool isPersonsLoaded = false;  // TODO add to save
 
     int orientation = 0;
     long date = 0;

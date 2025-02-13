@@ -33,12 +33,6 @@ class Actions {
     std::function<void()> reDo;
 };
 
-// class Person {
-//    public:
-//     cv::Rect face;
-//     int id;
-// };
-
 class Data {
    public:
     QApplication* app;
@@ -81,7 +75,6 @@ class Data {
     void loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
 
     bool unloadFromCache(std::string imagePath);
-    bool unloadFromFutures(std::string imagePath);
 
     bool isInCache(std::string imagePath);
     bool getLoadedImage(std::string imagePath, QImage& image);

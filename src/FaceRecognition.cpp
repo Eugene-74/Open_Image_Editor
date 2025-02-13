@@ -4,6 +4,7 @@ using namespace dlib;
 using namespace std;
 
 void Person::save(std::ofstream& out) const {
+    // try {
     size_t nameSize = name.size();
     out.write(reinterpret_cast<const char*>(&nameSize), sizeof(nameSize));
     out.write(name.c_str(), nameSize);
@@ -11,9 +12,13 @@ void Person::save(std::ofstream& out) const {
     out.write(reinterpret_cast<const char*>(&face.y), sizeof(face.y));
     out.write(reinterpret_cast<const char*>(&face.width), sizeof(face.width));
     out.write(reinterpret_cast<const char*>(&face.height), sizeof(face.height));
+    // } catch (const std::exception& e) {
+    // qDebug() << e.what();
+    // }
 }
 
 void Person::load(std::ifstream& in) {
+    // try {
     size_t nameSize;
     in.read(reinterpret_cast<char*>(&nameSize), sizeof(nameSize));
     name.resize(nameSize);
@@ -22,6 +27,9 @@ void Person::load(std::ifstream& in) {
     in.read(reinterpret_cast<char*>(&face.y), sizeof(face.y));
     in.read(reinterpret_cast<char*>(&face.width), sizeof(face.width));
     in.read(reinterpret_cast<char*>(&face.height), sizeof(face.height));
+    // } catch (const std::exception& e) {
+    // qDebug() << e.what();
+    // }
 }
 
 bool is_slow_cpu() {
@@ -65,13 +73,8 @@ std::vector<Person> detectFaces(std::string imagePath, QImage image) {
         array2d<unsigned char> img;
         cv::Mat mat = QImageToCvMat(image);
 
-        int newSize = 2;
+        int newSize = 1;  // divide image size by newSize
         float invNewSize = 1.0f / newSize;
-
-        if (invNewSize <= 0) {
-            qDebug() << "Error: invNewSize must be greater than 0";
-            return {};
-        }
 
         cv::Mat resizedMat;
         cv::resize(mat, resizedMat, cv::Size(), invNewSize, invNewSize);
@@ -82,23 +85,18 @@ std::vector<Person> detectFaces(std::string imagePath, QImage image) {
 
         qDebug() << "resized Image dimensions: " << resizedMat.cols << "x" << resizedMat.rows;
 
-        // Convert to dlib::cv_image
         dlib::cv_image<unsigned char> dlibImage(gray);
 
-        // Initialize face detector
         frontal_face_detector detector = get_frontal_face_detector();
 
-        // Detect faces in the image
         std::vector<rectangle> dets = detector(dlibImage);
 
-        // Print the number of faces detected
         qDebug() << "Number of faces detected: " << dets.size();
-        // std::vector<cv::Rect> faces;
+
         std::vector<Person> persons;
 
         for (const auto& d : dets) {
             Person person;
-            // faces.emplace_back(cv::Rect(d.left() * newSize, d.top() * newSize, d.width() * newSize, d.height() * newSize));
             person.face.x = d.left() * newSize;
             person.face.y = d.top() * newSize;
             person.face.width = d.width() * newSize;
@@ -107,8 +105,6 @@ std::vector<Person> detectFaces(std::string imagePath, QImage image) {
             persons.push_back(person);
         }
         return persons;
-
-        // return faces;
     } catch (std::exception& e) {
         qDebug() << "Exception: " << e.what();
     }
