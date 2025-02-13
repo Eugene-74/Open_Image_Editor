@@ -2,27 +2,22 @@
 
 ImageData& ImageData::operator=(const ImageData& other) {
     if (this != &other) {
-        // imagePath = other.imagePath;
         folders = other.folders;
         metaData = other.metaData;
         cropSizes = other.cropSizes;
         orientation = other.orientation;
+        date = other.date;
     }
     return *this;
 }
 
 void ImageData::print() const {
-    qDebug() << "Image : " << folders.name
-             << " fichiers : ";
-    for (const auto& file : folders.folders) {
-        qDebug() << " " << file.name;
-    }
-    qDebug() << " ";
+    qDebug() << get();
 }
 
 std::string ImageData::get() const {
     std::string name;
-    name += "Image : " + folders.name + " fichiers : ";
+    name += "Image : " + folders.name + " folders : ";
     for (const auto& file : folders.folders) {
         name += " ";
         name += file.name;
@@ -30,12 +25,12 @@ std::string ImageData::get() const {
     name += "\n";
     return name;
 }
+
 MetaData* ImageData::getMetaData() {
-    // Débogage pour afficher la taille des métadonnées
     return &metaData;
 }
+
 MetaData ImageData::getMetaData() const {
-    // Débogage pour afficher la taille des métadonnées
     return metaData;
 }
 
@@ -80,16 +75,12 @@ std::string ImageData::getImageExtension() {
     return fs::path(folders.name).extension().string();
 }
 
-void ImageData::handleExiv2Error(const Exiv2::Error& e) {
-    qDebug() << "Exiv2 error: " << e.what();
-}
-
 void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
     try {
         metaData.setExifData(toAddMetaData);
         saveMetaData();
     } catch (const Exiv2::Error& e) {
-        handleExiv2Error(e);
+        qDebug() << "Exiv2 error: " << e.what();
     }
 }
 
@@ -100,13 +91,12 @@ void ImageData::loadData() {
 
             orientation = metaData.getImageOrientation();
             date = metaData.getTimestamp();
-            // geo = metaData.getGeoData();
 
             metaData.dataLoaded = true;
         }
     } catch (const Exiv2::Error& e) {
         qDebug() << "Error loading metadata for image: " << folders.name;
-        handleExiv2Error(e);
+        qDebug() << "Exiv2 error: " << e.what();
     }
 }
 
@@ -114,7 +104,7 @@ void ImageData::saveMetaData() {
     try {
         metaData.saveMetaData(folders.name);
     } catch (const Exiv2::Error& e) {
-        handleExiv2Error(e);
+        qDebug() << "Exiv2 error: " << e.what();
     }
 }
 
@@ -140,32 +130,27 @@ void ImageData::setOrCreateExifData() {
 }
 
 void ImageData::save(std::ofstream& out) const {
-    try {
-        out.write(reinterpret_cast<const char*>(&orientation), sizeof(orientation));
+    out.write(reinterpret_cast<const char*>(&orientation), sizeof(orientation));
 
-        folders.save(out);
+    folders.save(out);
 
-        size_t cropSizesSize = cropSizes.size();
-        out.write(reinterpret_cast<const char*>(&cropSizesSize), sizeof(cropSizesSize));
-        for (const auto& cropSize : cropSizes) {
-            size_t innerSize = cropSize.size();
-            out.write(reinterpret_cast<const char*>(&innerSize), sizeof(innerSize));
-            out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
-        }
-        out.write(reinterpret_cast<const char*>(&isPersonsLoaded), sizeof(isPersonsLoaded));
+    size_t cropSizesSize = cropSizes.size();
+    out.write(reinterpret_cast<const char*>(&cropSizesSize), sizeof(cropSizesSize));
+    for (const auto& cropSize : cropSizes) {
+        size_t innerSize = cropSize.size();
+        out.write(reinterpret_cast<const char*>(&innerSize), sizeof(innerSize));
+        out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
+    }
+    out.write(reinterpret_cast<const char*>(&isPersonsLoaded), sizeof(isPersonsLoaded));
 
-        size_t personsSize = persons.size();
-        out.write(reinterpret_cast<const char*>(&personsSize), sizeof(personsSize));
-        for (const auto& person : persons) {
-            person.save(out);
-        }
-    } catch (const std::exception& e) {
-        // qDebug() << e.what();
+    size_t personsSize = persons.size();
+    out.write(reinterpret_cast<const char*>(&personsSize), sizeof(personsSize));
+    for (const auto& person : persons) {
+        person.save(out);
     }
 }
 
 void ImageData::load(std::ifstream& in) {
-    // try {
     in.read(reinterpret_cast<char*>(&orientation), sizeof(orientation));
     folders.load(in);
 
@@ -187,9 +172,6 @@ void ImageData::load(std::ifstream& in) {
     for (auto& person : persons) {
         person.load(in);
     }
-    // } catch (const std::exception& e) {
-    //     qDebug() << e.what();
-    // }
 }
 
 std::vector<std::vector<QPoint>> ImageData::getCropSizes() const {

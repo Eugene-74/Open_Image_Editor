@@ -2,9 +2,9 @@
 
 MetaData& MetaData::operator=(const MetaData& other) {
     if (this != &other) {
-        exifMetaData = other.exifMetaData;  // Utiliser l'opérateur d'affectation de std::vector
-        xmpMetaData = other.xmpMetaData;    // Utiliser l'opérateur d'affectation de std::vector
-        iptcMetaData = other.iptcMetaData;  // Utiliser l'opérateur d'affectation de std::vector
+        exifMetaData = other.exifMetaData;
+        xmpMetaData = other.xmpMetaData;
+        iptcMetaData = other.iptcMetaData;
     }
     return *this;
 }
@@ -13,7 +13,6 @@ void MetaData::saveMetaData(const std::string& imageName) {
     saveExifData(imageName, exifMetaData);
     saveXmpData(imageName, xmpMetaData);
     saveIptcData(imageName, iptcMetaData);
-    // displayExifData(exifMetaData);
 }
 
 // Fonction pour récupérer la largeur de l'image
@@ -25,10 +24,9 @@ int MetaData::getImageWidth() {
 #else
             return entry.toInt64();
 #endif
-            // return entry.toInt64();
         }
     }
-    return -1;  // Retourne -1 si la largeur n'est pas trouvée
+    return -1;
 }
 
 // Fonction pour récupérer la hauteur de l'image
@@ -40,10 +38,9 @@ int MetaData::getImageHeight() {
 #else
             return entry.toInt64();
 #endif
-            // return entry.toInt64();
         }
     }
-    return -1;  // Retourne -1 si la hauteur n'est pas trouvée
+    return -1;
 }
 // Fonction pour récupérer l'orientation de l'image (rotation)
 int MetaData::getImageOrientation() {
@@ -54,19 +51,26 @@ int MetaData::getImageOrientation() {
 #else
             return entry.toInt64();
 #endif
-            // return entry.toInt64();
         }
     }
-    return 1;  // Retourne 1 si l'orientation n'est pas trouvée
+    return 1;
 }
 
 long MetaData::getTimestamp() {
     for (auto& entry : exifMetaData) {
-        if (entry.key() == "Exif.Photo.DateTimeOriginal") {
-            return entry.toLong();
+        if (entry.key() == "Exif.Image.DateTime") {
+            QString dateTimeStr = QString::fromStdString(entry.toString());
+            QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
+            QDateTime epoch(QDate(1970, 1, 1), QTime(0, 0, 0));
+            qint64 secs = epoch.secsTo(dateTime);
+            if (secs < 0) {
+                qDebug() << "Erreur : dateTime est antérieur à l'époque Unix.";
+                return 0;
+            }
+            return secs;
         }
     }
-    return 0;  // Retourne 0 si la date n'est pas trouvée
+    return 0;
 }
 
 // Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
@@ -76,19 +80,14 @@ bool MetaData::modifyExifValue(const std::string& key, const std::string& newVal
     // Chercher la clé dans les métadonnées
     auto pos = exifMetaData.findKey(exifKey);
     if (pos != exifMetaData.end()) {
-        // Si la clé existe, modifier la valeur existante
-        pos->setValue(newValue);  // Utiliser setValue pour assigner la nouvelle valeur
-        // displayExifData(metaData);
+        pos->setValue(newValue);
 
-        return true;  // Retourne vrai si l'opération est réussie
+        return true;
     } else {
-        // Si la clé n'existe pas, la créer et y ajouter la nouvelle valeur
         try {
-            // Créer un nouvel Exifdatum avec la clé
             Exiv2::Exifdatum newDatum(exifKey);
             newDatum.setValue(newValue);  // Assigner la nouvelle valeur
 
-            // Ajouter le nouvel Exifdatum dans les métadonnées
             exifMetaData.add(newDatum);
 
             return true;
@@ -103,22 +102,16 @@ bool MetaData::modifyExifValue(const std::string& key, const std::string& newVal
 bool MetaData::modifyXmpValue(const std::string& key, const std::string& newValue) {
     Exiv2::XmpKey exifKey(key);
 
-    // Chercher la clé dans les métadonnées
     auto pos = xmpMetaData.findKey(exifKey);
     if (pos != xmpMetaData.end()) {
-        // Si la clé existe, modifier la valeur existante
-        pos->setValue(newValue);  // Utiliser setValue pour assigner la nouvelle valeur
-        // displayExifData(metaData);
+        pos->setValue(newValue);
 
-        return true;  // Retourne vrai si l'opération est réussie
+        return true;
     } else {
-        // Si la clé n'existe pas, la créer et y ajouter la nouvelle valeur
         try {
-            // Créer un nouvel Exifdatum avec la clé
             Exiv2::Xmpdatum newDatum(exifKey);
-            newDatum.setValue(newValue);  // Assigner la nouvelle valeur
+            newDatum.setValue(newValue);
 
-            // Ajouter le nouvel Exifdatum dans les métadonnées
             xmpMetaData.add(newDatum);
 
             return true;
@@ -132,22 +125,16 @@ bool MetaData::modifyXmpValue(const std::string& key, const std::string& newValu
 bool MetaData::modifyIptcValue(const std::string& key, const std::string& newValue) {
     Exiv2::IptcKey exifKey(key);
 
-    // Chercher la clé dans les métadonnées
     auto pos = iptcMetaData.findKey(exifKey);
     if (pos != iptcMetaData.end()) {
-        // Si la clé existe, modifier la valeur existante
-        pos->setValue(newValue);  // Utiliser setValue pour assigner la nouvelle valeur
-        // displayExifData(metaData);
+        pos->setValue(newValue);
 
-        return true;  // Retourne vrai si l'opération est réussie
+        return true;
     } else {
-        // Si la clé n'existe pas, la créer et y ajouter la nouvelle valeur
         try {
-            // Créer un nouvel Exifdatum avec la clé
             Exiv2::Iptcdatum newDatum(exifKey);
-            newDatum.setValue(newValue);  // Assigner la nouvelle valeur
+            newDatum.setValue(newValue);
 
-            // Ajouter le nouvel Exifdatum dans les métadonnées
             iptcMetaData.add(newDatum);
 
             return true;
@@ -160,7 +147,6 @@ bool MetaData::modifyIptcValue(const std::string& key, const std::string& newVal
 
 // Fonction pour mettre à jour ou créer les métadonnées EXIF si elles n'existent pas
 void MetaData::setOrCreateExifData(std::string& imagePath) {
-    // Obtenir le timestamp actuel
     time_t now = time(0);
     struct tm* timeinfo = localtime(&now);
     char dateTime[20];

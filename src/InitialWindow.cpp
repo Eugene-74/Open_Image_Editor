@@ -2,7 +2,6 @@
 
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
-    qDebug() << "Downloaded: " << size * nmemb << " bytes";
     return size * nmemb;
 }
 
@@ -30,7 +29,7 @@ std::string getLatestGitHubTag() {
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");  // Nécessaire pour l'API GitHub
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
@@ -184,14 +183,12 @@ InitialWindow::InitialWindow() {
 
         QTranslator translator;
         QString locale = QLocale::system().name();
-        QString language = locale.section('_', 0, 0);  // Extraire uniquement la partie de la langue
+        QString language = locale.section('_', 0, 0);
         if (translator.load(":/translations/open_image_editor_" + language + ".qm")) {
             // app.installTranslator(&translator);
         } else {
             qDebug() << "Translation file not found for language:" << language;
         }
-
-        // startDlib();
 
         data = new Data();
 

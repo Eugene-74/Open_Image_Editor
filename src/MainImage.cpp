@@ -22,7 +22,6 @@ MainImage::MainImage(Data* data, const QString& imagePath, ImageEditor* parent, 
     setMouseTracking(true);
 
     updateStyleSheet();
-    // update();
 }
 
 void MainImage::updateStyleSheet() {
@@ -136,21 +135,16 @@ void MainImage::cropImage() {
         return;
     }
 
-    // Créer un rectangle à partir de cropStart et cropEnd
     QRect cropRect = QRect(cropStart, cropEnd).normalized();
 
-    // Calculer la taille de l'image affichée (avec le redimensionnement)
     QSize scaledPixmapSize = qImage.size();
     scaledPixmapSize.scale(this->size(), Qt::KeepAspectRatio);
 
-    // Calculer les décalages si l'image est centrée dans le widget
     int xOffset = (this->width() - scaledPixmapSize.width()) / 2;
     int yOffset = (this->height() - scaledPixmapSize.height()) / 2;
 
-    // Ajuster cropRect pour qu'il soit relatif à l'image affichée
     cropRect.translate(-xOffset, -yOffset);
 
-    // S'assurer que cropRect est dans les limites de l'image affichée
     QRect displayedImageRect(0, 0, scaledPixmapSize.width(), scaledPixmapSize.height());
     cropRect = cropRect.intersected(displayedImageRect);
 
@@ -158,7 +152,6 @@ void MainImage::cropImage() {
         return;
     }
 
-    // Mapper cropRect vers les coordonnées réelles de l'image
     double xScale = static_cast<double>(qImage.width()) / scaledPixmapSize.width();
     double yScale = static_cast<double>(qImage.height()) / scaledPixmapSize.height();
 
@@ -172,22 +165,18 @@ void MainImage::cropImage() {
         return;
     }
 
-    // Découper l'image en utilisant le rectangle calculé
     QImage croppedImage = qImage.copy(imageCropRect);
 
-    // Mettre à jour qImage et afficher l'image découpée
     qImage = croppedImage;
     this->setPixmap(QPixmap::fromImage(qImage).scaled(
         this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
-    // Sauvegarder les coordonnées de découpe dans les coordonnées réelles de l'image
     if (data && data->imagesData.getCurrentImageData()) {
         std::vector<QPoint> cropPoints = {
             QPoint(imageCropRect.left(), imageCropRect.top()),
             QPoint(imageCropRect.right(), imageCropRect.bottom())};
         int orientation = data->imagesData.getCurrentImageData()->orientation;
 
-        // int orientation = data->imagesData.getCurrentImageData()->getImageOrientation();
         std::vector<QPoint> adjustedCropPoints = adjustPointsForOrientation(cropPoints, orientation, qImageReel.size());
 
         data->imagesData.getCurrentImageData()->cropSizes.push_back(adjustedCropPoints);
@@ -250,26 +239,22 @@ void MainImage::paintEvent(QPaintEvent* event) {
     if (!persons.empty()) {
         painter.setPen(QPen(Qt::blue, 2));
 
-        // Calculate the scale of the displayed image
         QSize scaledSize = qImage.size();
         scaledSize.scale(this->size(), Qt::KeepAspectRatio);
 
         double xScale = static_cast<double>(scaledSize.width()) / qImage.width();
         double yScale = static_cast<double>(scaledSize.height()) / qImage.height();
 
-        // Calculate the offset if the image is centered in the widget
         int xOffset = (this->width() - scaledSize.width()) / 2;
         int yOffset = (this->height() - scaledSize.height()) / 2;
 
         for (const auto& person : persons) {
             cv::Rect face = person.face;
-            // Adjust the coordinates of the face rectangle
             int x = static_cast<int>(face.x * xScale) + xOffset;
             int y = static_cast<int>(face.y * yScale) + yOffset;
             int width = static_cast<int>(face.width * xScale);
             int height = static_cast<int>(face.height * yScale);
 
-            // qDebug() << "Drawing face at" << x << y << width << height;
             QRect rect(x, y, width, height);
             painter.drawRect(rect);
 
@@ -296,33 +281,33 @@ std::vector<QPoint> MainImage::adjustPointsForOrientation(const std::vector<QPoi
         QPoint adjustedPoint = point;
 
         switch (orientation) {
-            case 2:  // Miroir vertical
+            case 2:
                 adjustedPoint.setX(W - point.x());
                 break;
-            case 3:  // Rotation de 180°
+            case 3:
                 adjustedPoint.setX(W - point.x());
                 adjustedPoint.setY(H - point.y());
                 break;
-            case 4:  // Miroir horizontal
+            case 4:
                 adjustedPoint.setY(H - point.y());
                 break;
-            case 5:  // Miroir horizontal puis rotation de 270°
+            case 5:
                 adjustedPoint.setX(point.y());
                 adjustedPoint.setY(point.x());
                 break;
-            case 6:  // Rotation de 90 degrés (sens horaire)
+            case 6:
                 adjustedPoint.setX(point.y());
                 adjustedPoint.setY(W - point.x());
                 break;
-            case 7:  // Miroir horizontal puis rotation de 90°
+            case 7:
                 adjustedPoint.setX(H - point.y() - 1);
                 adjustedPoint.setY(W - point.x() - 1);
                 break;
-            case 8:  // Rotation de 270 degrés (sens horaire)
+            case 8:
                 adjustedPoint.setX(H - point.y() - 1);
                 adjustedPoint.setY(point.x());
                 break;
-            default:  // Orientation normale, pas de changement
+            default:
                 break;
         }
 

@@ -2,7 +2,7 @@
 
 ImagesData& ImagesData::operator=(const ImagesData& other) {
     if (this != &other) {
-        imagesData = other.imagesData;  // Utiliser l'opérateur d'affectation de std::vector
+        imagesData = other.imagesData;
         imageNumber = other.imageNumber;
     }
     return *this;
@@ -66,7 +66,6 @@ ImageData* ImagesData::getImageData(int id) {
     }
 
     return &imagesData.at(id);
-    // renvoie un pointeur ce qui permet une modification automatique dans ImagesData
 }
 
 ImageData* ImagesData::getImageData(std::string imagePath) {
@@ -102,6 +101,6 @@ int ImagesData::getImageDataId(std::string imagePath) {
     if (it != imagesData.end()) {
         return std::distance(imagesData.begin(), it);
     } else {
-        return -1;  // Return -1 if the image is not found
+        return -1;
     }
 }

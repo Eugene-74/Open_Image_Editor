@@ -64,8 +64,6 @@ class ImageEditor : public QMainWindow {
     void createButtons();
     void updateButtons();
 
-    // void createBigImage();
-
     void reloadImageLabel();
 
     void saveImage();

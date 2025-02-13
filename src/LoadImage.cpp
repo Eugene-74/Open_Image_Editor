@@ -75,8 +75,6 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     data->imagesData = ImagesData(std::vector<ImageData>{});
 
     addFilesToTree(&data->rootFolders, imagePaths);
-    // data->rootFolders.print();
-    // return false;
 
     countImagesFromFolder(imagePaths, nbrImage);
 
@@ -123,13 +121,18 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     QObject::connect(&watcher, &QFutureWatcher<void>::finished, &progressDialog, &QProgressDialog::reset);
 
     QFuture<void> future = QtConcurrent::run([&]() {
-        for (int i = 0; i < numThreads; ++i) {
-            int start = i * imagesPerThread;
-            int end = (i == numThreads - 1) ? totalImages : start + imagesPerThread;
-            ThumbnailTask* task = new ThumbnailTask(data, imagesData, start, end);
+        try {
+            for (int i = 0; i < numThreads; ++i) {
+                int start = i * imagesPerThread;
+                int end = (i == numThreads - 1) ? totalImages : start + imagesPerThread;
+                ThumbnailTask* task = new ThumbnailTask(data, imagesData, start, end);
 
-            QThreadPool::globalInstance()->start(task);
-        } });
+                QThreadPool::globalInstance()->start(task);
+            }
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << '\n';
+        }
+    });
 
     watcher.setFuture(future);
 
@@ -148,6 +151,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
         progressDialog.setValue(thumbnailsCreated);
         QCoreApplication::processEvents();
         qDebug() << "Number of thumbnails created: " << thumbnailsCreated << "/" << nbrImage;
+        qDebug() << "Number of active thread: " << QThreadPool::globalInstance()->activeThreadCount();
     }
     return true;
 }
@@ -172,14 +176,14 @@ std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString)
     while (jsonStream >> ch) {
         if (ch == '"') {
             std::getline(jsonStream, key, '"');
-            jsonStream >> ch;  // skip ':'
-            jsonStream >> ch;  // skip space or '"'
+            jsonStream >> ch;
+            jsonStream >> ch;
             if (ch == '"') {
                 std::getline(jsonStream, value, '"');
             } else {
                 jsonStream.putback(ch);
                 std::getline(jsonStream, value, ',');
-                value.pop_back();  // remove trailing comma
+                value.pop_back();
             }
             resultMap[key] = value;
         }
@@ -187,7 +191,6 @@ std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString)
 
     return resultMap;
 }
-// }
 
 std::map<std::string, std::string> openJsonFile(std::string filePath) {
     std::string jsonString = readFile(filePath);
@@ -195,7 +198,7 @@ std::map<std::string, std::string> openJsonFile(std::string filePath) {
     return jsonMap;
 }
 
-// Conte toutes les images dans un dossier et ses sous dossier
+// Count images in a folder and its sub folders
 void countImagesFromFolder(const std::string path, int& nbrImage) {
     int i = 0;
 
@@ -248,43 +251,44 @@ bool loadImagesFromFolder(const std::string initialPath, const std::string path,
 
 bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog) {
     progressDialog.setMaximum(imagesData->get()->size());
+    try {
+        for (int i = 0; i < imagesData->get()->size(); ++i) {
+            // TODO not working for now
+            if (progressDialog.wasCanceled()) {
+                return false;
+            }
+            ImageData* imageData = imagesData->getImageData(i);
+            std::string jsonFilePath = imageData->getImagePath() + ".json";
 
-    for (int i = 0; i < imagesData->get()->size(); ++i) {
-        // TODO not working for now
-        // if (progressDialog.wasCanceled()){
-        //     return false;
-        // }
-        // ImageData* imageData = imagesData->getImageData(i);
-        // std::string jsonFilePath = imageData->getImagePath() + ".json";
+            if (fs::exists(jsonFilePath)) {
+                qDebug() << "json found : " << jsonFilePath.c_str();
+                std::map<std::string, std::string> jsonMap = openJsonFile(jsonFilePath);
 
-        // if (fs::exists(jsonFilePath)){
-        //     qDebug() << "json found : " << jsonFilePath.c_str();
-        //     std::map<std::string, std::string> jsonMap = openJsonFile(jsonFilePath);
-
-        //     for (const auto& [key, value] : jsonMap){
-        //         if (!key.empty() && !value.empty())
-        //         {
-        //             std::string exifKey = mapJsonKeyToExifKey(key);
-        //             if (exifKey != "")
-        //             {
-        //                 imageData->metaData.modifyExifValue(exifKey, value);
-        //             }
-        //         }
-        //     }
-        //     imageData->saveMetaData();
-        // } else{
-        //     // displayExifData(imageData->metaData.exifMetaData);
-        // }
-        progressDialog.setValue(i);
-        QApplication::processEvents();
+                for (const auto& [key, value] : jsonMap) {
+                    if (!key.empty() && !value.empty()) {
+                        std::string exifKey = mapJsonKeyToExifKey(key);
+                        if (exifKey != "") {
+                            imageData->metaData.modifyExifValue(exifKey, value);
+                        }
+                    }
+                }
+                imageData->saveMetaData();
+            } else {
+                // displayExifData(imageData->metaData.exifMetaData);
+            }
+            progressDialog.setValue(i);
+            QApplication::processEvents();
+        }
+        return true;
+    } catch (const std::exception& e) {
+        qDebug() << e.what();
+        return false;
     }
-    return true;
 }
 
 std::string mapJsonKeyToExifKey(const std::string& jsonKey) {
     static const std::map<std::string, std::string> keyMap = {
         // TODO mettre tous les nécessaires
-        // {"title", "Exif.Image.ImageDescription"}, // inutile
         {"description", "Exif.Image.ImageDescription"},
         {"photoTakenTime.timestamp", "Exif.Photo.DateTimeOriginal"},
         {"geoData.latitude", "Exif.GPSInfo.GPSLatitude"},

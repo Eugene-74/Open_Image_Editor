@@ -76,8 +76,6 @@ class ImageData {
 
     void setOrCreateExifData();
 
-    void handleExiv2Error(const Exiv2::Error& e);
-
     std::vector<std::vector<QPoint>> getCropSizes() const;
 
     void setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes);

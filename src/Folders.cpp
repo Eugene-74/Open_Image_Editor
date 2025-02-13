@@ -4,7 +4,7 @@ namespace fs = std::filesystem;
 
 Folders& Folders::operator=(const Folders& other) {
     if (this != &other) {
-        name = other.name;  // Utiliser l'opérateur d'affectation de std::vector
+        name = other.name;
         files = other.files;
         folders = other.folders;
     }
@@ -12,7 +12,6 @@ Folders& Folders::operator=(const Folders& other) {
 }
 
 void Folders::save(std::ofstream& out) const {
-    // try {
     size_t folderNameSize = name.size();
     out.write(reinterpret_cast<const char*>(&folderNameSize), sizeof(folderNameSize));
     out.write(name.c_str(), folderNameSize);
@@ -30,13 +29,9 @@ void Folders::save(std::ofstream& out) const {
     for (const auto& folder : folders) {
         folder.save(out);
     }
-    // } catch (const std::exception& e) {
-    // qDebug() << e.what();
-    // }
 }
 
 void Folders::load(std::ifstream& in) {
-    // try {
     size_t folderNameSize;
     in.read(reinterpret_cast<char*>(&folderNameSize), sizeof(folderNameSize));
     name.resize(folderNameSize);
@@ -59,9 +54,6 @@ void Folders::load(std::ifstream& in) {
         folder.load(in);
         folder.parent = this;
     }
-    // } catch (const std::exception& e) {
-    // qDebug() << e.what();
-    // }
 }
 
 void Folders::addFolder(std::string name) {
@@ -111,21 +103,12 @@ void addFilesToTree(Folders* currentFolder, const std::string& path) {
             continue;
 
         std::string folderName = part.string();
-        if (!createIfNotExist(currentFolder, folderName)) {
+        if (!getIfExist(currentFolder, folderName)) {
             currentFolder->addFolder(folderName);
             currentFolder = &currentFolder->folders.back();
         }
     }
     addSubfolders(*currentFolder, path);
-}
-
-// passer au sous dossier si il existe
-bool createIfNotExist(Folders*& currentFolder, const std::string& folderName) {
-    if (getIfExist(currentFolder, folderName)) {
-        return true;
-    } else {
-        return false;
-    }
 }
 
 // Verifie si un dossier existe dans un Folders
@@ -138,7 +121,7 @@ bool getIfExist(Folders* currentFolder, const std::string& path) {
     return false;
 }
 
-// Verifie si un dossier contient une image
+// Verifie si un dossier contient une image dans un de ses sous dossier
 bool containImage(const std::string& path) {
     bool valide = false;
     for (const auto& entry : fs::recursive_directory_iterator(path)) {

@@ -12,7 +12,6 @@ Sizes::Sizes() {
     screenGeometry = screenR.size() / pixelRatio;
     linkButtons = QSize(screenGeometry.width() * 1 / 20 * 2, screenGeometry.height() * 1 / 20);
 
-    // Création des instances des classes imbriquées en passant 'this'
     imagesEditorSizes = new ImagesEditorSizes(this);
     imagesBoothSizes = new ImagesBoothSizes(this);
 }

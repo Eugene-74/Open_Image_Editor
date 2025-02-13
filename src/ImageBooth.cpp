@@ -84,7 +84,7 @@ bool ImageBooth::isLineVisible(int lineIndex) {
     return (lineBottom > visibleRect.top() + scrollArea->verticalScrollBar()->value() && lineTop < visibleRect.bottom() + scrollArea->verticalScrollBar()->value());
 }
 
-// Check if a, image is visible
+// Check if an image is visible
 bool ImageBooth::isImageVisible(int imageIndex) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
@@ -92,7 +92,7 @@ bool ImageBooth::isImageVisible(int imageIndex) {
 
     int firstImageNbr = spacerHeight / imageHeight * data->sizes.imagesBoothSizes->widthImageNumber;
     int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->sizes.imagesBoothSizes->widthImageNumber;
-    // TODO verif last image nbr
+
     if (imageIndex >= firstImageNbr && imageIndex <= lastImageNbr) {
         return true;
     }
@@ -138,25 +138,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_QUALITY)) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
-        // imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING,
-        //                                  "", this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
-
-        // data->loadInCacheAsync(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_QUALITY), [this, imagePath, imageButton]() {
-        //     done += 1;
-        //     // TODO changer le widget plutot pour eviter les image enorme
-        //     QImage qImage = data->loadImage(this, imagePath, this->size(), true, IMAGE_BOOTH_IMAGE_QUALITY, true, true);
-
-        //     QMetaObject::invokeMethod(
-        //         QApplication::instance(),
-        //         [imageButton, qImage]() {
-        //             imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(
-        //                 imageButton->size(), Qt::KeepAspectRatio,
-        //                 Qt::SmoothTransformation));
-        //         },
-        //         Qt::QueuedConnection);
-
-        //     loadedImageNumber += 1;
-        // });
 
         loadedImageNumber += 1;
     } else {
@@ -219,7 +200,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                         ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
                         if (imageButton != nullptr) {
                             imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
-                            // std::cerr << "select" << std::endl;
                         }
                         addNbrToSelectedImages(nbr);
                     });
@@ -232,7 +212,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                         ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
                         if (imageButton != nullptr) {
                             imageButton->unSelect();
-                            // std::cerr << "unselect" << std::endl;
                         }
                         removeNbrToSelectedImages(nbr);
                     });
@@ -361,7 +340,7 @@ void ImageBooth::gotToImage(int nbr) {
     QCoreApplication::processEvents();
 }
 
-// add a nbr from the selected images
+// Add a nbr from the selected images
 void ImageBooth::addNbrToSelectedImages(int nbr) {
     auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
     if (it == data->imagesSelected.end()) {
@@ -399,7 +378,7 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
     return nullptr;
 }
 
-// udate icons status (selected or not)
+// Udate images
 void ImageBooth::updateImages() {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();

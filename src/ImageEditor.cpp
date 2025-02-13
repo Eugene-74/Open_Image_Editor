@@ -1,7 +1,6 @@
 #include "ImageEditor.hpp"
 
 #include "FaceRecognition.hpp"
-// using anet_type = dlib::loss_mmod<dlib::con<1, 9, 9, 1, 1, dlib::relu<dlib::con<32, 7, 7, 2, 2, dlib::relu<dlib::con<32, 7, 7, 2, 2, dlib::input_rgb_image_pyramid<dlib::pyramid_down<6>>>>>>>>;
 
 ImageEditor::ImageEditor(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
@@ -17,7 +16,7 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent)
                                    data->sizes.imagesEditorSizes->mainLayoutMargins[3]);  // Marges autour des bords (gauche, haut, droite, bas)
 
     fixedFrame = new QFrame();
-    fixedFrame->setFixedSize(data->sizes.imagesEditorSizes->mainImageSize);  // Set the desired fixed size
+    fixedFrame->setFixedSize(data->sizes.imagesEditorSizes->mainImageSize);
     QVBoxLayout* fixedFrameLayout = new QVBoxLayout(fixedFrame);
     fixedFrameLayout->setAlignment(Qt::AlignCenter);
     fixedFrame->setLayout(fixedFrameLayout);
@@ -138,7 +137,6 @@ void ImageEditor::createPreview() {
         return;
     }
 
-    // initialisation des boutons preview
     for (int i = 0; i < PREVIEW_NBR * 2 + 1; ++i) {
         ClickableLabel* previewButton = createImagePreview(IMAGE_PATH_LOADING.toStdString(), 0);
         previewButtonLayout->addWidget(previewButton);
@@ -719,8 +717,6 @@ ClickableLabel* ImageEditor::createImagePersons() {
             personsEditor = false;
         }
         reload();
-        // imageLabel->update();
-        // launchConversionDialogAndConvert(QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()));
     });
 
     return imagePersonsNew;
@@ -797,7 +793,6 @@ MainImage* ImageEditor::createImageLabel() {
     }
 
     int imageNbr = data->imagesData.getImageNumber();
-    // TODO changer pour ne pas recharger des visages dans les images sans visage
     if (!imageData->isPersonsLoaded && imageData->persons.empty()) {
         qDebug() << "No persons detected";
         imageData->isPersonsLoaded = true;
@@ -808,7 +803,6 @@ MainImage* ImageEditor::createImageLabel() {
         image = data->rotateQImage(image, currentImagePath);
         QPointer<MainImage> safeImageLabelNew = imageLabelNew;
         detectFacesAsync(currentImagePath, image, [this, safeImageLabelNew, imageNbr](std::vector<Person> persons) {
-            // do something with persons
             if (safeImageLabelNew) {
                 safeImageLabelNew->persons = persons;
                 if (personsEditor) {
@@ -817,7 +811,6 @@ MainImage* ImageEditor::createImageLabel() {
             }
             qDebug() << "persons detected:" << persons.size();
             data->imagesData.getImageData(imageNbr)->persons = persons;
-            // data->imagesData.getImageData(imageNbr)->isPersonsLoaded = true;
         });
     }
 
@@ -1189,18 +1182,15 @@ void ImageEditor::validateMetadata() {
     ImageData* imageData = imagesData->getCurrentImageData();
     MetaData* metaData = imageData->getMetaData();
 
-    // metaData->modifyExifValue("Exif.Image.DateTime", dateEdit->text().toStdString());
     QString dateTimeStr = dateEdit->dateTime().toString("yyyy:MM:dd HH:mm:ss");
     metaData->modifyExifValue("Exif.Image.DateTime", dateTimeStr.toStdString());
-    // Suppose that geoEdit contains latitude and longitude separated by a comma
+
     QStringList geoData = geoEdit->text().split(",");
     if (geoData.size() == 2) {
         metaData->modifyExifValue("Exif.GPSInfo.GPSLatitude", geoData[0].trimmed().toStdString());
         metaData->modifyExifValue("Exif.GPSInfo.GPSLongitude", geoData[1].trimmed().toStdString());
     }
     metaData->modifyExifValue("Exif.Image.ImageDescription", descriptionEdit->text().toStdString());
-
-    // imageData->folders.print();
 
     imageData->saveMetaData();
 }
