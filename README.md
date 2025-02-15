@@ -32,4 +32,4 @@ pacman -S mingw-w64-x86_64-curl
 pacman -S mingw-w64-x86_64-jsoncpp
 ```
 
-When all in well installed just launch edit\compile.bat
+When all in well installed just launch scripts\compile.bat
