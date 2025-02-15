@@ -1,4 +1,4 @@
-For all other informations go to wiki : [https://github.com/Eugene-74/Open_Image_Editor/wiki][]
+For all other informations go to [wiki](https://github.com/Eugene-74/Open_Image_Editor/wiki) :
 # Instalation
 
 ## Simple instalation
