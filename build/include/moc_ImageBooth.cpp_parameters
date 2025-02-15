@@ -1,0 +1,8 @@
+-IC:/msys64/mingw64/include
+-IC:/msys64/mingw64/include/opencv4
+-IC:/msys64/mingw64/include/libheif
+-IC:/Users/eugen/Documents/MesDocuments/git/Open_Image_Editor/include
+-DWIN32
+-o
+C:/Users/eugen/Documents/MesDocuments/git/Open_Image_Editor/build/include/moc_ImageBooth.cpp
+C:/Users/eugen/Documents/MesDocuments/git/Open_Image_Editor/include/ImageBooth.hpp
