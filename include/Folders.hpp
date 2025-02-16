@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QProgressDialog>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -41,9 +42,8 @@ class Folders {
     // std::string getParentPath();
 };
 
-void addSubfolders(Folders& rootFolder, const std::string& path);
-
-void addFilesToTree(Folders* currentFolder, const std::string& path);
+void addFilesToTree(Folders* currentFolder, const std::string& path, int& nbrImage, QProgressDialog& progressDialog);
+void addSubfolders(Folders& rootFolder, const std::string& path, int& nbrImage, QProgressDialog& progressDialog);
 
 bool createIfNotExist(Folders*& currentFolder, const std::string& path);
 bool getIfExist(Folders* currentFolder, const std::string& path);

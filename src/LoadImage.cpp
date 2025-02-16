@@ -37,7 +37,6 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
 // Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
 bool addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& progressDialog) {
     fileSelector fileSelector;
-
     QStringList selectedFiles;
 
     selectedFiles = fileSelector.openDirectoryDialog();
@@ -76,19 +75,22 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     qDebug() << "adding to tree: " << data->rootFolders.folders.size();
 
-    addFilesToTree(&data->rootFolders, imagePaths);
+    progressDialog.setLabelText("Scaning for images : ");
+    progressDialog.setCancelButtonText("Cancel");
+    progressDialog.setRange(0, 0);
+    progressDialog.setParent(parent);
+    progressDialog.show();
+    QApplication::processEvents();
+
+    addFilesToTree(&data->rootFolders, imagePaths, nbrImage, progressDialog);
 
     qDebug() << "Root folders: " << data->rootFolders.folders.size();
-
-    countImagesFromFolder(imagePaths, nbrImage);
-
     qDebug() << "Number of images: " << nbrImage;
 
-    progressDialog.setLabelText("Loading images...");
+    progressDialog.setLabelText("Loading images ...");
     progressDialog.setCancelButtonText("Cancel");
     progressDialog.setRange(0, nbrImage);
     progressDialog.setParent(parent);
-    progressDialog.setWindowModality(Qt::WindowModal);
     progressDialog.show();
 
     int loaded = 0;
@@ -104,14 +106,14 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     progressDialog.setValue(0);
     progressDialog.show();
-    progressDialog.setLabelText("Loading images googleData...");
+    progressDialog.setLabelText("Loading images googleData ...");
     if (!loadImagesMetaDataOfGoogle(imagesData, progressDialog)) {
         return false;
     }
 
     progressDialog.setValue(0);
     progressDialog.show();
-    progressDialog.setLabelText("Loading images thumbnail...");
+    progressDialog.setLabelText("Loading images thumbnail ...");
     QApplication::processEvents();
 
     try {
@@ -224,24 +226,6 @@ std::map<std::string, std::string> openJsonFile(std::string filePath) {
     std::string jsonString = readFile(filePath);
     std::map<std::string, std::string> jsonMap = parseJsonToMap(jsonString);
     return jsonMap;
-}
-
-// Count images in a folder and its sub folders
-void countImagesFromFolder(const std::string path, int& nbrImage) {
-    qDebug() << "countImagesFromFolder : " << path.c_str();
-    int i = 0;
-
-    for (const auto& entry : fs::directory_iterator(path)) {
-        if (fs::is_regular_file(entry.status())) {
-            if (isImage(entry.path().string())) {
-                nbrImage += 1;
-            }
-        } else if (fs::is_directory(entry.status())) {
-            countImagesFromFolder(entry.path().string(), nbrImage);
-
-            i += 1;
-        }
-    }
 }
 
 // Charges concrètement dans un imagesData toutes les données des images dans un dossier et ses sous dossier
