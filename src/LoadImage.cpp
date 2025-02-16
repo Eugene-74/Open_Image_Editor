@@ -74,9 +74,15 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     data->imagesData = ImagesData(std::vector<ImageData>{});
 
+    qDebug() << "adding to tree: " << data->rootFolders.folders.size();
+
     addFilesToTree(&data->rootFolders, imagePaths);
 
+    qDebug() << "Root folders: " << data->rootFolders.folders.size();
+
     countImagesFromFolder(imagePaths, nbrImage);
+
+    qDebug() << "Number of images: " << nbrImage;
 
     progressDialog.setLabelText("Loading images...");
     progressDialog.setCancelButtonText("Cancel");
@@ -108,52 +114,74 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     progressDialog.setLabelText("Loading images thumbnail...");
     QApplication::processEvents();
 
-    // TODO ne marche pas bien si il y a deja des thumbnail
+    try {
+        // TODO ne marche pas bien si il y a deja des thumbnail
 
-    // TODO utilise le threadPool mais fait beug l'application
-    int totalImages = imagesData->get()->size();
-    int numThreads = QThreadPool::globalInstance()->maxThreadCount();
-    int imagesPerThread = totalImages / numThreads;
+        // TODO utilise le threadPool mais fait beug l'application
+        int totalImages = imagesData->get()->size();
+        int numThreads = QThreadPool::globalInstance()->maxThreadCount();
+        // int imagesPerThread = totalImages / numThreads;
+        int imagesPerThread = 10;
 
-    QFutureWatcher<void> watcher;
-
-    QObject::connect(&watcher, &QFutureWatcher<void>::progressValueChanged, &progressDialog, &QProgressDialog::setValue);
-    QObject::connect(&watcher, &QFutureWatcher<void>::finished, &progressDialog, &QProgressDialog::reset);
-
-    QFuture<void> future = QtConcurrent::run([&]() {
-        try {
-            for (int i = 0; i < numThreads; ++i) {
-                int start = i * imagesPerThread;
-                int end = (i == numThreads - 1) ? totalImages : start + imagesPerThread;
-                ThumbnailTask* task = new ThumbnailTask(data, imagesData, start, end);
-
-                QThreadPool::globalInstance()->start(task);
-            }
-        } catch (const std::exception& e) {
-            std::cerr << e.what() << '\n';
-        }
-    });
-
-    watcher.setFuture(future);
-
-    while (QThreadPool::globalInstance()->activeThreadCount() > 0) {
         int thumbnailsCreated = 0;
-        // TODO attendre un peu pour eviter la surcharge
-        // TODO marche mais pas dutout optimiser X(
-        for (int i = 0; i < totalImages; ++i) {
-            ImageData* imageData = imagesData->getImageData(i);
-            if (data->hasThumbnail(imageData->getImagePath(), 128) ||
-                data->hasThumbnail(imageData->getImagePath(), 256) ||
-                data->hasThumbnail(imageData->getImagePath(), 512)) {
-                ++thumbnailsCreated;
+
+        // List with number from 0 to totalImages
+        std::vector<int> imageIndices(totalImages);
+        std::iota(imageIndices.begin(), imageIndices.end(), 0);
+
+        QFutureWatcher<void> watcher;
+
+        QObject::connect(&watcher, &QFutureWatcher<void>::progressValueChanged, &progressDialog, &QProgressDialog::setValue);
+        QObject::connect(&watcher, &QFutureWatcher<void>::finished, &progressDialog, &QProgressDialog::reset);
+
+        QFuture<void> future = QtConcurrent::run([&]() {
+            try {
+                std::atomic<int> currentIndex(0);
+
+                auto processImages = [&]() {
+                    while (true) {
+                        int start = currentIndex.fetch_add(imagesPerThread);
+                        if (start >= totalImages) break;
+                        int end = std::min(start + imagesPerThread, totalImages);
+
+                        ThumbnailTask* task = new ThumbnailTask(data, imagesData, start, end);
+                        QThreadPool::globalInstance()->start(task);
+                    }
+                };
+
+                for (int i = 0; i < numThreads; ++i) {
+                    processImages();
+                }
+
+            } catch (const std::exception& e) {
+                std::cerr << e.what() << '\n';
             }
+        });
+
+        watcher.setFuture(future);
+
+        while (QThreadPool::globalInstance()->activeThreadCount() > 0 && imageIndices.size() > 0) {
+            qDebug() << "starting count" << imageIndices.size();
+            QThread::msleep(1000);
+            for (int index : imageIndices) {
+                ImageData* imageData = imagesData->getImageData(index);
+                if (data->hasThumbnail(imageData->getImagePath(), 128) &&
+                    data->hasThumbnail(imageData->getImagePath(), 256) &&
+                    data->hasThumbnail(imageData->getImagePath(), 512)) {
+                    ++thumbnailsCreated;
+                    imageIndices.erase(std::remove(imageIndices.begin(), imageIndices.end(), index), imageIndices.end());
+                }
+            }
+            progressDialog.setValue(thumbnailsCreated);
+            QCoreApplication::processEvents();
+            qDebug() << "Number of thumbnails created: " << thumbnailsCreated << "/" << totalImages;
+            qDebug() << "Number of active thread: " << QThreadPool::globalInstance()->activeThreadCount();
         }
-        progressDialog.setValue(thumbnailsCreated);
-        QCoreApplication::processEvents();
-        qDebug() << "Number of thumbnails created: " << thumbnailsCreated << "/" << nbrImage;
-        qDebug() << "Number of active thread: " << QThreadPool::globalInstance()->activeThreadCount();
+        return true;
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
+        return false;
     }
-    return true;
 }
 
 std::string readFile(const std::string& filePath) {
@@ -200,6 +228,7 @@ std::map<std::string, std::string> openJsonFile(std::string filePath) {
 
 // Count images in a folder and its sub folders
 void countImagesFromFolder(const std::string path, int& nbrImage) {
+    qDebug() << "countImagesFromFolder : " << path.c_str();
     int i = 0;
 
     for (const auto& entry : fs::directory_iterator(path)) {

@@ -38,9 +38,9 @@ const QString MAIN_WINDOW_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : I
 const int IMAGE_BOOTH_IMAGE_QUALITY = 256;  // 128 or 256 or 512
 
 #ifdef _WIN32
-const std::string SAVE_PATH = APPDATA_PATH.toStdString() + "/." + APP_NAME;
+const std::string SAVE_PATH = APPDATA_PATH.toStdString() + "/" + APP_NAME;
 #else
-const std::string SAVE_PATH = HOME_PATH.toStdString() + "/." + APP_NAME;
+const std::string SAVE_PATH = HOME_PATH.toStdString() + "/" + APP_NAME;
 #endif
 
 const std::string THUMBNAIL_PATH = SAVE_PATH + "/thumbnails";

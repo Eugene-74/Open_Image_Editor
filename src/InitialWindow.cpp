@@ -97,6 +97,9 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
 }
 
 bool lookForUpdate() {
+    if (!fs::exists(SAVE_PATH)) {
+        fs::create_directories(SAVE_PATH);
+    }
     for (const auto& entry : fs::directory_iterator(SAVE_PATH)) {
         if (entry.path().extension() == ".exe") {
             fs::remove(entry.path());
@@ -117,9 +120,7 @@ bool lookForUpdate() {
         if (showQuestionMessage(nullptr, "A new version of the application is available\nDo you want to open the download page?")) {
             std::string downloadUrl = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/v" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
             std::string outputPath = SAVE_PATH + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
-            if (!fs::exists(SAVE_PATH)) {
-                fs::create_directories(SAVE_PATH);
-            }
+
             QProgressDialog progressDialog;
             progressDialog.setLabelText("Downloading...");
             progressDialog.setRange(0, 100);
@@ -143,7 +144,7 @@ bool lookForUpdate() {
 }
 
 void startLog() {
-    QString logPath = QString::fromUtf8(APPDATA_PATH.toUtf8()) + "/." + QString::fromUtf8(APP_NAME) + "/logs";
+    QString logPath = QString::fromUtf8(APPDATA_PATH.toUtf8()) + "/" + QString::fromUtf8(APP_NAME) + "/logs";
     QDir logDir(logPath);
     if (!logDir.exists()) {
         if (!logDir.mkpath(".")) {

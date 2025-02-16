@@ -15,7 +15,6 @@ LicenseData "..\build\release\LICENSE"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 
-; TODO Changer pour launch.vbs mais ca marche pas
 !define MUI_FINISHPAGE_RUN "$INSTDIR\start.bat"
 !insertmacro MUI_PAGE_FINISH
 
@@ -31,10 +30,8 @@ Section "Installer" SEC00
 
     File /r "..\build\release\*.*"
 
-    ; Create uninstaller
     WriteUninstaller "$INSTDIR\uninstall.exe"
     
-    ; Add registry keys
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "DisplayName" "${LNK_APP_NAME}"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "UninstallString" "$INSTDIR\uninstall.exe"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}" "InstallLocation" "$INSTDIR"
@@ -54,15 +51,11 @@ Section "Uninstall"
     Delete "$INSTDIR\*.*"
     RMDir /r "$INSTDIR"
     
-    ; Remove registry keys
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LNK_APP_NAME}"
     
-    ; Remove uninstaller shortcut
     Delete "$SMPROGRAMS\${APP_NAME}\Uninstall.lnk"
 
-    ; Remove shortcuts
     Delete "$DESKTOP\${LNK_APP_NAME}.lnk"
 
-    ; Remove user-specific directory
-    RMDir /r "$APPDATA\.${APP_NAME}"
+    RMDir /r "$APPDATA\${APP_NAME}"
 SectionEnd
