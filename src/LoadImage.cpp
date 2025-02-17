@@ -93,22 +93,6 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     data->imagesData = *imagesData;
 
-    // progressDialog.setValue(0);
-    // progressDialog.show();
-    // progressDialog.setLabelText("Loading images googleData ...");
-    // if (!loadImagesMetaDataOfGoogle(imagesData, progressDialog)) {
-    //     return false;
-    // }
-
-    // ImagesData* noThumbnailsImagesData;
-    // for (auto& imageData : data->imagesData.imagesData) {
-    //     if (data->hasThumbnail(imageData.getImagePath(), 128) &&
-    //         data->hasThumbnail(imageData.getImagePath(), 256) &&
-    //         data->hasThumbnail(imageData.getImagePath(), 512)) {
-    //         noThumbnailsImagesData->imagesData.push_back(imageData);
-    //     }
-    // }
-
     progressDialog.setValue(0);
     progressDialog.setMaximum(imagesData->get()->size());
     progressDialog.setLabelText("Loading images thumbnail ...");
@@ -125,7 +109,6 @@ bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& pr
     qDebug() << "Loading images thumbnail ...";
     try {
         int totalImages = imagesData->get()->size();
-        // TODO d'abord enlever celle qui ont deja ete cree
         int numThreads = QThreadPool::globalInstance()->maxThreadCount();
         int imagesPerThread = 10;
 
@@ -172,7 +155,7 @@ bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& pr
                 return false;
             }
             qDebug() << "starting count" << imageIndices.size();
-            QThread::msleep(100);
+            // QThread::msleep(100);
             for (int index : imageIndices) {
                 ImageData* imageData = imagesData->getImageData(index);
                 if (data->hasThumbnail(imageData->getImagePath(), 128) &&

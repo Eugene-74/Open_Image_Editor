@@ -671,11 +671,13 @@ void Data::sortImagesData(QProgressDialog& progressDialog) {
 
     int progress = 0;
 
+    // TODO faire un thread
     for (auto& imageData : *imagesData.get()) {
         imageData.loadData();
         imageData.clearMetaData();
         progress++;
         progressDialog.setValue(progress);
+        QApplication::processEvents();
     }
 
     progressDialog.setLabelText("Sorting ...");
@@ -691,6 +693,8 @@ void Data::sortImagesData(QProgressDialog& progressDialog) {
     std::sort(data.begin(), data.end(), [&progress, &progressDialog](const ImageData& a, const ImageData& b) {
         progress++;
         progressDialog.setValue(progress);
+        QApplication::processEvents();
+
         return a.date > b.date;
     });
     for (auto& imageData : *imagesData.get()) {

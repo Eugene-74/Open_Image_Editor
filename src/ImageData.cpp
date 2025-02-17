@@ -87,15 +87,14 @@ void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
 void ImageData::loadData() {
     try {
         if (!metaData.dataLoaded) {
-            metaData.loadData(folders.name);
-
+            metaData.loadData(getImagePath());
             orientation = metaData.getImageOrientation();
             date = metaData.getTimestamp();
 
             metaData.dataLoaded = true;
         }
     } catch (const Exiv2::Error& e) {
-        qDebug() << "Error loading metadata for image: " << folders.name;
+        qDebug() << "Error loading metadata for image: " << getImagePath();
         qDebug() << "Exiv2 error: " << e.what();
     }
 }
@@ -184,4 +183,5 @@ void ImageData::setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes) 
 
 void ImageData::clearMetaData() {
     metaData.clear();
+    metaData.dataLoaded = false;
 }

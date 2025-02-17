@@ -113,6 +113,7 @@ void ImageEditor::reload() {
         updatePreview();
 
         if (exifEditor) {
+            imagesData->getCurrentImageData()->loadData();
             populateMetadataFields();
         } else {
             for (int i = 0; i < infoLayout->count(); ++i) {
@@ -1104,6 +1105,9 @@ void ImageEditor::populateMetadataFields() {
     ImagesData* imagesData = &data->imagesData;
     ImageData* imageData = imagesData->getCurrentImageData();
     Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
+
+    qDebug() << "populateMetadataFields : " << imageData->getImageName();
+    qDebug() << "populateMetadataFields : " << imageData->metaData.exifMetaData.count();
 
     nameEdit->clear();
     dateEdit->setDateTime(QDateTime::currentDateTime());

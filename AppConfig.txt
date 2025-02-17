@@ -1,7 +1,7 @@
 APP_NAME=OpenImageEditor
 LNK_APP_NAME=Image Editor
 INSTALLER_APP_NAME=Image_Editor_Installer
-APP_VERSION=1.0.2
+APP_VERSION=1.0.3
 COMPANY_NAME=OpenImageEditor firm
 COPYRIGHT_YEAR=2025
 REPO_OWNER=Eugene-74
