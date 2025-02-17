@@ -2,8 +2,6 @@
 
 void ThumbnailTask::run() {
     for (int i = start; i < end; ++i) {
-        QCoreApplication::processEvents();
-
         ImageData* imageData = imagesData->getImageData(i);
         data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
         data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
@@ -95,26 +93,39 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     data->imagesData = *imagesData;
 
-    progressDialog.setValue(0);
-    progressDialog.show();
-    progressDialog.setLabelText("Loading images googleData ...");
-    if (!loadImagesMetaDataOfGoogle(imagesData, progressDialog)) {
-        return false;
-    }
+    // progressDialog.setValue(0);
+    // progressDialog.show();
+    // progressDialog.setLabelText("Loading images googleData ...");
+    // if (!loadImagesMetaDataOfGoogle(imagesData, progressDialog)) {
+    //     return false;
+    // }
+
+    // ImagesData* noThumbnailsImagesData;
+    // for (auto& imageData : data->imagesData.imagesData) {
+    //     if (data->hasThumbnail(imageData.getImagePath(), 128) &&
+    //         data->hasThumbnail(imageData.getImagePath(), 256) &&
+    //         data->hasThumbnail(imageData.getImagePath(), 512)) {
+    //         noThumbnailsImagesData->imagesData.push_back(imageData);
+    //     }
+    // }
 
     progressDialog.setValue(0);
-    progressDialog.show();
+    progressDialog.setMaximum(imagesData->get()->size());
     progressDialog.setLabelText("Loading images thumbnail ...");
+    progressDialog.show();
     QApplication::processEvents();
 
     if (!loadImagesThumbnail(data, imagesData, progressDialog)) {
         return false;
     }
+    return true;
 }
 
 bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& progressDialog) {
+    qDebug() << "Loading images thumbnail ...";
     try {
         int totalImages = imagesData->get()->size();
+        // TODO d'abord enlever celle qui ont deja ete cree
         int numThreads = QThreadPool::globalInstance()->maxThreadCount();
         int imagesPerThread = 10;
 
@@ -161,7 +172,7 @@ bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& pr
                 return false;
             }
             qDebug() << "starting count" << imageIndices.size();
-            QThread::msleep(1000);
+            QThread::msleep(100);
             for (int index : imageIndices) {
                 ImageData* imageData = imagesData->getImageData(index);
                 if (data->hasThumbnail(imageData->getImagePath(), 128) &&
@@ -243,40 +254,41 @@ std::map<std::string, std::string> openJsonFile(std::string filePath) {
 // }
 
 bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog) {
-    progressDialog.setMaximum(imagesData->get()->size());
-    try {
-        for (int i = 0; i < imagesData->get()->size(); ++i) {
-            // TODO not working for now
-            if (progressDialog.wasCanceled()) {
-                return false;
-            }
-            ImageData* imageData = imagesData->getImageData(i);
-            std::string jsonFilePath = imageData->getImagePath() + ".json";
+    // progressDialog.setMaximum(imagesData->get()->size());
+    // try {
+    //     for (int i = 0; i < imagesData->get()->size(); ++i) {
+    //         // TODO not working for now
+    //         if (progressDialog.wasCanceled()) {
+    //             return false;
+    //         }
+    //         ImageData* imageData = imagesData->getImageData(i);
+    //         std::string jsonFilePath = imageData->getImagePath() + ".json";
 
-            if (fs::exists(jsonFilePath)) {
-                qDebug() << "json found : " << jsonFilePath.c_str();
-                std::map<std::string, std::string> jsonMap = openJsonFile(jsonFilePath);
+    //         if (fs::exists(jsonFilePath)) {
+    //             qDebug() << "json found : " << jsonFilePath.c_str();
+    //             std::map<std::string, std::string> jsonMap = openJsonFile(jsonFilePath);
 
-                for (const auto& [key, value] : jsonMap) {
-                    if (!key.empty() && !value.empty()) {
-                        std::string exifKey = mapJsonKeyToExifKey(key);
-                        if (exifKey != "") {
-                            imageData->metaData.modifyExifValue(exifKey, value);
-                        }
-                    }
-                }
-                imageData->saveMetaData();
-            } else {
-                // displayExifData(imageData->metaData.exifMetaData);
-            }
-            progressDialog.setValue(i);
-            QApplication::processEvents();
-        }
-        return true;
-    } catch (const std::exception& e) {
-        qDebug() << e.what();
-        return false;
-    }
+    //             for (const auto& [key, value] : jsonMap) {
+    //                 if (!key.empty() && !value.empty()) {
+    //                     std::string exifKey = mapJsonKeyToExifKey(key);
+    //                     if (exifKey != "") {
+    //                         imageData->metaData.modifyExifValue(exifKey, value);
+    //                     }
+    //                 }
+    //             }
+    //             imageData->saveMetaData();
+    //         } else {
+    //             // displayExifData(imageData->metaData.exifMetaData);
+    //         }
+    //         progressDialog.setValue(i);
+    //         QApplication::processEvents();
+    //     }
+    //     return true;
+    // } catch (const std::exception& e) {
+    //     qDebug() << e.what();
+    //     return false;
+    // }
+    return true;
 }
 
 std::string mapJsonKeyToExifKey(const std::string& jsonKey) {
@@ -327,8 +339,6 @@ bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::s
 }
 
 bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog) {
-    qDebug() << "addSubfolders : " << path.c_str();
-
     auto subDirectories = fs::directory_iterator(path);
 
     for (const auto& entry : subDirectories) {
@@ -336,7 +346,6 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
             return false;
         }
         if (entry.is_directory()) {
-            qDebug() << "addSubfolders directory : " << entry.path().string().c_str();
             if (containImage(entry.path().string())) {
                 std::string folderName = entry.path().filename().string();
                 rootFolder.addFolder(folderName);
