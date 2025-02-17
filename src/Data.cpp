@@ -297,7 +297,6 @@ void Data::createThumbnailsIfNotExists(
 void Data::createThumbnailIfNotExists(const std::string& imagePath,
                                       const int maxDim) {
     if (!hasThumbnail(imagePath, maxDim)) {
-        qDebug() << "Creating thumbnail: " << imagePath;
         createThumbnail(imagePath, maxDim);
     }
 }

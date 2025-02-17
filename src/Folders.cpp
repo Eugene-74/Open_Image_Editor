@@ -81,47 +81,6 @@ void Folders::print() const {
     }
 }
 
-void addSubfolders(Folders& rootFolder, const std::string& path, int& nbrImage, QProgressDialog& progressDialog) {
-    qDebug() << "addSubfolders : " << path.c_str();
-    // TODO long avec des fichiers bien plein
-
-    auto subDirectories = fs::directory_iterator(path);
-    // auto subDirectories = fs::directory_entry(path);
-
-    for (const auto& entry : subDirectories) {
-        if (entry.is_directory()) {
-            qDebug() << "addSubfolders directory : " << entry.path().string().c_str();
-            if (containImage(entry.path().string())) {
-                std::string folderName = entry.path().filename().string();
-                rootFolder.addFolder(folderName);
-                addSubfolders(rootFolder.folders.back(), entry.path().string(), nbrImage, progressDialog);
-            }
-        } else {
-            if (isImage(entry.path().filename().string())) {
-                nbrImage += 1;
-                progressDialog.setLabelText(QString("Scaning for images : %1").arg(nbrImage));
-                QApplication::processEvents();
-            }
-        }
-    }
-}
-
-void addFilesToTree(Folders* currentFolder, const std::string& path, int& nbrImage, QProgressDialog& progressDialog) {
-    fs::path fsPath(path);
-
-    for (const auto& part : fsPath) {
-        if (part == "/")
-            continue;
-
-        std::string folderName = part.string();
-        if (!getIfExist(currentFolder, folderName)) {
-            currentFolder->addFolder(folderName);
-            currentFolder = &currentFolder->folders.back();
-        }
-    }
-    addSubfolders(*currentFolder, path, nbrImage, progressDialog);
-}
-
 // Verifie si un dossier existe dans un Folders
 bool getIfExist(Folders* currentFolder, const std::string& path) {
     auto it = std::find_if(currentFolder->folders.begin(), currentFolder->folders.end(), [&path](const Folders& folder) { return folder.name == path; });

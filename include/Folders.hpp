@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 
+// #include "ImageData.hpp"
 #include "Vector.hpp"
 #include "Verification.hpp"
 
@@ -41,9 +42,6 @@ class Folders {
 
     // std::string getParentPath();
 };
-
-void addFilesToTree(Folders* currentFolder, const std::string& path, int& nbrImage, QProgressDialog& progressDialog);
-void addSubfolders(Folders& rootFolder, const std::string& path, int& nbrImage, QProgressDialog& progressDialog);
 
 bool createIfNotExist(Folders*& currentFolder, const std::string& path);
 bool getIfExist(Folders* currentFolder, const std::string& path);

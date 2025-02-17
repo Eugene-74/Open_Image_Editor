@@ -32,8 +32,10 @@ bool addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& pro
 std::string getDirectoryFromUser(QWidget* parent);
 
 bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string imagePaths, QProgressDialog& progressDialog);
-bool loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage, QProgressDialog& progressDialog);
 bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog);
+bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog);
+bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog);
+bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& progressDialog);
 
 std::string mapJsonKeyToExifKey(const std::string& jsonKey);
 
@@ -42,3 +44,4 @@ std::string readFile(const std::string& filePath);
 std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString);
 
 void addImagesFromFolder(Data* data, QWidget* parent);
+

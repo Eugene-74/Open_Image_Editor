@@ -2,6 +2,8 @@
 
 void ThumbnailTask::run() {
     for (int i = start; i < end; ++i) {
+        QCoreApplication::processEvents();
+
         ImageData* imageData = imagesData->getImageData(i);
         data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
         data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
@@ -82,25 +84,14 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     progressDialog.show();
     QApplication::processEvents();
 
-    addFilesToTree(&data->rootFolders, imagePaths, nbrImage, progressDialog);
+    // TODO cancel marche pas (le faire marcher)
+    ImagesData* imagesData = new ImagesData(std::vector<ImageData>{});
+    if (!addFilesToTree(&data->rootFolders, imagesData, imagePaths, nbrImage, progressDialog)) {
+        return false;
+    }
 
     qDebug() << "Root folders: " << data->rootFolders.folders.size();
     qDebug() << "Number of images: " << nbrImage;
-
-    progressDialog.setLabelText("Loading images ...");
-    progressDialog.setCancelButtonText("Cancel");
-    progressDialog.setRange(0, nbrImage);
-    progressDialog.setParent(parent);
-    progressDialog.show();
-
-    int loaded = 0;
-
-    ImagesData* imagesData = new ImagesData(std::vector<ImageData>{});
-
-    if (!loadImagesFromFolder(imagePaths, imagePaths, imagesData, loaded, progressDialog)) {
-        qDebug() << "loadImagesFromFolder failed : " << imagePaths;
-        return false;
-    }
 
     data->imagesData = *imagesData;
 
@@ -116,13 +107,15 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     progressDialog.setLabelText("Loading images thumbnail ...");
     QApplication::processEvents();
 
-    try {
-        // TODO ne marche pas bien si il y a deja des thumbnail
+    if (!loadImagesThumbnail(data, imagesData, progressDialog)) {
+        return false;
+    }
+}
 
-        // TODO utilise le threadPool mais fait beug l'application
+bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& progressDialog) {
+    try {
         int totalImages = imagesData->get()->size();
         int numThreads = QThreadPool::globalInstance()->maxThreadCount();
-        // int imagesPerThread = totalImages / numThreads;
         int imagesPerThread = 10;
 
         int thumbnailsCreated = 0;
@@ -163,6 +156,10 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
         watcher.setFuture(future);
 
         while (QThreadPool::globalInstance()->activeThreadCount() > 0 && imageIndices.size() > 0) {
+            if (progressDialog.wasCanceled()) {
+                QThreadPool::globalInstance()->clear();
+                return false;
+            }
             qDebug() << "starting count" << imageIndices.size();
             QThread::msleep(1000);
             for (int index : imageIndices) {
@@ -229,38 +226,21 @@ std::map<std::string, std::string> openJsonFile(std::string filePath) {
 }
 
 // Charges concrètement dans un imagesData toutes les données des images dans un dossier et ses sous dossier
-bool loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage, QProgressDialog& progressDialog) {
-    for (const auto& entry : fs::directory_iterator(path)) {
-        if (progressDialog.wasCanceled()) {
-            return false;
-        }
-        if (fs::is_regular_file(entry.status())) {
-            if (isImage(entry.path().string())) {
-                fs::path relativePath = fs::relative(entry.path(), fs::path(initialPath).parent_path());
+// bool loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage, QProgressDialog& progressDialog) {
+//     for (const auto& entry : fs::directory_iterator(path)) {
+//         if (progressDialog.wasCanceled()) {
+//             return false;
+//         }
+//         if (fs::is_regular_file(entry.status())) {
+//             if (isImage(entry.path().string())) {
 
-                Folders folders;
-                ImageData* imageData = imagesData->getImageData(entry.path().string());
-                if (imageData != nullptr) {
-                    folders = imageData->folders;
-                } else {
-                    folders = Folders(entry.path().string());
-                }
-                folders.addFolder(fs::absolute(entry.path()).parent_path().string());
-
-                ImageData imageD(folders);
-
-                imagesData->addImage(imageD);
-
-                nbrImage += 1;
-                progressDialog.setValue(nbrImage);
-                QApplication::processEvents();
-            }
-        } else if (fs::is_directory(entry.status())) {
-            loadImagesFromFolder(initialPath, entry.path().string(), imagesData, nbrImage, progressDialog);
-        }
-    }
-    return true;
-}
+//             }
+//         } else if (fs::is_directory(entry.status())) {
+//             loadImagesFromFolder(initialPath, entry.path().string(), imagesData, nbrImage, progressDialog);
+//         }
+//     }
+//     return true;
+// }
 
 bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog) {
     progressDialog.setMaximum(imagesData->get()->size());
@@ -319,4 +299,65 @@ std::string mapJsonKeyToExifKey(const std::string& jsonKey) {
         return it->second;
     }
     return "";
+}
+
+bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog) {
+    fs::path fsPath(path);
+
+    for (const auto& part : fsPath) {
+        if (progressDialog.wasCanceled()) {
+            return false;
+        }
+        if (part == "/")
+            continue;
+
+        std::string folderName = part.string();
+        if (!getIfExist(currentFolder, folderName)) {
+            currentFolder->addFolder(folderName);
+            currentFolder = &currentFolder->folders.back();
+        }
+    }
+    if (progressDialog.wasCanceled()) {
+        return false;
+    }
+    if (!addSubfolders(*currentFolder, imagesData, path, nbrImage, progressDialog)) {
+        return false;
+    }
+    return true;
+}
+
+bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog) {
+    qDebug() << "addSubfolders : " << path.c_str();
+
+    auto subDirectories = fs::directory_iterator(path);
+
+    for (const auto& entry : subDirectories) {
+        if (progressDialog.wasCanceled()) {
+            return false;
+        }
+        if (entry.is_directory()) {
+            qDebug() << "addSubfolders directory : " << entry.path().string().c_str();
+            if (containImage(entry.path().string())) {
+                std::string folderName = entry.path().filename().string();
+                rootFolder.addFolder(folderName);
+                addSubfolders(rootFolder.folders.back(), imagesData, entry.path().string(), nbrImage, progressDialog);
+            }
+        } else {
+            if (isImage(entry.path().filename().string())) {
+                Folders folders = Folders(entry.path().string());
+                folders.addFolder(fs::absolute(entry.path()).parent_path().string());
+
+                ImageData imageD(folders);
+
+                // TODO reusir a mieux controler (unordered map pour trier)
+                // imagesData->addImage(imageD);
+                imagesData->imagesData.push_back(imageD);
+
+                nbrImage += 1;
+                progressDialog.setLabelText(QString("Scaning for images : %1").arg(nbrImage));
+                QApplication::processEvents();
+            }
+        }
+    }
+    return true;
 }
