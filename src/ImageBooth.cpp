@@ -494,6 +494,10 @@ ClickableLabel* ImageBooth::createImageDelete() {
     imageDeleteNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageDeleteNew, &ClickableLabel::clicked, [this]() {
+        if (data->imagesSelected.empty()) {
+            showInformationMessage(this, "No image selected", "You need to select an image to delete it");
+            return;
+        }
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             if (data->isDeleted(data->imagesSelected.at(i))) {
@@ -566,6 +570,7 @@ ClickableLabel* ImageBooth::createImageSave() {
     imageSaveNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() {
+        data->saveData();
     });
 
     return imageSaveNew;
@@ -582,9 +587,7 @@ ClickableLabel* ImageBooth::createImageExport() {
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
     });
 
-    if (data->imagesSelected.empty()) {
-        imageExportNew->setDisabled(true);
-    }
+    imageExportNew->setDisabled(true);
 
     return imageExportNew;
 }
@@ -598,6 +601,10 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
     imageRotateRightNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() {
+        if (data->imagesSelected.empty()) {
+            showInformationMessage(this, "No image selected", "You need to select an image to rotate it");
+            return;
+        }
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
@@ -641,6 +648,10 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
     imageRotateLeftNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() {
+        if (data->imagesSelected.empty()) {
+            showInformationMessage(this, "No image selected", "You need to select an image to rotate it");
+            return;
+        }
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
@@ -684,6 +695,10 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
     imageMirrorUpDownNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageMirrorUpDownNew, &ClickableLabel::clicked, [this]() {
+        if (data->imagesSelected.empty()) {
+            showInformationMessage(this, "No image selected", "You need to select an image to mirror it");
+            return;
+        }
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
 
         for (int i = 0; i < data->imagesSelected.size(); i++) {
@@ -728,6 +743,10 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
     imageMirrorLeftRightNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageMirrorLeftRightNew, &ClickableLabel::clicked, [this]() {
+        if (data->imagesSelected.empty()) {
+            showInformationMessage(this, "No image selected", "You need to select an image to mirror it");
+            return;
+        }
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
@@ -787,6 +806,10 @@ ClickableLabel* ImageBooth::createImageConversion() {
     imageConversionNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
+        if (data->imagesSelected.empty()) {
+            showInformationMessage(this, "No image selected", "You need to select an image to convert it");
+            return;
+        }
         if (data->imagesSelected.size() > 0) {
             QString selectedFormat = launchConversionDialog();
             if (selectedFormat != nullptr) {

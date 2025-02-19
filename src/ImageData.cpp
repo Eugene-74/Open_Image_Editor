@@ -140,7 +140,7 @@ void ImageData::save(std::ofstream& out) const {
         out.write(reinterpret_cast<const char*>(&innerSize), sizeof(innerSize));
         out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
     }
-    out.write(reinterpret_cast<const char*>(&isPersonsLoaded), sizeof(isPersonsLoaded));
+    out.write(reinterpret_cast<const char*>(&status), sizeof(status));
 
     size_t personsSize = persons.size();
     out.write(reinterpret_cast<const char*>(&personsSize), sizeof(personsSize));
@@ -164,7 +164,7 @@ void ImageData::load(std::ifstream& in) {
             in.read(reinterpret_cast<char*>(cropSizes[i].data()), innerSize * sizeof(QPoint));
         }
     }
-    in.read(reinterpret_cast<char*>(&isPersonsLoaded), sizeof(isPersonsLoaded));
+    in.read(reinterpret_cast<char*>(&status), sizeof(status));
     size_t personsSize;
     in.read(reinterpret_cast<char*>(&personsSize), sizeof(personsSize));
     persons.resize(personsSize);

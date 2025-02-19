@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QLabel>
 #include <QMouseEvent>
+#include <QPainter>
 #include <opencv2/opencv.hpp>
 
 #include "Const.hpp"
@@ -18,14 +19,15 @@ class ClickableLabel : public QLabel {
 
     void setInitialBackground(std::string backgroundColor, std::string hoverBackgroundColor);
     void setBackground(std::string backgroundColor, std::string hoverBackgroundColor);
-
     void resetBackground();
 
-    int logoNumber = -1;
-    bool logoVisible = false;
-    QColor textColor = Qt::white;
-    QColor logoColor = Qt::red;
-    void updateStyleSheet();
+    void addLogo(QColor logoColor, QColor logoTextColor);
+    void addLogo(QColor logoColor, QColor logoTextColor, int logoNumber);
+
+    void setLogoNumber(int logoNumber);
+
+    void setLogoEnabled();
+    void setLogoDisabled();
 
     QPixmap defaultPixmap;
 
@@ -49,6 +51,11 @@ class ClickableLabel : public QLabel {
     int border = 0;
     int border_radius = 5;
 
+    QString logoText = "";
+    bool logoVisible = false;
+    QColor logoTextColor = Qt::white;
+    QColor logoColor = Qt::red;
+
     std::string disabled_border_color = "#b3b3b3";
     std::string disabled_background_color = "#b3b3b3";
 
@@ -63,6 +70,8 @@ class ClickableLabel : public QLabel {
 
     std::string initial_background_color = "transparent";
     std::string initial_hover_background_color = "transparent";
+
+    void updateStyleSheet();
 
     void setBorder(int border);
     void setBorderRadius(int border_radius);
@@ -80,4 +89,9 @@ class ClickableLabel : public QLabel {
     void setInitialHoverBackgroundColor(std::string hoverBackgroundColor);
     void setBackgroundColor(std::string backgroundColor);
     void setHoverBackgroundColor(std::string hoverBackgroundColor);
+
+    void setLogoColor(QColor logoColor);
+    void setLogoTextColor(QColor logoTextColor);
+
+    void setLogoVisible(bool logoVisible);
 };

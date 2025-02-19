@@ -44,11 +44,6 @@ void ClickableLabel::leaveEvent(QEvent* event) {
 }
 
 void ClickableLabel::mousePressEvent(QMouseEvent* event) {
-    if (event->button() == Qt::LeftButton) {
-        setHoverBackgroundColor(CLICK_BACKGROUND_COLOR);
-
-        updateStyleSheet();
-    }
     QLabel::mousePressEvent(event);
 }
 
@@ -62,8 +57,6 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
 
         } else {
             emit leftClicked();
-            setHoverBackgroundColor(HOVER_BACKGROUND_COLOR);
-            updateStyleSheet();
         }
     } else if (event->button() == Qt::RightButton) {
         emit rightClicked();
@@ -99,6 +92,7 @@ void ClickableLabel::updateStyleSheet() {
                              .arg(hover_background_color.c_str())
                              .arg(disabled_border_color.c_str())
                              .arg(disabled_background_color.c_str());
+
     setStyleSheet(styleSheet);
 }
 
@@ -109,49 +103,48 @@ void ClickableLabel::setDisabledColor(std::string borderColor, std::string backg
 }
 
 void ClickableLabel::setDisabledBorderColor(std::string borderColor) {
-    disabled_border_color = borderColor;
+    this->disabled_border_color = borderColor;
 }
 
 void ClickableLabel::setDisabledBackgroundColor(std::string backgroundColor) {
-    disabled_background_color = backgroundColor;
+    this->disabled_background_color = backgroundColor;
 }
 
 void ClickableLabel::setBorderColor(std::string borderColor) {
-    border_color = borderColor;
+    this->border_color = borderColor;
 }
 
 void ClickableLabel::setHoverBorderColor(std::string hoverBorderColor) {
-    hover_border_color = hoverBorderColor;
+    this->hover_border_color = hoverBorderColor;
 }
 
 void ClickableLabel::setInitialBorderColor(std::string borderColor) {
-    initial_border_color = borderColor;
+    this->initial_border_color = borderColor;
 }
 
 void ClickableLabel::setInitialHoverBorderColor(std::string hoverBorderColor) {
-    initial_hover_border_color = hoverBorderColor;
+    this->initial_hover_border_color = hoverBorderColor;
 }
 
 void ClickableLabel::setBackgroundColor(std::string backgroundColor) {
-    background_color = backgroundColor;
+    this->background_color = backgroundColor;
 }
 
 void ClickableLabel::setHoverBackgroundColor(std::string hoverBackgroundColor) {
-    hover_background_color = hoverBackgroundColor;
+    this->hover_background_color = hoverBackgroundColor;
 }
 
 void ClickableLabel::setInitialBackgroundColor(std::string backgroundColor) {
-    initial_background_color = backgroundColor;
+    this->initial_background_color = backgroundColor;
 }
 
 void ClickableLabel::setInitialHoverBackgroundColor(std::string hoverBackgroundColor) {
-    initial_hover_background_color = hoverBackgroundColor;
+    this->initial_hover_background_color = hoverBackgroundColor;
 }
 
 void ClickableLabel::setInitialBorder(std::string borderColor, std::string hoverBorderColor) {
     int border = (size().width() + size().height()) / 50;
     setBorder(border);
-    // int border_radius = 2.5;
     setBorderRadius(border * 2);
 
     setBorderColor(borderColor);
@@ -180,14 +173,14 @@ void ClickableLabel::setInitialBackground(std::string borderColor, std::string h
     updateStyleSheet();
 }
 
-void ClickableLabel::setBackground(std::string borderColor, std::string hoverBorderColor) {
-    setBackgroundColor(borderColor);
-    setHoverBackgroundColor(hoverBorderColor);
+void ClickableLabel::setBackground(std::string backgroundColor, std::string hoverBackgroundColor) {
+    setBackgroundColor(backgroundColor);
+    setHoverBackgroundColor(hoverBackgroundColor);
     updateStyleSheet();
 }
 
 void ClickableLabel::resetBackground() {
-    setBackground(initial_border_color, initial_hover_border_color);
+    setBackground(initial_background_color, initial_hover_background_color);
 }
 
 void ClickableLabel::setBorderRadius(int border_radius) {
@@ -199,31 +192,75 @@ void ClickableLabel::setBorder(int border) {
     this->border = border;
     updateStyleSheet();
 }
-#include <QPainter>
 
 void ClickableLabel::paintEvent(QPaintEvent* event) {
     QLabel::paintEvent(event);
+
     if (logoVisible) {
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
-        painter.setPen(Qt::NoPen);  // Pas de bordure pour le cercle
+        painter.setPen(Qt::NoPen);
         QFont font = painter.font();
-        font.setPointSize(this->height() / 5);  // Ajuster la taille de la police en fonction de la hauteur de l'image
+        font.setPointSize(this->height() / 5);
         painter.setFont(font);
 
         QRect rect = this->rect();
-        QString text = QString::number(logoNumber);
 
-        // Dessiner un rond rouge
-        // int radius = font.pointSize()     * 2;
+        QString text;
+
         int radius = font.pointSize();
 
         QRect circleRect = QRect(rect.right() - radius * 2, rect.bottom() - radius * 2, radius * 2, radius * 2);
-        painter.setBrush(QBrush(logoColor));  // Couleur du rond
+        painter.setBrush(QBrush(logoColor));
         painter.drawEllipse(circleRect);
 
-        // Dessiner le texte au centre du rond
-        painter.setPen(textColor);  // Couleur du texte
-        painter.drawText(circleRect, Qt::AlignCenter, text);
+        painter.setPen(logoTextColor);
+        painter.drawText(circleRect, Qt::AlignCenter, logoText);
     }
+}
+
+void ClickableLabel::addLogo(QColor logoColor, QColor logoTextColor) {
+    setLogoColor(logoColor);
+    setLogoTextColor(logoTextColor);
+    setLogoVisible(true);
+    update();
+}
+
+void ClickableLabel::addLogo(QColor logoColor, QColor logoTextColor, int logoNumber) {
+    setLogoColor(logoColor);
+    setLogoTextColor(logoTextColor);
+    setLogoNumber(logoNumber);
+    setLogoVisible(true);
+    update();
+}
+
+void ClickableLabel::setLogoNumber(int logoNumber) {
+    if (logoNumber < 0) {
+        logoText = "?";
+    } else if (logoNumber > 99) {
+        logoText = "99+";
+    } else {
+        logoText = QString::number(logoNumber);
+    }
+}
+
+void ClickableLabel::setLogoColor(QColor logoColor) {
+    this->logoColor = logoColor;
+}
+
+void ClickableLabel::setLogoTextColor(QColor logoTextColor) {
+    this->logoTextColor = logoTextColor;
+}
+
+void ClickableLabel::setLogoVisible(bool logoVisible) {
+    this->logoVisible = logoVisible;
+}
+
+void ClickableLabel::setLogoEnabled() {
+    setLogoVisible(true);
+    update();
+}
+void ClickableLabel::setLogoDisabled() {
+    setLogoVisible(false);
+    update();
 }

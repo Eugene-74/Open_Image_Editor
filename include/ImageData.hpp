@@ -13,21 +13,26 @@ namespace fs = std::filesystem;
 
 class ImageData {
    public:
+    enum class Status {
+        NotLoaded,
+        Loading,
+        Loaded
+    };
     Folders folders;
     MetaData metaData;
     std::vector<std::vector<QPoint>> cropSizes;
     std::vector<Person> persons;
-    bool isPersonsLoaded = false;  // TODO add to save
-
+    // bool isPersonsLoaded = false;  // TODO add to save and change to have loded in loading and not loaded
+    Status status = Status::NotLoaded;
     int orientation = 0;
     long date = 0;
 
     ImageData()
-        : folders(Folders()), metaData(MetaData()), cropSizes(), orientation(), date(), persons() {}
+        : folders(Folders()), metaData(MetaData()), cropSizes(), orientation(), date(), persons(), status() {}
 
     // !! necessaire sinon push_back ne fonctionne pas
     ImageData(const ImageData& other)
-        : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), persons(other.persons) {
+        : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), persons(other.persons), status(other.status) {
     }
 
     ImageData(const Folders c)

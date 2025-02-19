@@ -288,8 +288,9 @@ void ImageEditor::updateButtons() {
         }
     }
     if (imageDelete) {
+        qDebug() << "updateButtons";
         if (data->isDeleted(data->imagesData.getImageNumber())) {
-            imageDelete->setBackground("#700c13", "#700c13");
+            imageDelete->setBackground("#700c13", "#F00c13");
         } else {
             imageDelete->resetBackground();
         }
@@ -314,7 +315,11 @@ void ImageEditor::updateButtons() {
     }
 
     if (imagePersons) {
-        imagePersons->logoNumber = data->imagesData.getCurrentImageData()->persons.size();
+        if (data->imagesData.getCurrentImageData()->status == ImageData::Status::Loaded) {
+            imagePersons->setLogoNumber(data->imagesData.getCurrentImageData()->persons.size());
+        } else {
+            imagePersons->setLogoNumber(-1);
+        }
     }
 }
 
@@ -502,7 +507,7 @@ ClickableLabel* ImageEditor::createImageDelete() {
     imageDeleteNew->setInitialBackground("transparent", "#b3b3b3");
 
     if (data->isDeleted(data->imagesData.getImageNumber())) {
-        imageDeleteNew->setBackground("#700c13", "#700c13");
+        imageDeleteNew->setBackground("#700c13", "#F00c13");
     }
     connect(imageDeleteNew, &ClickableLabel::clicked, [this]() {
         this->deleteImage();
@@ -670,13 +675,18 @@ ClickableLabel* ImageEditor::createImagePersons() {
 
     ClickableLabel* imagePersonsNew = new ClickableLabel(data, ICON_PATH_EDIT_PERSONS, TOOL_TIP_IMAGE_EDITOR_EDIT_PERSONS, this, actionSize);
     imagePersonsNew->setInitialBackground("transparent", "#b3b3b3");
-    imagePersonsNew->logoVisible = true;
-    imagePersonsNew->logoNumber = data->imagesData.getCurrentImageData()->persons.size();
+    imagePersonsNew->addLogo("#700c13", "#ffffff");
+
+    if (data->imagesData.getCurrentImageData()->status == ImageData::Status::Loaded) {
+        imagePersonsNew->setLogoNumber(data->imagesData.getCurrentImageData()->persons.size());
+    } else {
+        imagePersonsNew->setLogoNumber(-1);
+    }
 
     connect(imagePersonsNew, &ClickableLabel::clicked, [this, imagePersonsNew]() {
         if (!personsEditor) {
             personsEditor = true;
-            imagePersonsNew->setBackground("red", "red");
+            imagePersonsNew->setBackground("#700c13", "#f00c13");
 
             imageLabel->personsEditor = true;
         } else {
@@ -763,14 +773,18 @@ MainImage* ImageEditor::createImageLabel() {
     }
 
     int imageNbr = data->imagesData.getImageNumber();
-    if (!imageData->isPersonsLoaded && imageData->persons.empty()) {
+    if (imageData->status == ImageData::Status::NotLoaded && imageData->persons.empty()) {
         qDebug() << "No persons detected yet";
-        imageData->isPersonsLoaded = true;
+        imageData->status = ImageData::Status::Loading;
         QImage image = data->imageCache->at(currentImagePath).image;
         image = data->rotateQImage(image, currentImagePath);
         detectFacesAsync(currentImagePath, image, [this, imageNbr](std::vector<Person> persons) {
+            ImageData* imageData = data->imagesData.getImageData(imageNbr);
+
+            imageData->status = ImageData::Status::Loaded;
+
             if (data->imagesData.getImageNumber() == imageNbr) {
-                imagePersons->logoNumber = persons.size();
+                imagePersons->setLogoNumber(persons.size());
                 imagePersons->update();
                 if (this->personsEditor) {
                     imageLabel->update();

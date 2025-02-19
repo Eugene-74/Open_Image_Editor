@@ -34,15 +34,17 @@ Sizes::ImagesEditorSizes::ImagesEditorSizes(Sizes* parent)
 
 Sizes::ImagesBoothSizes::ImagesBoothSizes(Sizes* parent)
     : parentSizes(parent) {
-    if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height()) {
-        imageSize = QSize(parentSizes->screenGeometry.width() * 5 / 6 * 1 / 10, parentSizes->screenGeometry.width() * 5 / 6 * 1 / 10);
+    int imageNumber = 10;
+    if (parentSizes->screenGeometry.width() > parentSizes->screenGeometry.height()) {
+        imageSize = QSize(parentSizes->screenGeometry.width() * 9 / 12 / imageNumber, parentSizes->screenGeometry.width() * 9 / 12 / imageNumber);
+
     } else {
-        imageSize = QSize(parentSizes->screenGeometry.height() * 5 / 6 * 1 / 10, parentSizes->screenGeometry.height() * 5 / 6 * 1 / 10);
+        imageSize = QSize(parentSizes->screenGeometry.height() * 9 / 12 / imageNumber, parentSizes->screenGeometry.height() * 9 / 12 / imageNumber);
     }
 
     realImageSize = imageSize + QSize(linesLayoutSpacing, linesLayoutSpacing);
 
-    // TODO calcul pas parfait +10 anormal probablement la barre pour faire défiler
+    // TODO calcul pas parfait +10 anormal probablement la barre pour faire défiler (sans +10 l'appli crash X( ))
     scrollAreaSize = QSize(parentSizes->screenGeometry.width() * 5 / 6 + linesLayoutMargins[0] + linesLayoutMargins[2]  // marge gauche et droite
                                - (parentSizes->screenGeometry.width() * 5 / 6) % realImageSize.width() + linesLayoutSpacing + 10,
 
