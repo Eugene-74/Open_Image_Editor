@@ -154,7 +154,7 @@ void startLog() {
     }
     auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::tm* now_tm = std::localtime(&now);
-    QString logFileName = QString(APPDATA_PATH.toUtf8() + "/." + QString::fromUtf8(APP_NAME) + "/logs/%1-%2-%3.log")
+    QString logFileName = QString(APPDATA_PATH.toUtf8() + "/" + QString::fromUtf8(APP_NAME) + "/logs/%1-%2-%3.log")
                               .arg(now_tm->tm_mday, 2, 10, QChar('0'))
                               .arg(now_tm->tm_mon + 1, 2, 10, QChar('0'))
                               .arg(now_tm->tm_year + 1900);
@@ -395,6 +395,7 @@ void InitialWindow::showMainWindow() {
 
 ClickableLabel* InitialWindow::createImageDiscord() {
     ClickableLabel* imageDiscord = new ClickableLabel(data, ICON_PATH_DISCORD, TOOL_TIP_DISCORD, this, QSize(data->sizes.linkButtons.width() / 2, data->sizes.linkButtons.height()), false, 0, true);
+    imageDiscord->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageDiscord, &ClickableLabel::clicked, [this]() {
         QDesktopServices::openUrl(QUrl("https://discord.gg/Q2HhZucmxU"));
@@ -405,6 +406,7 @@ ClickableLabel* InitialWindow::createImageDiscord() {
 
 ClickableLabel* InitialWindow::createImageGithub() {
     ClickableLabel* imageGithub = new ClickableLabel(data, ICON_PATH_GITHUB, TOOL_TIP_GITHUB, this, QSize(data->sizes.linkButtons.width() / 2, data->sizes.linkButtons.height()), false, 0, true);
+    imageGithub->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageGithub, &ClickableLabel::clicked, [this]() {
         QDesktopServices::openUrl(QUrl("https://github.com/Eugene-74/Open_Image_Editor"));
@@ -414,6 +416,7 @@ ClickableLabel* InitialWindow::createImageGithub() {
 }
 ClickableLabel* InitialWindow::createImageOption() {
     ClickableLabel* imageOption = new ClickableLabel(data, ICON_PATH_OPTION, TOOL_TIP_PARAMETER, this, QSize(50, 50), false, 0, true);
+    imageOption->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageOption, &ClickableLabel::clicked, [this]() {
         openOption();

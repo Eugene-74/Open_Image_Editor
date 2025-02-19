@@ -182,8 +182,6 @@ void ImageEditor::updatePreview() {
             int imageNbr = imagesData->getImageNumber() + i - under;
             if (imageNbr == imagesData->getImageNumber()) {
                 ClickableLabel* previewButtonNew = createImagePreview(imagePaths[i], imageNbr);
-                previewButtonNew->background_color = "#b3b3b3";
-                previewButtonNew->updateStyleSheet();
 
                 previewButtonLayout->replaceWidget(previewButtons[i], previewButtonNew);
 
@@ -209,7 +207,6 @@ void ImageEditor::updatePreview() {
 
 void ImageEditor::createButtons() {
     imageRotateRight = createImageRotateRight();
-
     imageRotateLeft = createImageRotateLeft();
 
     imageMirrorLeftRight = createImageMirrorLeftRight();
@@ -292,11 +289,9 @@ void ImageEditor::updateButtons() {
     }
     if (imageDelete) {
         if (data->isDeleted(data->imagesData.getImageNumber())) {
-            imageDelete->background_color = "#700c13";
-            imageDelete->updateStyleSheet();
+            imageDelete->setBackground("#700c13", "#700c13");
         } else {
-            imageDelete->background_color = "transparent";
-            imageDelete->updateStyleSheet();
+            imageDelete->resetBackground();
         }
     }
     if (buttonImageBefore) {
@@ -316,6 +311,10 @@ void ImageEditor::updateButtons() {
         } else {
             buttonImageNext->setEnabled(true);
         }
+    }
+
+    if (imagePersons) {
+        imagePersons->logoNumber = data->imagesData.getCurrentImageData()->persons.size();
     }
 }
 
@@ -500,10 +499,10 @@ ClickableLabel* ImageEditor::createImageDelete() {
     }
 
     ClickableLabel* imageDeleteNew = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_TIP_IMAGE_EDITOR_DELETE, this, actionSize);
+    imageDeleteNew->setInitialBackground("transparent", "#b3b3b3");
 
     if (data->isDeleted(data->imagesData.getImageNumber())) {
-        imageDeleteNew->background_color = "#700c13";
-        imageDeleteNew->updateStyleSheet();
+        imageDeleteNew->setBackground("#700c13", "#700c13");
     }
     connect(imageDeleteNew, &ClickableLabel::clicked, [this]() {
         this->deleteImage();
@@ -518,6 +517,7 @@ ClickableLabel* ImageEditor::createImageSave() {
     }
 
     ClickableLabel* imageSaveNew = new ClickableLabel(data, ICON_PATH_SAVE, TOOL_TIP_IMAGE_EDITOR_SAVE, this, actionSize);
+    imageSaveNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() {
         this->saveImage();
@@ -532,6 +532,7 @@ ClickableLabel* ImageEditor::createImageExport() {
     }
 
     ClickableLabel* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, TOOL_TIP_IMAGE_EDITOR_EXPORT, this, actionSize);
+    imageExportNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
         this->exportImage();
@@ -546,6 +547,7 @@ ClickableLabel* ImageEditor::createImageRotateRight() {
     }
 
     ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_TIP_IMAGE_EDITOR_ROTATE_RIGHT, this, actionSize);
+    imageRotateRightNew->setInitialBackground("transparent", "#b3b3b3");
 
     if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageRotateRightNew->setDisabled(true);
@@ -565,6 +567,7 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
     }
 
     ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, TOOL_TIP_IMAGE_EDITOR_ROTATE_LEFT, this, actionSize);
+    imageRotateLeftNew->setInitialBackground("transparent", "#b3b3b3");
 
     if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageRotateLeftNew->setDisabled(true);
@@ -584,6 +587,7 @@ ClickableLabel* ImageEditor::createImageMirrorUpDown() {
     }
 
     ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, TOOL_TIP_IMAGE_EDITOR_MIRROR_UP_DOWN, this, actionSize);
+    imageMirrorUpDownNew->setInitialBackground("transparent", "#b3b3b3");
 
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageMirrorUpDownNew->setDisabled(true);
@@ -603,6 +607,7 @@ ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
     }
 
     ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, TOOL_TIP_IMAGE_EDITOR_MIRROR_LEFT_RIGHT, this, actionSize);
+    imageMirrorLeftRightNew->setInitialBackground("transparent", "#b3b3b3");
 
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageMirrorLeftRightNew->setDisabled(true);
@@ -623,6 +628,7 @@ ClickableLabel* ImageEditor::createImageEditExif() {
     }
 
     ClickableLabel* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, TOOL_TIP_IMAGE_EDITOR_EDIT_EXIF, this, actionSize);
+    imageEditExifNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
         if (exifEditor) {
@@ -648,6 +654,7 @@ ClickableLabel* ImageEditor::createImageConversion() {
     }
 
     ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, TOOL_TIP_IMAGE_EDITOR_CONVERSION, this, actionSize);
+    imageConversionNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
         launchConversionDialogAndConvert(QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()));
@@ -662,17 +669,19 @@ ClickableLabel* ImageEditor::createImagePersons() {
     }
 
     ClickableLabel* imagePersonsNew = new ClickableLabel(data, ICON_PATH_EDIT_PERSONS, TOOL_TIP_IMAGE_EDITOR_EDIT_PERSONS, this, actionSize);
-    imagePersonsNew->border = 2;
+    imagePersonsNew->setInitialBackground("transparent", "#b3b3b3");
+    imagePersonsNew->logoVisible = true;
+    imagePersonsNew->logoNumber = data->imagesData.getCurrentImageData()->persons.size();
 
     connect(imagePersonsNew, &ClickableLabel::clicked, [this, imagePersonsNew]() {
         if (!personsEditor) {
             personsEditor = true;
-            imagePersonsNew->select("red", "red");
+            imagePersonsNew->setBackground("red", "red");
 
             imageLabel->personsEditor = true;
         } else {
             personsEditor = false;
-            imagePersonsNew->unSelect();
+            imagePersonsNew->resetBackground();
             imageLabel->personsEditor = false;
         }
         imageLabel->update();
@@ -685,6 +694,7 @@ ClickableLabel* ImageEditor::createImageBefore() {
     }
 
     ClickableLabel* buttonImageBeforeNew = new ClickableLabel(data, ICON_PATH_BEFORE, "", this, actionSize);
+    buttonImageBeforeNew->setInitialBackground("transparent", "#b3b3b3");
 
     buttonImageBeforeNew->setFixedSize(actionSize);
 
@@ -704,6 +714,7 @@ ClickableLabel* ImageEditor::createImageNext() {
     }
 
     ClickableLabel* buttonImageNextNew = new ClickableLabel(data, ICON_PATH_NEXT, "", this, actionSize);
+    buttonImageNextNew->setInitialBackground("transparent", "#b3b3b3");
 
     if (data->imagesData.getImageNumber() == data->imagesData.get()->size() - 1) {
         buttonImageNextNew->setDisabled(true);
@@ -722,6 +733,7 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
     }
 
     ClickableLabel* previewButton = new ClickableLabel(data, QString::fromStdString(imagePath), "", this, previewSize, false, 128, false);
+    previewButton->setInitialBorder("transparent", "#b3b3b3");
 
     connect(previewButton, &ClickableLabel::leftClicked, [this, imageNbr]() {
         data->imagesData.setImageNumber(imageNbr);
@@ -758,6 +770,8 @@ MainImage* ImageEditor::createImageLabel() {
         image = data->rotateQImage(image, currentImagePath);
         detectFacesAsync(currentImagePath, image, [this, imageNbr](std::vector<Person> persons) {
             if (data->imagesData.getImageNumber() == imageNbr) {
+                imagePersons->logoNumber = persons.size();
+                imagePersons->update();
                 if (this->personsEditor) {
                     imageLabel->update();
                 }
@@ -800,65 +814,52 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
         case Qt::Key_Left:
             if (event->modifiers() & Qt::ControlModifier) {
-                imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
-                imageRotateLeft->updateStyleSheet();
+                imageRotateLeft->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             } else {
-                buttonImageBefore->background_color = CLICK_BACKGROUND_COLOR;
-                buttonImageBefore->updateStyleSheet();
+                buttonImageBefore->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             }
             break;
         case Qt::Key_End:
-            imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
-            imageRotateLeft->updateStyleSheet();
+            imageRotateLeft->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             break;
 
         case Qt::Key_Right:
             if (event->modifiers() & Qt::ControlModifier) {
-                imageRotateRight->background_color = CLICK_BACKGROUND_COLOR;
-                imageRotateRight->updateStyleSheet();
+                imageRotateRight->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             } else {
-                buttonImageNext->background_color = CLICK_BACKGROUND_COLOR;
-                buttonImageNext->updateStyleSheet();
+                buttonImageNext->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             }
             break;
         case Qt::Key_Home:
-            imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
-            imageRotateLeft->updateStyleSheet();
+            imageRotateLeft->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             break;
 
         case Qt::Key_Up:
             if (event->modifiers() & Qt::ControlModifier) {
-                imageMirrorLeftRight->background_color = CLICK_BACKGROUND_COLOR;
-                imageMirrorLeftRight->updateStyleSheet();
+                imageMirrorLeftRight->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             }
             break;
         case Qt::Key_Down:
             if (event->modifiers() & Qt::ControlModifier) {
-                imageMirrorUpDown->background_color = CLICK_BACKGROUND_COLOR;
-                imageMirrorUpDown->updateStyleSheet();
+                imageMirrorUpDown->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             }
             break;
 
         case Qt::Key_S:
             if (event->modifiers() & Qt::ControlModifier) {
-                imageSave->background_color = CLICK_BACKGROUND_COLOR;
-                imageSave->updateStyleSheet();
+                imageSave->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             }
             break;
         case Qt::Key_Delete:
-            imageDelete->background_color = CLICK_BACKGROUND_COLOR;
-            imageDelete->updateStyleSheet();
-            imageDelete->background_color = CLICK_BACKGROUND_COLOR;
-            imageDelete->updateStyleSheet();
+            imageDelete->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             break;
         case Qt::Key_Backspace:
-            imageDelete->background_color = CLICK_BACKGROUND_COLOR;
-            imageDelete->updateStyleSheet();
+            imageDelete->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
+
             break;
         case Qt::Key_D:
             if (event->modifiers() & Qt::ControlModifier) {
-                imageDelete->background_color = CLICK_BACKGROUND_COLOR;
-                imageDelete->updateStyleSheet();
+                imageDelete->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             }
             break;
 
@@ -874,86 +875,72 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
     switch (event->key()) {
         case Qt::Key_Left:
             if (event->modifiers() & Qt::ControlModifier) {
-                imageRotateLeft->background_color = BACKGROUND_COLOR;
-                imageRotateLeft->updateStyleSheet();
+                imageRotateLeft->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
                 rotateLeft();
             } else if (event->modifiers() & Qt::MetaModifier) {
-                imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
-                imageRotateLeft->updateStyleSheet();
+                imageRotateLeft->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
                 data->imagesData.imageNumber = data->imagesData.get()->size() - 1;
                 reload();
             } else {
-                buttonImageBefore->background_color = BACKGROUND_COLOR;
-                buttonImageBefore->updateStyleSheet();
+                buttonImageBefore->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
                 previousImage();
             }
             break;
         case Qt::Key_Home:
-            imageRotateLeft->background_color = BACKGROUND_COLOR;
-            imageRotateLeft->updateStyleSheet();
+            imageRotateLeft->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
             data->imagesData.imageNumber = 0;
             reload();
             break;
 
         case Qt::Key_Right:
             if (event->modifiers() & Qt::ControlModifier) {
-                imageRotateRight->background_color = BACKGROUND_COLOR;
-                imageRotateRight->updateStyleSheet();
+                imageRotateRight->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
                 rotateRight();
             } else if (event->modifiers() & Qt::MetaModifier) {
-                imageRotateLeft->background_color = CLICK_BACKGROUND_COLOR;
-                imageRotateLeft->updateStyleSheet();
+                imageRotateLeft->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
                 data->imagesData.imageNumber = data->imagesData.get()->size() - 1;
                 reload();
             } else {
-                buttonImageNext->background_color = BACKGROUND_COLOR;
-                buttonImageNext->updateStyleSheet();
+                buttonImageNext->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
                 nextImage();
             }
             break;
         case Qt::Key_End:
-            imageRotateLeft->background_color = BACKGROUND_COLOR;
-            imageRotateLeft->updateStyleSheet();
+            imageRotateLeft->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
             data->imagesData.imageNumber = data->imagesData.get()->size() - 1;
             reload();
             break;
 
         case Qt::Key_Up:
             if (event->modifiers() & Qt::ControlModifier) {
-                imageMirrorLeftRight->background_color = BACKGROUND_COLOR;
-                imageMirrorLeftRight->updateStyleSheet();
+                imageMirrorLeftRight->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
                 mirrorLeftRight();
             }
             break;
         case Qt::Key_Down:
             if (event->modifiers() & Qt::ControlModifier) {
-                imageMirrorUpDown->background_color = BACKGROUND_COLOR;
-                imageMirrorUpDown->updateStyleSheet();
+                imageMirrorUpDown->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
                 mirrorUpDown();
             }
             break;
 
         case Qt::Key_S:
             if (event->modifiers() & Qt::ControlModifier) {
-                imageSave->background_color = BACKGROUND_COLOR;
-                imageSave->updateStyleSheet();
+                imageSave->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
                 saveImage();
             }
             break;
         case Qt::Key_Delete:
-            imageDelete->background_color = BACKGROUND_COLOR;
-            imageDelete->updateStyleSheet();
+            imageDelete->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
             deleteImage();
             break;
         case Qt::Key_Backspace:
-            imageDelete->background_color = BACKGROUND_COLOR;
-            imageDelete->updateStyleSheet();
+            imageDelete->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
             deleteImage();
             break;
         case Qt::Key_D:
             if (event->modifiers() & Qt::ControlModifier) {
-                imageDelete->background_color = BACKGROUND_COLOR;
-                imageDelete->updateStyleSheet();
+                imageDelete->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
                 deleteImage();
             }
             break;
@@ -982,12 +969,10 @@ void ImageEditor::wheelEvent(QWheelEvent* event) {
     int numSteps = numDegrees / 15;
 
     if (numSteps > 0) {
-        buttonImageBefore->background_color = BACKGROUND_COLOR;
-        buttonImageBefore->updateStyleSheet();
+        buttonImageBefore->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
         previousImage(numSteps);
     } else if (numSteps < 0) {
-        buttonImageNext->background_color = BACKGROUND_COLOR;
-        buttonImageNext->updateStyleSheet();
+        buttonImageNext->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
         nextImage(-numSteps);
     }
 }
@@ -1105,9 +1090,6 @@ void ImageEditor::populateMetadataFields() {
     ImagesData* imagesData = &data->imagesData;
     ImageData* imageData = imagesData->getCurrentImageData();
     Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
-
-    qDebug() << "populateMetadataFields : " << imageData->getImageName();
-    qDebug() << "populateMetadataFields : " << imageData->metaData.exifMetaData.count();
 
     nameEdit->clear();
     dateEdit->setDateTime(QDateTime::currentDateTime());

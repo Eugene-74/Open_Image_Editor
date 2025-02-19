@@ -25,11 +25,9 @@ const int PRE_LOAD_RADIUS_IMAGE_BOOTH = 5;
 
 const int TIME_UNDO_VISUALISATION = 500;
 
-// const int LINE_LOADED = 1; // fois ou l'on charge un tableau d'image (2 = 2 tableau pres charger)
-
-const QString CLICK_BACKGROUND_COLOR = "#9c9c9c";
-const QString HOVER_BACKGROUND_COLOR = "#b3b3b3";
-const QString BACKGROUND_COLOR = "transparent";
+const std::string CLICK_BACKGROUND_COLOR = "#9c9c9c";
+const std::string HOVER_BACKGROUND_COLOR = "#b3b3b3";
+const std::string BACKGROUND_COLOR = "transparent";
 
 const QString IMAGE_EDITOR_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Editor Window";
 const QString IMAGE_BOOTH_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Booth Window";

@@ -18,8 +18,11 @@ MainWindow::MainWindow(Data* dat, QWidget* parent)
     switchLayout = new QHBoxLayout();
 
     ClickableLabel* switchToBooth = new ClickableLabel(data, ICON_PATH_IMAGE_BOOTH, TOOL_TIP_OPEN_IMAGE_BOOTH, this, QSize(300, 300), false, 0, true);
+    switchToBooth->setInitialBackground("transparent", "#b3b3b3");
     ClickableLabel* switchToEditor = new ClickableLabel(data, ICON_PATH_IMAGE_EDITOR, TOOL_TIP_OPEN_IMAGE_EDITOR, this, QSize(300, 300), false, 0, true);
+    switchToEditor->setInitialBackground("transparent", "#b3b3b3");
     ClickableLabel* addImages = new ClickableLabel(data, ICON_PATH_OPTION_ADD_IMAGES, TOOL_TIP_ADD_IMAGES, this, QSize(300, 300), false, 0, true);
+    addImages->setInitialBackground("transparent", "#b3b3b3");
 
     connect(switchToBooth, &ClickableLabel::clicked, this, [this]() {
         if (data->imagesData.get()->size() <= 0) {

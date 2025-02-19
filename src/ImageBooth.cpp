@@ -166,17 +166,16 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             loadedImageNumber += 1;
         });
     }
-    imageButton->border = 3;
 
     if (std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr) != data->imagesSelected.end()) {
-        imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+        imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
     }
 
     if (nbr == imageShiftSelected) {
         if (imageShiftSelectedSelect) {
-            imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT);
+            imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT);
         } else {
-            imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT);
+            imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT);
         }
     }
 
@@ -188,7 +187,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     connect(imageButton, &ClickableLabel::ctrlLeftClicked, [this, nbr, imageButton]() {
         auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
         if (it != data->imagesSelected.end()) {
-            imageButton->unSelect();
+            imageButton->resetBorder();
             data->imagesSelected.erase(it);
 
             data->addAction(
@@ -199,7 +198,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                     QTimer::singleShot(TIME_UNDO_VISUALISATION, [this, nbr]() {
                         ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
                         if (imageButton != nullptr) {
-                            imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+                            imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
                         }
                         addNbrToSelectedImages(nbr);
                     });
@@ -211,13 +210,13 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                     QTimer::singleShot(TIME_UNDO_VISUALISATION, [this, nbr]() {
                         ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
                         if (imageButton != nullptr) {
-                            imageButton->unSelect();
+                            imageButton->resetBorder();
                         }
                         removeNbrToSelectedImages(nbr);
                     });
                 });
         } else {
-            imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+            imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
             data->imagesSelected.push_back(nbr);
 
             data->addAction(
@@ -230,7 +229,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                     QTimer::singleShot(time, [this, nbr]() {
                         ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
                         if (imageButton != nullptr) {
-                            imageButton->unSelect();
+                            imageButton->resetBorder();
                         }
                         removeNbrToSelectedImages(nbr);
                     });
@@ -244,7 +243,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                     QTimer::singleShot(time, [this, nbr]() {
                         ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
                         if (imageButton != nullptr) {
-                            imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+                            imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
                         }
                         addNbrToSelectedImages(nbr);
                     });
@@ -319,15 +318,16 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             // select the first image
             auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
             if (it != data->imagesSelected.end()) {
-                imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT);
+                imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT);
                 imageShiftSelectedSelect = false;
             } else {
-                imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT);
+                imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT);
                 imageShiftSelectedSelect = true;
             }
             imageShiftSelected = nbr;
         }
     });
+    imageButton->setInitialBorder("transparent", "#b3b3b3");
     return imageButton;
 }
 
@@ -399,9 +399,9 @@ void ImageBooth::updateImages() {
 
             auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNbr);
             if (it != data->imagesSelected.end()) {
-                imageButton->select(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+                imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
             } else {
-                imageButton->unSelect();
+                imageButton->resetBorder();
             }
         }
     }
@@ -490,9 +490,10 @@ ClickableLabel* ImageBooth::createImageDelete() {
         return nullptr;
     }
 
-    ClickableLabel* imageDelete = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_TIP_IMAGE_BOOTH_DELETE, this, actionSize);
+    ClickableLabel* imageDeleteNew = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_TIP_IMAGE_BOOTH_DELETE, this, actionSize);
+    imageDeleteNew->setInitialBackground("transparent", "#b3b3b3");
 
-    connect(imageDelete, &ClickableLabel::clicked, [this]() {
+    connect(imageDeleteNew, &ClickableLabel::clicked, [this]() {
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             if (data->isDeleted(data->imagesSelected.at(i))) {
@@ -553,7 +554,7 @@ ClickableLabel* ImageBooth::createImageDelete() {
             });
     });
 
-    return imageDelete;
+    return imageDeleteNew;
 }
 
 ClickableLabel* ImageBooth::createImageSave() {
@@ -562,6 +563,7 @@ ClickableLabel* ImageBooth::createImageSave() {
     }
 
     ClickableLabel* imageSaveNew = new ClickableLabel(data, ICON_PATH_SAVE, TOOL_TIP_IMAGE_BOOTH_SAVE, this, actionSize);
+    imageSaveNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() {
     });
@@ -575,6 +577,7 @@ ClickableLabel* ImageBooth::createImageExport() {
     }
 
     ClickableLabel* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, TOOL_TIP_IMAGE_BOOTH_EXPORT, this, actionSize);
+    imageExportNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
     });
@@ -592,6 +595,7 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
     }
 
     ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_TIP_IMAGE_BOOTH_ROTATE_RIGHT, this, actionSize);
+    imageRotateRightNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() {
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
@@ -634,6 +638,7 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
     }
 
     ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, TOOL_TIP_IMAGE_BOOTH_ROTATE_LEFT, this, actionSize);
+    imageRotateLeftNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() {
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
@@ -676,6 +681,7 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
     }
 
     ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, TOOL_TIP_IMAGE_BOOTH_MIRROR_UP_DOWN, this, actionSize);
+    imageMirrorUpDownNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageMirrorUpDownNew, &ClickableLabel::clicked, [this]() {
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
@@ -719,6 +725,7 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
     }
 
     ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, TOOL_TIP_IMAGE_BOOTH_MIRROR_LEFT_RIGHT, this, actionSize);
+    imageMirrorLeftRightNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageMirrorLeftRightNew, &ClickableLabel::clicked, [this]() {
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
@@ -761,6 +768,7 @@ ClickableLabel* ImageBooth::createImageEditExif() {
     }
 
     ClickableLabel* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, TOOL_TIP_IMAGE_BOOTH_EDIT_EXIF, this, actionSize);
+    imageEditExifNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
     });
@@ -776,6 +784,7 @@ ClickableLabel* ImageBooth::createImageConversion() {
     }
 
     ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, TOOL_TIP_IMAGE_BOOTH_CONVERSION, this, actionSize);
+    imageConversionNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
         if (data->imagesSelected.size() > 0) {

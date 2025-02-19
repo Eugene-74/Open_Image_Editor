@@ -68,7 +68,7 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
             if (cropping) {
             } else {
                 emit leftClicked();
-                hover_background_color = CLICK_BACKGROUND_COLOR;
+                hover_background_color = QString::fromStdString(CLICK_BACKGROUND_COLOR);
                 updateStyleSheet();
             }
         }
@@ -121,7 +121,7 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
                 if (!drawingRectangle) {
                     emit leftClicked();
                 }
-                hover_background_color = HOVER_BACKGROUND_COLOR;
+                hover_background_color = QString::fromStdString(HOVER_BACKGROUND_COLOR);
                 updateStyleSheet();
             }
         }

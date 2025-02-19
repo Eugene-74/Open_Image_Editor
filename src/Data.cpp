@@ -207,7 +207,9 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     for (const auto& pair : *imageCache) {
         cacheSize += pair.second.image.sizeInBytes();
     }
-    qDebug() << "Image cache size: " << static_cast<double>(cacheSize) / (1024 * 1024) << " MB";
+    if (static_cast<double>(cacheSize) / (1024 * 1024) > 5000) {
+        qCritical() << "Image cache size: " << static_cast<double>(cacheSize) / (1024 * 1024) << " MB";
+    }
 
     return image;
 }
