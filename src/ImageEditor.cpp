@@ -774,23 +774,27 @@ MainImage* ImageEditor::createImageLabel() {
 
     int imageNbr = data->imagesData.getImageNumber();
     if (imageData->status == ImageData::Status::NotLoaded && imageData->persons.empty()) {
-        qDebug() << "No persons detected yet";
         imageData->status = ImageData::Status::Loading;
         QImage image = data->imageCache->at(currentImagePath).image;
         image = data->rotateQImage(image, currentImagePath);
         detectFacesAsync(currentImagePath, image, [this, imageNbr](std::vector<Person> persons) {
+            // TODO fait crash je crois
             ImageData* imageData = data->imagesData.getImageData(imageNbr);
 
             imageData->status = ImageData::Status::Loaded;
 
             if (data->imagesData.getImageNumber() == imageNbr) {
-                imagePersons->setLogoNumber(persons.size());
-                imagePersons->update();
-                if (this->personsEditor) {
-                    imageLabel->update();
+                if (imagePersons) {
+                    imagePersons->setLogoNumber(persons.size());
+                    imagePersons->update();
+                    if (imageLabel) {
+                        imageLabel->update();
+                    }
                 }
             }
-            data->imagesData.getImageData(imageNbr)->persons = persons;
+            if (data->imagesData.getImageData(imageNbr)) {
+                data->imagesData.getImageData(imageNbr)->persons = persons;
+            }
         });
     }
 
