@@ -1164,11 +1164,14 @@ void ImageEditor::startImageOpen() {
     }
 
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
-        data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [this]() {
+        QPointer<ImageEditor> self = this;
+        data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [self]() {
             try {
-                reloadImageLabel();
+                if (!self.isNull()) {
+                    self->reloadImageLabel();
+                }
             } catch (const std::exception& e) {
-                qDebug() << e.what();
+                std::cerr << e.what() << '\n';
             }
         });
         imageOpenTimer->stop();

@@ -78,7 +78,9 @@ class ImageBooth : public QMainWindow {
     void onScroll(int value);
 
     void updateImages();
+
     ClickableLabel* getClickableLabelIfExist(int imageNbr);
+    ClickableLabel* getClickableLabelIfExist(int imageNbr, QHBoxLayout*& lineLayout);
 
     void gotToImage(int nbr);
     void addNbrToSelectedImages(int nbr);

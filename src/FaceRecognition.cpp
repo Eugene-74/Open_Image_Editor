@@ -105,6 +105,10 @@ std::vector<Person> detectFaces(std::string imagePath, QImage image) {
 void detectFacesAsync(std::string imagePath, QImage image, std::function<void(std::vector<Person>)> callback) {
     std::thread([=]() {
         auto persons = detectFaces(imagePath, image);
-        callback(persons);
+        try {
+            callback(persons);
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << '\n';
+        }
     }).detach();
 }

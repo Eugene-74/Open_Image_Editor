@@ -81,7 +81,6 @@ void ClickableLabel::updateStyleSheet() {
         border: %1px solid %7;
             border-radius: %2px;
             background-color: %8; 
-
         }
     )")
                              .arg(border)

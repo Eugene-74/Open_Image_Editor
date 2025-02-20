@@ -216,7 +216,11 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 
 void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
     LoadImageTask* task = new LoadImageTask(this, imagePath, setSize, size, force, callback);
-    QThreadPool::globalInstance()->start(task);
+    try {
+        QThreadPool::globalInstance()->start(task);
+    } catch (const std::exception& e) {
+        std::cerr << "loadInCacheAsync" << e.what() << '\n';
+    }
 }
 
 bool Data::loadInCache(const std::string imagePath, bool setSize,

@@ -144,26 +144,36 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING,
                                          "", this, imageSize, false, 0, true);
 
-        data->loadInCacheAsync(imagePath, [this, imagePath, imageButton]() {
-            done += 1;
+        QPointer<ImageBooth> self = this;
+        Data* dataPtr = data;
 
-            data->createAllThumbnailIfNotExists(imagePath, 512);
+        data->loadInCacheAsync(imagePath, [self, dataPtr, imagePath, nbr]() {
+            qDebug() << "Load image : " << imagePath;
+            try {
+                dataPtr->createAllThumbnailIfNotExists(imagePath, 512);
 
-            data->unloadFromCache(imagePath);
-            // TODO changer le widget plutot pour eviter les image enorme
+                dataPtr->unloadFromCache(imagePath);
 
-            QImage qImage = data->loadImage(this, imagePath, this->size(), true, IMAGE_BOOTH_IMAGE_QUALITY, true, true);
+                if (!self.isNull()) {
+                    // TODO changer le widget plutot pour eviter les image enorme
+                    self->done += 1;
+                    QHBoxLayout* lineLayout = nullptr;
+                    ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
+                    if (lastImageButton != nullptr) {
+                        ClickableLabel* newImageButton = self->createImage(imagePath, nbr);
+                        if (lineLayout != nullptr) {
+                            lineLayout->replaceWidget(lastImageButton, newImageButton);
+                            lastImageButton->deleteLater();
+                        } else {
+                            newImageButton->deleteLater();
+                        }
+                    }
 
-            QMetaObject::invokeMethod(
-                QApplication::instance(),
-                [imageButton, qImage]() {
-                    imageButton->setPixmap(QPixmap::fromImage(qImage).scaled(
-                        imageButton->size(), Qt::KeepAspectRatio,
-                        Qt::SmoothTransformation));
-                },
-                Qt::QueuedConnection);
-
-            loadedImageNumber += 1;
+                    self->loadedImageNumber += 1;
+                }
+            } catch (const std::exception& e) {
+                std::cerr << e.what() << '\n';
+            }
         });
     }
 
@@ -354,6 +364,28 @@ void ImageBooth::removeNbrToSelectedImages(int nbr) {
     if (it != data->imagesSelected.end()) {
         data->imagesSelected.erase(it);
     }
+}
+// TODO faire une fonction pour pas doubler
+ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr, QHBoxLayout*& lineLayout) {
+    int spacerHeight = scrollArea->verticalScrollBar()->value();
+    int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
+    spacerHeight = (spacerHeight / imageHeight) * imageHeight;
+
+    int firstImageNbr = spacerHeight / imageHeight * data->sizes.imagesBoothSizes->widthImageNumber;
+    int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->sizes.imagesBoothSizes->widthImageNumber;
+
+    if (imageNbr >= firstImageNbr && imageNbr <= lastImageNbr) {
+        int firstImageLine = firstImageNbr / data->sizes.imagesBoothSizes->widthImageNumber;
+        int imageLine = imageNbr / data->sizes.imagesBoothSizes->widthImageNumber;
+
+        int imageRelativeLine = imageLine - firstImageLine;
+        int imageNbrInLine = imageNbr - imageLine * data->sizes.imagesBoothSizes->widthImageNumber;
+        lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(imageRelativeLine + 1)->layout());
+        ClickableLabel* imageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(imageNbrInLine)->widget());
+
+        return imageButton;
+    }
+    return nullptr;
 }
 
 ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
