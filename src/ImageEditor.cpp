@@ -324,6 +324,7 @@ void ImageEditor::updateButtons() {
 }
 
 void ImageEditor::clear() {
+    qDebug() << "clear";
     stopImageOpen();
 
     QTimer::singleShot(0, this, [this]() {
@@ -777,23 +778,30 @@ MainImage* ImageEditor::createImageLabel() {
         imageData->status = ImageData::Status::Loading;
         QImage image = data->imageCache->at(currentImagePath).image;
         image = data->rotateQImage(image, currentImagePath);
-        detectFacesAsync(currentImagePath, image, [this, imageNbr](std::vector<Person> persons) {
+
+        QPointer<ImageEditor> self = this;
+        Data* dataPtr = data;
+        detectFacesAsync(currentImagePath, image, [self, dataPtr, imageNbr](std::vector<Person> persons) {
             // TODO fait crash je crois
-            ImageData* imageData = data->imagesData.getImageData(imageNbr);
 
+            ImageData* imageData = dataPtr->imagesData.getImageData(imageNbr);
             imageData->status = ImageData::Status::Loaded;
+            if (dataPtr->imagesData.getImageData(imageNbr)) {
+                dataPtr->imagesData.getImageData(imageNbr)->persons = persons;
+            }
 
-            if (data->imagesData.getImageNumber() == imageNbr) {
-                if (imagePersons) {
-                    imagePersons->setLogoNumber(persons.size());
-                    imagePersons->update();
-                    if (imageLabel) {
-                        imageLabel->update();
+            if (!self.isNull()) {
+                if (self->data->imagesData.getImageNumber() == imageNbr) {
+                    if (self->imagePersons) {
+                        self->imagePersons->setLogoNumber(persons.size());
+
+                        self->imagePersons->update();
+
+                        if (self->imageLabel) {
+                            self->imageLabel->update();
+                        }
                     }
                 }
-            }
-            if (data->imagesData.getImageData(imageNbr)) {
-                data->imagesData.getImageData(imageNbr)->persons = persons;
             }
         });
     }

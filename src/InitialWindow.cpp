@@ -344,6 +344,7 @@ void InitialWindow::createMainWindow(Data* data) {
 void InitialWindow::clearImageEditor() {
     layout->removeWidget(imageEditor);
     imageEditor->clear();
+    imageEditor->deleteLater();
     imageEditor = nullptr;
 }
 
