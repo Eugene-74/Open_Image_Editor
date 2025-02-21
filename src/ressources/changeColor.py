@@ -29,7 +29,7 @@ def change_image_color_of_folder(input_directory,output_directory,r,g,b,a):
 
     # Iterate over all files in the input directory
     for filename in os.listdir(input_directory):
-        if filename.endswith('.png'):
+        if filename.endswith('.png') or filename.endswith('.ico'):
             input_path = os.path.join(input_directory, filename)
             output_path = os.path.join(output_directory, filename)
             change_image_color(input_path, output_path, (r, g, b, a))  # Change to red color

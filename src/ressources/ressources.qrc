@@ -25,6 +25,7 @@
         <file>icons/discord.png</file>
         <file>icons/github.png</file>
         <file>icons/option.png</file>
+        <file>icons/icon.ico</file>
     </qresource>
     <qresource prefix="">
         <file>images/loading.png</file>
@@ -59,6 +60,9 @@
         <file>255-255-255-255/icons/github.png</file>
         <file>255-255-255-255/icons/option.png</file>
 
+        <file>255-255-255-255/icons/icon.ico</file>
+
+
 
 
 
@@ -86,6 +90,8 @@
         <file>0-0-0-255/icons/discord.png</file>
         <file>0-0-0-255/icons/github.png</file>
         <file>0-0-0-255/icons/option.png</file>
+
+        <file>0-0-0-255/icons/icon.ico</file>
     </qresource>
     <qresource prefix="">
         <file>0-0-0-255/images/loading.png</file>
