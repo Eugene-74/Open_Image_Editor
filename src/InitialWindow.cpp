@@ -39,25 +39,24 @@ std::string getLatestGitHubTag() {
         } else if (res != CURLE_OK) {
             qDebug() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
         }
+        curl_easy_cleanup(curl);
     }
-    curl_easy_cleanup(curl);
-}
 
-// Parse JSON response
-Json::CharReaderBuilder readerBuilder;
-Json::Value root;
-std::string errs;
+    // Parse JSON response
+    Json::CharReaderBuilder readerBuilder;
+    Json::Value root;
+    std::string errs;
 
-std::istringstream s(readBuffer);
-if (Json::parseFromStream(readerBuilder, s, &root, &errs)) {
-    if (!root.empty() && root.isArray() && root.size() > 0) {
-        return root[0]["name"].asString();
+    std::istringstream s(readBuffer);
+    if (Json::parseFromStream(readerBuilder, s, &root, &errs)) {
+        if (!root.empty() && root.isArray() && root.size() > 0) {
+            return root[0]["name"].asString();
+        }
+    } else {
+        qDebug() << "Failed to parse JSON: " << errs;
     }
-} else {
-    qDebug() << "Failed to parse JSON: " << errs;
-}
 
-return "";
+    return "";
 }
 
 int progressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded) {
