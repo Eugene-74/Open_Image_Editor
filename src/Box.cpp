@@ -1,55 +1,70 @@
 #include "Box.hpp"
 
 // Helper function to create and show a modal dialog
-void showModalDialog(QWidget* parent, QMessageBox::Icon icon, std::string text, std::string title, int x, int y) {
+void showModalDialog(QWidget* parent, QMessageBox::Icon icon, std::string text, std::string title, int x, int y, bool async) {
     QMessageBox* msgBox = new QMessageBox(parent);
     msgBox->setIcon(icon);
     msgBox->setText(QString::fromStdString(text));
     msgBox->setWindowTitle(QString::fromStdString(title));
+    msgBox->setWindowFlags(msgBox->windowFlags() | Qt::WindowStaysOnTopHint);
 
     if (x != -1 && y != -1) {
         msgBox->move(x, y);
     }
 
-    msgBox->show();
+    if (async) {
+        msgBox->setWindowModality(Qt::NonModal);
+        msgBox->show();
+    } else {
+        msgBox->setWindowModality(Qt::ApplicationModal);
+        msgBox->exec();
+    }
 }
 
 // Display an information message box
-void showInformationMessage(QWidget* parent, std::string text, std::string title, int x, int y) {
-    showModalDialog(parent, QMessageBox::Information, text, title, x, y);
+void showInformationMessage(QWidget* parent, std::string text, std::string title, int x, int y, bool async) {
+    showModalDialog(parent, QMessageBox::Information, text, title, x, y, async);
 }
 
 // Display a warning message box
-void showWarningMessage(QWidget* parent, std::string text, std::string title, int x, int y) {
-    showModalDialog(parent, QMessageBox::Warning, text, title, x, y);
+void showWarningMessage(QWidget* parent, std::string text, std::string title, int x, int y, bool async) {
+    showModalDialog(parent, QMessageBox::Warning, text, title, x, y, async);
 }
 
 // Display an error message box
-void showErrorMessage(QWidget* parent, std::string text, std::string title, int x, int y) {
-    showModalDialog(parent, QMessageBox::Critical, text, title, x, y);
+void showErrorMessage(QWidget* parent, std::string text, std::string title, int x, int y, bool async) {
+    showModalDialog(parent, QMessageBox::Critical, text, title, x, y, async);
 }
 
 // Display a question message box with Yes/No options
-void showQuestionMessage(QWidget* parent, std::string text, std::function<void(bool)> callback, std::string title, int x, int y) {
+void showQuestionMessage(QWidget* parent, std::string text, std::function<void(bool)> callback, std::string title, int x, int y, bool async) {
     QMessageBox* msgBox = new QMessageBox(parent);
     msgBox->setWindowModality(Qt::ApplicationModal);
     msgBox->setIcon(QMessageBox::Question);
     msgBox->setText(QString::fromStdString(text));
     msgBox->setWindowTitle(QString::fromStdString(title));
     msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox->setWindowFlags(msgBox->windowFlags() | Qt::WindowStaysOnTopHint);
+
     if (x != -1 && y != -1) {
         msgBox->move(x, y);
     }
 
     QObject::connect(msgBox, &QMessageBox::buttonClicked, [parent, msgBox, callback](QAbstractButton* button) {
-        // parent->setEnabled(true);
         bool result = (msgBox->buttonRole(button) == QMessageBox::YesRole);
         callback(result);
         msgBox->deleteLater();
     });
-    // parent->setEnabled(false);
-    msgBox->show();
+
+    if (async) {
+        msgBox->setWindowModality(Qt::NonModal);
+        msgBox->show();
+    } else {
+        msgBox->setWindowModality(Qt::ApplicationModal);
+        msgBox->exec();
+    }
 }
+
 std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std::string windowName, const std::map<std::string, Option>& options) {
     QDialog dialog(parent);
     dialog.setWindowTitle(QString::fromStdString(windowName));

@@ -23,8 +23,9 @@ std::string getLatestGitHubTag() {
     curl = curl_easy_init();
     if (curl) {
         std::string url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/tags";
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 5L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 15L);
+        qDebug() << "Error : Could not check for update (low connexion)";
 
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
@@ -32,27 +33,31 @@ std::string getLatestGitHubTag() {
         curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 
         res = curl_easy_perform(curl);
-        if (res != CURLE_OK) {
+        if (res == CURLE_OPERATION_TIMEDOUT) {
+            showWarningMessage(nullptr, "Could not check for update (low connexion)", "Checking for updates");
+            qDebug() << "Could not check for update (low connexion) : " << curl_easy_strerror(res);
+        } else if (res != CURLE_OK) {
             qDebug() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
         }
-        curl_easy_cleanup(curl);
     }
+    curl_easy_cleanup(curl);
+}
 
-    // Parse JSON response
-    Json::CharReaderBuilder readerBuilder;
-    Json::Value root;
-    std::string errs;
+// Parse JSON response
+Json::CharReaderBuilder readerBuilder;
+Json::Value root;
+std::string errs;
 
-    std::istringstream s(readBuffer);
-    if (Json::parseFromStream(readerBuilder, s, &root, &errs)) {
-        if (!root.empty() && root.isArray() && root.size() > 0) {
-            return root[0]["name"].asString();
-        }
-    } else {
-        qDebug() << "Failed to parse JSON: " << errs;
+std::istringstream s(readBuffer);
+if (Json::parseFromStream(readerBuilder, s, &root, &errs)) {
+    if (!root.empty() && root.isArray() && root.size() > 0) {
+        return root[0]["name"].asString();
     }
+} else {
+    qDebug() << "Failed to parse JSON: " << errs;
+}
 
-    return "";
+return "";
 }
 
 int progressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded) {
@@ -96,7 +101,7 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
     return res == CURLE_OK;
 }
 
-bool lookForUpdate() {
+bool checkForUpdate() {
     if (!fs::exists(SAVE_PATH)) {
         fs::create_directories(SAVE_PATH);
     }
@@ -105,7 +110,7 @@ bool lookForUpdate() {
             fs::remove(entry.path());
         }
     }
-    // TODO faire dans un thread sinon long quand pas de connexion
+
     std::string latestTag = getLatestGitHubTag();
 
     int latestMajor = 0, latestMinor = 0, latestPatch = 0;
@@ -115,10 +120,8 @@ bool lookForUpdate() {
 
     int currentMajor = 0, currentMinor = 0, currentPatch = 0;
     std::sscanf(APP_VERSION, "%d.%d.%d", &currentMajor, &currentMinor, &currentPatch);
-    showWarningMessage(nullptr, "A new version of the application is available\nDo you want to open the download page?");
     if (currentMajor < latestMajor || currentMinor < latestMinor || currentPatch < latestPatch) {
-        showQuestionMessage(nullptr, "A new version of the application is available\nDo you want to open the download page?",
-                            [latestMajor, latestMinor, latestPatch](bool result) {
+        showQuestionMessage(nullptr, "A new version of the application is available\nDo you want to open the download page?", [latestMajor, latestMinor, latestPatch](bool result) {
                                 if (result) {
                                     std::string downloadUrl = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/v" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
                                     std::string outputPath = SAVE_PATH + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
@@ -137,16 +140,13 @@ bool lookForUpdate() {
                                         QProcess::startDetached(QString::fromStdString(command));
                                     }();
                                     QApplication::quit();
-                                }
-                            });
+                                } }, "Download last version", 0, 0);
         return true;
     }
 
     qDebug() << "Latest GitHub Tag Version: " << latestMajor << "." << latestMinor << "." << latestPatch;
     qDebug() << "Current App Version: " << currentMajor << "." << currentMinor << "." << currentPatch;
-    // });
 
-    // fetcher->start();
     return false;
 }
 
@@ -240,7 +240,7 @@ InitialWindow::InitialWindow() {
 
         createMainWindow(data);
 
-        lookForUpdate();
+        checkForUpdate();
     });
 }
 
