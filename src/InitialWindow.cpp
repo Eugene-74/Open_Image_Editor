@@ -28,7 +28,7 @@ std::string getLatestGitHubTag() {
 
         // Set timeout time to avoir bug
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 15L);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10L);
 
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
@@ -244,7 +244,14 @@ InitialWindow::InitialWindow() {
         windowLayout->addLayout(linkLayout);
 
         createMainWindow(data);
+        QProgressDialog progressDialog("Checking for updates...", nullptr, 0, 0, this);
+        progressDialog.setWindowModality(Qt::WindowModal);
+        progressDialog.setCancelButton(nullptr);
+        progressDialog.show();
+        progressDialog.move(0, 0);
+        QApplication::processEvents();
         checkForUpdate();
+        progressDialog.close();
     });
 }
 
