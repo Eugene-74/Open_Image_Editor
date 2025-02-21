@@ -23,9 +23,12 @@ std::string getLatestGitHubTag() {
     curl = curl_easy_init();
     if (curl) {
         std::string url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/tags";
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 5L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 15L);
-        qDebug() << "Error : Could not check for update (low connexion)";
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+
+        // Set timeout time to avoir bug
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 15L);
 
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
@@ -35,7 +38,7 @@ std::string getLatestGitHubTag() {
         res = curl_easy_perform(curl);
         if (res == CURLE_OPERATION_TIMEDOUT) {
             showWarningMessage(nullptr, "Could not check for update (low connexion)", "Checking for updates");
-            qDebug() << "Could not check for update (low connexion) : " << curl_easy_strerror(res);
+            qDebug() << "Error : Could not check for update (low connexion) : " << curl_easy_strerror(res);
         } else if (res != CURLE_OK) {
             qDebug() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
         }
@@ -129,6 +132,7 @@ bool checkForUpdate() {
                                     progressDialog.setWindowModality(Qt::WindowModal);
                                     progressDialog.setLabelText("Downloading...");
                                     progressDialog.setRange(0, 100);
+                                    progressDialog.setValue(0);
                                     progressDialog.setCancelButton(nullptr);
                                     progressDialog.show();
                                     downloadFile(downloadUrl, outputPath, &progressDialog);
@@ -138,7 +142,9 @@ bool checkForUpdate() {
                                     [command, outputPath]() {
                                         QProcess::startDetached(QString::fromStdString(command));
                                     }();
+                                    
                                     QApplication::quit();
+                                    
                                 } }, "Download last version", 0, 0);
         return true;
     }
@@ -238,7 +244,6 @@ InitialWindow::InitialWindow() {
         windowLayout->addLayout(linkLayout);
 
         createMainWindow(data);
-
         checkForUpdate();
     });
 }
