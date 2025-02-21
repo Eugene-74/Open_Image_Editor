@@ -105,8 +105,11 @@ bool lookForUpdate() {
             fs::remove(entry.path());
         }
     }
-
+    // TODO faire dans un thread sinon long quand pas de connexion
+    // GitHubTagFetcher* fetcher = new GitHubTagFetcher();
+    // QObject::connect(fetcher, &GitHubTagFetcher::tagFetched, [fetcher]() {
     std::string latestTag = getLatestGitHubTag();
+    // delete fetcher;
 
     int latestMajor = 0, latestMinor = 0, latestPatch = 0;
     if (!latestTag.empty()) {
@@ -133,13 +136,16 @@ bool lookForUpdate() {
             [command, outputPath]() {
                 QProcess::startDetached(QString::fromStdString(command));
             }();
-
+            QApplication::quit();
             return true;
         }
     }
 
     qDebug() << "Latest GitHub Tag Version: " << latestMajor << "." << latestMinor << "." << latestPatch;
     qDebug() << "Current App Version: " << currentMajor << "." << currentMinor << "." << currentPatch;
+    // });
+
+    // fetcher->start();
     return false;
 }
 
@@ -175,11 +181,8 @@ InitialWindow::InitialWindow() {
     startLog();
 
     QTimer::singleShot(100, this, [this]() {
-        if (lookForUpdate()) {
-            QApplication::quit();
+        data = new Data();
 
-            return;
-        }
         qDebug() << "Application started at:" << getCurrentFormattedDate();
 
         QTranslator translator;
@@ -190,8 +193,6 @@ InitialWindow::InitialWindow() {
         } else {
             qDebug() << "Translation file not found for language:" << language;
         }
-
-        data = new Data();
 
         ImagesData imagesData(std::vector<ImageData>{});
         ImagesData deletedImagesData(std::vector<ImageData>{});
@@ -237,6 +238,8 @@ InitialWindow::InitialWindow() {
         windowLayout->addLayout(linkLayout);
 
         createMainWindow(data);
+
+        lookForUpdate();
     });
 }
 
@@ -351,12 +354,14 @@ void InitialWindow::clearImageEditor() {
 void InitialWindow::clearImageBooth() {
     layout->removeWidget(imageBooth);
     imageBooth->clear();
+    imageBooth->deleteLater();
     imageBooth = nullptr;
 }
 
 void InitialWindow::clearMainWindow() {
     layout->removeWidget(mainWindow);
     mainWindow->clear();
+    mainWindow->deleteLater();
     mainWindow = nullptr;
 }
 

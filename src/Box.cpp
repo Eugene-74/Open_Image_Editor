@@ -2,25 +2,43 @@
 
 // Display an information message box
 void showInformationMessage(QWidget* parent, std::string text, std::string title) {
-    QMessageBox::information(parent, QString::fromStdString(title), QString::fromStdString(text));
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.setText(QString::fromStdString(text));
+    msgBox.setWindowTitle(QString::fromStdString(title));
+    msgBox.move(0, 0);  // Move to top-left corner
+    msgBox.exec();
 }
 
 // Display a warning message box
 void showWarningMessage(QWidget* parent, std::string text, std::string title) {
-    QMessageBox::warning(parent, QString::fromStdString(title), QString::fromStdString(text));
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setText(QString::fromStdString(text));
+    msgBox.setWindowTitle(QString::fromStdString(title));
+    msgBox.move(0, 0);  // Move to top-left corner
+    msgBox.exec();
 }
 
 // Display an error message box
 void showErrorMessage(QWidget* parent, std::string text, std::string title) {
-    QMessageBox::critical(parent, QString::fromStdString(title), QString::fromStdString(text));
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Critical);
+    msgBox.setText(QString::fromStdString(text));
+    msgBox.setWindowTitle(QString::fromStdString(title));
+    msgBox.move(0, 0);  // Move to top-left corner
+    msgBox.exec();
 }
 
 // Fisplay a question message box with Yes/No options
 bool showQuestionMessage(QWidget* parent, std::string text, std::string title) {
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(parent, "Question", QString::fromStdString(text),
-                                  QMessageBox::No | QMessageBox::Yes);
-    return (reply == QMessageBox::Yes);
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Question);
+    msgBox.setText(QString::fromStdString(text));
+    msgBox.setWindowTitle(QString::fromStdString(title));
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.move(0, 0);  // Move to top-left corner
+    return (msgBox.exec() == QMessageBox::Yes);
 }
 
 std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std::string windowName, const std::map<std::string, Option>& options) {
