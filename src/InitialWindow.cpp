@@ -106,10 +106,7 @@ bool lookForUpdate() {
         }
     }
     // TODO faire dans un thread sinon long quand pas de connexion
-    // GitHubTagFetcher* fetcher = new GitHubTagFetcher();
-    // QObject::connect(fetcher, &GitHubTagFetcher::tagFetched, [fetcher]() {
     std::string latestTag = getLatestGitHubTag();
-    // delete fetcher;
 
     int latestMajor = 0, latestMinor = 0, latestPatch = 0;
     if (!latestTag.empty()) {
@@ -118,27 +115,31 @@ bool lookForUpdate() {
 
     int currentMajor = 0, currentMinor = 0, currentPatch = 0;
     std::sscanf(APP_VERSION, "%d.%d.%d", &currentMajor, &currentMinor, &currentPatch);
-
+    showWarningMessage(nullptr, "A new version of the application is available\nDo you want to open the download page?");
     if (currentMajor < latestMajor || currentMinor < latestMinor || currentPatch < latestPatch) {
-        if (showQuestionMessage(nullptr, "A new version of the application is available\nDo you want to open the download page?")) {
-            std::string downloadUrl = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/v" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
-            std::string outputPath = SAVE_PATH + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
+        showQuestionMessage(nullptr, "A new version of the application is available\nDo you want to open the download page?",
+                            [latestMajor, latestMinor, latestPatch](bool result) {
+                                if (result) {
+                                    std::string downloadUrl = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/v" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
+                                    std::string outputPath = SAVE_PATH + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
 
-            QProgressDialog progressDialog;
-            progressDialog.setLabelText("Downloading...");
-            progressDialog.setRange(0, 100);
-            progressDialog.setCancelButton(nullptr);
-            progressDialog.show();
-            downloadFile(downloadUrl, outputPath, &progressDialog);
+                                    QProgressDialog progressDialog;
+                                    progressDialog.setWindowModality(Qt::WindowModal);
+                                    progressDialog.setLabelText("Downloading...");
+                                    progressDialog.setRange(0, 100);
+                                    progressDialog.setCancelButton(nullptr);
+                                    progressDialog.show();
+                                    downloadFile(downloadUrl, outputPath, &progressDialog);
 
-            std::string command = "\"" + outputPath + "\"";
+                                    std::string command = "\"" + outputPath + "\"";
 
-            [command, outputPath]() {
-                QProcess::startDetached(QString::fromStdString(command));
-            }();
-            QApplication::quit();
-            return true;
-        }
+                                    [command, outputPath]() {
+                                        QProcess::startDetached(QString::fromStdString(command));
+                                    }();
+                                    QApplication::quit();
+                                }
+                            });
+        return true;
     }
 
     qDebug() << "Latest GitHub Tag Version: " << latestMajor << "." << latestMinor << "." << latestPatch;
@@ -245,11 +246,12 @@ InitialWindow::InitialWindow() {
 
 void InitialWindow::closeEvent(QCloseEvent* event) {
     if (!data->saved && data->deletedImagesData.get()->size() > 0) {
-        if (showQuestionMessage(this, "Do you want to save before quit ?")) {
-            if (imageEditor != nullptr) {
-                data->removeDeletedImages();
-            }
-        }
+        showQuestionMessage(this, "Do you want to save before quit ?",
+                            [this, event](bool result) {
+                                if (imageEditor != nullptr) {
+                                    data->removeDeletedImages();
+                                }
+                            });
     }
     data->saveData();
     event->accept();

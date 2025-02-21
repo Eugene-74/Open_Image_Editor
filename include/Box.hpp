@@ -21,9 +21,10 @@ struct Option {
         : type(type), value(value) {
     }
 };
+void showModalDialog(QWidget* parent, QMessageBox::Icon icon, std::string text, std::string title, int x, int y);
 
-void showInformationMessage(QWidget* parent, std::string text, std::string title = "information");
-void showWarningMessage(QWidget* parent, std::string text, std::string title = "warning");
-void showErrorMessage(QWidget* parent, std::string text, std::string title = "error");
-bool showQuestionMessage(QWidget* parent, std::string text, std::string title = "question");
+void showInformationMessage(QWidget* parent, std::string text, std::string title = "information", int x = -1, int y = -1);
+void showWarningMessage(QWidget* parent, std::string text, std::string title = "warning", int x = -1, int y = -1);
+void showErrorMessage(QWidget* parent, std::string text, std::string title = "error", int x = -1, int y = -1);
+void showQuestionMessage(QWidget* parent, std::string text, std::function<void(bool)> callback, std::string title = "question", int x = -1, int y = -1);
 std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std::string windowName, const std::map<std::string, Option>& options);
