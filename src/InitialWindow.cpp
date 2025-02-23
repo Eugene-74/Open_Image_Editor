@@ -89,7 +89,7 @@ InitialWindow::InitialWindow() {
 
         createMainWindow(data);
         QProgressDialog progressDialog("Checking for updates...", nullptr, 0, 0, this);
-        progressDialog.setWindowModality(Qt::WindowModal);
+        progressDialog.setWindowModality(Qt::ApplicationModal);
         progressDialog.setCancelButton(nullptr);
         progressDialog.show();
         progressDialog.move(0, 0);
@@ -238,7 +238,7 @@ bool checkForUpdate(QProgressDialog* progressDialog) {
                                     std::string outputPath = SAVE_PATH + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
 
                                     QProgressDialog progressDialog;
-                                    progressDialog.setWindowModality(Qt::WindowModal);
+                                    progressDialog.setWindowModality(Qt::ApplicationModal);
                                     progressDialog.setLabelText("Downloading...");
                                     progressDialog.setRange(0, 100);
                                     progressDialog.setValue(0);

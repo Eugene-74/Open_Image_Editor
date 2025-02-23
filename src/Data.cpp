@@ -422,7 +422,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
     std::string initialFolder = fs::path(destinationPath).filename().string();
 
     QProgressDialog progressDialog("Exporting images...", "Cancel", 0, imagesData.imagesData.size());
-    progressDialog.setWindowModality(Qt::WindowModal);
+    progressDialog.setWindowModality(Qt::ApplicationModal);
     progressDialog.show();
 
     int progress = 0;
