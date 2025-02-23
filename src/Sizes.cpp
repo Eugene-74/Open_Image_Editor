@@ -4,8 +4,6 @@
 #include <QWidget>
 
 void Sizes::update() {
-    qDebug() << "Sizes::update";
-
     QWidget* activeWindow = QApplication::activeWindow();
 
     QMainWindow* mainWin = qobject_cast<QMainWindow*>(activeWindow);
@@ -40,38 +38,26 @@ void Sizes::update() {
     screenGeometry = screenR.size() / pixelRatio;
     if (screenGeometry.width() < screenGeometry.height()) {
         linkButton = QSize(screenGeometry.width() * 1 / 20, screenGeometry.width() * 1 / 20);
-        // linkButtons = QSize(screenGeometry.width() * 1 / 20 * 2, screenGeometry.width() * 1 / 20);
     } else {
         linkButton = QSize(screenGeometry.height() * 1 / 20, screenGeometry.height() * 1 / 20);
-        // linkButtons = QSize(screenGeometry.height() * 1 / 20 * 2, screenGeometry.height() * 1 / 20);
     }
-    qDebug() << "Sizes::update done";
 
     imagesEditorSizes->update();
-    qDebug() << "Sizes::update done1";
-
     imagesBoothSizes->update();
-    qDebug() << "Sizes::update done2";
-
     mainWindowSizes->update();
-    qDebug() << "Sizes::update done3";
 }
 
 void Sizes::ImagesEditorSizes::update() {
-    qDebug() << "Sizes::ImagesEditorSizes::update";
     if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height()) {
         actionSize = QSize((parentSizes->screenGeometry.width() * 1 / 24) / parentSizes->pixelRatio, (parentSizes->screenGeometry.width() * 1 / 24) / parentSizes->pixelRatio);
     } else {
         actionSize = QSize((parentSizes->screenGeometry.height() * 1 / 24) / parentSizes->pixelRatio, (parentSizes->screenGeometry.height() * 1 / 24) / parentSizes->pixelRatio);
     }
-    qDebug() << "Sizes::ImagesEditorSizes::update 1";
 
     previewSize = (parentSizes->screenGeometry * 1 / 12);
     mainImageSize = (parentSizes->screenGeometry * 4 / 6);
 
-    bigImage = parentSizes->screenGeometry - QSize(0, parentSizes->linkButton.height()) - QSize(mainLayoutMargins[0] + mainLayoutMargins[2], mainLayoutMargins[1] + mainLayoutMargins[3]) - QSize(mainLayoutSpacing * 0, mainLayoutSpacing * 2)
-               // TODO pk 100 ???
-               - QSize(0, 100);
+    bigImage = parentSizes->screenGeometry - QSize(0, parentSizes->linkButton.height()) - QSize(mainLayoutMargins[0] + mainLayoutMargins[2], mainLayoutMargins[1] + mainLayoutMargins[3]) - QSize(mainLayoutSpacing * 0, mainLayoutSpacing * 2);
 }
 
 void Sizes::ImagesBoothSizes::update() {
@@ -105,9 +91,7 @@ void Sizes::MainWindowSizes::update() {
 }
 
 Sizes::Sizes() {
-    qDebug() << "Sizes::Sizes";
     imagesEditorSizes = new ImagesEditorSizes(this);
-    qDebug() << "Sizes::Sizes 1";
     imagesBoothSizes = new ImagesBoothSizes(this);
     mainWindowSizes = new MainWindowSizes(this);
     update();

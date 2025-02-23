@@ -94,9 +94,7 @@ InitialWindow::InitialWindow() {
         progressDialog.show();
         progressDialog.move(0, 0);
         QApplication::processEvents();
-        qDebug() << "Checking for updates...";
         checkForUpdate(&progressDialog);
-        qDebug() << "Checking for updates done";
         progressDialog.close();
     });
 }
