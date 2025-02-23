@@ -8,7 +8,7 @@ for /f "tokens=1,2 delims==" %%a in (%~dp0..\AppConfig.txt) do (
 mkdir build
 cd build
 
-cmake -G "Ninja" ..
+cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release ..
     
 cmake --build . --config Release
 
