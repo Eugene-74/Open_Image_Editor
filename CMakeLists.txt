@@ -109,7 +109,9 @@ if(WIN32)
     add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
 
 
-    target_link_options(${PROJECT_NAME} PRIVATE -mwindows)
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        target_link_options(${PROJECT_NAME} PRIVATE -mwindows)
+    endif()
 
     # Liaison des bibliothèques
     target_link_libraries(${PROJECT_NAME} 
