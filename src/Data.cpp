@@ -673,6 +673,7 @@ void Data::sortImagesData(QProgressDialog& progressDialog) {
     progressDialog.setLabelText("Loading imagesData ...");
     progressDialog.setValue(0);
     progressDialog.setMaximum(imagesData.get()->size());
+    progressDialog.show();
     QApplication::processEvents();
 
     int progress = 0;
