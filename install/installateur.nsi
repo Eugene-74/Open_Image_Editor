@@ -15,7 +15,7 @@ LicenseData "..\build\release\LICENSE"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 
-!define MUI_FINISHPAGE_RUN "$INSTDIR\start.bat"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\bin\${APP_NAME}-${APP_VERSION}.exe"
 !insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_LANGUAGE "English"
@@ -44,7 +44,8 @@ SectionEnd
 
 
 Section "Create Shortcuts" SEC01
-    CreateShortcut "$DESKTOP\${LNK_APP_NAME}.lnk" "$INSTDIR\launch.vbs" "$INSTDIR\launch.vbs" "$INSTDIR\icon.ico"
+
+    CreateShortcut "$DESKTOP\${LNK_APP_NAME}.lnk" "$INSTDIR\bin\${APP_NAME}-${APP_VERSION}.exe" "$INSTDIR\bin\${APP_NAME}-${APP_VERSION}.exe" "$INSTDIR\icon.ico"
 SectionEnd
 
 Section "Uninstall"

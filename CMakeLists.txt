@@ -10,8 +10,8 @@ project(${APP_NAME}-${APP_VERSION} VERSION ${APP_VERSION})
 
 
 if(WIN32)
-
     message(STATUS "Configuring for Windows")
+
     # Chemin Qt
     set(CMAKE_PREFIX_PATH "C:/msys64/mingw64")
 
@@ -107,6 +107,9 @@ if(WIN32)
 
     # Création de l'exécutable
     add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
+
+
+    target_link_options(${PROJECT_NAME} PRIVATE -mwindows)
 
     # Liaison des bibliothèques
     target_link_libraries(${PROJECT_NAME} 

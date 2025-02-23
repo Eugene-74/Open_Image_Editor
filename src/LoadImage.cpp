@@ -14,6 +14,7 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
     QProgressDialog progressDialog(parent);
     progressDialog.setWindowModality(Qt::ApplicationModal);
     progressDialog.setAutoClose(false);
+
     // Necessaire : sinon s'affiche tout seul au bout de 5 s
     progressDialog.show();
     progressDialog.hide();
