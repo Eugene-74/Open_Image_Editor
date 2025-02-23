@@ -25,6 +25,8 @@ const int PRE_LOAD_RADIUS_IMAGE_BOOTH = 5;
 
 const int TIME_UNDO_VISUALISATION = 500;
 
+const int TIME_BEFORE_REZISE = 100;
+
 const std::string CLICK_BACKGROUND_COLOR = "#9c9c9c";
 const std::string HOVER_BACKGROUND_COLOR = "#b3b3b3";
 const std::string BACKGROUND_COLOR = "transparent";

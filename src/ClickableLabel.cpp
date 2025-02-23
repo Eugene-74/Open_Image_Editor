@@ -1,7 +1,7 @@
 #include "ClickableLabel.hpp"
 
-ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QString toolTip, QWidget* parent, QSize size, bool setSize, int thumbnail, bool square, bool force)
-    : QLabel(parent) {
+ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QString toolTip, QWidget* parent, QSize* sizePtr, bool setSize, int thumbnail, bool square, bool force)
+    : QLabel(parent), sizePtr(sizePtr) {
     initial_border_color = border_color;
     initial_hover_border_color = hover_border_color;
     initial_background_color = background_color;
@@ -11,24 +11,28 @@ ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QString too
         setToolTip(toolTip);
     }
 
-    QImage qImage = data->loadImage(this, imagePath.toStdString(), size, setSize, thumbnail, true, square, true, force);
+    QImage qImage = data->loadImage(this, imagePath.toStdString(), *sizePtr, setSize, thumbnail, true, square, true, force);
 
     if (!qImage.isNull()) {
-        setPixmap(QPixmap::fromImage(qImage).scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        setPixmap(QPixmap::fromImage(qImage).scaled(*sizePtr, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         setCursor(Qt::PointingHandCursor);
     } else {
         setText("Error : null image");
     }
 
     if (setSize)
-        setFixedSize(size);
+        setFixedSize(*sizePtr);
+    // resize(*sizePtr);
     else {
         QSize scaledSize = qImage.size();
-        scaledSize.scale(size, Qt::KeepAspectRatio);
+        scaledSize.scale(*sizePtr, Qt::KeepAspectRatio);
         setFixedSize(scaledSize);
+        // resize(scaledSize);
     }
 
     this->setAlignment(Qt::AlignCenter);
+
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
     setMouseTracking(true);
 
@@ -262,4 +266,14 @@ void ClickableLabel::setLogoEnabled() {
 void ClickableLabel::setLogoDisabled() {
     setLogoVisible(false);
     update();
+}
+
+void ClickableLabel::resizeEvent(QResizeEvent* event) {
+    // qDebug() << "ClickableLabel::resizeEvent : " << *sizePtr;
+    // setFixedSize(*sizePtr);
+
+    // if (!pixmap().isNull()) {
+    //     setPixmap(pixmap().scaled(event->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    // }
+    QLabel::resizeEvent(event);
 }

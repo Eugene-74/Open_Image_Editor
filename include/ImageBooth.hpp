@@ -19,17 +19,16 @@
 class ImageBooth : public QMainWindow {
     Q_OBJECT
 
-   protected:
-    // void keyPressEvent(QKeyEvent* event) override;
-    void keyReleaseEvent(QKeyEvent* event) override;
-    // void wheelEvent(QWheelEvent* event) override;
-
    public:
     ImageBooth(Data* dat, QWidget* parent = nullptr);
     ~ImageBooth() {}
     void reload();
-
     void clear();
+
+   protected:
+    // void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
+    // void wheelEvent(QWheelEvent* event) override;
 
    private:
     int imageShiftSelected = -1;
@@ -52,9 +51,9 @@ class ImageBooth : public QMainWindow {
     QVBoxLayout* mainLayout;
     QVBoxLayout* linesLayout;
 
-    QSize imageSize = data->sizes.imagesBoothSizes->imageSize;
-    QSize actionSize = data->sizes.imagesEditorSizes->actionSize;
-    QSize realImageSize = data->sizes.imagesBoothSizes->realImageSize;
+    QSize* imageSize = &data->sizes.imagesBoothSizes->imageSize;
+    QSize* actionSize = &data->sizes.imagesEditorSizes->actionSize;
+    QSize* realImageSize = &data->sizes.imagesBoothSizes->realImageSize;
 
     QHBoxLayout* scrollLayout;
 

@@ -31,7 +31,7 @@ class ClickableLabel : public QLabel {
 
     QPixmap defaultPixmap;
 
-    explicit ClickableLabel(Data* data, const QString& i, QString toolTip = "", QWidget* parent = nullptr, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
+    explicit ClickableLabel(Data* data, const QString& i, QString toolTip = "", QWidget* parent = nullptr, QSize* sizePtr = new QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
 
    signals:
     void clicked();
@@ -46,10 +46,13 @@ class ClickableLabel : public QLabel {
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
    private:
     int border = 0;
     int border_radius = 5;
+
+    QSize* sizePtr;
 
     QString logoText = "";
     bool logoVisible = false;

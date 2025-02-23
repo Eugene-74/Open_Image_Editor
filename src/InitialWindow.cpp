@@ -1,18 +1,135 @@
 #include "InitialWindow.hpp"
 
+InitialWindow::InitialWindow() {
+    startLog();
+
+    resizeTimer = new QTimer(this);
+    resizeTimer->setInterval(TIME_BEFORE_REZISE);
+    resizeTimer->setSingleShot(true);
+    connect(resizeTimer, &QTimer::timeout, this, [this]() {
+        if (imageEditor) {
+            data->sizes.update();
+            clearImageEditor();
+            createImageEditor(data);
+        }
+        if (imageBooth) {
+            data->sizes.update();
+            clearImageBooth();
+            createImageBooth(data);
+        }
+        if (mainWindow) {
+            data->sizes.update();
+            clearMainWindow();
+            createMainWindow(data);
+        }
+        emit resize();
+    });
+
+    QTimer::singleShot(1, this, [this]() {
+        qDebug() << "Application started at:" << getCurrentFormattedDate();
+        data = new Data();
+
+        QTranslator translator;
+        QString locale = QLocale::system().name();
+        QString language = locale.section('_', 0, 0);
+        if (translator.load(":/translations/open_image_editor_" + language + ".qm")) {
+            // app.installTranslator(&translator);
+        } else {
+            qDebug() << "Translation file not found for language:" << language;
+        }
+
+        ImagesData imagesData(std::vector<ImageData>{});
+        ImagesData deletedImagesData(std::vector<ImageData>{});
+        data->imageCache = new std::map<std::string, QImageAndPath>();
+
+        data->imagesData = imagesData;
+        data->deletedImagesData = deletedImagesData;
+        data->darkMode = isDarkMode();
+
+        try {
+            data->loadData();
+        } catch (const std::exception& e) {
+            qDebug() << "Error loading data: " << e.what();
+            showErrorMessage(nullptr, "Error loading data: data corrupted");
+        }
+
+        const QList<QScreen*> screens = QGuiApplication::screens();
+        QScreen* screen = QGuiApplication::primaryScreen();
+        screen = screens[0];
+
+        QRect screenR = screen->availableGeometry();
+
+        pixelRatio = screen->devicePixelRatio();
+
+        screenGeometry = screenR.size() / pixelRatio;
+
+        setWindowTitle("EasyImageEditor : Initial Window");
+
+        QVBoxLayout* windowLayout = new QVBoxLayout();
+
+        centralWidget = new QWidget(this);
+        centralWidget->setLayout(windowLayout);
+        setCentralWidget(centralWidget);
+
+        layout = new QVBoxLayout;
+        windowLayout->addLayout(layout);
+
+        linkLayout = new QHBoxLayout();
+
+        linkButton = &data->sizes.linkButton;
+        imageDiscord = createImageDiscord();
+        imageGithub = createImageGithub();
+        imageOption = createImageOption();
+
+        linkLayout->addWidget(imageDiscord);
+        linkLayout->addWidget(imageGithub);
+        linkLayout->addWidget(imageOption);
+        linkLayout->setAlignment(Qt::AlignBottom | Qt::AlignRight);
+        windowLayout->addLayout(linkLayout);
+
+        createMainWindow(data);
+        QProgressDialog progressDialog("Checking for updates...", nullptr, 0, 0, this);
+        progressDialog.setWindowModality(Qt::WindowModal);
+        progressDialog.setCancelButton(nullptr);
+        progressDialog.show();
+        progressDialog.move(0, 0);
+        QApplication::processEvents();
+        qDebug() << "Checking for updates...";
+        checkForUpdate(&progressDialog);
+        qDebug() << "Checking for updates done";
+        progressDialog.close();
+    });
+}
+
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
 
-size_t WriteCallbackBis(void* contents, size_t size, size_t nmemb, void* userp) {
+size_t WriteCallbackAndSave(void* contents, size_t size, size_t nmemb, void* userp) {
     std::ofstream* out = static_cast<std::ofstream*>(userp);
+    static_cast<std::ofstream*>(userp);
     size_t totalSize = size * nmemb;
     out->write(static_cast<char*>(contents), totalSize);
     return totalSize;
 }
+int progressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded) {
+    QProgressDialog* progressDialog = static_cast<QProgressDialog*>(ptr);
+    if (totalToDownload > 0) {
+        double progress = (nowDownloaded / (double)totalToDownload) * 100.0;
+        progressDialog->setValue((int)progress);
+        QApplication::processEvents();
+    }
+    return 0;
+}
 
-std::string getLatestGitHubTag() {
+int progressCallbackBis(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded) {
+    QProgressDialog* progressDialog = static_cast<QProgressDialog*>(ptr);
+    QApplication::processEvents();
+    return 0;
+}
+
+std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
     CURL* curl;
     CURLcode res;
     std::string readBuffer;
@@ -34,6 +151,10 @@ std::string getLatestGitHubTag() {
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
         curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+
+        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progressCallbackBis);
+        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+        curl_easy_setopt(curl, CURLOPT_XFERINFODATA, progressDialog);
 
         res = curl_easy_perform(curl);
         if (res == CURLE_OPERATION_TIMEDOUT) {
@@ -62,16 +183,6 @@ std::string getLatestGitHubTag() {
     return "";
 }
 
-int progressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded) {
-    QProgressDialog* progressDialog = static_cast<QProgressDialog*>(ptr);
-    if (totalToDownload > 0) {
-        double progress = (nowDownloaded / (double)totalToDownload) * 100.0;
-        progressDialog->setValue((int)progress);
-        QApplication::processEvents();
-    }
-    return 0;
-}
-
 bool downloadFile(const std::string& url, const std::string& outputPath, QProgressDialog* progressDialog) {
     CURL* curl;
     CURLcode res;
@@ -83,7 +194,7 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallbackBis);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallbackAndSave);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outFile);
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
@@ -103,7 +214,7 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
     return res == CURLE_OK;
 }
 
-bool checkForUpdate() {
+bool checkForUpdate(QProgressDialog* progressDialog) {
     if (!fs::exists(SAVE_PATH)) {
         fs::create_directories(SAVE_PATH);
     }
@@ -113,7 +224,7 @@ bool checkForUpdate() {
         }
     }
 
-    std::string latestTag = getLatestGitHubTag();
+    std::string latestTag = getLatestGitHubTag(progressDialog);
 
     int latestMajor = 0, latestMinor = 0, latestPatch = 0;
     if (!latestTag.empty()) {
@@ -180,78 +291,6 @@ void startLog() {
         logStream << msg << Qt::endl;
         logStream.flush();
         std::cerr << msg.toStdString() << std::endl;
-    });
-}
-
-InitialWindow::InitialWindow() {
-    startLog();
-
-    QTimer::singleShot(100, this, [this]() {
-        data = new Data();
-
-        qDebug() << "Application started at:" << getCurrentFormattedDate();
-
-        QTranslator translator;
-        QString locale = QLocale::system().name();
-        QString language = locale.section('_', 0, 0);
-        if (translator.load(":/translations/open_image_editor_" + language + ".qm")) {
-            // app.installTranslator(&translator);
-        } else {
-            qDebug() << "Translation file not found for language:" << language;
-        }
-
-        ImagesData imagesData(std::vector<ImageData>{});
-        ImagesData deletedImagesData(std::vector<ImageData>{});
-        data->imageCache = new std::map<std::string, QImageAndPath>();
-
-        data->imagesData = imagesData;
-        data->deletedImagesData = deletedImagesData;
-        data->darkMode = isDarkMode();
-
-        try {
-            data->loadData();
-        } catch (const std::exception& e) {
-            qDebug() << "Error loading data: " << e.what();
-            showErrorMessage(nullptr, "Error loading data: data corrupted");
-        }
-
-        const QList<QScreen*> screens = QGuiApplication::screens();
-        QScreen* screen = QGuiApplication::primaryScreen();
-        screen = screens[0];
-
-        QRect screenR = screen->availableGeometry();
-
-        pixelRatio = screen->devicePixelRatio();
-
-        screenGeometry = screenR.size() / pixelRatio;
-
-        setWindowTitle("EasyImageEditor : Initial Window");
-
-        QVBoxLayout* windowLayout = new QVBoxLayout();
-
-        centralWidget = new QWidget(this);
-        centralWidget->setLayout(windowLayout);
-        setCentralWidget(centralWidget);
-
-        layout = new QVBoxLayout;
-        windowLayout->addLayout(layout);
-        QHBoxLayout* linkLayout = new QHBoxLayout();
-
-        linkLayout->addWidget(createImageDiscord());
-        linkLayout->addWidget(createImageGithub());
-        linkLayout->addWidget(createImageOption());
-        linkLayout->setAlignment(Qt::AlignRight);
-        windowLayout->addLayout(linkLayout);
-
-        createMainWindow(data);
-        QProgressDialog progressDialog("Checking for updates...", nullptr, 0, 0, this);
-        progressDialog.setWindowModality(Qt::WindowModal);
-        progressDialog.setCancelButton(nullptr);
-        progressDialog.show();
-        progressDialog.move(0, 0);
-        QApplication::processEvents();
-        checkForUpdate();
-        progressDialog.close();
     });
 }
 
@@ -413,35 +452,56 @@ void InitialWindow::showMainWindow() {
 }
 
 ClickableLabel* InitialWindow::createImageDiscord() {
-    ClickableLabel* imageDiscord = new ClickableLabel(data, ICON_PATH_DISCORD, TOOL_TIP_DISCORD, this, QSize(data->sizes.linkButtons.width() / 2, data->sizes.linkButtons.height()), false, 0, true);
-    imageDiscord->setInitialBackground("transparent", "#b3b3b3");
+    ClickableLabel* newImageDiscord = new ClickableLabel(data, ICON_PATH_DISCORD, TOOL_TIP_DISCORD, this, linkButton, false, 0, true);
+    newImageDiscord->setInitialBackground("transparent", "#b3b3b3");
 
-    connect(imageDiscord, &ClickableLabel::clicked, [this]() {
+    connect(newImageDiscord, &ClickableLabel::clicked, [this]() {
         QDesktopServices::openUrl(QUrl("https://discord.gg/Q2HhZucmxU"));
     });
 
-    return imageDiscord;
+    connect(this, &InitialWindow::resize, newImageDiscord, [this]() {
+        ClickableLabel* newImageDiscord = createImageDiscord();
+        linkLayout->replaceWidget(imageDiscord, newImageDiscord);
+        imageDiscord->deleteLater();
+        imageDiscord = newImageDiscord;
+    });
+
+    return newImageDiscord;
 }
 
 ClickableLabel* InitialWindow::createImageGithub() {
-    ClickableLabel* imageGithub = new ClickableLabel(data, ICON_PATH_GITHUB, TOOL_TIP_GITHUB, this, QSize(data->sizes.linkButtons.width() / 2, data->sizes.linkButtons.height()), false, 0, true);
-    imageGithub->setInitialBackground("transparent", "#b3b3b3");
+    ClickableLabel* newImageGithub = new ClickableLabel(data, ICON_PATH_GITHUB, TOOL_TIP_GITHUB, this, linkButton, false, 0, true);
+    newImageGithub->setInitialBackground("transparent", "#b3b3b3");
 
-    connect(imageGithub, &ClickableLabel::clicked, [this]() {
+    connect(newImageGithub, &ClickableLabel::clicked, [this]() {
         QDesktopServices::openUrl(QUrl("https://github.com/Eugene-74/Open_Image_Editor"));
     });
 
-    return imageGithub;
+    connect(this, &InitialWindow::resize, newImageGithub, [this]() {
+        ClickableLabel* newImageGithub = createImageGithub();
+        linkLayout->replaceWidget(imageGithub, newImageGithub);
+        imageGithub->deleteLater();
+        imageGithub = newImageGithub;
+    });
+
+    return newImageGithub;
 }
 ClickableLabel* InitialWindow::createImageOption() {
-    ClickableLabel* imageOption = new ClickableLabel(data, ICON_PATH_OPTION, TOOL_TIP_PARAMETER, this, QSize(50, 50), false, 0, true);
-    imageOption->setInitialBackground("transparent", "#b3b3b3");
+    ClickableLabel* newImageOption = new ClickableLabel(data, ICON_PATH_OPTION, TOOL_TIP_PARAMETER, this, linkButton, false, 0, true);
+    newImageOption->setInitialBackground("transparent", "#b3b3b3");
 
-    connect(imageOption, &ClickableLabel::clicked, [this]() {
+    connect(newImageOption, &ClickableLabel::clicked, [this]() {
         openOption();
     });
 
-    return imageOption;
+    connect(this, &InitialWindow::resize, newImageOption, [this]() {
+        ClickableLabel* newImageOption = createImageOption();
+        linkLayout->replaceWidget(imageOption, newImageOption);
+        imageOption->deleteLater();
+        imageOption = newImageOption;
+    });
+
+    return newImageOption;
 }
 
 void InitialWindow::openOption() {
@@ -469,4 +529,15 @@ bool isDarkMode() {
         RegCloseKey(hKey);
     }
     return darkMode;
+}
+
+void InitialWindow::resizeEvent(QResizeEvent* event) {
+    QWidget* widget = QApplication::activeWindow();
+    if (dynamic_cast<QMainWindow*>(widget)) {
+        if (resizeTimer->isActive()) {
+            resizeTimer->stop();
+        }
+        resizeTimer->start();
+    }
+    QMainWindow::resizeEvent(event);
 }

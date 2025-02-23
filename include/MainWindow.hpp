@@ -19,7 +19,10 @@ class MainWindow : public QMainWindow {
     Data* data;
     QHBoxLayout* mainLayout;
     QHBoxLayout* switchLayout;
+
+    QSize* actionSize = &data->sizes.mainWindowSizes->actionSize;
    signals:
     void switchToImageBooth();
     void switchToImageEditor();
+    
 };

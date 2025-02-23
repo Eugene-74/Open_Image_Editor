@@ -4,30 +4,36 @@
 #include <QRect>
 #include <QScreen>
 #include <QSize>
+#include <QWidget>
 
 class Sizes {
    public:
+    Sizes();
     // Membres de Sizes
     QScreen* screen;
     QRect screenR;
     QSize screenGeometry;
-    QSize linkButtons;
+
+    QSize linkButton;
+    // QSize linkButtons;
 
     int pixelRatio;
 
     class ImagesEditorSizes;
     class ImagesBoothSizes;
+    class MainWindowSizes;
 
     ImagesEditorSizes* imagesEditorSizes;
     ImagesBoothSizes* imagesBoothSizes;
-
-    Sizes();
+    MainWindowSizes* mainWindowSizes;
+    void update();
 };
 
 class Sizes::ImagesEditorSizes {
    public:
-    ImagesEditorSizes(Sizes* parent);
-
+    ImagesEditorSizes(Sizes* parent)
+        : parentSizes(parent) {
+          };
     QSize previewSize;
     QSize mainImageSize;
     QSize actionSize;
@@ -37,13 +43,17 @@ class Sizes::ImagesEditorSizes {
 
     QSize bigImage;
 
+    void update();
+
    private:
     Sizes* parentSizes;
 };
 
 class Sizes::ImagesBoothSizes {
    public:
-    ImagesBoothSizes(Sizes* parent);
+    ImagesBoothSizes(Sizes* parent)
+        : parentSizes(parent) {
+          };
     QSize imageSize;
     QSize realImageSize;
     QSize scrollAreaSize;
@@ -53,6 +63,21 @@ class Sizes::ImagesBoothSizes {
 
     int widthImageNumber;
     int heightImageNumber;
+
+    void update();
+
+   private:
+    Sizes* parentSizes;
+};
+
+class Sizes::MainWindowSizes {
+   public:
+    MainWindowSizes(Sizes* parent)
+        : parentSizes(parent) {
+          };
+    QSize actionSize;
+
+    void update();
 
    private:
     Sizes* parentSizes;

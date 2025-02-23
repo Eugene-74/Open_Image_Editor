@@ -707,14 +707,14 @@ ClickableLabel* ImageEditor::createImageBefore() {
     ClickableLabel* buttonImageBeforeNew = new ClickableLabel(data, ICON_PATH_BEFORE, "", this, actionSize);
     buttonImageBeforeNew->setInitialBackground("transparent", "#b3b3b3");
 
-    buttonImageBeforeNew->setFixedSize(actionSize);
+    // buttonImageBeforeNew->setFixedSize(&actionSize);
 
     if (data->imagesData.getImageNumber() == 0) {
         buttonImageBeforeNew->setDisabled(true);
     }
 
     connect(buttonImageBeforeNew, &ClickableLabel::clicked, [this]() { this->previousImage(); });
-    buttonImageBeforeNew->setFixedSize(actionSize);
+    // buttonImageBeforeNew->setFixedSize(&actionSize);
 
     return buttonImageBeforeNew;
 }
@@ -733,7 +733,7 @@ ClickableLabel* ImageEditor::createImageNext() {
 
     connect(buttonImageNextNew, &ClickableLabel::clicked, [this]() { this->nextImage(); });
 
-    buttonImageNextNew->setFixedSize(actionSize);
+    // buttonImageNextNew->setFixedSize(&actionSize);
 
     return buttonImageNextNew;
 }
@@ -759,7 +759,7 @@ MainImage* ImageEditor::createImageLabel() {
         return nullptr;
     }
 
-    MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, mainImageSize, false);
+    MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, *mainImageSize, false);
     imageLabelNew->personsEditor = personsEditor;
 
     startDlib();
