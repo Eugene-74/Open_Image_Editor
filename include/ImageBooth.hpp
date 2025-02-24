@@ -23,7 +23,7 @@ class ImageBooth : public QMainWindow {
     ImageBooth(Data* dat, QWidget* parent = nullptr);
     ~ImageBooth() {}
     void reload();
-    void clear();
+    // void clear();
 
    protected:
     // void keyPressEvent(QKeyEvent* event) override;
@@ -31,13 +31,12 @@ class ImageBooth : public QMainWindow {
     // void wheelEvent(QWheelEvent* event) override;
 
    private:
+    QTimer* updateTimer;
     int imageShiftSelected = -1;
     bool imageShiftSelectedSelect;
 
     Data* data;
     int imageNumber;
-    int loadedImageNumber = 0;
-    int done = 0;
 
     int lastLineNbr = 0;
 
@@ -81,11 +80,10 @@ class ImageBooth : public QMainWindow {
     ClickableLabel* getClickableLabelIfExist(int imageNbr);
     ClickableLabel* getClickableLabelIfExist(int imageNbr, QHBoxLayout*& lineLayout);
 
-    void gotToImage(int nbr);
+    void gotToImage(int nbr, bool force = false);
     void addNbrToSelectedImages(int nbr);
     void removeNbrToSelectedImages(int nbr);
 
-    bool isLineVisible(int lineIndex);
     bool isImageVisible(int imageIndex);
 
     void createButtons();
@@ -102,8 +100,7 @@ class ImageBooth : public QMainWindow {
 
     void createLine();
     ClickableLabel* createImage(std::string imagePath, int nbr);
-    void setImageNumber(int nbr);
-    void updateVisibleImages();
+    void updateVisibleImages(bool force = false);
 
    signals:
     void switchToImageEditor();

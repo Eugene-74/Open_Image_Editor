@@ -10,8 +10,7 @@ cd build
 
 if exist %APP_NAME%-%APP_VERSION%.exe del %APP_NAME%-%APP_VERSION%.exe
 
-REM Configure CMake to use ccache
-cmake -G "Ninja" ..
+cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Build ..
 
 cmake --build .
 

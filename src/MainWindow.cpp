@@ -54,21 +54,3 @@ MainWindow::MainWindow(Data* dat, QWidget* parent)
 
     mainLayout->addLayout(switchLayout);
 }
-
-void MainWindow::clear() {
-    QTimer::singleShot(100, this, [this]() {
-        if (switchLayout) {
-            QLayoutItem* item;
-            while ((item = switchLayout->takeAt(0)) != nullptr) {
-                if (item->widget()) {
-                    item->widget()->disconnect();
-                    item->widget()->hide();
-                    item->widget()->deleteLater();
-                }
-                delete item;
-            }
-            delete switchLayout;
-            switchLayout = nullptr;
-        }
-    });
-}

@@ -36,6 +36,7 @@ const QString IMAGE_BOOTH_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : I
 const QString MAIN_WINDOW_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Booth Window";
 
 const int IMAGE_BOOTH_IMAGE_QUALITY = 256;  // 128 or 256 or 512
+const int IMAGE_BOOTH_IMAGE_POOR_QUALITY = 16;
 
 #ifdef _WIN32
 const std::string SAVE_PATH = APPDATA_PATH.toStdString() + "/" + APP_NAME;

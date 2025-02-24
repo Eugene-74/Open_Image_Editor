@@ -14,8 +14,6 @@ class MainWindow : public QMainWindow {
     MainWindow(Data* dat, QWidget* parent = nullptr);
     ~MainWindow() {}
 
-    void clear();
-
     Data* data;
     QHBoxLayout* mainLayout;
     QHBoxLayout* switchLayout;
@@ -24,5 +22,4 @@ class MainWindow : public QMainWindow {
    signals:
     void switchToImageBooth();
     void switchToImageEditor();
-    
 };

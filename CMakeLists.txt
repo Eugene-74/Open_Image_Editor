@@ -8,6 +8,9 @@ endforeach()
 
 project(${APP_NAME}-${APP_VERSION} VERSION ${APP_VERSION})
 
+# Option pour activer les instructions AVX
+option(USE_AVX_INSTRUCTIONS "Use AVX instructions" ON)
+
 
 if(WIN32)
     message(STATUS "Configuring for Windows")

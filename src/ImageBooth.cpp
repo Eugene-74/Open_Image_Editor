@@ -3,9 +3,10 @@
 ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
-    imageNumber = 0;
-
+    imageNumber = data->imagesData.getImageNumber();
     data->clearCache();
+
+    lastLineNbr = 0;
 
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
@@ -30,7 +31,8 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     linesLayout = new QVBoxLayout(scrollWidget);
     scrollArea->setWidget(scrollWidget);
 
-    scrollWidget->setMinimumHeight(data->sizes.imagesBoothSizes->realImageSize.height() * (data->imagesData.get()->size() / data->sizes.imagesBoothSizes->widthImageNumber) + 1);
+    // marche pas jsp pk il manque 1/2 lignes a la fin
+    scrollWidget->setMinimumHeight(data->sizes.imagesBoothSizes->realImageSize.height() * (data->imagesData.get()->size() / data->sizes.imagesBoothSizes->widthImageNumber));
 
     linesLayout->setAlignment(Qt::AlignTop);
     linesLayout->setSpacing(data->sizes.imagesBoothSizes->linesLayoutSpacing);
@@ -43,45 +45,35 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     spacer = new QSpacerItem(0, 0);
     linesLayout->insertSpacerItem(0, spacer);
 
-    int index = 0;
     for (int i = 0; i < maxVisibleLines; ++i) {
         createLine();
     }
 
-    int spacerHeight = scrollArea->verticalScrollBar()->value();
-    int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
-    int lineNbr = spacerHeight / imageHeight;
-
     connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, this, &ImageBooth::onScroll);
+
+    // Make sure that the scrollArea is well initialized (doesn't work without)
+    QTimer::singleShot(1, this, [this]() {
+        gotToImage(imageNumber, true);
+    });
 }
 
-void ImageBooth::updateVisibleImages() {
-    QRect visibleRect = scrollArea->viewport()->rect();
-
+void ImageBooth::updateVisibleImages(bool force) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
+    qDebug() << "spacerHeight" << spacerHeight;
     int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
     int lineNbr = spacerHeight / imageHeight;
     int difLineNbr = lineNbr - lastLineNbr;
 
-    if (difLineNbr == 0) {
+    if (difLineNbr == 0 && !force) {
         return;
     }
-
+    qDebug() << spacerHeight;
     spacer->changeSize(0, spacerHeight);
     updateImages();
     linesLayout->invalidate();
     lastLineNbr = lineNbr;
-}
-
-// Check if a line is visible
-bool ImageBooth::isLineVisible(int lineIndex) {
-    QRect visibleRect = scrollArea->viewport()->rect();
-    int lineTop = lineIndex * data->sizes.imagesBoothSizes->realImageSize.height();
-    int lineBottom = lineTop + data->sizes.imagesBoothSizes->realImageSize.height();
-
-    return (lineBottom > visibleRect.top() + scrollArea->verticalScrollBar()->value() && lineTop < visibleRect.bottom() + scrollArea->verticalScrollBar()->value());
 }
 
 // Check if an image is visible
@@ -109,15 +101,10 @@ void ImageBooth::createLine() {
     int nbr = data->sizes.imagesBoothSizes->widthImageNumber;
 
     for (int i = 0; i < nbr; i++) {
-        if (imageNumber >= 0 && imageNumber < data->imagesData.get()->size()) {
-            std::string imagePath = data->imagesData.get()->at(imageNumber).folders.name;
+        if (i < data->imagesData.get()->size()) {
+            std::string imagePath = data->imagesData.get()->at(0).folders.name;
 
-            if (data->imagesData.get()->at(imageNumber).orientation == 0) {
-                data->imagesData.get()->at(imageNumber).loadData();
-            }
-            lineLayout->addWidget(createImage(imagePath, imageNumber));
-
-            imageNumber += 1;
+            lineLayout->addWidget(createImage(imagePath, 0));
         }
     }
 }
@@ -134,12 +121,27 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     if (data->isInCache(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_QUALITY))) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
-        loadedImageNumber += 1;
-    } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_QUALITY)) {
-        imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
-                                         "", this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
+    } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)) {
+        imageButton = new ClickableLabel(data, QString::fromStdString(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)),
+                                         "", this, imageSize, false, 0, true);
 
-        loadedImageNumber += 1;
+        QPointer<ImageBooth> self = this;
+        Data* dataPtr = data;
+        data->loadInCacheAsync(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_QUALITY), [self, dataPtr, imagePath, nbr]() {
+            if (!self.isNull()) {
+                QHBoxLayout* lineLayout = nullptr;
+                ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
+                if (lastImageButton != nullptr) {
+                    ClickableLabel* newImageButton = self->createImage(imagePath, nbr);
+                    if (lineLayout != nullptr) {
+                        lineLayout->replaceWidget(lastImageButton, newImageButton);
+                        lastImageButton->deleteLater();
+                    } else {
+                        newImageButton->deleteLater();
+                    }
+                }
+            }
+        });
     } else {
         imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING,
                                          "", this, imageSize, false, 0, true);
@@ -149,30 +151,22 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
         data->loadInCacheAsync(imagePath, [self, dataPtr, imagePath, nbr]() {
             qDebug() << "Load image : " << imagePath;
-            try {
-                dataPtr->createAllThumbnailIfNotExists(imagePath, 512);
+            dataPtr->createAllThumbnailIfNotExists(imagePath, 512);
 
-                dataPtr->unloadFromCache(imagePath);
+            dataPtr->unloadFromCache(imagePath);
 
-                if (!self.isNull()) {
-                    // TODO changer le widget plutot pour eviter les image enorme
-                    self->done += 1;
-                    QHBoxLayout* lineLayout = nullptr;
-                    ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
-                    if (lastImageButton != nullptr) {
-                        ClickableLabel* newImageButton = self->createImage(imagePath, nbr);
-                        if (lineLayout != nullptr) {
-                            lineLayout->replaceWidget(lastImageButton, newImageButton);
-                            lastImageButton->deleteLater();
-                        } else {
-                            newImageButton->deleteLater();
-                        }
+            if (!self.isNull()) {
+                QHBoxLayout* lineLayout = nullptr;
+                ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
+                if (lastImageButton != nullptr) {
+                    ClickableLabel* newImageButton = self->createImage(imagePath, nbr);
+                    if (lineLayout != nullptr) {
+                        lineLayout->replaceWidget(lastImageButton, newImageButton);
+                        lastImageButton->deleteLater();
+                    } else {
+                        newImageButton->deleteLater();
                     }
-
-                    self->loadedImageNumber += 1;
                 }
-            } catch (const std::exception& e) {
-                std::cerr << e.what() << '\n';
             }
         });
     }
@@ -342,15 +336,20 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 }
 
 // Go to the line of the image nbr
-void ImageBooth::gotToImage(int nbr) {
+void ImageBooth::gotToImage(int nbr, bool force) {
     int imageLine = nbr / data->sizes.imagesBoothSizes->widthImageNumber;
     int spacerHeight = imageLine * data->sizes.imagesBoothSizes->realImageSize.height();
+    qDebug() << "ImageBooth::spacerHeight : " << spacerHeight;
+
     scrollArea->verticalScrollBar()->setValue(spacerHeight);
-    updateVisibleImages();
+
+    qDebug() << scrollArea->verticalScrollBar()->value();
+
+    updateVisibleImages(force);
     QCoreApplication::processEvents();
 }
 
-// Add a nbr from the selected images
+// Add a nbr to the selected images
 void ImageBooth::addNbrToSelectedImages(int nbr) {
     auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
     if (it == data->imagesSelected.end()) {
@@ -358,14 +357,14 @@ void ImageBooth::addNbrToSelectedImages(int nbr) {
     }
 }
 
-// remove a nbr from the selected images
+// remove a nbr to the selected images
 void ImageBooth::removeNbrToSelectedImages(int nbr) {
     auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
     if (it != data->imagesSelected.end()) {
         data->imagesSelected.erase(it);
     }
 }
-// TODO faire une fonction pour pas doubler
+
 ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr, QHBoxLayout*& lineLayout) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
@@ -389,28 +388,10 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr, QHBoxLayout*&
 }
 
 ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
-    int spacerHeight = scrollArea->verticalScrollBar()->value();
-    int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
-    spacerHeight = (spacerHeight / imageHeight) * imageHeight;
-
-    int firstImageNbr = spacerHeight / imageHeight * data->sizes.imagesBoothSizes->widthImageNumber;
-    int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->sizes.imagesBoothSizes->widthImageNumber;
-
-    if (imageNbr >= firstImageNbr && imageNbr <= lastImageNbr) {
-        int firstImageLine = firstImageNbr / data->sizes.imagesBoothSizes->widthImageNumber;
-        int imageLine = imageNbr / data->sizes.imagesBoothSizes->widthImageNumber;
-
-        int imageRelativeLine = imageLine - firstImageLine;
-        int imageNbrInLine = imageNbr - imageLine * data->sizes.imagesBoothSizes->widthImageNumber;
-        QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(imageRelativeLine + 1)->layout());
-        ClickableLabel* imageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(imageNbrInLine)->widget());
-
-        return imageButton;
-    }
-    return nullptr;
+    QHBoxLayout* lineLayout = nullptr;
+    return getClickableLabelIfExist(imageNbr, lineLayout);
 }
 
-// Udate images
 void ImageBooth::updateImages() {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
@@ -437,38 +418,6 @@ void ImageBooth::updateImages() {
             }
         }
     }
-}
-
-void ImageBooth::setImageNumber(int nbr) {
-    while (nbr < 0) {
-        nbr += 1;
-    }
-    while (nbr >= data->imagesData.get()->size()) {
-        nbr -= 1;
-    }
-
-    imageNumber = nbr;
-}
-
-void ImageBooth::clear() {
-    QTimer::singleShot(0, this, [this]() {
-        while (QLayoutItem* item = linesLayout->takeAt(0)) {
-            if (QWidget* widget = item->widget()) {
-                widget->deleteLater();
-            }
-            delete item;
-        }
-        delete scrollArea;
-        scrollArea = nullptr;
-
-        while (QLayoutItem* item = actionButtonLayout->takeAt(0)) {
-            if (QWidget* widget = item->widget()) {
-                widget->deleteLater();
-            }
-            delete item;
-        }
-        actionButtonLayout->deleteLater();
-    });
 }
 
 void ImageBooth::keyReleaseEvent(QKeyEvent* event) {

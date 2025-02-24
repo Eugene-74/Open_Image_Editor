@@ -403,14 +403,12 @@ void InitialWindow::clearImageEditor() {
 
 void InitialWindow::clearImageBooth() {
     layout->removeWidget(imageBooth);
-    imageBooth->clear();
     imageBooth->deleteLater();
     imageBooth = nullptr;
 }
 
 void InitialWindow::clearMainWindow() {
     layout->removeWidget(mainWindow);
-    mainWindow->clear();
     mainWindow->deleteLater();
     mainWindow = nullptr;
 }

@@ -108,17 +108,16 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
 
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                              bool setSize, int thumbnail, bool force) {
-    auto it = imageCache->find(imagePath);
-    if (it != imageCache->end()) {
-        return it->second.image;
-    }
-
     if (imagePath.at(0) == ':') {
         if (darkMode) {
             imagePath.insert(imagePath.find_first_of(':') + 1, "/255-255-255-255");
         } else {
             imagePath.insert(imagePath.find_first_of(':') + 1, "/0-0-0-255");
         }
+    }
+    auto it = imageCache->find(imagePath);
+    if (it != imageCache->end()) {
+        return it->second.image;
     }
 
     if (!force) {
@@ -198,7 +197,6 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
             image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         }
     }
-
     (*imageCache)[imagePathbis].image = image;
     (*imageCache)[imagePathbis].imagePath = imagePath;
 
@@ -275,16 +273,16 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
     std::string extension = ".png";
 
     std::string outputImage;
-    if (maxDim == 128) {
-        outputImage = THUMBNAIL_PATH + "/normal/" +
-                      std::to_string(hashValue) + extension;
-    } else if (maxDim == 256) {
-        outputImage = THUMBNAIL_PATH + "/large/" +
-                      std::to_string(hashValue) + extension;
-    } else if (maxDim == 512) {
-        outputImage = THUMBNAIL_PATH + "/x-large/" +
-                      std::to_string(hashValue) + extension;
-    }
+    // if (maxDim == 128) {
+    outputImage = THUMBNAIL_PATH + "/" + std::to_string(maxDim) + "/" +
+                  std::to_string(hashValue) + extension;
+    // } else if (maxDim == 256) {
+    //     outputImage = THUMBNAIL_PATH + "/large/" +
+    //                   std::to_string(hashValue) + extension;
+    // } else if (maxDim == 512) {
+    //     outputImage = THUMBNAIL_PATH + "/x-large/" +
+    //                   std::to_string(hashValue) + extension;
+    // }
 
     if (!fs::exists(fs::path(outputImage).parent_path())) {
         fs::create_directories(fs::path(outputImage).parent_path());
@@ -314,16 +312,16 @@ bool Data::hasThumbnail(const std::string& imagePath, const int maxDim) {
 
     std::string outputImage;
 
-    if (maxDim == 128) {
-        outputImage = THUMBNAIL_PATH + "/normal/" +
-                      std::to_string(hashValue) + extension;
-    } else if (maxDim == 256) {
-        outputImage = THUMBNAIL_PATH + "/large/" +
-                      std::to_string(hashValue) + extension;
-    } else if (maxDim == 512) {
-        outputImage = THUMBNAIL_PATH + "/x-large/" +
-                      std::to_string(hashValue) + extension;
-    }
+    // if (maxDim == 128) {
+    outputImage = THUMBNAIL_PATH + "/" + std::to_string(maxDim) + "/" +
+                  std::to_string(hashValue) + extension;
+    // } else if (maxDim == 256) {
+    //     outputImage = THUMBNAIL_PATH + "/large/" +
+    //                   std::to_string(hashValue) + extension;
+    // } else if (maxDim == 512) {
+    //     outputImage = THUMBNAIL_PATH + "/x-large/" +
+    //                   std::to_string(hashValue) + extension;
+    // }
     return fs::exists(outputImage);
 }
 
@@ -359,16 +357,16 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
 
     std::string outputImage;
 
-    if (size == 128) {
-        outputImage = THUMBNAIL_PATH + "/normal/" +
-                      std::to_string(hashValue) + extension;
-    } else if (size == 256) {
-        outputImage = THUMBNAIL_PATH + "/large/" +
-                      std::to_string(hashValue) + extension;
-    } else if (size == 512) {
-        outputImage = THUMBNAIL_PATH + "/x-large/" +
-                      std::to_string(hashValue) + extension;
-    }
+    // if (size == 128) {
+    outputImage = THUMBNAIL_PATH + "/" + std::to_string(size) + "/" +
+                  std::to_string(hashValue) + extension;
+    // } else if (size == 256) {
+    //     outputImage = THUMBNAIL_PATH + "/large/" +
+    //                   std::to_string(hashValue) + extension;
+    // } else if (size == 512) {
+    //     outputImage = THUMBNAIL_PATH + "/x-large/" +
+    //                   std::to_string(hashValue) + extension;
+    // }
     return outputImage;
 }
 
