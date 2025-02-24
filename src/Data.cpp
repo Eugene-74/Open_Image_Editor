@@ -578,6 +578,11 @@ void Data::saveData() {
         size_t keySize = key.size();
         outFile.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
         outFile.write(key.c_str(), keySize);
+
+        size_t typeSize = option.type.size();
+        outFile.write(reinterpret_cast<const char*>(&typeSize), sizeof(typeSize));
+        outFile.write(option.type.c_str(), typeSize);
+
         size_t valueSize = option.value.size();
         outFile.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
         outFile.write(option.value.c_str(), valueSize);
@@ -618,15 +623,21 @@ void Data::loadData() {
     size_t optionsSize;
     inFile.read(reinterpret_cast<char*>(&optionsSize), sizeof(optionsSize));
     for (size_t i = 0; i < optionsSize; ++i) {
-        std::string key, value;
-        size_t keySize, valueSize;
+        std::string key, type, value;
+        size_t keySize, typeSize, valueSize;
         inFile.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
         key.resize(keySize);
         inFile.read(&key[0], keySize);
+
+        inFile.read(reinterpret_cast<char*>(&typeSize), sizeof(typeSize));
+        type.resize(typeSize);
+        inFile.read(&type[0], typeSize);
+
         inFile.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
         value.resize(valueSize);
         inFile.read(&value[0], valueSize);
-        options[key] = Option("string", value);
+
+        options[key] = Option(type, value);
     }
     rootFolders.load(inFile);
 

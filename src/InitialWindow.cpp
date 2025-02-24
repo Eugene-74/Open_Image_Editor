@@ -333,6 +333,12 @@ void InitialWindow::createImageEditor(Data* data) {
 }
 
 void InitialWindow::createImageBooth(Data* data) {
+    // TODO faire sans
+    // ToDO verif que c'est un int XD
+    // Cast to int
+    data->sizes->imagesBoothSizes->imagesPerLine = std::stoi(data->options.at("Sizes::imageBooth::ImagesPerLine").value);
+    data->sizes->update();
+
     imageBooth = new ImageBooth(data, this);
 
     layout->addWidget(imageBooth);
@@ -508,10 +514,15 @@ void InitialWindow::openOption() {
     if (data->options.size() == 0) {
         data->options = DEFAULT_OPTIONS;
     }
-    std::map<std::string, std::string> options = showOptionsDialog(this, "Options", DEFAULT_OPTIONS);
+
+    std::map<std::string, std::string> options = showOptionsDialog(this, "Options", data->options);
 
     for (const auto& [key, value] : options) {
-        qDebug() << key << " : " << value;
+        data->options[key].value = value;
+    }
+    // TODO faire autrement
+    if (imageBooth) {
+        showImageBooth();
     }
 }
 

@@ -4,6 +4,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
     imageNumber = data->imagesData.getImageNumber();
+    qDebug() << "ImageBooth started at:" << imageNumber;
     data->clearCache();
 
     lastLineNbr = 0;
