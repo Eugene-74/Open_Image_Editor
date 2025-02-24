@@ -31,7 +31,6 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     linesLayout = new QVBoxLayout(scrollWidget);
     scrollArea->setWidget(scrollWidget);
 
-    // marche pas jsp pk il manque 1/2 lignes a la fin
     scrollWidget->setMinimumHeight(data->sizes.imagesBoothSizes->realImageSize.height() * (data->imagesData.get()->size() / data->sizes.imagesBoothSizes->widthImageNumber));
 
     linesLayout->setAlignment(Qt::AlignTop);
@@ -101,7 +100,6 @@ void ImageBooth::createFirstImages() {
             int imageNbr = j * nbr + i;
             if (i < data->imagesData.get()->size()) {
                 std::string imagePath = data->imagesData.get()->at(imageNbr).folders.name;
-
                 lineLayout->addWidget(createImage(imagePath, imageNbr));
             }
         }
@@ -116,6 +114,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
     }
+
     ClickableLabel* imageButton;
     if (data->isInCache(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_QUALITY))) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
@@ -402,18 +401,21 @@ void ImageBooth::updateImages() {
         QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
         for (int j = 0; j < lineLayout->count(); j++) {
             int imageNbr = (lineNbr + i - 1) * data->sizes.imagesBoothSizes->widthImageNumber + j;
-
             ClickableLabel* lastImageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
-            ClickableLabel* imageButton = createImage(data->imagesData.get()->at(imageNbr).folders.name, imageNbr);
-
-            lineLayout->replaceWidget(lastImageButton, imageButton);
-            lastImageButton->deleteLater();
-
-            auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNbr);
-            if (it != data->imagesSelected.end()) {
-                imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+            if (imageNbr >= data->imagesData.get()->size()) {
+                lastImageButton->hide();
             } else {
-                imageButton->resetBorder();
+                ClickableLabel* imageButton = createImage(data->imagesData.get()->at(imageNbr).folders.name, imageNbr);
+
+                lineLayout->replaceWidget(lastImageButton, imageButton);
+                lastImageButton->deleteLater();
+
+                auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNbr);
+                if (it != data->imagesSelected.end()) {
+                    imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+                } else {
+                    imageButton->resetBorder();
+                }
             }
         }
     }
