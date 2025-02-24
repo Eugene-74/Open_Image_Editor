@@ -326,6 +326,9 @@ bool Data::hasThumbnail(const std::string& imagePath, const int maxDim) {
 }
 
 void Data::createAllThumbnailIfNotExists(const std::string& imagePath, const int size) {
+    if (size > 16) {
+        createThumbnailIfNotExists(imagePath, 16);
+    }
     if (size > 128) {
         createThumbnailIfNotExists(imagePath, 128);
     }
@@ -338,6 +341,9 @@ void Data::createAllThumbnailIfNotExists(const std::string& imagePath, const int
 }
 
 void Data::createAllThumbnail(const std::string& imagePath, const int size) {
+    if (size > 16) {
+        createThumbnail(imagePath, 16);
+    }
     if (size > 128) {
         createThumbnail(imagePath, 128);
     }

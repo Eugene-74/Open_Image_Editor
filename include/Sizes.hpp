@@ -9,13 +9,11 @@
 class Sizes {
    public:
     Sizes();
-    // Membres de Sizes
     QScreen* screen;
     QRect screenR;
     QSize screenGeometry;
 
     QSize linkButton;
-    // QSize linkButtons;
 
     int pixelRatio;
 
@@ -54,6 +52,7 @@ class Sizes::ImagesBoothSizes {
     ImagesBoothSizes(Sizes* parent)
         : parentSizes(parent) {
           };
+    int imagesPerLine = 10;
     QSize imageSize;
     QSize realImageSize;
     QSize scrollAreaSize;
@@ -63,6 +62,9 @@ class Sizes::ImagesBoothSizes {
 
     int widthImageNumber;
     int heightImageNumber;
+
+    void setimagesPerLine(int imagesPerLine);
+    void changeimagesPerLine(int imagesPerLine);
 
     void update();
 

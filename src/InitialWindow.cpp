@@ -347,6 +347,16 @@ void InitialWindow::createImageBooth(Data* data) {
                 showImageEditor();
             });
     });
+    connect(imageBooth, &ImageBooth::switchToImageBooth, this, [this]() {
+        showImageBooth();
+        this->data->addAction(
+            [this]() {
+                showMainWindow();
+            },
+            [this]() {
+                showImageBooth();
+            });
+    });
     connect(imageBooth, &ImageBooth::switchToMainWindow, this, [this]() {
         showMainWindow();
         this->data->addAction(
@@ -417,6 +427,9 @@ void InitialWindow::showImageEditor() {
 
 void InitialWindow::showImageBooth() {
     qDebug() << "showImageBooth";
+    if (imageBooth != nullptr) {
+        clearImageBooth();
+    }
     if (imageEditor != nullptr) {
         clearImageEditor();
     }

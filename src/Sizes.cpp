@@ -61,12 +61,12 @@ void Sizes::ImagesEditorSizes::update() {
 }
 
 void Sizes::ImagesBoothSizes::update() {
-    int imageNumber = 10;
+    // int imagesPerLine = 10;
     if (parentSizes->screenGeometry.width() > parentSizes->screenGeometry.height()) {
-        imageSize = QSize(parentSizes->screenGeometry.width() * 9 / 12 / imageNumber, parentSizes->screenGeometry.width() * 9 / 12 / imageNumber);
+        imageSize = QSize(parentSizes->screenGeometry.width() * 9 / 12 / imagesPerLine, parentSizes->screenGeometry.width() * 9 / 12 / imagesPerLine);
 
     } else {
-        imageSize = QSize(parentSizes->screenGeometry.height() * 9 / 12 / imageNumber, parentSizes->screenGeometry.height() * 9 / 12 / imageNumber);
+        imageSize = QSize(parentSizes->screenGeometry.height() * 9 / 12 / imagesPerLine, parentSizes->screenGeometry.height() * 9 / 12 / imagesPerLine);
     }
 
     realImageSize = imageSize + QSize(linesLayoutSpacing, linesLayoutSpacing);
@@ -95,4 +95,16 @@ Sizes::Sizes() {
     imagesBoothSizes = new ImagesBoothSizes(this);
     mainWindowSizes = new MainWindowSizes(this);
     update();
+}
+
+void Sizes::ImagesBoothSizes::setimagesPerLine(int imagesPerLine) {
+    this->imagesPerLine = imagesPerLine;
+    while (imagesPerLine < 4) {
+        imagesPerLine += 1;
+    }
+    update();
+}
+
+void Sizes::ImagesBoothSizes::changeimagesPerLine(int imagesPerLine) {
+    setimagesPerLine(this->imagesPerLine + imagesPerLine);
 }

@@ -107,7 +107,14 @@ void ImageBooth::createFirstImages() {
 }
 
 void ImageBooth::onScroll(int value) {
-    updateVisibleImages();
+    // TODO eviter le if pour rien
+    if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+        qDebug() << "Control 1";
+    } else {
+        qDebug() << "no Control 1";
+
+        updateVisibleImages();
+    }
 }
 
 ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
@@ -148,7 +155,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         Data* dataPtr = data;
 
         data->loadInCacheAsync(imagePath, [self, dataPtr, imagePath, nbr]() {
-            qDebug() << "Load image : " << imagePath;
             dataPtr->createAllThumbnailIfNotExists(imagePath, 512);
 
             dataPtr->unloadFromCache(imagePath);
@@ -457,6 +463,9 @@ void ImageBooth::createButtons() {
 
     imageConversion = createImageConversion();
 
+    // imageMore = createImageMore();
+    // imageLess = createImageLess();
+
     actionButtonLayout->addWidget(imageRotateRight);
     actionButtonLayout->addWidget(imageRotateLeft);
     actionButtonLayout->addWidget(imageMirrorLeftRight);
@@ -466,6 +475,8 @@ void ImageBooth::createButtons() {
     actionButtonLayout->addWidget(imageExport);
     actionButtonLayout->addWidget(imageConversion);
     actionButtonLayout->addWidget(imageEditExif);
+    // actionButtonLayout->addWidget(imageMore);
+    // actionButtonLayout->addWidget(imageLess);
 }
 
 ClickableLabel* ImageBooth::createImageDelete() {
@@ -815,6 +826,53 @@ ClickableLabel* ImageBooth::createImageConversion() {
 
     return imageConversionNew;
 }
+
+// ClickableLabel* ImageBooth::createImageMore() {
+//     ClickableLabel* imageMoreNew = new ClickableLabel(data, ICON_PATH_PLUS, TOOL_TIP_IMAGE_BOOTH_CONVERSION, this, actionSize);
+//     imageMoreNew->setInitialBackground("transparent", "#b3b3b3");
+
+//     connect(imageMoreNew, &ClickableLabel::clicked, [this]() {
+//         int lastimagesPerLine = data->sizes.imagesBoothSizes->imagesPerLine;
+//         data->sizes.imagesBoothSizes->changeimagesPerLine(1);
+
+//         emit switchToImageBooth();
+
+//         data->addAction(
+//             [this, lastimagesPerLine]() {
+//                 data->sizes.imagesBoothSizes->setimagesPerLine(lastimagesPerLine);
+//                 emit switchToImageBooth();
+//             },
+//             [this]() {
+//                 data->sizes.imagesBoothSizes->changeimagesPerLine(1);
+//                 emit switchToImageBooth();
+//             });
+//     });
+
+//     return imageMoreNew;
+// }
+
+// ClickableLabel* ImageBooth::createImageLess() {
+//     ClickableLabel* imageLessNew = new ClickableLabel(data, ICON_PATH_MINUS, TOOL_TIP_IMAGE_BOOTH_CONVERSION, this, actionSize);
+//     imageLessNew->setInitialBackground("transparent", "#b3b3b3");
+
+//     connect(imageLessNew, &ClickableLabel::clicked, [this]() {
+//         int lastimagesPerLine = data->sizes.imagesBoothSizes->imagesPerLine;
+//         data->sizes.imagesBoothSizes->changeimagesPerLine(-1);
+//         emit switchToImageBooth();
+
+//         data->addAction(
+//             [this, lastimagesPerLine]() {
+//                 data->sizes.imagesBoothSizes->setimagesPerLine(lastimagesPerLine);
+//                 emit switchToImageBooth();
+//             },
+//             [this]() {
+//                 data->sizes.imagesBoothSizes->changeimagesPerLine(-1);
+//                 emit switchToImageBooth();
+//             });
+//     });
+
+//     return imageLessNew;
+// }
 
 void ImageBooth::reload() {
     updateImages();

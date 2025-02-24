@@ -14,8 +14,6 @@
 #include "Data.hpp"
 #include "InitialWindow.hpp"
 
-// #include "../../Const.hpp"
-
 class ImageBooth : public QMainWindow {
     Q_OBJECT
 
@@ -23,7 +21,6 @@ class ImageBooth : public QMainWindow {
     ImageBooth(Data* dat, QWidget* parent = nullptr);
     ~ImageBooth() {}
     void reload();
-    // void clear();
 
    protected:
     void keyReleaseEvent(QKeyEvent* event) override;
@@ -59,16 +56,15 @@ class ImageBooth : public QMainWindow {
 
     ClickableLabel* imageRotateRight;
     ClickableLabel* imageRotateLeft;
-
     ClickableLabel* imageMirrorUpDown;
     ClickableLabel* imageMirrorLeftRight;
-
     ClickableLabel* imageDelete;
     ClickableLabel* imageSave;
     ClickableLabel* imageExport;
-
     ClickableLabel* imageEditExif;
     ClickableLabel* imageConversion;
+    ClickableLabel* imageMore;
+    ClickableLabel* imageLess;
 
     std::vector<QHBoxLayout*> lineLayouts;
 
@@ -96,6 +92,8 @@ class ImageBooth : public QMainWindow {
     ClickableLabel* createImageExport();
     ClickableLabel* createImageEditExif();
     ClickableLabel* createImageConversion();
+    ClickableLabel* createImageMore();
+    ClickableLabel* createImageLess();
 
     void createFirstImages();
     ClickableLabel* createImage(std::string imagePath, int nbr);
@@ -103,5 +101,6 @@ class ImageBooth : public QMainWindow {
 
    signals:
     void switchToImageEditor();
+    void switchToImageBooth();
     void switchToMainWindow();
 };
