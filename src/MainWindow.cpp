@@ -54,3 +54,9 @@ MainWindow::MainWindow(Data* dat, QWidget* parent)
 
     mainLayout->addLayout(switchLayout);
 }
+
+void MainWindow::enterEvent(QEnterEvent* event) {
+    qDebug() << "enterEvent";
+    this->setFocus();
+    QMainWindow::enterEvent(event);
+}

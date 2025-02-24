@@ -10,9 +10,12 @@ cd build
 
 if exist %APP_NAME%-%APP_VERSION%.exe del %APP_NAME%-%APP_VERSION%.exe
 
-cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Build ..
+@REM cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Build ..
+cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Build ..
 
-cmake --build .
+
+@REM cmake --build .
+mingw32-make -j %NUMBER_OF_PROCESSORS%
 
 %APP_NAME%-%APP_VERSION%.exe
 

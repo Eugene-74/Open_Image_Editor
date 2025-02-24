@@ -44,6 +44,7 @@ class ImageEditor : public QMainWindow {
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
+    void enterEvent(QEnterEvent* event) override;
 
    private:
     void hide();

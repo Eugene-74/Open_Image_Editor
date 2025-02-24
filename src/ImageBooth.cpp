@@ -59,7 +59,6 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
 
 void ImageBooth::updateVisibleImages(bool force) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
-    qDebug() << "spacerHeight" << spacerHeight;
     int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
@@ -69,7 +68,6 @@ void ImageBooth::updateVisibleImages(bool force) {
     if (difLineNbr == 0 && !force) {
         return;
     }
-    qDebug() << spacerHeight;
     spacer->changeSize(0, spacerHeight);
     updateImages();
     linesLayout->invalidate();
@@ -319,7 +317,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
             imageShiftSelected = -1;
         } else {
-            // select the first image
+            // Select the first image
             auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
             if (it != data->imagesSelected.end()) {
                 imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT);
@@ -339,11 +337,8 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 void ImageBooth::gotToImage(int nbr, bool force) {
     int imageLine = nbr / data->sizes.imagesBoothSizes->widthImageNumber;
     int spacerHeight = imageLine * data->sizes.imagesBoothSizes->realImageSize.height();
-    qDebug() << "ImageBooth::spacerHeight : " << spacerHeight;
 
     scrollArea->verticalScrollBar()->setValue(spacerHeight);
-
-    qDebug() << scrollArea->verticalScrollBar()->value();
 
     updateVisibleImages(force);
     QCoreApplication::processEvents();
@@ -365,6 +360,7 @@ void ImageBooth::removeNbrToSelectedImages(int nbr) {
     }
 }
 
+// Get the clickableLabel + lineLayout of imageNbr if exist
 ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr, QHBoxLayout*& lineLayout) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
@@ -387,11 +383,13 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr, QHBoxLayout*&
     return nullptr;
 }
 
+// Get the clickable label of imageNbr if exist
 ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
     QHBoxLayout* lineLayout = nullptr;
     return getClickableLabelIfExist(imageNbr, lineLayout);
 }
 
+// Update all visible images
 void ImageBooth::updateImages() {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
@@ -441,6 +439,7 @@ void ImageBooth::keyReleaseEvent(QKeyEvent* event) {
     }
 }
 
+// Create all the buttons
 void ImageBooth::createButtons() {
     imageRotateRight = createImageRotateRight();
     imageRotateLeft = createImageRotateLeft();
@@ -815,6 +814,10 @@ ClickableLabel* ImageBooth::createImageConversion() {
 }
 
 void ImageBooth::reload() {
-    qDebug() << "reload";
     updateImages();
+}
+void ImageBooth::enterEvent(QEnterEvent* event) {
+    qDebug() << "enterEvent 2 ";
+    this->setFocus();
+    QMainWindow::enterEvent(event);
 }

@@ -52,8 +52,8 @@ void showQuestionMessage(QWidget* parent, std::string text, std::function<void(b
 
     QObject::connect(msgBox, &QMessageBox::buttonClicked, [parent, msgBox, callback](QAbstractButton* button) {
         bool result = (msgBox->buttonRole(button) == QMessageBox::YesRole);
-        callback(result);
         msgBox->deleteLater();
+        callback(result);
     });
 
     if (async) {

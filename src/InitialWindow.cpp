@@ -238,8 +238,8 @@ bool checkForUpdate(QProgressDialog* progressDialog) {
                                     std::string outputPath = SAVE_PATH + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
 
                                     QProgressDialog progressDialog;
-                                    progressDialog.setWindowModality(Qt::ApplicationModal);
                                     progressDialog.setLabelText("Downloading...");
+                                    progressDialog.setWindowModality(Qt::ApplicationModal);
                                     progressDialog.setRange(0, 100);
                                     progressDialog.setValue(0);
                                     progressDialog.setCancelButton(nullptr);
@@ -310,9 +310,6 @@ void InitialWindow::createImageEditor(Data* data) {
 
     layout->addWidget(imageEditor);
 
-    imageEditor->setFocus();
-    imageEditor->setFocusPolicy(Qt::StrongFocus);
-
     connect(imageEditor, &ImageEditor::switchToImageBooth, this, [this]() {
         showImageBooth();
         this->data->addAction(
@@ -340,9 +337,6 @@ void InitialWindow::createImageBooth(Data* data) {
 
     layout->addWidget(imageBooth);
 
-    imageBooth->setFocus();
-    imageBooth->setFocusPolicy(Qt::StrongFocus);
-
     connect(imageBooth, &ImageBooth::switchToImageEditor, this, [this]() {
         showImageEditor();
         this->data->addAction(
@@ -369,9 +363,6 @@ void InitialWindow::createMainWindow(Data* data) {
     mainWindow = new MainWindow(data, this);
 
     layout->addWidget(mainWindow);
-
-    mainWindow->setFocus();
-    mainWindow->setFocusPolicy(Qt::StrongFocus);
 
     connect(mainWindow, &MainWindow::switchToImageBooth, this, [this]() {
         showImageBooth();

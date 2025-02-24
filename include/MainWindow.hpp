@@ -22,4 +22,7 @@ class MainWindow : public QMainWindow {
    signals:
     void switchToImageBooth();
     void switchToImageEditor();
+
+   protected:
+    void enterEvent(QEnterEvent* event) override;
 };

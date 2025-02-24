@@ -26,9 +26,8 @@ class ImageBooth : public QMainWindow {
     // void clear();
 
    protected:
-    // void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
-    // void wheelEvent(QWheelEvent* event) override;
+    void enterEvent(QEnterEvent* event) override;
 
    private:
     QTimer* updateTimer;
@@ -40,7 +39,7 @@ class ImageBooth : public QMainWindow {
 
     int lastLineNbr = 0;
 
-    int maxVisibleLines = data->sizes.imagesBoothSizes->heightImageNumber + 1;
+    int maxVisibleLines = data->sizes.imagesBoothSizes->heightImageNumber + 2;
     std::vector<QLabel*> imageWidgets;
 
     QScrollArea* scrollArea;
