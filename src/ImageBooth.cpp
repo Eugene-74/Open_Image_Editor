@@ -45,9 +45,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     spacer = new QSpacerItem(0, 0);
     linesLayout->insertSpacerItem(0, spacer);
 
-    for (int i = 0; i < maxVisibleLines; ++i) {
-        createLine();
-    }
+    createFirstImages();
 
     connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, this, &ImageBooth::onScroll);
 
@@ -90,19 +88,22 @@ bool ImageBooth::isImageVisible(int imageIndex) {
     return false;
 }
 
-void ImageBooth::createLine() {
-    QHBoxLayout* lineLayout = new QHBoxLayout();
-    lineLayout->setAlignment(Qt::AlignLeft);
+void ImageBooth::createFirstImages() {
+    for (int j = 0; j < maxVisibleLines; j++) {
+        QHBoxLayout* lineLayout = new QHBoxLayout();
+        lineLayout->setAlignment(Qt::AlignLeft);
 
-    linesLayout->addLayout(lineLayout);
-    lineLayouts.push_back(lineLayout);
-    int nbr = data->sizes.imagesBoothSizes->widthImageNumber;
+        linesLayout->addLayout(lineLayout);
+        lineLayouts.push_back(lineLayout);
+        int nbr = data->sizes.imagesBoothSizes->widthImageNumber;
 
-    for (int i = 0; i < nbr; i++) {
-        if (i < data->imagesData.get()->size()) {
-            std::string imagePath = data->imagesData.get()->at(0).folders.name;
+        for (int i = 0; i < nbr; i++) {
+            int imageNbr = j * nbr + i;
+            if (i < data->imagesData.get()->size()) {
+                std::string imagePath = data->imagesData.get()->at(imageNbr).folders.name;
 
-            lineLayout->addWidget(createImage(imagePath, 0));
+                lineLayout->addWidget(createImage(imagePath, imageNbr));
+            }
         }
     }
 }

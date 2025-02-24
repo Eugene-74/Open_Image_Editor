@@ -97,7 +97,7 @@ class ImageBooth : public QMainWindow {
     ClickableLabel* createImageEditExif();
     ClickableLabel* createImageConversion();
 
-    void createLine();
+    void createFirstImages();
     ClickableLabel* createImage(std::string imagePath, int nbr);
     void updateVisibleImages(bool force = false);
 
