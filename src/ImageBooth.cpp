@@ -23,7 +23,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
 
     scrollArea = new QScrollArea(centralWidget);
     scrollArea->setWidgetResizable(true);
-    scrollArea->setFixedSize(data->sizes.imagesBoothSizes->scrollAreaSize);
+    scrollArea->setFixedSize(data->sizes->imagesBoothSizes->scrollAreaSize);
     actionButtonLayout->setAlignment(Qt::AlignCenter);
     scrollLayout->addWidget(scrollArea);
 
@@ -31,15 +31,15 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     linesLayout = new QVBoxLayout(scrollWidget);
     scrollArea->setWidget(scrollWidget);
 
-    scrollWidget->setMinimumHeight(data->sizes.imagesBoothSizes->realImageSize.height() * (data->imagesData.get()->size() / data->sizes.imagesBoothSizes->widthImageNumber));
+    scrollWidget->setMinimumHeight(data->sizes->imagesBoothSizes->realImageSize.height() * (data->imagesData.get()->size() / data->sizes->imagesBoothSizes->widthImageNumber));
 
     linesLayout->setAlignment(Qt::AlignTop);
-    linesLayout->setSpacing(data->sizes.imagesBoothSizes->linesLayoutSpacing);
+    linesLayout->setSpacing(data->sizes->imagesBoothSizes->linesLayoutSpacing);
     linesLayout->setContentsMargins(
-        data->sizes.imagesBoothSizes->linesLayoutMargins[0],   // gauche
-        data->sizes.imagesBoothSizes->linesLayoutMargins[1],   // haut
-        data->sizes.imagesBoothSizes->linesLayoutMargins[2],   // droite
-        data->sizes.imagesBoothSizes->linesLayoutMargins[3]);  // bas
+        data->sizes->imagesBoothSizes->linesLayoutMargins[0],   // gauche
+        data->sizes->imagesBoothSizes->linesLayoutMargins[1],   // haut
+        data->sizes->imagesBoothSizes->linesLayoutMargins[2],   // droite
+        data->sizes->imagesBoothSizes->linesLayoutMargins[3]);  // bas
 
     spacer = new QSpacerItem(0, 0);
     linesLayout->insertSpacerItem(0, spacer);
@@ -56,7 +56,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
 
 void ImageBooth::updateVisibleImages(bool force) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
-    int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
+    int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
     int lineNbr = spacerHeight / imageHeight;
@@ -74,11 +74,11 @@ void ImageBooth::updateVisibleImages(bool force) {
 // Check if an image is visible
 bool ImageBooth::isImageVisible(int imageIndex) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
-    int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
+    int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
-    int firstImageNbr = spacerHeight / imageHeight * data->sizes.imagesBoothSizes->widthImageNumber;
-    int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->sizes.imagesBoothSizes->widthImageNumber;
+    int firstImageNbr = spacerHeight / imageHeight * data->sizes->imagesBoothSizes->widthImageNumber;
+    int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->sizes->imagesBoothSizes->widthImageNumber;
 
     if (imageIndex >= firstImageNbr && imageIndex <= lastImageNbr) {
         return true;
@@ -94,7 +94,7 @@ void ImageBooth::createFirstImages() {
 
         linesLayout->addLayout(lineLayout);
         lineLayouts.push_back(lineLayout);
-        int nbr = data->sizes.imagesBoothSizes->widthImageNumber;
+        int nbr = data->sizes->imagesBoothSizes->widthImageNumber;
 
         for (int i = 0; i < nbr; i++) {
             int imageNbr = j * nbr + i;
@@ -107,14 +107,7 @@ void ImageBooth::createFirstImages() {
 }
 
 void ImageBooth::onScroll(int value) {
-    // TODO eviter le if pour rien
-    if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-        qDebug() << "Control 1";
-    } else {
-        qDebug() << "no Control 1";
-
-        updateVisibleImages();
-    }
+    updateVisibleImages();
 }
 
 ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
@@ -341,8 +334,8 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
 // Go to the line of the image nbr
 void ImageBooth::gotToImage(int nbr, bool force) {
-    int imageLine = nbr / data->sizes.imagesBoothSizes->widthImageNumber;
-    int spacerHeight = imageLine * data->sizes.imagesBoothSizes->realImageSize.height();
+    int imageLine = nbr / data->sizes->imagesBoothSizes->widthImageNumber;
+    int spacerHeight = imageLine * data->sizes->imagesBoothSizes->realImageSize.height();
 
     scrollArea->verticalScrollBar()->setValue(spacerHeight);
 
@@ -369,18 +362,18 @@ void ImageBooth::removeNbrToSelectedImages(int nbr) {
 // Get the clickableLabel + lineLayout of imageNbr if exist
 ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr, QHBoxLayout*& lineLayout) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
-    int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
+    int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
-    int firstImageNbr = spacerHeight / imageHeight * data->sizes.imagesBoothSizes->widthImageNumber;
-    int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->sizes.imagesBoothSizes->widthImageNumber;
+    int firstImageNbr = spacerHeight / imageHeight * data->sizes->imagesBoothSizes->widthImageNumber;
+    int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->sizes->imagesBoothSizes->widthImageNumber;
 
     if (imageNbr >= firstImageNbr && imageNbr <= lastImageNbr) {
-        int firstImageLine = firstImageNbr / data->sizes.imagesBoothSizes->widthImageNumber;
-        int imageLine = imageNbr / data->sizes.imagesBoothSizes->widthImageNumber;
+        int firstImageLine = firstImageNbr / data->sizes->imagesBoothSizes->widthImageNumber;
+        int imageLine = imageNbr / data->sizes->imagesBoothSizes->widthImageNumber;
 
         int imageRelativeLine = imageLine - firstImageLine;
-        int imageNbrInLine = imageNbr - imageLine * data->sizes.imagesBoothSizes->widthImageNumber;
+        int imageNbrInLine = imageNbr - imageLine * data->sizes->imagesBoothSizes->widthImageNumber;
         lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(imageRelativeLine + 1)->layout());
         ClickableLabel* imageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(imageNbrInLine)->widget());
 
@@ -398,7 +391,7 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
 // Update all visible images
 void ImageBooth::updateImages() {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
-    int imageHeight = data->sizes.imagesBoothSizes->realImageSize.height();
+    int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
     int lineNbr = spacerHeight / imageHeight;
@@ -406,7 +399,7 @@ void ImageBooth::updateImages() {
     for (int i = 1; i < linesLayout->count(); i++) {
         QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
         for (int j = 0; j < lineLayout->count(); j++) {
-            int imageNbr = (lineNbr + i - 1) * data->sizes.imagesBoothSizes->widthImageNumber + j;
+            int imageNbr = (lineNbr + i - 1) * data->sizes->imagesBoothSizes->widthImageNumber + j;
             ClickableLabel* lastImageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
             if (imageNbr >= data->imagesData.get()->size()) {
                 lastImageButton->hide();
@@ -832,18 +825,18 @@ ClickableLabel* ImageBooth::createImageConversion() {
 //     imageMoreNew->setInitialBackground("transparent", "#b3b3b3");
 
 //     connect(imageMoreNew, &ClickableLabel::clicked, [this]() {
-//         int lastimagesPerLine = data->sizes.imagesBoothSizes->imagesPerLine;
-//         data->sizes.imagesBoothSizes->changeimagesPerLine(1);
+//         int lastimagesPerLine = data->sizes->imagesBoothSizes->imagesPerLine;
+//         data->sizes->imagesBoothSizes->changeimagesPerLine(1);
 
 //         emit switchToImageBooth();
 
 //         data->addAction(
 //             [this, lastimagesPerLine]() {
-//                 data->sizes.imagesBoothSizes->setimagesPerLine(lastimagesPerLine);
+//                 data->sizes->imagesBoothSizes->setimagesPerLine(lastimagesPerLine);
 //                 emit switchToImageBooth();
 //             },
 //             [this]() {
-//                 data->sizes.imagesBoothSizes->changeimagesPerLine(1);
+//                 data->sizes->imagesBoothSizes->changeimagesPerLine(1);
 //                 emit switchToImageBooth();
 //             });
 //     });
@@ -856,17 +849,17 @@ ClickableLabel* ImageBooth::createImageConversion() {
 //     imageLessNew->setInitialBackground("transparent", "#b3b3b3");
 
 //     connect(imageLessNew, &ClickableLabel::clicked, [this]() {
-//         int lastimagesPerLine = data->sizes.imagesBoothSizes->imagesPerLine;
-//         data->sizes.imagesBoothSizes->changeimagesPerLine(-1);
+//         int lastimagesPerLine = data->sizes->imagesBoothSizes->imagesPerLine;
+//         data->sizes->imagesBoothSizes->changeimagesPerLine(-1);
 //         emit switchToImageBooth();
 
 //         data->addAction(
 //             [this, lastimagesPerLine]() {
-//                 data->sizes.imagesBoothSizes->setimagesPerLine(lastimagesPerLine);
+//                 data->sizes->imagesBoothSizes->setimagesPerLine(lastimagesPerLine);
 //                 emit switchToImageBooth();
 //             },
 //             [this]() {
-//                 data->sizes.imagesBoothSizes->changeimagesPerLine(-1);
+//                 data->sizes->imagesBoothSizes->changeimagesPerLine(-1);
 //                 emit switchToImageBooth();
 //             });
 //     });

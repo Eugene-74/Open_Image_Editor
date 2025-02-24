@@ -36,7 +36,7 @@ class ImageBooth : public QMainWindow {
 
     int lastLineNbr = 0;
 
-    int maxVisibleLines = data->sizes.imagesBoothSizes->heightImageNumber + 2;
+    int maxVisibleLines = data->sizes->imagesBoothSizes->heightImageNumber + 2;
     std::vector<QLabel*> imageWidgets;
 
     QScrollArea* scrollArea;
@@ -46,9 +46,9 @@ class ImageBooth : public QMainWindow {
     QVBoxLayout* mainLayout;
     QVBoxLayout* linesLayout;
 
-    QSize* imageSize = &data->sizes.imagesBoothSizes->imageSize;
-    QSize* actionSize = &data->sizes.imagesEditorSizes->actionSize;
-    QSize* realImageSize = &data->sizes.imagesBoothSizes->realImageSize;
+    QSize* imageSize = &data->sizes->imagesBoothSizes->imageSize;
+    QSize* actionSize = &data->sizes->imagesEditorSizes->actionSize;
+    QSize* realImageSize = &data->sizes->imagesBoothSizes->realImageSize;
 
     QHBoxLayout* scrollLayout;
 

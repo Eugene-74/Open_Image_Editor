@@ -1,14 +1,20 @@
 #pragma once
 
 #include <QApplication>
+#include <QMainWindow>
 #include <QRect>
 #include <QScreen>
 #include <QSize>
 #include <QWidget>
 
+// #include "Data.hpp"
+
 class Sizes {
    public:
     Sizes();
+
+    // Sizes(Data* parent);
+    // Data* data;
     QScreen* screen;
     QRect screenR;
     QSize screenGeometry;
@@ -52,7 +58,10 @@ class Sizes::ImagesBoothSizes {
     ImagesBoothSizes(Sizes* parent)
         : parentSizes(parent) {
           };
+    //   Cast to int
+    // int imagesPerLine = std::stoi(parentSizes->data->options["Sizes::imageBooth::ImagesPerLine"].value);
     int imagesPerLine = 10;
+
     QSize imageSize;
     QSize realImageSize;
     QSize scrollAreaSize;

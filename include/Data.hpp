@@ -20,6 +20,7 @@
 #include "ImagesData.hpp"
 #include "Sizes.hpp"
 
+// class Sizes;
 class QImageAndPath {
    public:
     QImage image;
@@ -46,8 +47,8 @@ class Data {
     Folders rootFolders = Folders("/");
 #endif
 
-    Sizes sizes;
     std::map<std::string, Option> options = DEFAULT_OPTIONS;
+    Sizes* sizes = new Sizes();
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
     bool saved = true;
 

@@ -9,14 +9,14 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent)
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
     mainLayout = new QHBoxLayout(centralWidget);
-    mainLayout->setSpacing(data->sizes.imagesEditorSizes->mainLayoutSpacing);
-    mainLayout->setContentsMargins(data->sizes.imagesEditorSizes->mainLayoutMargins[0],
-                                   data->sizes.imagesEditorSizes->mainLayoutMargins[1],
-                                   data->sizes.imagesEditorSizes->mainLayoutMargins[2],
-                                   data->sizes.imagesEditorSizes->mainLayoutMargins[3]);  // Marges autour des bords (gauche, haut, droite, bas)
+    mainLayout->setSpacing(data->sizes->imagesEditorSizes->mainLayoutSpacing);
+    mainLayout->setContentsMargins(data->sizes->imagesEditorSizes->mainLayoutMargins[0],
+                                   data->sizes->imagesEditorSizes->mainLayoutMargins[1],
+                                   data->sizes->imagesEditorSizes->mainLayoutMargins[2],
+                                   data->sizes->imagesEditorSizes->mainLayoutMargins[3]);  // Marges autour des bords (gauche, haut, droite, bas)
 
     fixedFrame = new QFrame();
-    fixedFrame->setFixedSize(data->sizes.imagesEditorSizes->mainImageSize);
+    fixedFrame->setFixedSize(data->sizes->imagesEditorSizes->mainImageSize);
     QVBoxLayout* fixedFrameLayout = new QVBoxLayout(fixedFrame);
     fixedFrameLayout->setAlignment(Qt::AlignCenter);
     fixedFrame->setLayout(fixedFrameLayout);
@@ -101,8 +101,8 @@ void ImageEditor::previousImage(int nbr) {
 
 void ImageEditor::reload() {
     if (bigImage) {
-        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes.imagesEditorSizes->bigImage), false, 0, false, true);
-        bigImageLabelNew->setFixedSize(data->sizes.imagesEditorSizes->bigImage);
+        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes->imagesEditorSizes->bigImage), false, 0, false, true);
+        bigImageLabelNew->setFixedSize(data->sizes->imagesEditorSizes->bigImage);
         mainLayout->replaceWidget(bigImageLabel, bigImageLabelNew);
         bigImageLabel->deleteLater();
         bigImageLabel = bigImageLabelNew;
@@ -1173,8 +1173,8 @@ void ImageEditor::openBigImageLabel() {
     bigImage = true;
     hide();
 
-    bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes.imagesEditorSizes->bigImage), false, 0, false, true);
-    bigImageLabel->setFixedSize(data->sizes.imagesEditorSizes->bigImage);
+    bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes->imagesEditorSizes->bigImage), false, 0, false, true);
+    bigImageLabel->setFixedSize(data->sizes->imagesEditorSizes->bigImage);
 
     mainLayout->addWidget(bigImageLabel);
 

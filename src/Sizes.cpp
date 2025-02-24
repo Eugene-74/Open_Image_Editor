@@ -1,8 +1,5 @@
 #include "Sizes.hpp"
 
-#include <QMainWindow>
-#include <QWidget>
-
 void Sizes::update() {
     QWidget* activeWindow = QApplication::activeWindow();
 
@@ -90,6 +87,8 @@ void Sizes::MainWindowSizes::update() {
     }
 }
 
+// Sizes::Sizes(Data* parent)
+//     : data(parent) {
 Sizes::Sizes() {
     imagesEditorSizes = new ImagesEditorSizes(this);
     imagesBoothSizes = new ImagesBoothSizes(this);

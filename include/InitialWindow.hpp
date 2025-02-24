@@ -49,7 +49,7 @@ class InitialWindow : public QMainWindow {
     void showMainWindow();
 
    private:
-    // QSize* linkButton = &data->sizes.linkButton;
+    // QSize* linkButton = &data->sizes->linkButton;
     QSize* linkButton;
 
     QTimer* resizeTimer;

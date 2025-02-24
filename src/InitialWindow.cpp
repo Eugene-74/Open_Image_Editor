@@ -8,17 +8,17 @@ InitialWindow::InitialWindow() {
     resizeTimer->setSingleShot(true);
     connect(resizeTimer, &QTimer::timeout, this, [this]() {
         if (imageEditor) {
-            data->sizes.update();
+            data->sizes->update();
             clearImageEditor();
             createImageEditor(data);
         }
         if (imageBooth) {
-            data->sizes.update();
+            data->sizes->update();
             clearImageBooth();
             createImageBooth(data);
         }
         if (mainWindow) {
-            data->sizes.update();
+            data->sizes->update();
             clearMainWindow();
             createMainWindow(data);
         }
@@ -76,7 +76,7 @@ InitialWindow::InitialWindow() {
 
         linkLayout = new QHBoxLayout();
 
-        linkButton = &data->sizes.linkButton;
+        linkButton = &data->sizes->linkButton;
         imageDiscord = createImageDiscord();
         imageGithub = createImageGithub();
         imageOption = createImageOption();
