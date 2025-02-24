@@ -1214,7 +1214,6 @@ void ImageEditor::closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEdito
 }
 
 void ImageEditor::enterEvent(QEnterEvent* event) {
-    qDebug() << "enterEvent";
     this->setFocus();
     QMainWindow::enterEvent(event);
 }

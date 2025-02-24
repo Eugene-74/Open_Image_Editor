@@ -56,7 +56,6 @@ MainWindow::MainWindow(Data* dat, QWidget* parent)
 }
 
 void MainWindow::enterEvent(QEnterEvent* event) {
-    qDebug() << "enterEvent";
     this->setFocus();
     QMainWindow::enterEvent(event);
 }

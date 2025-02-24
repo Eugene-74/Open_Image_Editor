@@ -820,7 +820,6 @@ void ImageBooth::reload() {
     updateImages();
 }
 void ImageBooth::enterEvent(QEnterEvent* event) {
-    qDebug() << "enterEvent 2 ";
     this->setFocus();
     QMainWindow::enterEvent(event);
 }
