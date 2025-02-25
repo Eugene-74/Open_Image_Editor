@@ -838,7 +838,6 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
             break;
         case Qt::Key_Home:
             imageRotateLeft->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
-            data->imagesData.imageNumber = 0;
             reload();
             break;
 

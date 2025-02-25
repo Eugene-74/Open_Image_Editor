@@ -10,9 +10,11 @@
         <file>icons/mirrorUpDown.png</file> 
         <file>icons/mirrorLeftRight.png</file>
         <file>icons/conversion.png</file>
-        
         <file>icons/editExif.png</file>
         <file>icons/editPersons.png</file>
+        <file>icons/file.png</file>
+        <file>icons/allImages.png</file>
+
 
 
 
@@ -46,9 +48,10 @@
         <file>255-255-255-255/icons/mirrorUpDown.png</file> 
         <file>255-255-255-255/icons/mirrorLeftRight.png</file>
         <file>255-255-255-255/icons/conversion.png</file>
-        
         <file>255-255-255-255/icons/editExif.png</file>
         <file>255-255-255-255/icons/editPersons.png</file>
+        <file>255-255-255-255/icons/file.png</file>
+        <file>255-255-255-255/icons/allImages.png</file>
 
 
         <file>255-255-255-255/icons/imageBooth.png</file>
@@ -76,9 +79,11 @@
         <file>0-0-0-255/icons/mirrorUpDown.png</file> 
         <file>0-0-0-255/icons/mirrorLeftRight.png</file>
         <file>0-0-0-255/icons/conversion.png</file>
-        
         <file>0-0-0-255/icons/editExif.png</file>
         <file>0-0-0-255/icons/editPersons.png</file>
+        <file>0-0-0-255/icons/file.png</file>
+        <file>0-0-0-255/icons/allImages.png</file>
+
 
 
 

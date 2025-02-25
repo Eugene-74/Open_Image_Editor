@@ -45,12 +45,18 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     spacer = new QSpacerItem(0, 0);
     linesLayout->insertSpacerItem(0, spacer);
 
+    // ImageData imageData;
+    // imageData.folders.name = ":/icons/allImages.png";
+
+    // data->imagesData.imagesData.insert(data->imagesData.imagesData.begin(), imageData);
+
     createFirstImages();
 
     connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, this, &ImageBooth::onScroll);
 
     // Make sure that the scrollArea is well initialized (doesn't work without)
-    QTimer::singleShot(1, this, [this]() {
+    QTimer::singleShot(100, this, [this]() {
+        qDebug() << "go to" << imageNumber;
         gotToImage(imageNumber, true);
     });
 }
@@ -59,6 +65,9 @@ void ImageBooth::updateVisibleImages(bool force) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
+    qDebug() << "test 2 : " << spacerHeight;
+
+    imageNumber = (spacerHeight / realImageSize->height()) * data->sizes->imagesBoothSizes->imagesPerLine;
 
     int lineNbr = spacerHeight / imageHeight;
     int difLineNbr = lineNbr - lastLineNbr;
@@ -119,7 +128,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     }
 
     ClickableLabel* imageButton;
-    if (data->isInCache(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_QUALITY))) {
+    if (data->isInCache(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_QUALITY)) || imagePath.rfind(":", 0) == 0) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
     } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)) {
@@ -339,7 +348,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 void ImageBooth::gotToImage(int nbr, bool force) {
     int imageLine = nbr / data->sizes->imagesBoothSizes->widthImageNumber;
     int spacerHeight = imageLine * data->sizes->imagesBoothSizes->realImageSize.height();
-
+    qDebug() << spacerHeight;
     scrollArea->verticalScrollBar()->setValue(spacerHeight);
 
     updateVisibleImages(force);

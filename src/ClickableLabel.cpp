@@ -75,6 +75,7 @@ void ClickableLabel::updateStyleSheet() {
             border: %1px solid %3;
             border-radius: %2px;
             background-color: %5;
+
         }
         QLabel:hover {
             border: %1px solid %4;
@@ -85,6 +86,7 @@ void ClickableLabel::updateStyleSheet() {
         border: %1px solid %7;
             border-radius: %2px;
             background-color: %8; 
+
         }
     )")
                              .arg(border)
