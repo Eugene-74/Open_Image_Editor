@@ -1,4 +1,5 @@
 For all other informations go to [wiki](https://github.com/Eugene-74/Open_Image_Editor/wiki) :
+
 # Instalation
 
 ## Simple instalation
@@ -30,6 +31,9 @@ pacman -S mingw-w64-x86_64-libheif
 pacman -S mingw-w64-x86_64-curl
 
 pacman -S mingw-w64-x86_64-jsoncpp
+
+pacman -S mingw-w64-x86_64-dlib
+
 ```
 
 When all in well installed just launch scripts\compile.bat

@@ -99,9 +99,11 @@ void ImageBooth::createFirstImages() {
 
         for (int i = 0; i < nbr; i++) {
             int imageNbr = j * nbr + i;
-            if (i < data->imagesData.get()->size()) {
-                std::string imagePath = data->imagesData.get()->at(imageNbr).folders.name;
-                lineLayout->addWidget(createImage(imagePath, imageNbr));
+            if (imageNbr < data->imagesData.get()->size()) {
+                if (i < data->imagesData.get()->size()) {
+                    std::string imagePath = data->imagesData.get()->at(imageNbr).folders.name;
+                    lineLayout->addWidget(createImage(imagePath, imageNbr));
+                }
             }
         }
     }
