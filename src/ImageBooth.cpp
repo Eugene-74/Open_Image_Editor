@@ -3,8 +3,7 @@
 ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
-    imageNumber = data->imagesData.getImageNumber();
-    qDebug() << "ImageBooth started at:" << imageNumber;
+
     data->clearCache();
 
     lastLineNbr = 0;
@@ -55,20 +54,21 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, this, &ImageBooth::onScroll);
 
     // Make sure that the scrollArea is well initialized (doesn't work without)
+    // qDebug() << "imageNumber " << data->imagesData.getImageNumber();
+    // TODO marche pas bien
     QTimer::singleShot(100, this, [this]() {
-        qDebug() << "go to" << imageNumber;
-        gotToImage(imageNumber, true);
+        gotToImage(data->imagesData.getImageNumber(), true);
     });
 }
+
 
 void ImageBooth::updateVisibleImages(bool force) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
-    qDebug() << "test 2 : " << spacerHeight;
 
-    imageNumber = (spacerHeight / realImageSize->height()) * data->sizes->imagesBoothSizes->imagesPerLine;
-
+    data->imagesData.imageNumber = (spacerHeight / realImageSize->height()) * data->sizes->imagesBoothSizes->imagesPerLine;
+    // qDebug() << spacerHeight;
     int lineNbr = spacerHeight / imageHeight;
     int difLineNbr = lineNbr - lastLineNbr;
 
@@ -348,7 +348,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 void ImageBooth::gotToImage(int nbr, bool force) {
     int imageLine = nbr / data->sizes->imagesBoothSizes->widthImageNumber;
     int spacerHeight = imageLine * data->sizes->imagesBoothSizes->realImageSize.height();
-    qDebug() << spacerHeight;
+    // qDebug() << spacerHeight;
     scrollArea->verticalScrollBar()->setValue(spacerHeight);
 
     updateVisibleImages(force);

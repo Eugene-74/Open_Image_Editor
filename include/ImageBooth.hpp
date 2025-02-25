@@ -32,7 +32,7 @@ class ImageBooth : public QMainWindow {
     bool imageShiftSelectedSelect;
 
     Data* data;
-    int imageNumber;
+    // int imageNumber;
 
     int lastLineNbr = 0;
 
