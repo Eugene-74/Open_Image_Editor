@@ -24,32 +24,33 @@ int ImagesData::getImageNumber() {
 
 void ImagesData::print() const {
     qDebug() << "ImagesData : \n";
-    for (const ImageData& valeur : imagesData) {
+    for (const ImageData valeur : imagesData) {
         qDebug() << valeur.get();
     }
 }
 
 void ImagesData::addImage(ImageData& imageD) {
-    auto it = std::find_if(imagesData.begin(), imagesData.end(),
-                           [&imageD](const ImageData& imgD) {
-                               return imgD == imageD;
-                           });
+    // auto it = std::find_if(imagesData.begin(), imagesData.end(),
+    //                        [&imageD](const ImageData& imgD) {
+    //                            return imgD == imageD;
+    //                        });
 
-    if (it != imagesData.end()) {
-        ImageData lastImageD = *it;
-        imagesData.erase(it);
-        imageD.addFolders(lastImageD.getFolders());
-        imageD.setCropSizes(lastImageD.getCropSizes());
+    // if (it != imagesData.end()) {
+    // ImageData lastImageD = *it;
+    // imagesData.erase(it);
+    // imageD.addFolders(lastImageD.getFolders());
+    // imageD.setCropSizes(lastImageD.getCropSizes());
 
-        imagesData.push_back(imageD);
-    } else {
-        imagesData.push_back(imageD);
-        for (const auto& crop : imageD.getCropSizes()) {
-            for (const auto& point : crop) {
-                qDebug() << point;
-            }
-        }
-    }
+    imagesData.push_back(imageD);
+    imageMap[imageD.getImageName()] = &imageD;
+    // } else {
+    //     imagesData.push_back(imageD);
+    //     for (const auto& crop : imageD.getCropSizes()) {
+    //         for (const auto& point : crop) {
+    //             qDebug() << point;
+    //         }
+    //     }
+    // }
 }
 
 void ImagesData::removeImage(const ImageData& image) {
@@ -69,13 +70,10 @@ ImageData* ImagesData::getImageData(int id) {
 }
 
 ImageData* ImagesData::getImageData(std::string imagePath) {
-    auto it = std::find_if(imagesData.begin(), imagesData.end(),
-                           [&imagePath](const ImageData& imgD) {
-                               return imgD.folders.name == imagePath;
-                           });
+    auto it = imageMap.find(imagePath);
 
-    if (it != imagesData.end()) {
-        return &(*it);
+    if (it != imageMap.end()) {
+        return it->second;
     }
     return nullptr;
 }
@@ -91,11 +89,14 @@ ImageData* ImagesData::getCurrentImageData() {
 std::vector<ImageData>* ImagesData::get() {
     return &imagesData;
 }
+std::vector<ImageData> ImagesData::getConst() const {
+    return imagesData;
+}
 
 int ImagesData::getImageDataId(std::string imagePath) {
     auto it = std::find_if(imagesData.begin(), imagesData.end(),
-                           [&imagePath](const ImageData& imgD) {
-                               return imgD.folders.name == imagePath;
+                           [&imagePath](const ImageData imgD) {
+                               return imgD.getImagePathConst() == imagePath;
                            });
 
     if (it != imagesData.end()) {

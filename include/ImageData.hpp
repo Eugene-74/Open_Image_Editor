@@ -59,6 +59,8 @@ class ImageData {
     bool operator==(const ImageData& other) const;
 
     std::string getImagePath();
+    std::string getImagePathConst() const;
+
     std::string getImageExtension();
 
     void setExifMetaData(const Exiv2::ExifData& toAddMetaData);

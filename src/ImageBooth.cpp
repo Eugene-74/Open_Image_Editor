@@ -4,6 +4,10 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
 
+    for (ImageData& imageData : *data->imagesData.get()) {
+        data->imagesData.currentImagesData.push_back(&imageData);
+    }
+
     data->clearCache();
 
     lastLineNbr = 0;
@@ -30,8 +34,9 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     QWidget* scrollWidget = new QWidget();
     linesLayout = new QVBoxLayout(scrollWidget);
     scrollArea->setWidget(scrollWidget);
-
+    // TODO modif now
     scrollWidget->setMinimumHeight(data->sizes->imagesBoothSizes->realImageSize.height() * (data->imagesData.get()->size() / data->sizes->imagesBoothSizes->widthImageNumber));
+    // scrollWidget->setMinimumHeight(data->sizes->imagesBoothSizes->realImageSize.height() * (data->imagesData.currentImagesData.size() / data->sizes->imagesBoothSizes->widthImageNumber));
 
     linesLayout->setAlignment(Qt::AlignTop);
     linesLayout->setSpacing(data->sizes->imagesBoothSizes->linesLayoutSpacing);
@@ -44,11 +49,6 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     spacer = new QSpacerItem(0, 0);
     linesLayout->insertSpacerItem(0, spacer);
 
-    // ImageData imageData;
-    // imageData.folders.name = ":/icons/allImages.png";
-
-    // data->imagesData.imagesData.insert(data->imagesData.imagesData.begin(), imageData);
-
     createFirstImages();
 
     connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, this, &ImageBooth::onScroll);
@@ -60,7 +60,6 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
         gotToImage(data->imagesData.getImageNumber(), true);
     });
 }
-
 
 void ImageBooth::updateVisibleImages(bool force) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
@@ -108,6 +107,13 @@ void ImageBooth::createFirstImages() {
 
         for (int i = 0; i < nbr; i++) {
             int imageNbr = j * nbr + i;
+            // TODO modif now
+            // if (imageNbr < data->imagesData.currentImagesData.size()) {
+            //     if (i < data->imagesData.currentImagesData.size()) {
+            //         std::string imagePath = data->imagesData.currentImagesData.at(imageNbr)->folders.name;
+            //         lineLayout->addWidget(createImage(imagePath, imageNbr));
+            //     }
+            // }
             if (imageNbr < data->imagesData.get()->size()) {
                 if (i < data->imagesData.get()->size()) {
                     std::string imagePath = data->imagesData.get()->at(imageNbr).folders.name;

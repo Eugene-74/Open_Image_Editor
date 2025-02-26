@@ -1,14 +1,11 @@
 #include "Main.hpp"
 
 int main(int argc, char* argv[]) {
+    // qDebug() << result << " : " << stop - start;
     QApplication app(argc, argv);
 
     // TODO ne marche pas apres une release
-    if (isDarkMode()) {
-        app.setWindowIcon(QIcon(":/255-255-255-255/icons/icon.ico"));
-    } else {
-        app.setWindowIcon(QIcon(":/0-0-0-255/icons/icon.ico"));
-    }
+    app.setWindowIcon(QIcon(":/icons/icon.ico"));
 
     InitialWindow window;
     qDebug() << "InitialWindow window;";

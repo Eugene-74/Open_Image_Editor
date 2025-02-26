@@ -38,6 +38,7 @@ class Data {
    public:
     QApplication* app;
     ImagesData imagesData;
+
     int imageNumber = 0;
     ImagesData deletedImagesData;
 

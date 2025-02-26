@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <unordered_map>
 #include <vector>
 
 #include "Const.hpp"
@@ -9,6 +10,10 @@
 class ImagesData {
    public:
     std::vector<ImageData> imagesData;
+    std::vector<ImageData*> currentImagesData;
+
+    std::unordered_map<std::string, ImageData*> imageMap;
+
     int imageNumber = 0;
 
     ImagesData()
@@ -49,6 +54,7 @@ class ImagesData {
 
     // Permet de recuperer imagesData
     std::vector<ImageData>* get();
+    std::vector<ImageData> getConst() const;
 
     int getImageDataId(std::string imagePath);
 };

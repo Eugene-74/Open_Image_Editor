@@ -71,6 +71,10 @@ std::string ImageData::getImagePath() {
     return folders.name;
 }
 
+std::string ImageData::getImagePathConst() const {
+    return folders.name;
+}
+
 std::string ImageData::getImageExtension() {
     return fs::path(folders.name).extension().string();
 }

@@ -243,9 +243,9 @@ std::map<std::string, std::string> openJsonFile(std::string filePath) {
 // }
 
 bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog) {
-    // progressDialog.setMaximum(imagesData->get()->size());
+    // progressDialog.setMaximum(imagesData.get()->size());
     // try {
-    //     for (int i = 0; i < imagesData->get()->size(); ++i) {
+    //     for (int i = 0; i < imagesData.get()->size(); ++i) {
     //         // TODO not working for now
     //         if (progressDialog.wasCanceled()) {
     //             return false;
@@ -342,14 +342,12 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
             }
         } else {
             if (isImage(entry.path().filename().string())) {
+                rootFolder.addFile(entry.path().string());
                 Folders folders = Folders(entry.path().string());
                 folders.addFolder(fs::absolute(entry.path()).parent_path().string());
-
                 ImageData imageD(folders);
 
-                // TODO reusir a mieux controler (unordered map pour trier)
-                // imagesData->addImage(imageD);
-                imagesData->imagesData.push_back(imageD);
+                imagesData->addImage(imageD);
 
                 nbrImage += 1;
                 progressDialog.setLabelText(QString("Scaning for images : %1").arg(nbrImage));
