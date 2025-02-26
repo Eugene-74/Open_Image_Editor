@@ -1,10 +1,8 @@
 #include "Main.hpp"
 
 int main(int argc, char* argv[]) {
-    // qDebug() << result << " : " << stop - start;
     QApplication app(argc, argv);
 
-    // TODO ne marche pas apres une release
     app.setWindowIcon(QIcon(":/icons/icon.ico"));
 
     InitialWindow window;

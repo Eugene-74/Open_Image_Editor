@@ -67,10 +67,11 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
 
     if (crop) {
         ImageData* imageData = imagesData.getImageData(imagePath);
+
         if (imageData != nullptr) {
-            ImageData* imageData = imagesData.getImageData(imagePath);
-            if (imageData != nullptr && !imageData->cropSizes.empty()) {
+            if (!imageData->cropSizes.empty()) {
                 std::vector<QPoint> cropPoints = imageData->cropSizes.back();
+
                 if (cropPoints.size() == 2) {
                     QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
 
@@ -99,6 +100,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
         // TODO pas ouf ça
         std::string extension = imagesData.getCurrentImageData()->getImageExtension();
         if (isExifTurnOrMirror(extension)) {
+            // TODO change imagePath to imageData
             image = rotateQImage(image, imagePath);
         }
     }
@@ -217,7 +219,7 @@ void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callbac
     try {
         QThreadPool::globalInstance()->start(task);
     } catch (const std::exception& e) {
-        std::cerr << "loadInCacheAsync" << e.what() << '\n';
+        qDebug() << "loadInCacheAsync" << e.what();
     }
 }
 
@@ -490,6 +492,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
 
 QImage Data::rotateQImage(QImage image, std::string imagePath) {
     ImageData* imageData = imagesData.getImageData(imagePath);
+
     if (imageData != nullptr) {
         int orientation = imageData->orientation;
 
@@ -610,6 +613,11 @@ void Data::loadData() {
         imagesData.get()->push_back(imageData);
     }
 
+    // Update imageMap with pointers to ImageData in imagesData
+    for (auto& imageData : *imagesData.get()) {
+        imagesData.imageMap[imageData.getImagePath()] = &imageData;
+    }
+
     size_t deletedImagesDataSize;
     inFile.read(reinterpret_cast<char*>(&deletedImagesDataSize),
                 sizeof(deletedImagesDataSize));
@@ -693,7 +701,6 @@ void Data::sortImagesData(QProgressDialog& progressDialog) {
 
     int progress = 0;
 
-    // TODO faire un thread
     for (auto& imageData : *imagesData.get()) {
         imageData.loadData();
         imageData.clearMetaData();
@@ -854,15 +861,15 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
 }
 
 void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
-    QString outputPath = QString::fromStdString(imagesData.getImageData(nbr)->folders.name);
-    QImage image = loadImage(nullptr, imagesData.getImageData(nbr)->folders.name, QSize(0, 0), false);
+    QString outputPath = QString::fromStdString(imagesData.getImageData(nbr)->getImagePath());
+    QImage image = loadImage(nullptr, imagesData.getImageData(nbr)->getImagePath(), QSize(0, 0), false);
     image = image.transformed(QTransform().rotate(-rotation));
     if (!image.save(outputPath)) {
         qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
     }
-    unloadFromCache(imagesData.getImageData(nbr)->folders.name);
-    loadInCache(imagesData.getImageData(nbr)->folders.name);
-    createAllThumbnail(imagesData.getImageData(nbr)->folders.name, 512);
+    unloadFromCache(imagesData.getImageData(nbr)->getImagePath());
+    loadInCache(imagesData.getImageData(nbr)->getImagePath());
+    createAllThumbnail(imagesData.getImageData(nbr)->getImagePath(), 512);
     reload();
 }
 

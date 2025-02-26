@@ -22,7 +22,6 @@ class ImageData {
     MetaData metaData;
     std::vector<std::vector<QPoint>> cropSizes;
     std::vector<Person> persons;
-    // bool isPersonsLoaded = false;  // TODO add to save and change to have loded in loading and not loaded
     Status status = Status::NotLoaded;
     int orientation = 0;
     long date = 0;

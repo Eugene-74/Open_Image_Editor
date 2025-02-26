@@ -3,7 +3,7 @@
 void ThumbnailTask::run() {
     for (int i = start; i < end; ++i) {
         ImageData* imageData = imagesData->getImageData(i);
-        // TODO test
+
         data->createThumbnailIfNotExists(imageData->getImagePath(), 16);
 
         data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
@@ -342,8 +342,8 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
             }
         } else {
             if (isImage(entry.path().filename().string())) {
-                rootFolder.addFile(entry.path().string());
                 Folders folders = Folders(entry.path().string());
+                rootFolder.addFile(entry.path().string());
                 folders.addFolder(fs::absolute(entry.path()).parent_path().string());
                 ImageData imageD(folders);
 

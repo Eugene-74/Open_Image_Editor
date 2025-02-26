@@ -102,7 +102,12 @@ void ImageEditor::previousImage(int nbr) {
 void ImageEditor::reload() {
     if (bigImage) {
         MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes->imagesEditorSizes->bigImage), false, 0, false, true);
+
         bigImageLabelNew->setFixedSize(data->sizes->imagesEditorSizes->bigImage);
+        bool oldExifEditor = exifEditor;
+        connect(bigImageLabelNew, &MainImage::leftClicked, [this, oldExifEditor]() {
+            closeBigImageLabel(bigImageLabel, oldExifEditor);
+        });
         mainLayout->replaceWidget(bigImageLabel, bigImageLabelNew);
         bigImageLabel->deleteLater();
         bigImageLabel = bigImageLabelNew;
@@ -110,6 +115,7 @@ void ImageEditor::reload() {
         ImagesData* imagesData = &data->imagesData;
 
         updateButtons();
+
         updatePreview();
 
         if (exifEditor) {
@@ -157,13 +163,14 @@ void ImageEditor::updatePreview() {
     std::vector<std::string> imagePaths;
 
     int currentImageNumber = imagesData->getImageNumber();
-    int totalImages = imagesData->get()->size();
+    int totalImages = data->imagesData.getCurrent()->size();
 
     int under = 0;
     for (int i = PREVIEW_NBR; i > 0; --i) {
         if (currentImageNumber - i >= 0) {
-            imagesData->getImageData(currentImageNumber - i)->loadData();
-            imagePaths.push_back(imagesData->getImageData(currentImageNumber - i)->getImagePath());
+            ImageData* imageData = imagesData->getImageDataInCurrent(currentImageNumber - i);
+            imageData->loadData();
+            imagePaths.push_back(imageData->getImagePath());
             under += 1;
         }
     }
@@ -172,8 +179,9 @@ void ImageEditor::updatePreview() {
 
     for (int i = 1; i <= PREVIEW_NBR; ++i) {
         if (currentImageNumber + i <= totalImages - 1) {
-            imagesData->getImageData(currentImageNumber + i)->loadData();
-            imagePaths.push_back(imagesData->getImageData(currentImageNumber + i)->getImagePath());
+            ImageData* imageData = imagesData->getImageDataInCurrent(currentImageNumber + i);
+            imageData->loadData();
+            imagePaths.push_back(imageData->getImagePath());
         }
     }
 
@@ -263,6 +271,7 @@ void ImageEditor::updateButtons() {
                 imageRotateRight->setEnabled(true);
         }
     }
+
     if (imageRotateLeft) {
         if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
             imageRotateLeft->setDisabled(true);
@@ -307,7 +316,7 @@ void ImageEditor::updateButtons() {
     checkCache();
 
     if (buttonImageNext) {
-        if (data->imagesData.getImageNumber() == data->imagesData.get()->size() - 1) {
+        if (data->imagesData.getImageNumber() == data->imagesData.getCurrent()->size() - 1) {
             buttonImageNext->setDisabled(true);
         } else {
             buttonImageNext->setEnabled(true);
@@ -651,7 +660,7 @@ ClickableLabel* ImageEditor::createImageNext() {
     ClickableLabel* buttonImageNextNew = new ClickableLabel(data, ICON_PATH_NEXT, "", this, actionSize);
     buttonImageNextNew->setInitialBackground("transparent", "#b3b3b3");
 
-    if (data->imagesData.getImageNumber() == data->imagesData.get()->size() - 1) {
+    if (data->imagesData.getImageNumber() == data->imagesData.getCurrent()->size() - 1) {
         buttonImageNextNew->setDisabled(true);
     }
 
@@ -706,12 +715,10 @@ MainImage* ImageEditor::createImageLabel() {
         QPointer<ImageEditor> self = this;
         Data* dataPtr = data;
         detectFacesAsync(currentImagePath, image, [self, dataPtr, imageNbr](std::vector<Person> persons) {
-            // TODO fait crash je crois
-
-            ImageData* imageData = dataPtr->imagesData.getImageData(imageNbr);
+            ImageData* imageData = dataPtr->imagesData.getImageDataInCurrent(imageNbr);
             imageData->status = ImageData::Status::Loaded;
-            if (dataPtr->imagesData.getImageData(imageNbr)) {
-                dataPtr->imagesData.getImageData(imageNbr)->persons = persons;
+            if (imageData) {
+                imageData->persons = persons;
             }
 
             if (!self.isNull()) {
@@ -1099,12 +1106,12 @@ void ImageEditor::startImageOpen() {
         });
         imageOpenTimer->stop();
         for (int i = 0; i < PRE_LOAD_RADIUS; i++) {
-            if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.get()->size() && data->imagesData.getImageNumber() - (i + 1) >= 0) {
-                data->loadInCacheAsync(data->imagesData.getImageData(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr);
+            if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() - (i + 1) >= 0) {
+                data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr);
             }
 
-            if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.get()->size() && data->imagesData.getImageNumber() + (i + 1) >= 0) {
-                data->loadInCacheAsync(data->imagesData.getImageData(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr);
+            if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() + (i + 1) >= 0) {
+                data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr);
             }
         }
     });
@@ -1126,6 +1133,7 @@ void ImageEditor::checkLoadedImage() {
         const std::string& imagePath = cache.second.imagePath;
         const std::string& imagePathBis = cache.first;
 
+        // TODO Change to use -10 to 10 check path and not all images
         int imageId = data->imagesData.getImageDataId(imagePath);
         if (imageId != -1) {
             if (std::abs(data->imagesData.imageNumber - imageId) > 2 * PRE_LOAD_RADIUS) {

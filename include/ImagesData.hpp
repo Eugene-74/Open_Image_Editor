@@ -46,14 +46,16 @@ class ImagesData {
 
     // Permet de recuperer la MetaData de l'ImageData à l'id
     ImageData* getImageData(int id);
+    ImageData* getImageDataInCurrent(int id);
 
     ImageData* getImageData(std::string imagePath);
-
     // Permet de recuperer la MetaData de l'ImageData actuellement utilisé
     ImageData* getCurrentImageData();
 
     // Permet de recuperer imagesData
     std::vector<ImageData>* get();
+    std::vector<ImageData*>* getCurrent();
+
     std::vector<ImageData> getConst() const;
 
     int getImageDataId(std::string imagePath);

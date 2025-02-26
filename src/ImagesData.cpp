@@ -12,7 +12,7 @@ void ImagesData::setImageNumber(int nbr) {
     while (nbr < 0) {
         nbr += 1;
     }
-    while (nbr >= imagesData.size()) {
+    while (nbr >= currentImagesData.size()) {
         nbr -= 1;
     }
 
@@ -42,7 +42,7 @@ void ImagesData::addImage(ImageData& imageD) {
     // imageD.setCropSizes(lastImageD.getCropSizes());
 
     imagesData.push_back(imageD);
-    imageMap[imageD.getImageName()] = &imageD;
+    imageMap[imageD.getImagePath()] = &imageD;
     // } else {
     //     imagesData.push_back(imageD);
     //     for (const auto& crop : imageD.getCropSizes()) {
@@ -65,12 +65,22 @@ ImageData* ImagesData::getImageData(int id) {
     if (id < 0 || id >= imagesData.size()) {
         throw std::out_of_range("getImageData :: Index hors limites" + std::to_string(id));
     }
-
     return &imagesData.at(id);
 }
 
+ImageData* ImagesData::getImageDataInCurrent(int id) {
+    if (id < 0 || id >= currentImagesData.size()) {
+        throw std::out_of_range("getImageData current :: Index hors limites" + std::to_string(id));
+    }
+    return currentImagesData.at(id);
+}
+
 ImageData* ImagesData::getImageData(std::string imagePath) {
+    auto start = std::chrono::high_resolution_clock::now();
     auto it = imageMap.find(imagePath);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    qDebug() << "Execution time: " << elapsed.count() << " seconds";
 
     if (it != imageMap.end()) {
         return it->second;
@@ -79,28 +89,32 @@ ImageData* ImagesData::getImageData(std::string imagePath) {
 }
 
 ImageData* ImagesData::getCurrentImageData() {
-    if (imagesData.size() <= 0 || imageNumber >= imagesData.size()) {
+    if (currentImagesData.size() <= 0 || imageNumber >= currentImagesData.size()) {
         return nullptr;
-        throw std::out_of_range("getCurrentImageData :: Index hors limites");
     }
 
-    return &imagesData.at(imageNumber);
+    return currentImagesData.at(imageNumber);
 }
 std::vector<ImageData>* ImagesData::get() {
     return &imagesData;
 }
+std::vector<ImageData*>* ImagesData::getCurrent() {
+    return &currentImagesData;
+}
+
 std::vector<ImageData> ImagesData::getConst() const {
     return imagesData;
 }
 
 int ImagesData::getImageDataId(std::string imagePath) {
-    auto it = std::find_if(imagesData.begin(), imagesData.end(),
-                           [&imagePath](const ImageData imgD) {
-                               return imgD.getImagePathConst() == imagePath;
+    // qDebug() << "getImageDataId :: " << imagePath;
+    auto it = std::find_if(currentImagesData.begin(), currentImagesData.end(),
+                           [&imagePath](const ImageData* imgD) {
+                               return imgD->getImagePathConst() == imagePath;
                            });
 
-    if (it != imagesData.end()) {
-        return std::distance(imagesData.begin(), it);
+    if (it != currentImagesData.end()) {
+        return std::distance(currentImagesData.begin(), it);
     } else {
         return -1;
     }
