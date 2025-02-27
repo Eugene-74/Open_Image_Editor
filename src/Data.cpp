@@ -39,15 +39,31 @@ void Data::removeDeletedImages() {
 
         auto it = std::find(imagesData.get()->begin(), imagesData.get()->end(),
                             deletedImage);
-        // auto it = imagesData.imageMap.find(deletedImage.getImagePathConst());
         qDebug() << "Deleting images 2";
+        if (currentFolder) {
+            auto fileIt = std::find(currentFolder->files.begin(), currentFolder->files.end(), it->getImagePath());
+            if (fileIt != currentFolder->files.end()) {
+                currentFolder->files.erase(fileIt);
+            }
+        }
 
+        qDebug() << "Remove image from folder : " << *currentFolder->getName();
+
+        qDebug() << "Deleting images 3";
         removeImageFromFolders(*it);
+        qDebug() << "Deleting images 4";
 
         if (it != imagesData.get()->end()) {
             imagesData.get()->erase(it);
             deletedImage.print();
+        }
+        auto mapIt = imagesData.imageMap.find(deletedImage.getImagePathConst());
+        if (mapIt != imagesData.imageMap.end()) {
             imagesData.imageMap.erase(deletedImage.getImagePathConst());
+        }
+        auto itPtr = std::find(imagesData.currentImagesData.begin(), imagesData.currentImagesData.end(), &(*it));
+        if (itPtr != imagesData.currentImagesData.end()) {
+            imagesData.currentImagesData.erase(itPtr);
         }
     }
     qDebug() << "All images deleted";
@@ -1192,22 +1208,29 @@ void Data::removeImageFromFolders(ImageData& imageData) {
     Folders* rootFolders = getRootFolders();
     for (auto& folder : imageData.getFolders()) {
         std::string folderPath = *folder.getName();
-        Folders* currentFolder = rootFolders;
+        Folders* currentFolderBis = rootFolders;
         std::istringstream iss(folderPath);
         std::string token;
         bool run = true;
+        qDebug() << "Remove image from folder :  1" << folderPath;
         while (run && std::getline(iss, token, '/')) {
-            auto it = std::find_if(currentFolder->folders.begin(), currentFolder->folders.end(),
+            auto it = std::find_if(currentFolderBis->folders.begin(), currentFolderBis->folders.end(),
                                    [&token](const Folders& f) { return f.name == token; });
-            if (it != currentFolder->folders.end()) {
-                currentFolder = &(*it);
+            if (it != currentFolderBis->folders.end()) {
+                currentFolderBis = &(*it);
             } else {
-                currentFolder = nullptr;
-                // break;
+                currentFolderBis = nullptr;
                 run = false;
             }
         }
-        currentFolder->files.erase(std::remove(currentFolder->files.begin(), currentFolder->files.end(), imageData.getImagePath()), currentFolder->files.end());
+        qDebug() << "Remove image from folder :  2" << folderPath;
+
+        if (currentFolderBis) {
+            auto it = std::find(currentFolderBis->files.begin(), currentFolderBis->files.end(), imageData.getImagePath());
+            if (it != currentFolderBis->files.end()) {
+                currentFolderBis->files.erase(it);
+            }
+        }
 
         qDebug() << "Remove image from folder : " << *currentFolder->getName();
     }

@@ -83,7 +83,11 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
 }
 
 void ImageBooth::openFolder(int index) {
-    data->getImagesData()->getCurrent()->clear();
+    // TODO modifier pour stocker les index dans imagesData et pouvoir les garder entre les fichiers
+    data->imagesSelected.clear();
+    data->getImagesData()
+        ->getCurrent()
+        ->clear();
     if (data->getCurrentFolders()->getFolders()->size() > index || index == -2) {
         if (index == -2) {
             data->currentFolder = data->getCurrentFolders()->getParent();
@@ -295,7 +299,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                 });
         } else {
             imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
-            data->imagesSelected.push_back(nbr);
+            data->imagesSelected.push_back(data->getImagesData()->getImageNumberInTotal(nbr));
 
             data->addAction(
                 [this, nbr]() {
@@ -337,7 +341,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             int start = std::min(imageShiftSelected, nbr);
             int end = std::max(imageShiftSelected, nbr);
             for (int i = start; i <= end; ++i) {
-                auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), i);
+                auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), data->getImagesData()->getImageNumberInTotal(i));
                 if (it != data->imagesSelected.end()) {
                     if (!imageShiftSelectedSelect) {
                         data->imagesSelected.erase(it);

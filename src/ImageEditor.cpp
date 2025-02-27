@@ -935,13 +935,13 @@ void ImageEditor::wheelEvent(QWheelEvent* event) {
 
 void ImageEditor::saveImage() {
     // TODO repare
-    // int id = data->getImagesData()->getImageNumber();
-    // for (int i = 0; i <= id; ++i) {
-    //     if (data->isDeleted(i)) {
-    //         id--;
-    //     }
-    // }
-    // data->imagesData.setImageNumber(id);
+    int id = data->getImagesData()->getImageNumber();
+    for (int i = 0; i <= id; ++i) {
+        if (data->isDeleted(data->getImagesData()->getImageNumberInTotal(i))) {
+            id--;
+        }
+    }
+    data->imagesData.setImageNumber(id);
     data->removeDeletedImages();
     if (data->imagesData.get()->size() <= 0) {
         switchToMainWindow();
