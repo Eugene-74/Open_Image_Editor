@@ -82,7 +82,9 @@ const QString ICON_PATH_CONVERSION = ":/icons/conversion.png";
 const QString ICON_PATH_EDIT_EXIF = ":/icons/editExif.png";
 const QString ICON_PATH_EDIT_PERSONS = ":/icons/editPersons.png";
 
-const QString ICON_PATH_FOLDER = ":/icons/file.png";
+const QString ICON_PATH_FOLDER = ":/icons/folder.png";
+const QString ICON_PATH_ALL_IMAGES = ":/icons/allImages.png";
+const QString ICON_PATH_BACK = ":/icons/back.png";
 
 const QString ICON_PATH_BEFORE = ":/icons/before.png";
 const QString ICON_PATH_NEXT = ":/icons/next.png";
@@ -124,6 +126,9 @@ const QString TOOL_TIP_IMAGE_EDITOR_MIRROR_UP_DOWN = "Mirror UP-DOWN the image";
 const QString TOOL_TIP_IMAGE_EDITOR_MIRROR_LEFT_RIGHT = "Mirror LEFT-RIGHT the image";
 const QString TOOL_TIP_IMAGE_EDITOR_EDIT_EXIF = "Edit exif data of the image";
 const QString TOOL_TIP_IMAGE_EDITOR_EDIT_PERSONS = "Edit persons data of the image";
+
+const QString TOOL_TIP_IMAGE_BOOTH_ALL_IMAGES = "Open all you images at once";
+const QString TOOL_TIP_IMAGE_BOOTH_BACK = "Go to last folder";
 
 // const QString TOOL_TIP_IMAGE_EDITOR_CONVERSION = "Convert the image";
 #include <QObject>

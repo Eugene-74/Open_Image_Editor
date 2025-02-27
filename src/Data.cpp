@@ -649,7 +649,7 @@ void Data::loadData() {
     }
     rootFolders.load(inFile);
     // TODO save currentFolder
-    currentFolder = &rootFolders;
+    // currentFolder = &rootFolders;
 
     inFile.close();
 }

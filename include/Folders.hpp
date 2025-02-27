@@ -46,6 +46,7 @@ class Folders {
 
     Folders* getFolder(int index);
     std::string* getFile(int index);
+    Folders* getParent();
 
     // std::string getParentPath();
 };

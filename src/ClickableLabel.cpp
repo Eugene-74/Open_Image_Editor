@@ -202,18 +202,17 @@ void ClickableLabel::paintEvent(QPaintEvent* event) {
     QLabel::paintEvent(event);
 
     if (logoVisible) {
+        int radius = static_cast<int>(sqrt(this->height()) * 1.5f);
+        int fontSize = radius / logoText.length() * 1.5f;
+
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setPen(Qt::NoPen);
         QFont font = painter.font();
-        font.setPointSize(this->height() / 5);
+        font.setPointSize(fontSize);
         painter.setFont(font);
 
         QRect rect = this->rect();
-
-        QString text;
-
-        int radius = font.pointSize();
 
         QRect circleRect = QRect(rect.right() - radius * 2, rect.bottom() - radius * 2, radius * 2, radius * 2);
         painter.setBrush(QBrush(logoColor));
@@ -243,7 +242,7 @@ void ClickableLabel::setLogoNumber(int logoNumber) {
     if (logoNumber < 0) {
         logoText = "?";
     } else if (logoNumber > 99) {
-        logoText = "99+";
+        logoText = "+99";
     } else {
         logoText = QString::number(logoNumber);
     }

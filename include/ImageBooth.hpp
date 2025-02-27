@@ -28,6 +28,7 @@ class ImageBooth : public QMainWindow {
     void enterEvent(QEnterEvent* event) override;
 
    private:
+    int getCurrentFoldersSize();
     QTimer* updateTimer;
     int imageShiftSelected = -1;
     bool imageShiftSelectedSelect;

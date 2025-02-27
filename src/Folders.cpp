@@ -101,6 +101,10 @@ std::string* Folders::getFile(int index) {
     return &files.at(index);
 }
 
+Folders* Folders::getParent() {
+    return parent;
+}
+
 // Verifie si un dossier existe dans un Folders
 bool getIfExist(Folders* currentFolder, const std::string& path) {
     auto it = std::find_if(currentFolder->folders.begin(), currentFolder->folders.end(), [&path](const Folders& folder) { return folder.name == path; });
