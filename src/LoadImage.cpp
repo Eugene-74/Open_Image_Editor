@@ -38,6 +38,13 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
     qDebug() << "Sorting images took " << elapsed.count() << " seconds.";
 
     data->saveData();
+
+    // auto images = data->getImagesData()->get();
+    // for (auto& imageData : *images) {
+    //     data->getImagesData()->imageMap[imageData.getImagePath()] = &imageData;
+    // }
+
+    data->currentFolder = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
 }
 
 // Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
@@ -321,6 +328,7 @@ bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::s
     if (progressDialog.wasCanceled()) {
         return false;
     }
+
     if (!addSubfolders(*currentFolder, imagesData, path, nbrImage, progressDialog)) {
         return false;
     }
@@ -348,6 +356,7 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
                 ImageData imageD(folders);
 
                 imagesData->addImage(imageD);
+                imagesData->imageMap[imageD.getImagePath()] = &imageD;
 
                 nbrImage += 1;
                 progressDialog.setLabelText(QString("Scaning for images : %1").arg(nbrImage));

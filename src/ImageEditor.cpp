@@ -298,7 +298,7 @@ void ImageEditor::updateButtons() {
     }
     if (imageDelete) {
         qDebug() << "updateButtons";
-        if (data->isDeleted(data->imagesData.getImageNumber())) {
+        if (data->isDeleted(data->imagesData.getImageNumberInTotal())) {
             imageDelete->setBackground("#700c13", "#F00c13");
         } else {
             imageDelete->resetBackground();
@@ -440,7 +440,7 @@ ClickableLabel* ImageEditor::createImageDelete() {
     ClickableLabel* imageDeleteNew = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_TIP_IMAGE_EDITOR_DELETE, this, actionSize);
     imageDeleteNew->setInitialBackground("transparent", "#b3b3b3");
 
-    if (data->isDeleted(data->imagesData.getImageNumber())) {
+    if (data->isDeleted(data->imagesData.getImageNumberInTotal())) {
         imageDeleteNew->setBackground("#700c13", "#F00c13");
     }
     connect(imageDeleteNew, &ClickableLabel::clicked, [this]() {
@@ -934,21 +934,21 @@ void ImageEditor::wheelEvent(QWheelEvent* event) {
 }
 
 void ImageEditor::saveImage() {
-    int id = data->imagesData.imageNumber;
-    for (int i = 0; i <= data->imagesData.imageNumber; ++i) {
-        if (data->isDeleted(i)) {
-            id--;
-        }
-    }
+    // TODO repare
+    // int id = data->getImagesData()->getImageNumber();
+    // for (int i = 0; i <= id; ++i) {
+    //     if (data->isDeleted(i)) {
+    //         id--;
+    //     }
+    // }
+    // data->imagesData.setImageNumber(id);
     data->removeDeletedImages();
     if (data->imagesData.get()->size() <= 0) {
-        clear();
+        switchToMainWindow();
     }
     data->saveData();
 
     data->saved = true;
-
-    data->imagesData.setImageNumber(id);
 
     reload();
 }
@@ -971,69 +971,71 @@ void ImageEditor::exportImage() {
 }
 
 void ImageEditor::deleteImage() {
+    qDebug() << "deleteImage";
     int nbr = data->imagesData.getImageNumber();
+    int nbrInTotal = data->getImagesData()->getImageDataId(data->getImagesData()->getImageDataInCurrent(nbr)->getImagePathConst());
     bool saved = data->saved;
 
-    if (data->isDeleted(nbr)) {
-        data->unPreDeleteImage(nbr);
+    if (data->isDeleted(nbrInTotal)) {
+        data->unPreDeleteImage(nbrInTotal);
         data->addAction(
-            [this, nbr, saved]() {
+            [this, nbrInTotal, saved]() {
                 int time = 0;
-                if (data->imagesData.imageNumber != nbr) {
-                    data->imagesData.imageNumber = nbr;
+                if (data->imagesData.imageNumber != nbrInTotal) {
+                    data->imagesData.imageNumber = nbrInTotal;
                     reload();
                     time = TIME_UNDO_VISUALISATION;
                 }
-                QTimer::singleShot(time, [this, nbr, saved]() {
+                QTimer::singleShot(time, [this, nbrInTotal, saved]() {
                     if (saved) {
                         data->saved = true;
                     }
-                    data->preDeleteImage(nbr);
+                    data->preDeleteImage(nbrInTotal);
                     reload();
                 });
             },
-            [this, nbr]() {
+            [this, nbrInTotal]() {
                 int time = 0;
-                if (data->imagesData.imageNumber != nbr) {
-                    data->imagesData.imageNumber = nbr;
+                if (data->imagesData.imageNumber != nbrInTotal) {
+                    data->imagesData.imageNumber = nbrInTotal;
                     reload();
                     time = TIME_UNDO_VISUALISATION;
                 }
-                QTimer::singleShot(time, [this, nbr]() {
+                QTimer::singleShot(time, [this, nbrInTotal]() {
                     data->saved = false;
-                    data->unPreDeleteImage(nbr);
+                    data->unPreDeleteImage(nbrInTotal);
                 });
             });
 
         updateButtons();
     } else {
-        data->preDeleteImage(nbr);
+        data->preDeleteImage(nbrInTotal);
         data->addAction(
-            [this, nbr, saved]() {
+            [this, nbrInTotal, saved]() {
                 int time = 0;
-                if (data->imagesData.imageNumber != nbr) {
-                    data->imagesData.imageNumber = nbr;
+                if (data->imagesData.imageNumber != nbrInTotal) {
+                    data->imagesData.imageNumber = nbrInTotal;
                     reload();
                     time = TIME_UNDO_VISUALISATION;
                 }
-                QTimer::singleShot(time, [this, nbr, saved]() {
+                QTimer::singleShot(time, [this, nbrInTotal, saved]() {
                     if (saved) {
                         data->saved = true;
                     }
-                    data->unPreDeleteImage(nbr);
+                    data->unPreDeleteImage(nbrInTotal);
                     reload();
                 });
             },
-            [this, nbr]() {
+            [this, nbrInTotal]() {
                 int time = 0;
-                if (data->imagesData.imageNumber != nbr) {
-                    data->imagesData.imageNumber = nbr;
+                if (data->imagesData.imageNumber != nbrInTotal) {
+                    data->imagesData.imageNumber = nbrInTotal;
                     reload();
                     time = TIME_UNDO_VISUALISATION;
                 }
-                QTimer::singleShot(time, [this, nbr]() {
+                QTimer::singleShot(time, [this, nbrInTotal]() {
                     data->saved = false;
-                    data->preDeleteImage(nbr);
+                    data->preDeleteImage(nbrInTotal);
                     reload();
                 });
             });
@@ -1134,7 +1136,7 @@ void ImageEditor::checkLoadedImage() {
         const std::string& imagePathBis = cache.first;
 
         // TODO Change to use -10 to 10 check path and not all images
-        int imageId = data->imagesData.getImageDataId(imagePath);
+        int imageId = data->imagesData.getImageDataIdInCurrent(imagePath);
         if (imageId != -1) {
             if (std::abs(data->imagesData.imageNumber - imageId) > 2 * PRE_LOAD_RADIUS) {
                 toUnload.push_back(imagePathBis);

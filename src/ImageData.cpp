@@ -34,8 +34,8 @@ MetaData ImageData::getMetaData() const {
     return metaData;
 }
 
-std::vector<std::string> ImageData::getFolders() {
-    return folders.files;
+std::vector<Folders> ImageData::getFolders() {
+    return *folders.getFolders();
 }
 
 void ImageData::addFolder(const std::string& toAddFolder) {

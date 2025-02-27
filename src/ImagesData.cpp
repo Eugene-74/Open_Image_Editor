@@ -26,6 +26,14 @@ int ImagesData::getImageNumber() {
     return imageNumber;
 }
 
+int ImagesData::getImageNumberInTotal() {
+    return getImageNumberInTotal(imageNumber);
+}
+
+int ImagesData::getImageNumberInTotal(int imageNbrInCurrent) {
+    return getImageDataId(getImageDataInCurrent(imageNbrInCurrent)->getImagePathConst());
+}
+
 void ImagesData::print() const {
     qDebug() << "ImagesData : \n";
     for (const ImageData valeur : imagesData) {
@@ -46,7 +54,6 @@ void ImagesData::addImage(ImageData& imageD) {
     // imageD.setCropSizes(lastImageD.getCropSizes());
 
     imagesData.push_back(imageD);
-    imageMap[imageD.getImagePath()] = &imageD;
     // } else {
     //     imagesData.push_back(imageD);
     //     for (const auto& crop : imageD.getCropSizes()) {
@@ -109,8 +116,7 @@ std::vector<ImageData> ImagesData::getConst() const {
     return imagesData;
 }
 
-int ImagesData::getImageDataId(std::string imagePath) {
-    // qDebug() << "getImageDataId :: " << imagePath;
+int ImagesData::getImageDataIdInCurrent(std::string imagePath) {
     auto it = std::find_if(currentImagesData.begin(), currentImagesData.end(),
                            [&imagePath](const ImageData* imgD) {
                                return imgD->getImagePathConst() == imagePath;
@@ -118,6 +124,19 @@ int ImagesData::getImageDataId(std::string imagePath) {
 
     if (it != currentImagesData.end()) {
         return std::distance(currentImagesData.begin(), it);
+    } else {
+        return -1;
+    }
+}
+
+int ImagesData::getImageDataId(std::string imagePath) {
+    auto it = std::find_if(imagesData.begin(), imagesData.end(),
+                           [&imagePath](const ImageData& imgD) {
+                               return imgD.getImagePathConst() == imagePath;
+                           });
+
+    if (it != imagesData.end()) {
+        return std::distance(imagesData.begin(), it);
     } else {
         return -1;
     }

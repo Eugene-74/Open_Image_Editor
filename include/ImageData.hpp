@@ -47,7 +47,7 @@ class ImageData {
     MetaData* getMetaData();
     MetaData getMetaData() const;
 
-    std::vector<std::string> getFolders();
+    std::vector<Folders> getFolders();
 
     void addFolder(const std::string& toAddFolder);
 

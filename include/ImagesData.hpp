@@ -56,7 +56,11 @@ class ImagesData {
     std::vector<ImageData>* get();
     std::vector<ImageData*>* getCurrent();
 
+    int getImageNumberInTotal();
+    int getImageNumberInTotal(int imageNbrInCurrent);
+
     std::vector<ImageData> getConst() const;
 
+    int getImageDataIdInCurrent(std::string imagePath);
     int getImageDataId(std::string imagePath);
 };

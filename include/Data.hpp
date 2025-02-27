@@ -132,6 +132,7 @@ class Data {
 
     ImagesData* getImagesData();
     Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
+    void removeImageFromFolders(ImageData& imageData);
 
    private:
     std::vector<Actions> lastActions = {};
