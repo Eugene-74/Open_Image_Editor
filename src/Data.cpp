@@ -648,6 +648,8 @@ void Data::loadData() {
         options[key] = Option(type, value);
     }
     rootFolders.load(inFile);
+    // TODO save currentFolder
+    currentFolder = &rootFolders;
 
     inFile.close();
 }
@@ -1163,4 +1165,15 @@ void Data::realMirror(int nbr, bool UpDown, std::function<void()> reload) {
 void Data::clearActions() {
     lastActions.clear();
     lastActionsDone.clear();
+}
+
+Folders* Data::getRootFolders() {
+    return &rootFolders;
+}
+Folders* Data::getCurrentFolders() {
+    return currentFolder;
+}
+
+ImagesData* Data::getImagesData() {
+    return &imagesData;
 }

@@ -9,11 +9,15 @@ ImagesData& ImagesData::operator=(const ImagesData& other) {
 }
 
 void ImagesData::setImageNumber(int nbr) {
-    while (nbr < 0) {
-        nbr += 1;
-    }
-    while (nbr >= currentImagesData.size()) {
-        nbr -= 1;
+    if (currentImagesData.size() == 0) {
+        nbr = 0;
+    } else {
+        while (nbr < 0) {
+            nbr += 1;
+        }
+        while (nbr >= currentImagesData.size()) {
+            nbr -= 1;
+        }
     }
 
     imageNumber = nbr;
@@ -80,7 +84,6 @@ ImageData* ImagesData::getImageData(std::string imagePath) {
     auto it = imageMap.find(imagePath);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;
-    qDebug() << "Execution time: " << elapsed.count() << " seconds";
 
     if (it != imageMap.end()) {
         return it->second;

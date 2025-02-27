@@ -79,9 +79,10 @@ const QString ICON_PATH_ROTATE_LEFT = ":/icons/rotateLeft.png";
 const QString ICON_PATH_MIRROR_UP_DOWN = ":/icons/mirrorUpDown.png";
 const QString ICON_PATH_MIRROR_LEFT_RIGHT = ":/icons/mirrorLeftRight.png";
 const QString ICON_PATH_CONVERSION = ":/icons/conversion.png";
-
 const QString ICON_PATH_EDIT_EXIF = ":/icons/editExif.png";
 const QString ICON_PATH_EDIT_PERSONS = ":/icons/editPersons.png";
+
+const QString ICON_PATH_FOLDER = ":/icons/file.png";
 
 const QString ICON_PATH_BEFORE = ":/icons/before.png";
 const QString ICON_PATH_NEXT = ":/icons/next.png";

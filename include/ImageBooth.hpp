@@ -7,6 +7,7 @@
 #include <QScrollBar>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <cmath>
 #include <vector>
 
 #include "Box.hpp"
@@ -39,6 +40,7 @@ class ImageBooth : public QMainWindow {
     std::vector<QLabel*> imageWidgets;
 
     QScrollArea* scrollArea;
+    QWidget* scrollWidget;
 
     QSpacerItem* spacer;
 
@@ -93,6 +95,7 @@ class ImageBooth : public QMainWindow {
     ClickableLabel* createImageConversion();
     ClickableLabel* createImageMore();
     ClickableLabel* createImageLess();
+    void openFolder(int index);
 
     void createFirstImages();
     ClickableLabel* createImage(std::string imagePath, int nbr);

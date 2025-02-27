@@ -19,8 +19,8 @@ MainWindow::MainWindow(Data* dat, QWidget* parent)
 
     ClickableLabel* switchToBooth = new ClickableLabel(data, ICON_PATH_IMAGE_BOOTH, TOOL_TIP_OPEN_IMAGE_BOOTH, this, actionSize, false, 0, true);
     switchToBooth->setInitialBackground("transparent", "#b3b3b3");
-    ClickableLabel* switchToEditor = new ClickableLabel(data, ICON_PATH_IMAGE_EDITOR, TOOL_TIP_OPEN_IMAGE_EDITOR, this, actionSize, false, 0, true);
-    switchToEditor->setInitialBackground("transparent", "#b3b3b3");
+    // ClickableLabel* switchToEditor = new ClickableLabel(data, ICON_PATH_IMAGE_EDITOR, TOOL_TIP_OPEN_IMAGE_EDITOR, this, actionSize, false, 0, true);
+    // switchToEditor->setInitialBackground("transparent", "#b3b3b3");
     ClickableLabel* addImages = new ClickableLabel(data, ICON_PATH_OPTION_ADD_IMAGES, TOOL_TIP_ADD_IMAGES, this, actionSize, false, 0, true);
     addImages->setInitialBackground("transparent", "#b3b3b3");
 
@@ -33,21 +33,21 @@ MainWindow::MainWindow(Data* dat, QWidget* parent)
         }
     });
 
-    connect(switchToEditor, &ClickableLabel::clicked, this, [this]() {
-        if (data->imagesData.get()->size() <= 0) {
-            addImagesFromFolder(data, this);
-        }
-        if (data->imagesData.get()->size() > 0) {
-            switchToImageEditor();
-        }
-    });
+    // connect(switchToEditor, &ClickableLabel::clicked, this, [this]() {
+    //     if (data->imagesData.get()->size() <= 0) {
+    //         addImagesFromFolder(data, this);
+    //     }
+    //     if (data->imagesData.get()->size() > 0) {
+    //         switchToImageEditor();
+    //     }
+    // });
 
     connect(addImages, &ClickableLabel::clicked, this, [this]() {
         addImagesFromFolder(data, this);
     });
 
     switchLayout->addWidget(switchToBooth);
-    switchLayout->addWidget(switchToEditor);
+    // switchLayout->addWidget(switchToEditor);
     switchLayout->addWidget(addImages);
 
     switchLayout->setAlignment(Qt::AlignCenter);

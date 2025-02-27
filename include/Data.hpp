@@ -47,6 +47,7 @@ class Data {
 #else
     Folders rootFolders = Folders("/");
 #endif
+    Folders* currentFolder;
 
     std::map<std::string, Option> options = DEFAULT_OPTIONS;
     Sizes* sizes = new Sizes();
@@ -126,11 +127,16 @@ class Data {
     void clearActions();
     QImage rotateQImage(QImage image, std::string imagePath);
 
+    Folders* getRootFolders();
+    Folders* getCurrentFolders();
+
+    ImagesData* getImagesData();
+    Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
+
    private:
     std::vector<Actions> lastActions = {};
     std::vector<Actions> lastActionsDone = {};
 
-    Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
     void createFolders(Folders* currentFolders, std::string path);
     void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
 };

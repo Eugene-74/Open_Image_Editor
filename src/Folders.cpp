@@ -81,6 +81,26 @@ void Folders::print() const {
     }
 }
 
+std::string* Folders::getName() {
+    return &name;
+}
+
+std::vector<Folders>* Folders::getFolders() {
+    return &folders;
+}
+
+std::vector<std::string>* Folders::getFiles() {
+    return &files;
+}
+
+Folders* Folders::getFolder(int index) {
+    return &folders.at(index);
+}
+
+std::string* Folders::getFile(int index) {
+    return &files.at(index);
+}
+
 // Verifie si un dossier existe dans un Folders
 bool getIfExist(Folders* currentFolder, const std::string& path) {
     auto it = std::find_if(currentFolder->folders.begin(), currentFolder->folders.end(), [&path](const Folders& folder) { return folder.name == path; });

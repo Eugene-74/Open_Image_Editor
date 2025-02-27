@@ -4,24 +4,26 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
 
+    data->currentFolder = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
+
+    qDebug() << "ImageBooth name  : " << data->getCurrentFolders()->getName();
     data->imagesData.currentImagesData.clear();
+    for (auto it = data->getCurrentFolders()->getFiles()->begin(); it != data->getCurrentFolders()->getFiles()->end(); ++it) {
+        std::string imagePath = *it;
+        qDebug() << imagePath;
+        ImageData* imageData = data->imagesData.getImageData(imagePath);
 
-    // qDebug() << "ImageBooth name  : " << data->rootFolders.folders.at(0).folders.at(0).folders.at(0).folders.at(0).folders.at(0).folders.at(0).folders.at(0).name;
-    // for (std::string imagePath : data->rootFolders.folders.at(0).folders.at(0).folders.at(0).folders.at(0).folders.at(0).folders.at(0).folders.at(0).files) {
-    //     // std::string imagePath;
-    //     qDebug() << imagePath;
-    //     ImageData* imageData = data->imagesData.getImageData(imagePath);
-
-    //     data->imagesData.currentImagesData.push_back(&*imageData);
-    //     if (imageData == nullptr) {
-    //         qDebug() << "imageData is null";
-    //     }
-    // }
-
-    auto images = data->imagesData.getConst();
-    for (int i = 0; i < images.size(); i++) {
-        data->imagesData.currentImagesData.push_back(data->imagesData.getImageData(i));
+        data->imagesData.currentImagesData.push_back(&*imageData);
+        if (imageData == nullptr) {
+            qDebug() << "imageData is null";
+        }
     }
+    // qDebug() << "ImageBooth currentImagesData size : " << data->rootFolders.getFolders()->size();
+
+    // auto images = data->imagesData.getConst();
+    // for (int i = 0; i < images.size(); i++) {
+    //     data->imagesData.currentImagesData.push_back(data->imagesData.getImageData(i));
+    // }
 
     data->clearCache();
 
@@ -46,11 +48,12 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     actionButtonLayout->setAlignment(Qt::AlignCenter);
     scrollLayout->addWidget(scrollArea);
 
-    QWidget* scrollWidget = new QWidget();
+    scrollWidget = new QWidget();
     linesLayout = new QVBoxLayout(scrollWidget);
     scrollArea->setWidget(scrollWidget);
 
-    scrollWidget->setMinimumHeight(data->sizes->imagesBoothSizes->realImageSize.height() * (data->imagesData.currentImagesData.size() / data->sizes->imagesBoothSizes->widthImageNumber));
+    int minHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->imagesData.currentImagesData.size() / data->sizes->imagesBoothSizes->widthImageNumber);
+    scrollWidget->setMinimumHeight(minHeight);
 
     linesLayout->setAlignment(Qt::AlignTop);
     linesLayout->setSpacing(data->sizes->imagesBoothSizes->linesLayoutSpacing);
@@ -63,24 +66,70 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     spacer = new QSpacerItem(0, 0);
     linesLayout->insertSpacerItem(0, spacer);
     createFirstImages();
+    qDebug() << "initial image created";
 
     connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, this, &ImageBooth::onScroll);
 
     // Make sure that the scrollArea is well initialized (doesn't work without)
     // qDebug() << "imageNumber " << data->imagesData.getImageNumber();
     // TODO marche pas bien
+
+    qDebug() << "have connect";
+
     QTimer::singleShot(100, this, [this]() {
+        qDebug() << "will goto";
         gotToImage(data->imagesData.getImageNumber(), true);
     });
 }
 
+void ImageBooth::openFolder(int index) {
+    if (data->getCurrentFolders()->getFolders()->size() > index) {
+        qDebug() << "openFolder: " << index;
+        qDebug() << "openFolder: switch from " << *data->currentFolder->getName();
+
+        data->currentFolder = data->currentFolder->getFolder(index);
+        qDebug() << "openFolder: switch to " << *data->currentFolder->getName();
+        qDebug() << "openFolder: switch to " << data->currentFolder->getFiles()->size();
+        qDebug() << "openFolder: switch to " << data->currentFolder->getFolders()->size();
+
+        data->imagesData.currentImagesData.clear();
+        for (int i = 0; i < data->currentFolder->files.size(); i++) {
+            data->imagesData.currentImagesData.push_back(data->imagesData.getImageData(data->currentFolder->files.at(i)));
+        }
+        qDebug() << "openFolder: 1" << index;
+
+        int minTotalImagesHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesData()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber);
+
+        int minTotalFoldersHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getCurrentFolders()->getFolders()->size() / data->sizes->imagesBoothSizes->widthImageNumber);
+        qDebug() << "openFolder: 2" << index;
+
+        int minHeight = minTotalImagesHeight + minTotalFoldersHeight;
+        scrollWidget->setMinimumHeight(minHeight);
+        qDebug() << "openFolder: 3" << index;
+
+        qDebug() << "openFolder: 4" << index;
+
+        // createFirstImages();
+        qDebug() << "openFolder: 5" << index;
+
+        data->getImagesData()->setImageNumber(0);
+        data->clearCache();
+        qDebug() << "openFolder: 6" << index;
+        reload();
+        // gotToImage(data->imagesData.getImageNumber(), true);
+        qDebug() << "openFolder: 7" << index;
+    }
+}
+
 void ImageBooth::updateVisibleImages(bool force) {
+    qDebug() << "updateVisibleImages";
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
     data->imagesData.imageNumber = (spacerHeight / realImageSize->height()) * data->sizes->imagesBoothSizes->imagesPerLine;
     // qDebug() << spacerHeight;
+
     int lineNbr = spacerHeight / imageHeight;
     int difLineNbr = lineNbr - lastLineNbr;
 
@@ -110,7 +159,12 @@ bool ImageBooth::isImageVisible(int imageIndex) {
 }
 
 void ImageBooth::createFirstImages() {
-    for (int j = 0; j < maxVisibleLines; j++) {
+    // qDebug() << "createFirstImages: " << data->getCurrentFolders()->getFolders()->size();
+
+    // data->getCurrentFolders()->print();
+    int foldersLineNumber = data->getCurrentFolders()->getFolders()->size() / data->sizes->imagesBoothSizes->widthImageNumber + 1;
+
+    for (int i = 0; i < maxVisibleLines; i++) {
         QHBoxLayout* lineLayout = new QHBoxLayout();
         lineLayout->setAlignment(Qt::AlignLeft);
 
@@ -118,24 +172,15 @@ void ImageBooth::createFirstImages() {
         lineLayouts.push_back(lineLayout);
         int nbr = data->sizes->imagesBoothSizes->widthImageNumber;
 
-        for (int i = 0; i < nbr; i++) {
-            int imageNbr = j * nbr + i;
-            if (imageNbr < data->imagesData.currentImagesData.size()) {
-                ImageData* imageData = data->imagesData.currentImagesData.at(imageNbr);
-                if (imageData) {
-                    std::string imagePath = imageData->getImagePath();
+        int j = 0;
+        int folderNumber = i * nbr + j;
 
-                    lineLayout->addWidget(createImage(imagePath, imageNbr));
-                } else {
-                    qDebug() << "imageData is null";
-                }
-            }
-            // if (imageNbr < data->imagesData.get()->size()) {
-            //     if (i < data->imagesData.get()->size()) {
-            //         std::string imagePath = data->imagesData.get()->at(imageNbr).folders.name;
-            //         lineLayout->addWidget(createImage(imagePath, imageNbr));
-            //     }
-            // }
+        for (int i = 0; i < nbr; i++) {
+            ClickableLabel* imageButton = new ClickableLabel(data, ICON_PATH_FOLDER,
+                                                             "", this, imageSize, false, 0, true);
+            lineLayout->addWidget(imageButton);
+            j++;
+            folderNumber = i * nbr + j;
         }
     }
 }
@@ -145,7 +190,7 @@ void ImageBooth::onScroll(int value) {
 }
 
 ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->imagesData.getCurrent()->size() <= 0) {
         return nullptr;
     }
 
@@ -368,6 +413,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
 // Go to the line of the image nbr
 void ImageBooth::gotToImage(int nbr, bool force) {
+    qDebug() << "gotToImage";
     int imageLine = nbr / data->sizes->imagesBoothSizes->widthImageNumber;
     int spacerHeight = imageLine * data->sizes->imagesBoothSizes->realImageSize.height();
     // qDebug() << spacerHeight;
@@ -395,6 +441,10 @@ void ImageBooth::removeNbrToSelectedImages(int nbr) {
 
 // Get the clickableLabel + lineLayout of imageNbr if exist
 ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr, QHBoxLayout*& lineLayout) {
+    // Adapt to folders
+    int foldersLineNumber = data->getCurrentFolders()->getFolders()->size() / data->sizes->imagesBoothSizes->widthImageNumber + 1;
+    imageNbr += foldersLineNumber * data->sizes->imagesBoothSizes->widthImageNumber;
+
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
@@ -424,16 +474,49 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
 
 // Update all visible images
 void ImageBooth::updateImages() {
+    qDebug() << "updateImages";
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
+    int foldersLineNumber = data->getCurrentFolders()->getFolders()->size() / data->sizes->imagesBoothSizes->widthImageNumber + 1;
     int lineNbr = spacerHeight / imageHeight;
+    qDebug() << "foldersLineNumber " << foldersLineNumber << " : " << data->getCurrentFolders()->getFolders()->size();
+    int folderLinesNbr = std::min(std::max(foldersLineNumber - lineNbr, 0), maxVisibleLines);
+    int imageLinesNbr = std::min(std::max(maxVisibleLines - folderLinesNbr, 0), maxVisibleLines);
+    // int imageLinesNbr = 0;
 
-    for (int i = 1; i < linesLayout->count(); i++) {
+    qDebug() << "folderLinesNbr " << folderLinesNbr;
+    qDebug() << "imageLinesNbr " << imageLinesNbr;
+    for (int i = 1; i < 1 + folderLinesNbr; i++) {
         QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
         for (int j = 0; j < lineLayout->count(); j++) {
-            int imageNbr = (lineNbr + i - 1) * data->sizes->imagesBoothSizes->widthImageNumber + j;
+            int folderNbr = (lineNbr + i - 1) * data->sizes->imagesBoothSizes->widthImageNumber + j;
+
+            ClickableLabel* lastFolderButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
+
+            if (folderNbr < data->getCurrentFolders()->getFolders()->size()) {
+                ClickableLabel* folderButton = new ClickableLabel(data, ICON_PATH_FOLDER,
+                                                                  QString::fromStdString(*data->getCurrentFolders()->getFolder(folderNbr)->getName()),
+                                                                  this, imageSize, false, 0, true);
+
+                connect(folderButton, &ClickableLabel::leftClicked, [this, folderNbr]() {
+                    openFolder(folderNbr);
+                });
+                lineLayout->replaceWidget(lastFolderButton, folderButton);
+                lastFolderButton->deleteLater();
+
+                // lastFolderButton->show();
+            } else {
+                lastFolderButton->hide();
+            }
+        }
+    }
+    for (int i = 1 + folderLinesNbr; i < 1 + imageLinesNbr + folderLinesNbr; i++) {
+        qDebug() << "update image";
+        QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
+        for (int j = 0; j < lineLayout->count(); j++) {
+            int imageNbr = (lineNbr - foldersLineNumber + i - 1) * data->sizes->imagesBoothSizes->widthImageNumber + j;
             ClickableLabel* lastImageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
             if (imageNbr >= data->imagesData.getCurrent()->size()) {
                 lastImageButton->hide();
@@ -490,9 +573,6 @@ void ImageBooth::createButtons() {
 
     imageConversion = createImageConversion();
 
-    // imageMore = createImageMore();
-    // imageLess = createImageLess();
-
     actionButtonLayout->addWidget(imageRotateRight);
     actionButtonLayout->addWidget(imageRotateLeft);
     actionButtonLayout->addWidget(imageMirrorLeftRight);
@@ -502,8 +582,6 @@ void ImageBooth::createButtons() {
     actionButtonLayout->addWidget(imageExport);
     actionButtonLayout->addWidget(imageConversion);
     actionButtonLayout->addWidget(imageEditExif);
-    // actionButtonLayout->addWidget(imageMore);
-    // actionButtonLayout->addWidget(imageLess);
 }
 
 ClickableLabel* ImageBooth::createImageDelete() {

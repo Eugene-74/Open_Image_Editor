@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 
-// #include "ImageData.hpp"
+// #include "ImageData.hpp"g
 #include "Vector.hpp"
 #include "Verification.hpp"
 
@@ -39,6 +39,13 @@ class Folders {
     void addFile(std::string name);
 
     void print() const;
+
+    std::string* getName();
+    std::vector<Folders>* getFolders();
+    std::vector<std::string>* getFiles();
+
+    Folders* getFolder(int index);
+    std::string* getFile(int index);
 
     // std::string getParentPath();
 };
