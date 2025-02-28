@@ -29,6 +29,11 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
         return;
     }
 
+    auto images = data->getImagesData()->get();
+    for (auto& imageData : *images) {
+        data->getImagesData()->setImageMapValue(imageData.getImagePath(), &imageData);
+    }
+
     auto start = std::chrono::high_resolution_clock::now();
 
     data->sortImagesData(progressDialog);
@@ -38,11 +43,6 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
     qDebug() << "Sorting images took " << elapsed.count() << " seconds.";
 
     data->saveData();
-
-    auto images = data->getImagesData()->get();
-    for (auto& imageData : *images) {
-        data->getImagesData()->imageMap[imageData.getImagePath()] = &imageData;
-    }
 
     data->currentFolder = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
 }
@@ -86,7 +86,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     data->imagesData = ImagesData(std::vector<ImageData>{});
 
-    qDebug() << "adding to tree: " << data->rootFolders.folders.size();
+    qDebug() << "adding to tree: " << data->getRootFolders()->getFolders()->size();
 
     progressDialog.setLabelText("Scaning for images : ");
     progressDialog.setCancelButtonText("Cancel");
@@ -101,7 +101,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
         return false;
     }
 
-    qDebug() << "Root folders: " << data->rootFolders.folders.size();
+    qDebug() << "Root folders: " << data->getRootFolders()->getFolders()->size();
     qDebug() << "Number of images: " << nbrImage;
 
     data->imagesData = *imagesData;
@@ -322,7 +322,7 @@ bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::s
         std::string folderName = part.string();
         if (!getIfExist(currentFolder, folderName)) {
             currentFolder->addFolder(folderName);
-            currentFolder = &currentFolder->folders.back();
+            currentFolder = &currentFolder->getFolders()->back();
         }
     }
     if (progressDialog.wasCanceled()) {
@@ -346,7 +346,7 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
             if (containImage(entry.path().string())) {
                 std::string folderName = entry.path().filename().string();
                 rootFolder.addFolder(folderName);
-                addSubfolders(rootFolder.folders.back(), imagesData, entry.path().string(), nbrImage, progressDialog);
+                addSubfolders(rootFolder.getFolders()->back(), imagesData, entry.path().string(), nbrImage, progressDialog);
             }
         } else {
             if (isImage(entry.path().filename().string())) {

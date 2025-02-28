@@ -34,6 +34,20 @@ int ImagesData::getImageNumberInTotal(int imageNbrInCurrent) {
     return getImageDataId(getImageDataInCurrent(imageNbrInCurrent)->getImagePathConst());
 }
 
+int ImagesData::getImageNumberInCurrent(int imageNbrInTotal) {
+    int imageNbrInCurrent = -1;
+    int k = 0;
+    bool run = true;
+    while (k < currentImagesData.size() && run) {
+        if (getImageDataInCurrent(k)->getImagePath() == getImageData(imageNbrInTotal)->getImagePath()) {
+            imageNbrInCurrent = k;
+            run = false;
+        }
+        k++;
+    }
+    return imageNbrInCurrent;
+}
+
 void ImagesData::print() const {
     qDebug() << "ImagesData : \n";
     for (const ImageData valeur : imagesData) {
@@ -81,7 +95,7 @@ ImageData* ImagesData::getImageData(int id) {
 
 ImageData* ImagesData::getImageDataInCurrent(int id) {
     if (id < 0 || id >= currentImagesData.size()) {
-        throw std::out_of_range("getImageData current :: Index hors limites" + std::to_string(id));
+        throw std::out_of_range("getImageData current :: Index hors limites : " + std::to_string(id));
     }
     return currentImagesData.at(id);
 }
@@ -140,4 +154,12 @@ int ImagesData::getImageDataId(std::string imagePath) {
     } else {
         return -1;
     }
+}
+
+std::unordered_map<std::string, ImageData*>* ImagesData::getImageMap() {
+    return &imageMap;
+}
+
+void ImagesData::setImageMapValue(std::string imagePath, ImageData* imageData) {
+    imageMap[imagePath] = imageData;
 }

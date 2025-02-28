@@ -50,10 +50,10 @@ void Data::removeDeletedImages() {
 
         removeImageFromFolders(*it);
 
-        auto itPtr = std::find(imagesData.currentImagesData.begin(), imagesData.currentImagesData.end(), &(*it));
-        if (itPtr != imagesData.currentImagesData.end()) {
+        auto itPtr = std::find(imagesData.getCurrent()->begin(), imagesData.getCurrent()->end(), &(*it));
+        if (itPtr != imagesData.getCurrent()->end()) {
             qDebug() << "remove image from currentImagesData";
-            imagesData.currentImagesData.erase(itPtr);
+            imagesData.getCurrent()->erase(itPtr);
         }
         //     qDebug() << "Deleting images 2";
 
@@ -97,11 +97,11 @@ void Data::removeDeletedImages() {
 
 // Check if the imageNumber is deleted or not (!! imageNumber in imagesData!!)
 bool Data::isDeleted(int imageNbr) {
-    std::string imagePath = imagesData.getImageData(imageNbr)->folders.name;
+    std::string imagePath = imagesData.getImageData(imageNbr)->getImagePathConst();
     auto it = std::find_if(deletedImagesData.get()->begin(),
                            deletedImagesData.get()->end(),
                            [imagePath, this](const ImageData img) {
-                               return img.folders.name == imagePath;
+                               return img.getImagePathConst() == imagePath;
                            });
 
     if (it != deletedImagesData.get()->end()) {
@@ -452,7 +452,7 @@ void Data::exportImages(std::string exportPath, bool dateInName) {
 
     firstFolder = findFirstFolderWithAllImages(imagesData, rootFolders);
 
-    exportPath += "/" + firstFolder->name;
+    exportPath += "/" + firstFolder->getName();
 
     createFolders(firstFolder, exportPath);
 
@@ -466,7 +466,7 @@ Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const 
     for (const auto& folder : currentFolder.folders) {
         for (ImageData imageData : imagesData.imagesData) {
             for (Folders folderBis : imageData.folders.folders) {
-                if (folderBis.name == folder.name) {
+                if (folderBis.getName() == folder.getName()) {
                     return const_cast<Folders*>(&currentFolder);
                 }
             }
@@ -480,7 +480,7 @@ Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const 
 void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInName) {
     std::string initialFolder = fs::path(destinationPath).filename().string();
 
-    QProgressDialog progressDialog("Exporting images...", "Cancel", 0, imagesData.imagesData.size());
+    QProgressDialog progressDialog("Exporting images...", "Cancel", 0, imagesData.getCurrent()->size());
     progressDialog.setWindowModality(Qt::ApplicationModal);
     progressDialog.show();
 
@@ -668,7 +668,7 @@ void Data::loadData() {
 
     // Update imageMap with pointers to ImageData in imagesData
     for (auto& imageData : *imagesData.get()) {
-        imagesData.imageMap[imageData.getImagePath()] = &imageData;
+        imagesData.setImageMapValue(imageData.getImagePath(), &imageData);
     }
 
     size_t deletedImagesDataSize;
@@ -804,8 +804,8 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -815,8 +815,8 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -831,8 +831,8 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -842,8 +842,8 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -863,8 +863,8 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -874,8 +874,8 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -890,8 +890,8 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -901,8 +901,8 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -1010,8 +1010,8 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -1021,8 +1021,8 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -1038,8 +1038,8 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -1049,8 +1049,8 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -1071,8 +1071,8 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -1082,8 +1082,8 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -1098,8 +1098,8 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -1109,8 +1109,8 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.imageNumber != nbr) {
-                        imagesData.imageNumber = nbr;
+                    if (imagesData.getImageNumber() != nbr) {
+                        imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
                     }
@@ -1198,8 +1198,8 @@ void Data::exifMirror(int nbr, bool UpDown, std::function<void()> reload) {
 }
 
 void Data::realMirror(int nbr, bool UpDown, std::function<void()> reload) {
-    QString outputPath = QString::fromStdString(imagesData.getCurrentImageData()->folders.name);
-    QImage image = loadImage(nullptr, imagesData.getCurrentImageData()->folders.name, QSize(0, 0), false);
+    QString outputPath = QString::fromStdString(imagesData.getCurrentImageData()->getImagePathConst());
+    QImage image = loadImage(nullptr, imagesData.getCurrentImageData()->getImagePathConst(), QSize(0, 0), false);
     if (UpDown) {
         image = image.mirrored(false, true);
     } else {
@@ -1208,9 +1208,9 @@ void Data::realMirror(int nbr, bool UpDown, std::function<void()> reload) {
     if (!image.save(outputPath)) {
         qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
     }
-    unloadFromCache(imagesData.getCurrentImageData()->folders.name);
-    loadInCache(imagesData.getCurrentImageData()->folders.name);
-    createAllThumbnail(imagesData.getCurrentImageData()->folders.name, 512);
+    unloadFromCache(imagesData.getCurrentImageData()->getImagePathConst());
+    loadInCache(imagesData.getCurrentImageData()->getImagePathConst());
+    createAllThumbnail(imagesData.getCurrentImageData()->getImagePathConst(), 512);
     reload();
 }
 
@@ -1233,7 +1233,7 @@ ImagesData* Data::getImagesData() {
 void Data::removeImageFromFolders(ImageData& imageData) {
     Folders* rootFolders = getRootFolders();
     for (auto& folder : imageData.getFolders()) {
-        std::string folderPath = *folder.getName();
+        std::string folderPath = folder.getName();
         Folders* currentFolderBis = rootFolders;
         std::string folderPathBis = std::regex_replace(folderPath, std::regex("\\\\"), "/");
         std::istringstream iss(folderPathBis);
@@ -1269,6 +1269,6 @@ void Data::removeImageFromFolders(ImageData& imageData) {
             }
         }
 
-        qDebug() << "Remove image from folder : " << *currentFolder->getName();
+        qDebug() << "Remove image from folder : " << currentFolder->getName();
     }
 }

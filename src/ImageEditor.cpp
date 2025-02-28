@@ -832,7 +832,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
                 rotateLeft();
             } else if (event->modifiers() & Qt::MetaModifier) {
                 imageRotateLeft->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
-                data->imagesData.imageNumber = data->imagesData.get()->size() - 1;
+                data->getImagesData()->setImageNumber(data->imagesData.get()->size() - 1);
                 reload();
             } else {
                 buttonImageBefore->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
@@ -850,7 +850,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
                 rotateRight();
             } else if (event->modifiers() & Qt::MetaModifier) {
                 imageRotateLeft->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
-                data->imagesData.imageNumber = data->imagesData.get()->size() - 1;
+                data->getImagesData()->setImageNumber(data->imagesData.get()->size() - 1);
                 reload();
             } else {
                 buttonImageNext->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
@@ -859,7 +859,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
             break;
         case Qt::Key_End:
             imageRotateLeft->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
-            data->imagesData.imageNumber = data->imagesData.get()->size() - 1;
+            data->getImagesData()->setImageNumber(data->imagesData.get()->size() - 1);
             reload();
             break;
 
@@ -930,7 +930,6 @@ void ImageEditor::wheelEvent(QWheelEvent* event) {
 }
 
 void ImageEditor::saveImage() {
-    // TODO repare
     int id = data->getImagesData()->getImageNumber();
     for (int i = 0; i <= id; ++i) {
         if (data->isDeleted(data->getImagesData()->getImageNumberInTotal(i))) {
@@ -977,8 +976,8 @@ void ImageEditor::deleteImage() {
         data->addAction(
             [this, nbrInTotal, saved]() {
                 int time = 0;
-                if (data->imagesData.imageNumber != nbrInTotal) {
-                    data->imagesData.imageNumber = nbrInTotal;
+                if (data->getImagesData()->getImageNumber() != nbrInTotal) {
+                    data->getImagesData()->setImageNumber(nbrInTotal);
                     reload();
                     time = TIME_UNDO_VISUALISATION;
                 }
@@ -992,8 +991,8 @@ void ImageEditor::deleteImage() {
             },
             [this, nbrInTotal]() {
                 int time = 0;
-                if (data->imagesData.imageNumber != nbrInTotal) {
-                    data->imagesData.imageNumber = nbrInTotal;
+                if (data->getImagesData()->getImageNumber() != nbrInTotal) {
+                    data->getImagesData()->setImageNumber(nbrInTotal);
                     reload();
                     time = TIME_UNDO_VISUALISATION;
                 }
@@ -1009,8 +1008,8 @@ void ImageEditor::deleteImage() {
         data->addAction(
             [this, nbrInTotal, saved]() {
                 int time = 0;
-                if (data->imagesData.imageNumber != nbrInTotal) {
-                    data->imagesData.imageNumber = nbrInTotal;
+                if (data->getImagesData()->getImageNumber() != nbrInTotal) {
+                    data->getImagesData()->setImageNumber(nbrInTotal);
                     reload();
                     time = TIME_UNDO_VISUALISATION;
                 }
@@ -1024,8 +1023,8 @@ void ImageEditor::deleteImage() {
             },
             [this, nbrInTotal]() {
                 int time = 0;
-                if (data->imagesData.imageNumber != nbrInTotal) {
-                    data->imagesData.imageNumber = nbrInTotal;
+                if (data->getImagesData()->getImageNumber() != nbrInTotal) {
+                    data->getImagesData()->setImageNumber(nbrInTotal);
                     reload();
                     time = TIME_UNDO_VISUALISATION;
                 }
@@ -1134,7 +1133,7 @@ void ImageEditor::checkLoadedImage() {
         // TODO Change to use -10 to 10 check path and not all images
         int imageId = data->imagesData.getImageDataIdInCurrent(imagePath);
         if (imageId != -1) {
-            if (std::abs(data->imagesData.imageNumber - imageId) > 2 * PRE_LOAD_RADIUS) {
+            if (std::abs(data->getImagesData()->getImageNumber() - imageId) > 2 * PRE_LOAD_RADIUS) {
                 toUnload.push_back(imagePathBis);
             }
         }

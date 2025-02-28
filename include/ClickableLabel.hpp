@@ -29,8 +29,6 @@ class ClickableLabel : public QLabel {
     void setLogoEnabled();
     void setLogoDisabled();
 
-    QPixmap defaultPixmap;
-
     explicit ClickableLabel(Data* data, const QString& i, QString toolTip = "", QWidget* parent = nullptr, QSize* sizePtr = new QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
 
    signals:

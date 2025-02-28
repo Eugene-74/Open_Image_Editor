@@ -146,7 +146,7 @@ bool MetaData::modifyIptcValue(const std::string& key, const std::string& newVal
 }
 
 // Fonction pour mettre à jour ou créer les métadonnées EXIF si elles n'existent pas
-void MetaData::setOrCreateExifData(std::string& imagePath) {
+void MetaData::setOrCreateExifData(std::string imagePath) {
     time_t now = time(0);
     struct tm* timeinfo = localtime(&now);
     char dateTime[20];

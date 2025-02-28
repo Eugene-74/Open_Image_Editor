@@ -43,7 +43,7 @@ class MetaData {
     bool modifyXmpValue(const std::string& key, const std::string& newValue);
     bool modifyIptcValue(const std::string& key, const std::string& newValue);
 
-    void setOrCreateExifData(std::string& imagePath);
+    void setOrCreateExifData(std::string imagePath);
 
     void setExifData(const Exiv2::ExifData data);
     void setXmpData(const Exiv2::XmpData data);

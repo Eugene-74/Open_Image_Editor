@@ -17,10 +17,10 @@ void ImageData::print() const {
 
 std::string ImageData::get() const {
     std::string name;
-    name += "Image : " + folders.name + " folders : ";
-    for (const auto& file : folders.folders) {
+    name += "Image : " + getImagePathConst() + " folders : ";
+    for (const auto& file : folders.getFoldersConst()) {
         name += " ";
-        name += file.name;
+        name += file.getName();
     }
     name += "\n";
     return name;
@@ -49,17 +49,17 @@ void ImageData::addFolders(const std::vector<std::string>& toAddFolders) {
 }
 
 std::string ImageData::getImageName() const {
-    std::filesystem::path filePath(folders.name);
+    std::filesystem::path filePath(getImagePathConst());
     return filePath.filename().string();
 }
 
 bool ImageData::operator==(const ImageData& other) const {
-    std::filesystem::path filePath(folders.name);
+    std::filesystem::path filePath(getImagePathConst());
     std::string imageName = filePath.filename().string();
     std::transform(imageName.begin(), imageName.end(), imageName.begin(),
                    [](unsigned char c) { return std::tolower(c); });
 
-    std::filesystem::path filePathOther(other.folders.name);
+    std::filesystem::path filePathOther(other.getImagePathConst());
     std::string imageNameOther = filePathOther.filename().string();
     std::transform(imageNameOther.begin(), imageNameOther.end(), imageNameOther.begin(),
                    [](unsigned char c) { return std::tolower(c); });
@@ -68,15 +68,15 @@ bool ImageData::operator==(const ImageData& other) const {
 }
 
 std::string ImageData::getImagePath() {
-    return folders.name;
+    return folders.getName();
 }
 
 std::string ImageData::getImagePathConst() const {
-    return folders.name;
+    return folders.getName();
 }
 
 std::string ImageData::getImageExtension() {
-    return fs::path(folders.name).extension().string();
+    return fs::path(getImagePath()).extension().string();
 }
 
 void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
@@ -105,7 +105,7 @@ void ImageData::loadData() {
 
 void ImageData::saveMetaData() {
     try {
-        metaData.saveMetaData(folders.name);
+        metaData.saveMetaData(getImagePath());
     } catch (const Exiv2::Error& e) {
         qDebug() << "Exiv2 error: " << e.what();
     }
@@ -129,7 +129,7 @@ void ImageData::turnImage(int rotation) {
 }
 
 void ImageData::setOrCreateExifData() {
-    metaData.setOrCreateExifData(folders.name);
+    metaData.setOrCreateExifData(getImagePath());
 }
 
 void ImageData::save(std::ofstream& out) const {

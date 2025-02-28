@@ -11,12 +11,15 @@
 #include "Verification.hpp"
 
 class Folders {
+    //    private:
    public:
     Folders* parent = nullptr;
     std::string name;
     std::vector<Folders> folders;
+
     std::vector<std::string> files;
 
+    //    public:
     Folders() = default;
 
     Folders(std::string f)
@@ -40,15 +43,17 @@ class Folders {
 
     void print() const;
 
-    std::string* getName();
+    std::string getName() const;
     std::vector<Folders>* getFolders();
+    std::vector<Folders> getFoldersConst() const;
+
     std::vector<std::string>* getFiles();
+    std::vector<std::string> getFilesConst() const;
 
     Folders* getFolder(int index);
     std::string* getFile(int index);
     Folders* getParent();
-
-    // std::string getParentPath();
+    void setParent(Folders* parent);
 };
 
 bool createIfNotExist(Folders*& currentFolder, const std::string& path);

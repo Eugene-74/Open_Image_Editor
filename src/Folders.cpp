@@ -81,16 +81,24 @@ void Folders::print() const {
     }
 }
 
-std::string* Folders::getName() {
-    return &name;
+std::string Folders::getName() const {
+    return name;
 }
 
 std::vector<Folders>* Folders::getFolders() {
     return &folders;
 }
 
+std::vector<Folders> Folders::getFoldersConst() const {
+    return folders;
+}
+
 std::vector<std::string>* Folders::getFiles() {
     return &files;
+}
+
+std::vector<std::string> Folders::getFilesConst() const {
+    return files;
 }
 
 Folders* Folders::getFolder(int index) {
@@ -105,11 +113,14 @@ Folders* Folders::getParent() {
     return parent;
 }
 
+void Folders::setParent(Folders* parent) {
+    this->parent = parent;
+}
 // Verifie si un dossier existe dans un Folders
 bool getIfExist(Folders* currentFolder, const std::string& path) {
-    auto it = std::find_if(currentFolder->folders.begin(), currentFolder->folders.end(), [&path](const Folders& folder) { return folder.name == path; });
+    auto it = std::find_if(currentFolder->getFolders()->begin(), currentFolder->getFolders()->end(), [&path](const Folders& folder) { return folder.getName() == path; });
 
-    if (it != currentFolder->folders.end()) {
+    if (it != currentFolder->getFolders()->end()) {
         return true;
     }
     return false;

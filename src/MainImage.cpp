@@ -181,7 +181,7 @@ void MainImage::cropImage() {
 
         data->imagesData.getCurrentImageData()->cropSizes.push_back(adjustedCropPoints);
 
-        int nbr = data->imagesData.imageNumber;
+        int nbr = data->getImagesData()->getImageNumber();
 
         bool saved = data->saved;
 
@@ -249,7 +249,7 @@ void MainImage::paintEvent(QPaintEvent* event) {
         int yOffset = (this->height() - scaledSize.height()) / 2;
 
         for (const auto& person : data->imagesData.getCurrentImageData()->persons) {
-            cv::Rect face = person.face;
+            cv::Rect face = person.getFace();
             int x = static_cast<int>(face.x * xScale) + xOffset;
             int y = static_cast<int>(face.y * yScale) + yOffset;
             int width = static_cast<int>(face.width * xScale);
@@ -258,7 +258,7 @@ void MainImage::paintEvent(QPaintEvent* event) {
             QRect rect(x, y, width, height);
             painter.drawRect(rect);
 
-            QString name = QString::fromStdString(person.name);
+            QString name = QString::fromStdString(person.getName());
             painter.drawText(x, y + height + 15, name);
         }
     }

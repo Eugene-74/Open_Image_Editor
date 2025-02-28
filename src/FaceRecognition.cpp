@@ -88,11 +88,13 @@ std::vector<Person> detectFaces(std::string imagePath, QImage image) {
 
         for (const auto& d : dets) {
             Person person;
-            person.face.x = d.left() * newSize;
-            person.face.y = d.top() * newSize;
-            person.face.width = d.width() * newSize;
-            person.face.height = d.height() * newSize;
-            person.name = "Unknown";
+            cv::Rect face;
+            face.x = d.left() * newSize;
+            face.y = d.top() * newSize;
+            face.width = d.width() * newSize;
+            face.height = d.height() * newSize;
+            person.setFace(face);
+            person.setName("Unknown");
             persons.push_back(person);
         }
         return persons;
@@ -111,4 +113,19 @@ void detectFacesAsync(std::string imagePath, QImage image, std::function<void(st
             std::cerr << e.what() << '\n';
         }
     }).detach();
+}
+
+std::string Person::getName() const {
+    return name;
+}
+
+cv::Rect Person::getFace() const {
+    return face;
+}
+
+void Person::setName(std::string name) {
+    this->name = name;
+}
+void Person::setFace(cv::Rect face) {
+    this->face = face;
 }
