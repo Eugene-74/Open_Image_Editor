@@ -4,18 +4,17 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
 
-    // data->currentFolder = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
-
-    qDebug() << "ImageBooth name  : " << data->getCurrentFolders()->getName();
+    qDebug() << "ImageBooth name  : " << *data->getCurrentFolders()->getName();
     data->imagesData.currentImagesData.clear();
     for (auto it = data->getCurrentFolders()->getFiles()->begin(); it != data->getCurrentFolders()->getFiles()->end(); ++it) {
         std::string imagePath = *it;
         qDebug() << imagePath;
         ImageData* imageData = data->imagesData.getImageData(imagePath);
 
-        data->imagesData.currentImagesData.push_back(&*imageData);
         if (imageData == nullptr) {
             qDebug() << "imageData is null";
+        } else {
+            data->imagesData.currentImagesData.push_back(&*imageData);
         }
     }
     // qDebug() << "ImageBooth currentImagesData size : " << data->rootFolders.getFolders()->size();
@@ -341,7 +340,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             int start = std::min(imageShiftSelected, nbr);
             int end = std::max(imageShiftSelected, nbr);
             for (int i = start; i <= end; ++i) {
-                auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), data->getImagesData()->getImageNumberInTotal(i));
+                auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), i);
                 if (it != data->imagesSelected.end()) {
                     if (!imageShiftSelectedSelect) {
                         data->imagesSelected.erase(it);
@@ -476,92 +475,116 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
 
 // Update all visible images
 void ImageBooth::updateImages() {
-    qDebug() << "updateImages";
-    int spacerHeight = scrollArea->verticalScrollBar()->value();
-    int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
-    spacerHeight = (spacerHeight / imageHeight) * imageHeight;
+    try {
+        qDebug() << "updateImages";
+        int spacerHeight = scrollArea->verticalScrollBar()->value();
+        int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
+        spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
-    int foldersLineNumber = getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber + 1;
-    int lineNbr = spacerHeight / imageHeight;
+        int foldersLineNumber = getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber + 1;
+        int lineNbr = spacerHeight / imageHeight;
 
-    int folderLinesNbr = std::min(std::max(foldersLineNumber - lineNbr, 0), maxVisibleLines);
-    int imageLinesNbr = std::min(std::max(maxVisibleLines - folderLinesNbr, 0), maxVisibleLines);
+        int folderLinesNbr = std::min(std::max(foldersLineNumber - lineNbr, 0), maxVisibleLines);
+        int imageLinesNbr = std::min(std::max(maxVisibleLines - folderLinesNbr, 0), maxVisibleLines);
 
-    for (int i = 1; i < 1 + folderLinesNbr; i++) {
-        QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
-        for (int j = 0; j < lineLayout->count(); j++) {
-            int folderNbr = (lineNbr + i - 1) * data->sizes->imagesBoothSizes->widthImageNumber + j;
+        for (int i = 1; i < 1 + folderLinesNbr; i++) {
+            QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
+            for (int j = 0; j < lineLayout->count(); j++) {
+                int folderNbr = (lineNbr + i - 1) * data->sizes->imagesBoothSizes->widthImageNumber + j;
 
-            ClickableLabel* lastFolderButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
+                ClickableLabel* lastFolderButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
 
-            if (folderNbr < getCurrentFoldersSize()) {
-                if (folderNbr == 0) {
-                    std::string firstFolderName = *data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders())->getName();
-
-                    ClickableLabel* folderButton;
-                    if (*data->getCurrentFolders()->getName() == firstFolderName) {
-                        folderButton = new ClickableLabel(data, ICON_PATH_ALL_IMAGES,
-                                                          TOOL_TIP_IMAGE_BOOTH_ALL_IMAGES,
-                                                          this, imageSize, false, 0, true);
-                        folderButton->addLogo("#00FF00", "FFFFFF", data->getImagesData()->get()->size());
-                    } else {
-                        // TODO mettre le nom du dossier parent en tool tip
-                        folderButton = new ClickableLabel(data, ICON_PATH_BACK,
-                                                          TOOL_TIP_IMAGE_BOOTH_BACK,
-                                                          this, imageSize, false, 0, true);
-                    }
-
-                    connect(folderButton, &ClickableLabel::leftClicked, [this]() {
+                if (folderNbr < getCurrentFoldersSize()) {
+                    if (folderNbr == 0) {
                         std::string firstFolderName = *data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders())->getName();
 
+                        ClickableLabel* folderButton;
                         if (*data->getCurrentFolders()->getName() == firstFolderName) {
-                            openFolder(-1);
+                            folderButton = new ClickableLabel(data, ICON_PATH_ALL_IMAGES,
+                                                              TOOL_TIP_IMAGE_BOOTH_ALL_IMAGES,
+                                                              this, imageSize, false, 0, true);
+                            folderButton->addLogo("#00FF00", "FFFFFF", data->getImagesData()->get()->size());
                         } else {
-                            openFolder(-2);
+                            // TODO mettre le nom du dossier parent en tool tip
+                            folderButton = new ClickableLabel(data, ICON_PATH_BACK,
+                                                              TOOL_TIP_IMAGE_BOOTH_BACK,
+                                                              this, imageSize, false, 0, true);
                         }
-                    });
-                    lineLayout->replaceWidget(lastFolderButton, folderButton);
-                    lastFolderButton->deleteLater();
+
+                        connect(folderButton, &ClickableLabel::leftClicked, [this]() {
+                            std::string firstFolderName = *data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders())->getName();
+
+                            if (*data->getCurrentFolders()->getName() == firstFolderName) {
+                                openFolder(-1);
+                            } else {
+                                openFolder(-2);
+                            }
+                        });
+                        lineLayout->replaceWidget(lastFolderButton, folderButton);
+                        lastFolderButton->deleteLater();
+                    } else {
+                        ClickableLabel* folderButton = new ClickableLabel(data, ICON_PATH_FOLDER,
+                                                                          QString::fromStdString(*data->getCurrentFolders()->getFolder(folderNbr - 1)->getName()),
+                                                                          this, imageSize, false, 0, true);
+                        folderButton->addLogo("#00FF00", "FFFFFF", data->getCurrentFolders()->getFolder(folderNbr - 1)->getFiles()->size());
+
+                        connect(folderButton, &ClickableLabel::leftClicked, [this, folderNbr]() {
+                            openFolder(folderNbr - 1);
+                        });
+                        lineLayout->replaceWidget(lastFolderButton, folderButton);
+                        lastFolderButton->deleteLater();
+                    }
+
                 } else {
-                    ClickableLabel* folderButton = new ClickableLabel(data, ICON_PATH_FOLDER,
-                                                                      QString::fromStdString(*data->getCurrentFolders()->getFolder(folderNbr - 1)->getName()),
-                                                                      this, imageSize, false, 0, true);
-                    folderButton->addLogo("#00FF00", "FFFFFF", data->getCurrentFolders()->getFolder(folderNbr - 1)->getFiles()->size());
-
-                    connect(folderButton, &ClickableLabel::leftClicked, [this, folderNbr]() {
-                        openFolder(folderNbr - 1);
-                    });
-                    lineLayout->replaceWidget(lastFolderButton, folderButton);
-                    lastFolderButton->deleteLater();
-                }
-
-            } else {
-                lastFolderButton->hide();
-            }
-        }
-    }
-    for (int i = 1 + folderLinesNbr; i < 1 + imageLinesNbr + folderLinesNbr; i++) {
-        qDebug() << "update image";
-        QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
-        for (int j = 0; j < lineLayout->count(); j++) {
-            int imageNbr = (lineNbr - foldersLineNumber + i - 1) * data->sizes->imagesBoothSizes->widthImageNumber + j;
-            ClickableLabel* lastImageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
-            if (imageNbr >= data->imagesData.getCurrent()->size()) {
-                lastImageButton->hide();
-            } else {
-                ClickableLabel* imageButton = createImage(data->imagesData.getImageDataInCurrent(imageNbr)->getImagePath(), imageNbr);
-
-                lineLayout->replaceWidget(lastImageButton, imageButton);
-                lastImageButton->deleteLater();
-
-                auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNbr);
-                if (it != data->imagesSelected.end()) {
-                    imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
-                } else {
-                    imageButton->resetBorder();
+                    lastFolderButton->hide();
                 }
             }
         }
+        for (int i = 1 + folderLinesNbr; i < 1 + imageLinesNbr + folderLinesNbr; i++) {
+            // qDebug() << "update image";
+            QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
+            for (int j = 0; j < lineLayout->count(); j++) {
+                // qDebug() << "update image 1";
+
+                int imageNbr = (lineNbr - foldersLineNumber + i - 1) * data->sizes->imagesBoothSizes->widthImageNumber + j;
+                ClickableLabel* lastImageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
+                if (imageNbr >= data->getImagesData()->getCurrent()->size()) {
+                    // qDebug() << "update image 2";
+
+                    lastImageButton->hide();
+                } else {
+                    std::string imagePath;
+                    ClickableLabel* imageButton;
+                    if (data->imagesData.getImageDataInCurrent(imageNbr)) {
+                        imagePath = data->imagesData.getImageDataInCurrent(imageNbr)->getImagePath();
+                        imageButton = createImage(imagePath, imageNbr);
+                    } else {
+                        imageButton = new ClickableLabel(data, IMAGE_PATH_ERROR,
+                                                         "", this, imageSize, false, 0, true);
+                    }
+                    // qDebug() << "update image 4";
+
+                    lineLayout->replaceWidget(lastImageButton, imageButton);
+                    // qDebug() << "update image 5";
+
+                    lastImageButton->deleteLater();
+
+                    // qDebug() << "update image 6";
+
+                    auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNbr);
+                    if (it != data->imagesSelected.end()) {
+                        imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+                    } else {
+                        imageButton->resetBorder();
+                    }
+                    // qDebug() << "update image 7";
+                }
+            }
+        }
+        // qDebug() << "update image end";
+
+    } catch (const std::exception& e) {
+        std::cerr << "update : " << e.what() << '\n';
     }
 }
 

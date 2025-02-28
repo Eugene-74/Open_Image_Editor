@@ -481,14 +481,10 @@ ClickableLabel* ImageEditor::createImageExport() {
 }
 
 ClickableLabel* ImageEditor::createImageRotateRight() {
-    if (data->imagesData.get()->size() <= 0) {
-        return nullptr;
-    }
-
     ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_TIP_IMAGE_EDITOR_ROTATE_RIGHT, this, actionSize);
     imageRotateRightNew->setInitialBackground("transparent", "#b3b3b3");
 
-    if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
+    if (!isTurnable(data->getImagesData()->getCurrentImageData()->getImagePath())) {
         imageRotateRightNew->setDisabled(true);
     } else {
         if (!imageRotateRightNew->isEnabled())
@@ -1154,28 +1150,33 @@ void ImageEditor::checkCache() {
 }
 
 void ImageEditor::rotateLeft() {
-    std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
-    int nbr = data->imagesData.imageNumber;
-    data->rotateLeft(nbr, extension, [this]() { reload(); });
+    std::string extension = data->getImagesData()->getCurrentImageData()->getImageExtension();
+    int nbr = data->getImagesData()->getImageNumber();
+    int imageInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
+    data->rotateLeft(imageInTotal, extension, [this]() { reload(); });
 }
 void ImageEditor::rotateRight() {
-    std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
-    int nbr = data->imagesData.imageNumber;
-    data->rotateRight(nbr, extension, [this]() { reload(); });
+    std::string extension = data->getImagesData()->getCurrentImageData()->getImageExtension();
+    int nbr = data->getImagesData()->getImageNumber();
+    int imageInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
+
+    data->rotateRight(imageInTotal, extension, [this]() { reload(); });
 }
 
 void ImageEditor::mirrorUpDown() {
-    std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
-    int nbr = data->imagesData.imageNumber;
+    std::string extension = data->getImagesData()->getCurrentImageData()->getImageExtension();
+    int nbr = data->getImagesData()->getImageNumber();
+    int imageInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
 
-    data->mirrorUpDown(nbr, extension, [this]() { reload(); });
+    data->mirrorUpDown(imageInTotal, extension, [this]() { reload(); });
 }
 
 void ImageEditor::mirrorLeftRight() {
-    std::string extension = data->imagesData.getCurrentImageData()->getImageExtension();
-    int nbr = data->imagesData.imageNumber;
+    std::string extension = data->getImagesData()->getCurrentImageData()->getImageExtension();
+    int nbr = data->getImagesData()->getImageNumber();
+    int imageInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
 
-    data->mirrorLeftRight(nbr, extension, [this]() { reload(); });
+    data->mirrorLeftRight(imageInTotal, extension, [this]() { reload(); });
 }
 
 void ImageEditor::openBigImageLabel() {

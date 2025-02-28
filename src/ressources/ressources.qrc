@@ -33,6 +33,7 @@
     </qresource>
     <qresource prefix="">
         <file>images/loading.png</file>
+        <file>images/error.png</file>
     </qresource>
     <qresource prefix="">
         <file>translations/open_image_editor_en.qm</file>

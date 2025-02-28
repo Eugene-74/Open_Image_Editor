@@ -39,10 +39,10 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
 
     data->saveData();
 
-    // auto images = data->getImagesData()->get();
-    // for (auto& imageData : *images) {
-    //     data->getImagesData()->imageMap[imageData.getImagePath()] = &imageData;
-    // }
+    auto images = data->getImagesData()->get();
+    for (auto& imageData : *images) {
+        data->getImagesData()->imageMap[imageData.getImagePath()] = &imageData;
+    }
 
     data->currentFolder = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
 }
@@ -356,7 +356,8 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
                 ImageData imageD(folders);
 
                 imagesData->addImage(imageD);
-                imagesData->imageMap[imageD.getImagePath()] = &imageD;
+                // marche pas jsp pk
+                // imagesData->imageMap[imageD.getImagePath()] = &imagesData->get()->back();
 
                 nbrImage += 1;
                 progressDialog.setLabelText(QString("Scaning for images : %1").arg(nbrImage));

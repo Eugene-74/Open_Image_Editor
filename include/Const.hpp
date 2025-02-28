@@ -70,6 +70,7 @@ const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "gre
 const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
 
 const QString IMAGE_PATH_LOADING = ":/images/loading.png";
+const QString IMAGE_PATH_ERROR = ":/images/error.png";
 
 const QString ICON_PATH_DELETE = ":/icons/delete.png";
 const QString ICON_PATH_SAVE = ":/icons/save.png";

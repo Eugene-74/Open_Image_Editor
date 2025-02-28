@@ -1,5 +1,7 @@
 #include "Data.hpp"
 
+#include <regex>
+
 namespace fs = std::filesystem;
 
 void Data::preDeleteImage(int imageNbr) {
@@ -33,40 +35,64 @@ void Data::revocerDeletedImage(int imageNbr) {
 
 // Delete in imagesData images that are also in deletedImagesData
 void Data::removeDeletedImages() {
-    qDebug() << "Deleting images";
+    // TODO marche tres mal je crois que l'image map renvoie n'importe quoi
+    // qDebug() << "Deleting images";
     for (const auto& deletedImage : *deletedImagesData.get()) {
-        qDebug() << "Deleting images 1";
+        //     qDebug() << "Deleting images 1";
 
         auto it = std::find(imagesData.get()->begin(), imagesData.get()->end(),
                             deletedImage);
-        qDebug() << "Deleting images 2";
-        if (currentFolder) {
-            auto fileIt = std::find(currentFolder->files.begin(), currentFolder->files.end(), it->getImagePath());
-            if (fileIt != currentFolder->files.end()) {
-                currentFolder->files.erase(fileIt);
-            }
-        }
+        //     if (it != imagesData.get()->end()) {
+        //         qDebug() << "remove image from imagesData";
+        //         imagesData.get()->erase(it);
+        //         deletedImage.print();
+        //     }
 
-        qDebug() << "Remove image from folder : " << *currentFolder->getName();
-
-        qDebug() << "Deleting images 3";
         removeImageFromFolders(*it);
-        qDebug() << "Deleting images 4";
 
-        if (it != imagesData.get()->end()) {
-            imagesData.get()->erase(it);
-            deletedImage.print();
-        }
-        auto mapIt = imagesData.imageMap.find(deletedImage.getImagePathConst());
-        if (mapIt != imagesData.imageMap.end()) {
-            imagesData.imageMap.erase(deletedImage.getImagePathConst());
-        }
         auto itPtr = std::find(imagesData.currentImagesData.begin(), imagesData.currentImagesData.end(), &(*it));
         if (itPtr != imagesData.currentImagesData.end()) {
+            qDebug() << "remove image from currentImagesData";
             imagesData.currentImagesData.erase(itPtr);
         }
+        //     qDebug() << "Deleting images 2";
+
+        // if (currentFolder) {
+        //     qDebug() << "currentFolder exist looking for :" << it->getImagePath() << " in :";
+        //     for (const auto& file : currentFolder->files) {
+        //         qDebug() << QString::fromStdString(file);
+        //     }
+        //     auto fileIt = std::find(currentFolder->files.begin(), currentFolder->files.end(), it->getImagePath());
+        //     if (fileIt != currentFolder->files.end()) {
+        //         qDebug() << "Remove image from folder 10";
+        //         currentFolder->files.erase(fileIt);
+        //     }
+        // }
+
+        //     qDebug() << "Remove image from folder : " << *currentFolder->getName();
+
+        //     qDebug() << "Deleting images 3";
+        //     qDebug() << "Deleting images 4";
+
+        //     auto mapIt = imagesData.imageMap.find(deletedImage.getImagePathConst());
+        //     if (mapIt != imagesData.imageMap.end()) {
+        //         qDebug() << "remove image from map";
+        //         imagesData.imageMap.erase(mapIt);
+
+        //         imagesData.imageMap.erase(deletedImage.getImagePathConst());
+        //     }
+        //     auto itPtr = std::find(imagesData.currentImagesData.begin(), imagesData.currentImagesData.end(), &(*it));
+        //     if (itPtr != imagesData.currentImagesData.end()) {
+        //         qDebug() << "remove image from currentImagesData";
+        //         imagesData.currentImagesData.erase(itPtr);
+        //     }
     }
-    qDebug() << "All images deleted";
+    // getImagesData()->imageMap.clear();
+    // auto images = getImagesData()->get();
+    // for (auto& imageData : *images) {
+    //     getImagesData()->imageMap[imageData.getImagePath()] = &imageData;
+    // }
+    // qDebug() << "All images deleted";
 }
 
 // Check if the imageNumber is deleted or not (!! imageNumber in imagesData!!)
@@ -1209,7 +1235,8 @@ void Data::removeImageFromFolders(ImageData& imageData) {
     for (auto& folder : imageData.getFolders()) {
         std::string folderPath = *folder.getName();
         Folders* currentFolderBis = rootFolders;
-        std::istringstream iss(folderPath);
+        std::string folderPathBis = std::regex_replace(folderPath, std::regex("\\\\"), "/");
+        std::istringstream iss(folderPathBis);
         std::string token;
         bool run = true;
         qDebug() << "Remove image from folder :  1" << folderPath;
@@ -1223,12 +1250,22 @@ void Data::removeImageFromFolders(ImageData& imageData) {
                 run = false;
             }
         }
-        qDebug() << "Remove image from folder :  2" << folderPath;
-
         if (currentFolderBis) {
-            auto it = std::find(currentFolderBis->files.begin(), currentFolderBis->files.end(), imageData.getImagePath());
-            if (it != currentFolderBis->files.end()) {
-                currentFolderBis->files.erase(it);
+            try {
+                qDebug() << "Remove image from folder :  2" << folderPath;
+                qDebug() << "Current folder files:";
+                for (const auto& file : currentFolderBis->files) {
+                    qDebug() << QString::fromStdString(file);
+                }
+                qDebug() << "Image to find: " << QString::fromStdString(imageData.getImagePath());
+                auto it = std::find(currentFolderBis->files.begin(), currentFolderBis->files.end(), imageData.getImagePath());
+                if (it != currentFolderBis->files.end()) {
+                    qDebug() << "find to remove";
+                    currentFolderBis->files.erase(it);
+                    // currentFolder->files.erase(it);
+                }
+            } catch (const std::exception& e) {
+                std::cerr << "removeImageFromFolders" << e.what() << '\n';
             }
         }
 
