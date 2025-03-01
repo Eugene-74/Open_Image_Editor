@@ -9,7 +9,7 @@ void Data::preDeleteImage(int imageNbr) {
     imageData = imagesData.getImageData(imageNbr);
 
     deletedImagesData.addImage(*imageData);
-    qDebug() << "image deleted : " << imageNbr;
+    qInfo() << "image deleted : " << imageNbr;
     deletedImagesData.print();
 }
 void Data::unPreDeleteImage(int imageNbr) {
@@ -35,64 +35,19 @@ void Data::revocerDeletedImage(int imageNbr) {
 
 // Delete in imagesData images that are also in deletedImagesData
 void Data::removeDeletedImages() {
-    // TODO marche tres mal je crois que l'image map renvoie n'importe quoi
-    // qDebug() << "Deleting images";
     for (const auto& deletedImage : *deletedImagesData.get()) {
-        //     qDebug() << "Deleting images 1";
-
         auto it = std::find(imagesData.get()->begin(), imagesData.get()->end(),
                             deletedImage);
-        //     if (it != imagesData.get()->end()) {
-        //         qDebug() << "remove image from imagesData";
-        //         imagesData.get()->erase(it);
-        //         deletedImage.print();
-        //     }
 
         removeImageFromFolders(*it);
 
         auto itPtr = std::find(imagesData.getCurrent()->begin(), imagesData.getCurrent()->end(), &(*it));
         if (itPtr != imagesData.getCurrent()->end()) {
-            qDebug() << "remove image from currentImagesData";
+            qInfo() << "remove image from currentImagesData";
             imagesData.getCurrent()->erase(itPtr);
         }
-        //     qDebug() << "Deleting images 2";
-
-        // if (currentFolder) {
-        //     qDebug() << "currentFolder exist looking for :" << it->getImagePath() << " in :";
-        //     for (const auto& file : currentFolder->files) {
-        //         qDebug() << QString::fromStdString(file);
-        //     }
-        //     auto fileIt = std::find(currentFolder->files.begin(), currentFolder->files.end(), it->getImagePath());
-        //     if (fileIt != currentFolder->files.end()) {
-        //         qDebug() << "Remove image from folder 10";
-        //         currentFolder->files.erase(fileIt);
-        //     }
-        // }
-
-        //     qDebug() << "Remove image from folder : " << *currentFolder->getName();
-
-        //     qDebug() << "Deleting images 3";
-        //     qDebug() << "Deleting images 4";
-
-        //     auto mapIt = imagesData.imageMap.find(deletedImage.getImagePathConst());
-        //     if (mapIt != imagesData.imageMap.end()) {
-        //         qDebug() << "remove image from map";
-        //         imagesData.imageMap.erase(mapIt);
-
-        //         imagesData.imageMap.erase(deletedImage.getImagePathConst());
-        //     }
-        //     auto itPtr = std::find(imagesData.currentImagesData.begin(), imagesData.currentImagesData.end(), &(*it));
-        //     if (itPtr != imagesData.currentImagesData.end()) {
-        //         qDebug() << "remove image from currentImagesData";
-        //         imagesData.currentImagesData.erase(itPtr);
-        //     }
     }
-    // getImagesData()->imageMap.clear();
-    // auto images = getImagesData()->get();
-    // for (auto& imageData : *images) {
-    //     getImagesData()->imageMap[imageData.getImagePath()] = &imageData;
-    // }
-    // qDebug() << "All images deleted";
+    qInfo() << "All images deleted";
 }
 
 // Check if the imageNumber is deleted or not (!! imageNumber in imagesData!!)
@@ -243,7 +198,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         }
 
         if (image.isNull()) {
-            qDebug() << "Could not open or find the image : " << imagePathbis;
+            qCritical() << "Could not open or find the image : " << imagePathbis;
 
             return QImage();
         }
@@ -272,7 +227,7 @@ void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callbac
     try {
         QThreadPool::globalInstance()->start(task);
     } catch (const std::exception& e) {
-        qDebug() << "loadInCacheAsync" << e.what();
+        qCritical() << "loadInCacheAsync" << e.what();
     }
 }
 
@@ -343,7 +298,7 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
         fs::create_directories(fs::path(outputImage).parent_path());
     }
     if (!thumbnail.save(QString::fromStdString(outputImage))) {
-        qDebug() << "Error: Could not save thumbnail: " << outputImage;
+        qCritical() << "Error: Could not save thumbnail: " << outputImage;
     }
 }
 void Data::createThumbnailsIfNotExists(
@@ -433,7 +388,7 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
 
 bool Data::unloadFromCache(std::string imagePath) {
     if (!imageCache) {
-        qDebug() << "imageCache is not initialized : " << imagePath;
+        qWarning() << "imageCache is not initialized : " << imagePath;
         return false;
     }
     auto it = imageCache->find(imagePath);
@@ -601,14 +556,14 @@ void Data::saveData() {
     if (!outFile) {
         if (!fs::exists(fs::path(filePath).parent_path())) {
             if (!fs::create_directories(fs::path(filePath).parent_path())) {
-                qDebug() << "Couldn't create directories for save file : " << fs::path(filePath).parent_path();
+                qCritical() << "Couldn't create directories for save file : " << fs::path(filePath).parent_path();
                 return;
             }
         }
 
         outFile.open(filePath, std::ios::binary);
         if (!outFile) {
-            qDebug() << "Couldn't open save file : " << filePath;
+            qCritical() << "Couldn't open save file : " << filePath;
             return;
         }
     }
@@ -646,6 +601,12 @@ void Data::saveData() {
 
     rootFolders.save(outFile);
 
+    // Save the path of currentFolder
+    std::string currentFolderPath = getFolderPath(currentFolder);
+    size_t pathSize = currentFolderPath.size();
+    outFile.write(reinterpret_cast<const char*>(&pathSize), sizeof(pathSize));
+    outFile.write(currentFolderPath.c_str(), pathSize);
+
     outFile.close();
 }
 
@@ -653,7 +614,7 @@ void Data::loadData() {
     std::string filePath = IMAGESDATA_SAVE_DATA_PATH;
     std::ifstream inFile(filePath, std::ios::binary);
     if (!inFile) {
-        qDebug() << "Couldn't open load file : " << filePath;
+        qCritical() << "Couldn't open load file : " << filePath;
         return;
     }
 
@@ -701,7 +662,14 @@ void Data::loadData() {
         options[key] = Option(type, value);
     }
     rootFolders.load(inFile);
+
     // TODO save currentFolder
+    // Load the path of currentFolder
+    size_t pathSize;
+    inFile.read(reinterpret_cast<char*>(&pathSize), sizeof(pathSize));
+    std::string currentFolderPath(pathSize, '\0');
+    inFile.read(&currentFolderPath[0], pathSize);
+    currentFolder = findFolderByPath(rootFolders, currentFolderPath);
 
     inFile.close();
 }
@@ -1271,4 +1239,40 @@ void Data::removeImageFromFolders(ImageData& imageData) {
 
         qDebug() << "Remove image from folder : " << currentFolder->getName();
     }
+}
+
+std::string Data::getFolderPath(Folders* folder) {
+    if (folder == &rootFolders) {
+        return "/";
+    }
+
+    std::string path;
+    while (folder != &rootFolders) {
+        path = "/" + folder->getName() + path;
+        folder = folder->getParent();
+    }
+    return path;
+}
+
+Folders* Data::findFolderByPath(Folders& root, const std::string& path) {
+    if (path == "/") {
+        return &root;
+    }
+
+    Folders* current = &root;
+    std::istringstream iss(path);
+    std::string token;
+    while (std::getline(iss, token, '/')) {
+        if (token.empty()) {
+            continue;
+        }
+        auto it = std::find_if(current->folders.begin(), current->folders.end(),
+                               [&token](const Folders& f) { return f.getName() == token; });
+        if (it != current->folders.end()) {
+            current = &(*it);
+        } else {
+            return nullptr;
+        }
+    }
+    return current;
 }

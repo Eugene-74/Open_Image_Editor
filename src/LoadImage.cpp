@@ -29,11 +29,6 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
         return;
     }
 
-    auto images = data->getImagesData()->get();
-    for (auto& imageData : *images) {
-        data->getImagesData()->setImageMapValue(imageData.getImagePath(), &imageData);
-    }
-
     auto start = std::chrono::high_resolution_clock::now();
 
     data->sortImagesData(progressDialog);
@@ -43,6 +38,10 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
     qDebug() << "Sorting images took " << elapsed.count() << " seconds.";
 
     data->saveData();
+    auto images = data->getImagesData()->get();
+    for (auto& imageData : *images) {
+        data->getImagesData()->setImageMapValue(imageData.getImagePath(), &imageData);
+    }
 
     data->currentFolder = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
 }

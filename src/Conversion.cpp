@@ -14,7 +14,7 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
         }
 
         if (image.isNull()) {
-            qDebug() << "Could not open or find the image : " << QString::fromStdString(inputPath);
+            qWarning() << "Could not open or find the image : " << QString::fromStdString(inputPath);
             return false;
         }
 
@@ -22,7 +22,7 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
         exivImage->readMetadata();
 
         if (!image.save(QString::fromStdString(outputPath))) {
-            qDebug() << "Could not write the image : " << QString::fromStdString(outputPath);
+            qWarning() << "Could not write the image : " << QString::fromStdString(outputPath);
             return false;
         }
 
@@ -35,10 +35,10 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
 
         exivOutputImage->writeMetadata();
 
-        qDebug() << "Image converted successfully with metadata";
+        qInfo() << "Image converted successfully with metadata";
         return true;
     } catch (const Exiv2::Error& e) {
-        qDebug() << "Error: " << e.what();
+        qCritical() << "Error: " << e.what();
         return false;
     }
 }
@@ -48,7 +48,7 @@ QImage readHeicAndHeif(const std::string& filename) {
     struct heif_error err = heif_context_read_from_file(ctx, filename.c_str(), nullptr);
 
     if (err.code != heif_error_Ok) {
-        qDebug() << "Error: Unable to read HEIC/HEIF file: " << filename;
+        qCritical() << "Error: Unable to read HEIC/HEIF file: " << filename;
         heif_context_free(ctx);
         return QImage();
     }
@@ -56,7 +56,7 @@ QImage readHeicAndHeif(const std::string& filename) {
     struct heif_image_handle* handle;
     err = heif_context_get_primary_image_handle(ctx, &handle);
     if (err.code != heif_error_Ok) {
-        qDebug() << "Error: Unable to get image handle: " << filename;
+        qCritical() << "Error: Unable to get image handle: " << filename;
         heif_context_free(ctx);
         return QImage();
     }
@@ -64,7 +64,7 @@ QImage readHeicAndHeif(const std::string& filename) {
     struct heif_image* img;
     err = heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGB, nullptr);
     if (err.code != heif_error_Ok) {
-        qDebug() << "Erreur : Impossible de décoder l'image : " << filename;
+        qCritical() << "Erreur : Impossible de décoder l'image : " << filename;
         heif_image_handle_release(handle);
         heif_context_free(ctx);
         return QImage();
@@ -113,14 +113,14 @@ void convertion(const QString& inputImagePath, const QString& selectedFormat) {
         QString outputImagePath = fileInfo.path() + "/" + fileInfo.completeBaseName() + "." + selectedFormat;
 
         if (!convertImageWithMetadata(inputImagePath.toStdString(), outputImagePath.toStdString())) {
-            qDebug() << "Erreur : Impossible de convertir l'image avec les métadonnées : " << inputImagePath << " -> " << outputImagePath;
+            qWarning() << "Erreur : Impossible de convertir l'image avec les métadonnées : " << inputImagePath << " -> " << outputImagePath;
             return;
         }
 
-        qDebug() << "Image convertie avec succès : " << outputImagePath.toStdString();
+        qInfo() << "Image convertie avec succès : " << outputImagePath.toStdString();
         return;
     } else {
-        qDebug() << "Le format sélectionné est identique au format actuel. Aucune conversion nécessaire.";
+        qInfo() << "Le format sélectionné est identique au format actuel. Aucune conversion nécessaire.";
     }
 }
 

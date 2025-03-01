@@ -52,7 +52,9 @@ InitialWindow::InitialWindow() {
             qDebug() << "Error loading data: " << e.what();
             showErrorMessage(nullptr, "Error loading data: data corrupted");
         }
-        data->currentFolder = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
+        if (!data->currentFolder) {
+            data->currentFolder = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
+        }
 
         const QList<QScreen*> screens = QGuiApplication::screens();
         QScreen* screen = QGuiApplication::primaryScreen();

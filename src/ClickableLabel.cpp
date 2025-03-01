@@ -270,11 +270,5 @@ void ClickableLabel::setLogoDisabled() {
 }
 
 void ClickableLabel::resizeEvent(QResizeEvent* event) {
-    // qDebug() << "ClickableLabel::resizeEvent : " << *sizePtr;
-    // setFixedSize(*sizePtr);
-
-    // if (!pixmap().isNull()) {
-    //     setPixmap(pixmap().scaled(event->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    // }
     QLabel::resizeEvent(event);
 }

@@ -5,16 +5,30 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
 
     qDebug() << "ImageBooth name  : " << data->getCurrentFolders()->getName();
-    data->getImagesData()->getCurrent()->clear();
-    for (auto it = data->getCurrentFolders()->getFiles()->begin(); it != data->getCurrentFolders()->getFiles()->end(); ++it) {
-        std::string imagePath = *it;
-        qDebug() << imagePath;
-        ImageData* imageData = data->imagesData.getImageData(imagePath);
 
-        if (imageData == nullptr) {
-            qDebug() << "imageData is null";
-        } else {
-            data->getImagesData()->getCurrent()->push_back(&*imageData);
+    data->getImagesData()->getCurrent()->clear();
+
+    if (data->getCurrentFolders()->getName() == "*") {
+        Folders* firstFolder = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
+        Folders* allImagesFolder = new Folders("*");
+        allImagesFolder->setParent(firstFolder);
+        auto images = data->getImagesData()->get();
+        for (auto it = images->begin(); it != images->end(); ++it) {
+            ImageData* imageData = &(*it);
+            data->getImagesData()->getCurrent()->push_back(imageData);
+        }
+        data->currentFolder = allImagesFolder;
+    } else {
+        for (auto it = data->getCurrentFolders()->getFiles()->begin(); it != data->getCurrentFolders()->getFiles()->end(); ++it) {
+            std::string imagePath = *it;
+            qDebug() << imagePath;
+            ImageData* imageData = data->imagesData.getImageData(imagePath);
+
+            if (imageData == nullptr) {
+                qDebug() << "imageData is null";
+            } else {
+                data->getImagesData()->getCurrent()->push_back(&*imageData);
+            }
         }
     }
     // qDebug() << "ImageBooth currentImagesData size : " << data->rootFolders.getFolders()->size();
@@ -51,7 +65,11 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     linesLayout = new QVBoxLayout(scrollWidget);
     scrollArea->setWidget(scrollWidget);
 
-    int minHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesData()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber);
+    int minTotalImagesHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesData()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber);
+
+    int minTotalFoldersHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
+
+    int minHeight = minTotalImagesHeight + minTotalFoldersHeight;
     scrollWidget->setMinimumHeight(minHeight);
 
     linesLayout->setAlignment(Qt::AlignTop);
@@ -95,7 +113,7 @@ void ImageBooth::openFolder(int index) {
             data->getImagesData()->getCurrent()->push_back(data->imagesData.getImageData(data->currentFolder->getFiles()->at(i)));
         }
     } else {
-        Folders* allImagesFolder = new Folders("");
+        Folders* allImagesFolder = new Folders("*");
         allImagesFolder->setParent(data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders()));
         auto images = data->getImagesData()->get();
         for (auto it = images->begin(); it != images->end(); ++it) {
@@ -108,7 +126,7 @@ void ImageBooth::openFolder(int index) {
 
     int minTotalImagesHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesData()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber);
 
-    int minTotalFoldersHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber);
+    int minTotalFoldersHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
 
     int minHeight = minTotalImagesHeight + minTotalFoldersHeight;
     scrollWidget->setMinimumHeight(minHeight);
