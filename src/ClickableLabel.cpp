@@ -170,11 +170,11 @@ void ClickableLabel::resetBorder() {
     setBorder(initial_border_color, initial_hover_border_color);
 }
 
-void ClickableLabel::setInitialBackground(std::string borderColor, std::string hoverBorderColor) {
-    setBackgroundColor(borderColor);
-    setHoverBackgroundColor(hoverBorderColor);
-    setInitialBackgroundColor(borderColor);
-    setInitialHoverBackgroundColor(hoverBorderColor);
+void ClickableLabel::setInitialBackground(std::string backgroundColor, std::string hoverBackgroundColor) {
+    setBackgroundColor(backgroundColor);
+    setHoverBackgroundColor(hoverBackgroundColor);
+    setInitialBackgroundColor(backgroundColor);
+    setInitialHoverBackgroundColor(hoverBackgroundColor);
     updateStyleSheet();
 }
 
@@ -214,7 +214,7 @@ void ClickableLabel::paintEvent(QPaintEvent* event) {
 
         QRect rect = this->rect();
 
-        QRect circleRect = QRect(rect.right() - radius * 2, rect.bottom() - radius * 2, radius * 2, radius * 2);
+        QRect circleRect = QRect(rect.right() - (radius * 2), rect.bottom() - (radius * 2), radius * 2, radius * 2);
         painter.setBrush(QBrush(logoColor));
         painter.drawEllipse(circleRect);
 

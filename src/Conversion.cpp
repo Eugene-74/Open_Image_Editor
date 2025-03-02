@@ -77,8 +77,8 @@ QImage readHeicAndHeif(const std::string& filename) {
     int height = heif_image_get_height(img, heif_channel_interleaved);
     QImage qImage(data, width, height, stride, QImage::Format_RGB888);
 
-    for (int y = 0; y < qImage.height(); ++y) {
-        memcpy(qImage.scanLine(y), data + y * stride, qImage.width() * 3);
+    for (int row = 0; row < qImage.height(); ++row) {
+        memcpy(qImage.scanLine(row), data + (row * stride), qImage.width() * 3);
     }
 
     heif_image_release(img);
@@ -119,12 +119,10 @@ void convertion(const QString& inputImagePath, const QString& selectedFormat) {
 
         qInfo() << "Image convertie avec succès : " << outputImagePath.toStdString();
         return;
-    } else {
-        qInfo() << "Le format sélectionné est identique au format actuel. Aucune conversion nécessaire.";
     }
+    qInfo() << "Le format sélectionné est identique au format actuel. Aucune conversion nécessaire.";
 }
 
-// TODO non fonctionel
 QImage readRaw(const std::string& filename) {
     return QImage();
 }

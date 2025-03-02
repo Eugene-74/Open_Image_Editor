@@ -6,7 +6,6 @@
 #include <iostream>
 #include <vector>
 
-// #include "ImageData.hpp"g
 #include "Vector.hpp"
 #include "Verification.hpp"
 
@@ -22,11 +21,11 @@ class Folders {
     //    public:
     Folders() = default;
 
-    Folders(std::string f)
-        : name(f), parent(nullptr) {}
+    Folders(std::string name)
+        : name(name), parent(nullptr) {}
 
-    Folders(std::string f, Folders* p)
-        : name(f), parent(p) {}
+    Folders(std::string name, Folders* parent)
+        : name(name), parent(parent) {}
 
     // Constructeur de copie
     Folders(const Folders& other)

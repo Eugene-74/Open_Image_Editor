@@ -57,12 +57,12 @@ bool ImageData::operator==(const ImageData& other) const {
     std::filesystem::path filePath(getImagePathConst());
     std::string imageName = filePath.filename().string();
     std::transform(imageName.begin(), imageName.end(), imageName.begin(),
-                   [](unsigned char c) { return std::tolower(c); });
+                   [](unsigned char chr) { return std::tolower(chr); });
 
     std::filesystem::path filePathOther(other.getImagePathConst());
     std::string imageNameOther = filePathOther.filename().string();
     std::transform(imageNameOther.begin(), imageNameOther.end(), imageNameOther.begin(),
-                   [](unsigned char c) { return std::tolower(c); });
+                   [](unsigned char chr) { return std::tolower(chr); });
 
     return imageName == imageNameOther;
 }

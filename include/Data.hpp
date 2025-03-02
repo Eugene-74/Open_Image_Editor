@@ -47,7 +47,7 @@ class Data {
 #else
     Folders rootFolders = Folders("/");
 #endif
-    Folders* currentFolder;
+    Folders* currentFolder = &rootFolders;
 
     std::map<std::string, Option> options = DEFAULT_OPTIONS;
     Sizes* sizes = new Sizes();

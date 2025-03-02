@@ -116,14 +116,15 @@ Folders* Folders::getParent() {
 void Folders::setParent(Folders* parent) {
     this->parent = parent;
 }
+
 // Verifie si un dossier existe dans un Folders
 bool getIfExist(Folders* currentFolder, const std::string& path) {
-    auto it = std::find_if(currentFolder->getFolders()->begin(), currentFolder->getFolders()->end(), [&path](const Folders& folder) { return folder.getName() == path; });
+    auto folder = std::find_if(currentFolder->getFolders()->begin(), currentFolder->getFolders()->end(), [&path](const Folders& folder) { return folder.getName() == path; });
 
-    if (it != currentFolder->getFolders()->end()) {
-        return true;
-    }
-    return false;
+    // if (it != currentFolder->getFolders()->end()) {
+    //     return true;
+    // }
+    return folder != currentFolder->getFolders()->end();
 }
 
 // Verifie si un dossier contient une image dans un de ses sous dossier

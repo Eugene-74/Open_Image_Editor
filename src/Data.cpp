@@ -6,12 +6,13 @@ namespace fs = std::filesystem;
 
 void Data::preDeleteImage(int imageNbr) {
     ImageData* imageData;
-    imageData = imagesData.getImageData(imageNbr);
+    imageData = this->imagesData.getImageData(imageNbr);
 
-    deletedImagesData.addImage(*imageData);
+    this->deletedImagesData.addImage(*imageData);
     qInfo() << "image deleted : " << imageNbr;
-    deletedImagesData.print();
+    this->deletedImagesData.print();
 }
+
 void Data::unPreDeleteImage(int imageNbr) {
     ImageData* imageData;
     imageData = imagesData.getImageData(imageNbr);
@@ -421,7 +422,7 @@ Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const 
     for (const auto& folder : currentFolder.folders) {
         for (ImageData imageData : imagesData.imagesData) {
             for (Folders folderBis : imageData.folders.folders) {
-                if (folderBis.getName() == folder.getName()) {
+                if (folderBis.name == folder.name) {
                     return const_cast<Folders*>(&currentFolder);
                 }
             }
@@ -602,7 +603,9 @@ void Data::saveData() {
     rootFolders.save(outFile);
 
     // Save the path of currentFolder
+    qDebug() << "currentFolder : " << currentFolder->getName();
     std::string currentFolderPath = getFolderPath(currentFolder);
+    qDebug() << "currentFolderPath : " << currentFolderPath;
     size_t pathSize = currentFolderPath.size();
     outFile.write(reinterpret_cast<const char*>(&pathSize), sizeof(pathSize));
     outFile.write(currentFolderPath.c_str(), pathSize);
@@ -670,6 +673,7 @@ void Data::loadData() {
     std::string currentFolderPath(pathSize, '\0');
     inFile.read(&currentFolderPath[0], pathSize);
     currentFolder = findFolderByPath(rootFolders, currentFolderPath);
+    qDebug() << "currentFolder : " << currentFolderPath;
 
     inFile.close();
 }
@@ -1191,6 +1195,10 @@ Folders* Data::getRootFolders() {
     return &rootFolders;
 }
 Folders* Data::getCurrentFolders() {
+    if (currentFolder == nullptr || currentFolder->getName() == "") {
+        currentFolder = findFirstFolderWithAllImages(imagesData, rootFolders);
+        qWarning() << "currentFolder is null";
+    }
     return currentFolder;
 }
 
@@ -1248,8 +1256,15 @@ std::string Data::getFolderPath(Folders* folder) {
 
     std::string path;
     while (folder != &rootFolders) {
+        qDebug() << "path : " << path;
         path = "/" + folder->getName() + path;
-        folder = folder->getParent();
+
+        Folders* parent = folder->parent;
+        if (parent == nullptr) {
+            qCritical() << "getFolderPath folder has no parent";
+            return "/";
+        }
+        folder = parent;
     }
     return path;
 }

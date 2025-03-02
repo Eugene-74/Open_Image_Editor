@@ -26,8 +26,8 @@ class ImagesData {
         : imagesData(other.imagesData), imageNumber(other.imageNumber), currentImagesData(other.currentImagesData), imageMap(other.imageMap) {
     }
 
-    ImagesData(const std::vector<ImageData> a)
-        : imagesData(a) {}
+    ImagesData(const std::vector<ImageData> ImageDataList)
+        : imagesData(ImageDataList) {}
 
     ImagesData& operator=(const ImagesData& other);
 

@@ -37,13 +37,11 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
     std::chrono::duration<double> elapsed = end - start;
     qDebug() << "Sorting images took " << elapsed.count() << " seconds.";
 
-    data->saveData();
     auto images = data->getImagesData()->get();
-    for (auto& imageData : *images) {
-        data->getImagesData()->setImageMapValue(imageData.getImagePath(), &imageData);
-    }
 
-    data->currentFolder = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
+    data->saveData();
+    // TODO essayer de faire sans X()
+    data->loadData();
 }
 
 // Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
