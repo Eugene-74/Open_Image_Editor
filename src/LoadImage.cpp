@@ -292,8 +292,6 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
                 imageData.clearMetaData();
 
                 imagesData->addImage(imageData);
-                // marche pas jsp pk
-                // imagesData->imageMap[imageD.getImagePath()] = &imagesData->get()->back();
 
                 nbrImage += 1;
                 progressDialog.setLabelText(QString("Scaning for images : %1").arg(nbrImage));

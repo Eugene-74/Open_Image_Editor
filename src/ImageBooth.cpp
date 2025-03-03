@@ -23,7 +23,6 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     } else {
         for (auto it = data->getCurrentFolders()->getFiles()->begin(); it != data->getCurrentFolders()->getFiles()->end(); ++it) {
             std::string imagePath = *it;
-            qDebug() << imagePath;
             ImageData* imageData = data->imagesData.getImageData(imagePath);
 
             if (imageData == nullptr) {
@@ -63,7 +62,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     linesLayout = new QVBoxLayout(scrollWidget);
     scrollArea->setWidget(scrollWidget);
 
-    int minTotalImagesHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesData()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber);
+    int minTotalImagesHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesData()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
 
     int minTotalFoldersHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
 
@@ -89,8 +88,8 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     // TODO marche pas bien
 
     QTimer::singleShot(100, this, [this]() {
-        // gotToImage(data->imagesData.getImageNumber(), true);
-        reload();
+        gotToImage(data->imagesData.getImageNumber(), true);
+        // reload();
     });
 }
 
@@ -129,7 +128,7 @@ void ImageBooth::openFolder(int index) {
         data->currentFolder = allImagesFolder;
     }
 
-    int minTotalImagesHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesData()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber);
+    int minTotalImagesHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesData()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
 
     int minTotalFoldersHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
 
@@ -220,16 +219,27 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     }
 
     ClickableLabel* imageButton;
-    if (data->isInCache(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_QUALITY)) || imagePath.rfind(":", 0) == 0) {
+
+    // image are croped so we take imageSize->height() + imageSize->width() to avoir bad quality image
+    int imageQuality = 16;
+    if (imageSize->height() + imageSize->width() >= 256) {
+        imageQuality = 512;
+    } else if (imageSize->height() + imageSize->width() >= 128) {
+        imageQuality = 256;
+    } else if (imageSize->height() + imageSize->width() >= 16) {
+        imageQuality = 128;
+    }
+
+    if (data->isInCache(data->getThumbnailPath(imagePath, imageQuality)) || imagePath.rfind(":", 0) == 0) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
-                                         "", this, imageSize, false, IMAGE_BOOTH_IMAGE_QUALITY, true);
+                                         "", this, imageSize, false, imageQuality, true);
     } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)) {
         imageButton = new ClickableLabel(data, QString::fromStdString(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)),
                                          "", this, imageSize, false, 0, true);
 
         QPointer<ImageBooth> self = this;
         Data* dataPtr = data;
-        data->loadInCacheAsync(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_QUALITY), [self, dataPtr, imagePath, nbr]() {
+        data->loadInCacheAsync(data->getThumbnailPath(imagePath, imageQuality), [self, dataPtr, imagePath, nbr]() {
             if (!self.isNull()) {
                 QHBoxLayout* lineLayout = nullptr;
                 ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
@@ -271,6 +281,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             }
         });
     }
+    imageButton->setInitialBorder("transparent", "#b3b3b3");
 
     int imageNumberInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
 
@@ -443,7 +454,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             imageShiftSelected = imageNumberInTotal;
         }
     });
-    imageButton->setInitialBorder("transparent", "#b3b3b3");
     return imageButton;
 }
 

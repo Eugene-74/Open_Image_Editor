@@ -148,8 +148,11 @@ class Const {
         static const int ROTATE_90 = 6;
         static const int TRANSVERSE = 7;
         static const int ROTATE_270 = 8;
-        static const int ROTATE_LEFT = 90;
-        static const int ROTATE_RIGHT = -90;
-        static const int ROTATE_UP_SIDE_DOWN = 180;
+    };
+    class Rotation {
+       public:
+        static const int LEFT = 90;
+        static const int RIGHT = -90;
+        static const int UP_SIDE_DOWN = 180;
     };
 };

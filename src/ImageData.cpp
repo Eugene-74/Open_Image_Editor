@@ -94,10 +94,6 @@ void ImageData::loadData() {
             metaData.loadData(getImagePath());
             orientation = metaData.getImageOrientation();
             date = metaData.getTimestamp();
-            // if (date == 0) {
-            //     qDebug() << "Error loading metadata for image: " << getImagePath();
-            //     displayData(metaData);
-            // }
 
             metaData.dataLoaded = true;
         }

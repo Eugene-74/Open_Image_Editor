@@ -508,22 +508,22 @@ QImage Data::rotateQImage(QImage image, ImageData* imageData) {
                 image = image.mirrored(true, false);
                 break;
             case Const::Orientation::ROTATE_180:
-                image = image.transformed(QTransform().rotate(180));
+                image = image.transformed(QTransform().rotate(Const::Rotation::UP_SIDE_DOWN));
                 break;
             case Const::Orientation::FLIP_VERTICAL:
                 image = image.mirrored(false, true);
                 break;
             case Const::Orientation::TRANSPOSE:
-                image = image.mirrored(true, false).transformed(QTransform().rotate(90));
+                image = image.mirrored(true, false).transformed(QTransform().rotate(Const::Rotation::LEFT));
                 break;
             case Const::Orientation::ROTATE_90:
-                image = image.transformed(QTransform().rotate(90));
+                image = image.transformed(QTransform().rotate(Const::Rotation::LEFT));
                 break;
             case Const::Orientation::TRANSVERSE:
-                image = image.mirrored(true, false).transformed(QTransform().rotate(-90));
+                image = image.mirrored(true, false).transformed(QTransform().rotate(Const::Rotation::RIGHT));
                 break;
             case Const::Orientation::ROTATE_270:
-                image = image.transformed(QTransform().rotate(-90));
+                image = image.transformed(QTransform().rotate(Const::Rotation::RIGHT));
                 break;
             default:
                 break;
@@ -720,7 +720,9 @@ void Data::unDoAction() {
 }
 
 void Data::sortCurrentImagesData() {
-    qDebug() << "Sorting current imagesData ...";
+    QElapsedTimer timer;
+    timer.start();
+
     QProgressDialog progressDialog = QProgressDialog(nullptr);
     progressDialog.move(0, 0);
     progressDialog.setWindowModality(Qt::ApplicationModal);
@@ -732,16 +734,24 @@ void Data::sortCurrentImagesData() {
     // TODO mieux estimer X( estimatedSteps
     int estimatedSteps = static_cast<int>(n * std::log(n) * 3);
     progressDialog.setMaximum(estimatedSteps);
-    progressDialog.show();
+    // progressDialog.show();
+    progressDialog.hide();
+
     QApplication::processEvents();
 
     auto& data = *imagesData.getCurrent();
-    std::sort(data.begin(), data.end(), [&progress, &progressDialog](const ImageData* a, const ImageData* b) {
+    std::sort(data.begin(), data.end(), [&progress, &progressDialog, &timer](const ImageData* a, const ImageData* b) {
         progress++;
         progressDialog.setValue(progress);
         QApplication::processEvents();
+        if (timer.elapsed() > 1000) {
+            progressDialog.show();
+            timer.invalidate();
+        }
         return a->date > b->date;
     });
+
+    timer.invalidate();
 }
 
 void Data::clearCache() {
@@ -758,7 +768,7 @@ void LoadImageTask::run() {
 
 void Data::rotateLeft(int nbr, std::string extension, std::function<void()> reload, bool action) {
     if (isExifTurnOrMirror(extension)) {
-        exifRotate(nbr, 90, reload);
+        exifRotate(nbr, Const::Rotation::LEFT, reload);
         if (action) {
             addAction(
                 [this, nbr, reload]() {
@@ -769,7 +779,7 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
                         time = TIME_UNDO_VISUALISATION;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
-                        exifRotate(nbr, -90, reload);
+                        exifRotate(nbr, Const::Rotation::RIGHT, reload);
                     });
                 },
                 [this, nbr, reload]() {
@@ -780,12 +790,12 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
                         time = TIME_UNDO_VISUALISATION;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
-                        exifRotate(nbr, 90, reload);
+                        exifRotate(nbr, Const::Rotation::LEFT, reload);
                     });
                 });
         }
     } else if (isRealTurnOrMirror(extension)) {
-        realRotate(nbr, 90, reload);
+        realRotate(nbr, Const::Rotation::LEFT, reload);
         if (action) {
             addAction(
                 [this, nbr, reload]() {
@@ -796,7 +806,7 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
                         time = TIME_UNDO_VISUALISATION;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
-                        realRotate(nbr, -90, reload);
+                        realRotate(nbr, Const::Rotation::RIGHT, reload);
                     });
                 },
                 [this, nbr, reload]() {
@@ -807,7 +817,7 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
                         time = TIME_UNDO_VISUALISATION;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
-                        realRotate(nbr, 90, reload);
+                        realRotate(nbr, Const::Rotation::LEFT, reload);
                     });
                 });
         }
@@ -816,7 +826,7 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
 
 void Data::rotateRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
     if (isExifTurnOrMirror(extension)) {
-        exifRotate(nbr, -90, reload);
+        exifRotate(nbr, Const::Rotation::RIGHT, reload);
 
         if (action) {
             addAction(
@@ -828,7 +838,7 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
                         time = TIME_UNDO_VISUALISATION;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
-                        exifRotate(nbr, 90, reload);
+                        exifRotate(nbr, Const::Rotation::LEFT, reload);
                     });
                 },
                 [this, nbr, reload]() {
@@ -839,12 +849,12 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
                         time = TIME_UNDO_VISUALISATION;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
-                        exifRotate(nbr, -90, reload);
+                        exifRotate(nbr, Const::Rotation::RIGHT, reload);
                     });
                 });
         }
     } else if (isRealTurnOrMirror(extension)) {
-        realRotate(nbr, -90, reload);
+        realRotate(nbr, Const::Rotation::RIGHT, reload);
         if (action) {
             addAction(
                 [this, nbr, reload]() {
@@ -855,7 +865,7 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
                         time = TIME_UNDO_VISUALISATION;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
-                        realRotate(nbr, 90, reload);
+                        realRotate(nbr, Const::Rotation::LEFT, reload);
                     });
                 },
                 [this, nbr, reload]() {
@@ -866,7 +876,7 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
                         time = TIME_UNDO_VISUALISATION;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
-                        realRotate(nbr, -90, reload);
+                        realRotate(nbr, Const::Rotation::RIGHT, reload);
                     });
                 });
         }
@@ -894,7 +904,7 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
         return;
     }
     int orientation = imageData->orientation;
-    if (rotation == 90) {
+    if (rotation == Const::Rotation::LEFT) {
         switch (orientation) {
             case Const::Orientation::NORMAL:
                 orientation = Const::Orientation::ROTATE_270;
@@ -925,7 +935,7 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
                 break;
         }
     }
-    if (rotation == -90) {
+    if (rotation == Const::Rotation::RIGHT) {
         switch (orientation) {
             case Const::Orientation::NORMAL:
                 orientation = Const::Orientation::ROTATE_90;
@@ -1244,7 +1254,6 @@ std::string Data::getFolderPath(Folders* folder) {
 
     std::string path;
     while (folder != &rootFolders) {
-        qDebug() << "path : " << path;
         path = "/" + folder->getName() + path;
 
         Folders* parent = folder->parent;
