@@ -16,6 +16,7 @@ class ImagesData {
    public:
     std::vector<ImageData> imagesData;
     std::vector<ImageData*> currentImagesData;
+    // bool currentImagesDataSorted = false;
 
     ImagesData()
         : imageNumber(0) {}

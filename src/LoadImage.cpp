@@ -29,14 +29,6 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
         return;
     }
 
-    auto start = std::chrono::high_resolution_clock::now();
-
-    data->sortImagesData(progressDialog);
-
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
-    qDebug() << "Sorting images took " << elapsed.count() << " seconds.";
-
     auto images = data->getImagesData()->get();
 
     // ensure that it's well loaded
@@ -295,9 +287,11 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
                 Folders folders = Folders(entry.path().string());
                 rootFolder.addFile(entry.path().string());
                 folders.addFolder(fs::absolute(entry.path()).parent_path().string());
-                ImageData imageD(folders);
+                ImageData imageData(folders);
+                imageData.loadData();
+                imageData.clearMetaData();
 
-                imagesData->addImage(imageD);
+                imagesData->addImage(imageData);
                 // marche pas jsp pk
                 // imagesData->imageMap[imageD.getImagePath()] = &imagesData->get()->back();
 

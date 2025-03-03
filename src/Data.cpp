@@ -719,65 +719,29 @@ void Data::unDoAction() {
     }
 }
 
-void Data::sortImagesData(QProgressDialog& progressDialog) {
-    progressDialog.setLabelText("Loading imagesData ...");
-    progressDialog.setValue(0);
-    progressDialog.setMaximum(imagesData.get()->size());
-    progressDialog.show();
-    QApplication::processEvents();
-
+void Data::sortCurrentImagesData() {
+    qDebug() << "Sorting current imagesData ...";
+    QProgressDialog progressDialog = QProgressDialog(nullptr);
+    progressDialog.move(0, 0);
+    progressDialog.setWindowModality(Qt::ApplicationModal);
     int progress = 0;
-
-    for (auto& imageData : *imagesData.get()) {
-        imageData.loadData();
-        imageData.clearMetaData();
-        progress++;
-        progressDialog.setValue(progress);
-        QApplication::processEvents();
-    }
 
     progressDialog.setLabelText("Sorting ...");
     progressDialog.setValue(0);
-    int n = imagesData.get()->size();
+    int n = imagesData.getCurrent()->size();
     // TODO mieux estimer X( estimatedSteps
     int estimatedSteps = static_cast<int>(n * std::log(n) * 3);
     progressDialog.setMaximum(estimatedSteps);
     progressDialog.show();
     QApplication::processEvents();
 
-    auto& data = *imagesData.get();
-    std::sort(data.begin(), data.end(), [&progress, &progressDialog](const ImageData& a, const ImageData& b) {
+    auto& data = *imagesData.getCurrent();
+    std::sort(data.begin(), data.end(), [&progress, &progressDialog](const ImageData* a, const ImageData* b) {
         progress++;
         progressDialog.setValue(progress);
         QApplication::processEvents();
-
-        return a.date > b.date;
+        return a->date > b->date;
     });
-}
-
-void Data::sortCurrentImagesData() {
-    // TODO faire marcher
-    // QProgressDialog progressDialog = QProgressDialog(nullptr);
-    // progressDialog.setWindowModality(Qt::ApplicationModal);
-    // int progress = 0;
-
-    // progressDialog.setLabelText("Sorting ...");
-    // progressDialog.setValue(0);
-    // int n = imagesData.get()->size();
-    // // TODO mieux estimer X( estimatedSteps
-    // int estimatedSteps = static_cast<int>(n * std::log(n) * 3);
-    // progressDialog.setMaximum(estimatedSteps);
-    // progressDialog.show();
-    // QApplication::processEvents();
-
-    // auto& data = *imagesData.getCurrent();
-    // std::sort(data.begin(), data.end(), [&progress, &progressDialog](const ImageData& a, const ImageData& b) {
-    //     progress++;
-    //     progressDialog.setValue(progress);
-    //     QApplication::processEvents();
-
-    //     return a.date > b.date;
-    // });
 }
 
 void Data::clearCache() {

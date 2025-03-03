@@ -34,7 +34,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
         }
     }
 
-    // data->sortCurrentImagesData();
+    data->sortCurrentImagesData();
 
     data->clearCache();
 
@@ -89,7 +89,8 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     // TODO marche pas bien
 
     QTimer::singleShot(100, this, [this]() {
-        gotToImage(data->imagesData.getImageNumber(), true);
+        // gotToImage(data->imagesData.getImageNumber(), true);
+        reload();
     });
 }
 
@@ -138,7 +139,7 @@ void ImageBooth::openFolder(int index) {
     data->getImagesData()->setImageNumber(0);
     data->clearCache();
 
-    // data->sortCurrentImagesData();
+    data->sortCurrentImagesData();
 
     reload();
 

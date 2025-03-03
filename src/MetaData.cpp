@@ -180,6 +180,11 @@ void MetaData::loadData(const std::string& imagePath) {
             iptcMetaData = image->iptcData();
 
             dataLoaded = true;
+
+            auto pos = exifMetaData.findKey(Exiv2::ExifKey("Exif.Image.DateTime"));
+            if (pos == exifMetaData.end()) {
+                qDebug() << "Erreur : 'Exif.Image.DateTime' n'existe pas dans les métadonnées.";
+            }
         }
     } catch (const Exiv2::Error& e) {
         qDebug() << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what();

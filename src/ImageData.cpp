@@ -94,6 +94,10 @@ void ImageData::loadData() {
             metaData.loadData(getImagePath());
             orientation = metaData.getImageOrientation();
             date = metaData.getTimestamp();
+            // if (date == 0) {
+            //     qDebug() << "Error loading metadata for image: " << getImagePath();
+            //     displayData(metaData);
+            // }
 
             metaData.dataLoaded = true;
         }
@@ -135,6 +139,7 @@ void ImageData::setOrCreateExifData() {
 
 void ImageData::save(std::ofstream& out) const {
     out.write(reinterpret_cast<const char*>(&orientation), sizeof(orientation));
+    out.write(reinterpret_cast<const char*>(&date), sizeof(date));
 
     folders.save(out);
 
@@ -156,6 +161,8 @@ void ImageData::save(std::ofstream& out) const {
 
 void ImageData::load(std::ifstream& in) {
     in.read(reinterpret_cast<char*>(&orientation), sizeof(orientation));
+    in.read(reinterpret_cast<char*>(&date), sizeof(date));
+
     folders.load(in);
 
     size_t cropSizesSize;
