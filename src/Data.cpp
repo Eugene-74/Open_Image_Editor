@@ -105,9 +105,11 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     }
 
     if (rotation && imagePath.at(0) != ':') {
-        std::string extension = imageData->getImageExtension();
-        if (isExifTurnOrMirror(extension)) {
-            image = rotateQImage(image, imageData);
+        if (imageData != nullptr) {
+            std::string extension = imageData->getImageExtension();
+            if (isExifTurnOrMirror(extension)) {
+                image = rotateQImage(image, imageData);
+            }
         }
     }
 
