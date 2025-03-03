@@ -706,12 +706,15 @@ MainImage* ImageEditor::createImageLabel() {
     if (imageData->status == ImageData::Status::NotLoaded && imageData->persons.empty()) {
         imageData->status = ImageData::Status::Loading;
         QImage image = data->imageCache->at(currentImagePath).image;
+
         image = data->rotateQImage(image, currentImagePath);
 
         QPointer<ImageEditor> self = this;
         Data* dataPtr = data;
-        detectFacesAsync(currentImagePath, image, [self, dataPtr, imageNbr](std::vector<Person> persons) {
-            ImageData* imageData = dataPtr->imagesData.getImageDataInCurrent(imageNbr);
+        int imageNbrIntotal = data->getImagesData()->getImageNumberInTotal(imageNbr);
+
+        detectFacesAsync(currentImagePath, image, [self, dataPtr, imageNbr, imageNbrIntotal](std::vector<Person> persons) {
+            ImageData* imageData = dataPtr->imagesData.getImageData(imageNbrIntotal);
             imageData->status = ImageData::Status::Loaded;
             if (imageData) {
                 imageData->persons = persons;

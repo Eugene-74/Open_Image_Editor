@@ -134,3 +134,22 @@ const QString TOOL_TIP_IMAGE_BOOTH_BACK = "Go to last folder";
 // const QString TOOL_TIP_IMAGE_EDITOR_CONVERSION = "Convert the image";
 #include <QObject>
 const QString TOOL_TIP_IMAGE_EDITOR_CONVERSION = QObject::tr("Convert the image");
+
+class Const {
+   public:
+    class Orientation {
+       public:
+        static const int UNDEFINED = 0;
+        static const int NORMAL = 1;
+        static const int FLIP_HORIZONTAL = 2;
+        static const int ROTATE_180 = 3;
+        static const int FLIP_VERTICAL = 4;
+        static const int TRANSPOSE = 5;
+        static const int ROTATE_90 = 6;
+        static const int TRANSVERSE = 7;
+        static const int ROTATE_270 = 8;
+        static const int ROTATE_LEFT = 90;
+        static const int ROTATE_RIGHT = -90;
+        static const int ROTATE_UP_SIDE_DOWN = 180;
+    };
+};

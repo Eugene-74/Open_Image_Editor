@@ -502,29 +502,32 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
 QImage Data::rotateQImage(QImage image, std::string imagePath) {
     ImageData* imageData = imagesData.getImageData(imagePath);
 
+    // ImageData* imageData = imagesData.getCurrentImageData();
+
     if (imageData != nullptr) {
         int orientation = imageData->orientation;
+        qDebug() << "rotateQImage : " << orientation << " : " << imagePath;
 
         switch (orientation) {
-            case 2:
+            case Const::Orientation::FLIP_HORIZONTAL:
                 image = image.mirrored(true, false);
                 break;
-            case 3:
+            case Const::Orientation::ROTATE_180:
                 image = image.transformed(QTransform().rotate(180));
                 break;
-            case 4:
+            case Const::Orientation::FLIP_VERTICAL:
                 image = image.mirrored(false, true);
                 break;
-            case 5:
+            case Const::Orientation::TRANSPOSE:
                 image = image.mirrored(true, false).transformed(QTransform().rotate(90));
                 break;
-            case 6:
+            case Const::Orientation::ROTATE_90:
                 image = image.transformed(QTransform().rotate(90));
                 break;
-            case 7:
+            case Const::Orientation::TRANSVERSE:
                 image = image.mirrored(true, false).transformed(QTransform().rotate(-90));
                 break;
-            case 8:
+            case Const::Orientation::ROTATE_270:
                 image = image.transformed(QTransform().rotate(-90));
                 break;
             default:
@@ -900,73 +903,77 @@ void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
 }
 
 void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
+    qDebug() << "Exif rotate :" << nbr;
     ImageData* imageData = imagesData.getImageData(nbr);
-
+    // TODO ERROR WITH MIRROR
     if (!isTurnable(imageData->getImagePath())) {
+        qWarning() << "Image not turnable : " << imageData->getImagePath();
         return;
     }
     int orientation = imageData->orientation;
     if (rotation == 90) {
         switch (orientation) {
-            case 1:
-                orientation = 8;
+            case Const::Orientation::NORMAL:
+                orientation = Const::Orientation::ROTATE_270;
                 break;
-            case 2:
-                orientation = 7;
+            case Const::Orientation::FLIP_HORIZONTAL:
+                orientation = Const::Orientation::TRANSVERSE;
                 break;
-            case 3:
-                orientation = 6;
+            case Const::Orientation::ROTATE_180:
+                orientation = Const::Orientation::ROTATE_90;
                 break;
-            case 4:
-                orientation = 5;
+            case Const::Orientation::FLIP_VERTICAL:
+                orientation = Const::Orientation::TRANSPOSE;
                 break;
-            case 5:
-                orientation = 2;
+            case Const::Orientation::TRANSPOSE:
+                orientation = Const::Orientation::FLIP_HORIZONTAL;
                 break;
-            case 6:
-                orientation = 1;
+            case Const::Orientation::ROTATE_90:
+                orientation = Const::Orientation::NORMAL;
                 break;
-            case 7:
-                orientation = 4;
+            case Const::Orientation::TRANSVERSE:
+                orientation = Const::Orientation::FLIP_VERTICAL;
                 break;
-            case 8:
-                orientation = 3;
+            case Const::Orientation::ROTATE_270:
+                orientation = Const::Orientation::ROTATE_180;
                 break;
             default:
+                orientation = Const::Orientation::NORMAL;
                 break;
         }
     }
     if (rotation == -90) {
         switch (orientation) {
-            case 1:
-                orientation = 6;
+            case Const::Orientation::NORMAL:
+                orientation = Const::Orientation::ROTATE_90;
                 break;
-            case 2:
-                orientation = 5;
+            case Const::Orientation::FLIP_HORIZONTAL:
+                orientation = Const::Orientation::TRANSPOSE;
                 break;
-            case 3:
-                orientation = 8;
+            case Const::Orientation::ROTATE_180:
+                orientation = Const::Orientation::ROTATE_270;
                 break;
-            case 4:
-                orientation = 7;
+            case Const::Orientation::FLIP_VERTICAL:
+                orientation = Const::Orientation::TRANSVERSE;
                 break;
-            case 5:
-                orientation = 4;
+            case Const::Orientation::TRANSPOSE:
+                orientation = Const::Orientation::FLIP_VERTICAL;
                 break;
-            case 6:
-                orientation = 3;
+            case Const::Orientation::ROTATE_90:
+                orientation = Const::Orientation::ROTATE_180;
                 break;
-            case 7:
-                orientation = 2;
+            case Const::Orientation::TRANSVERSE:
+                orientation = Const::Orientation::FLIP_HORIZONTAL;
                 break;
-            case 8:
-                orientation = 1;
+            case Const::Orientation::ROTATE_270:
+                orientation = Const::Orientation::NORMAL;
                 break;
             default:
+                orientation = Const::Orientation::NORMAL;
                 break;
         }
     }
-
+    qDebug() << "Exif rotate orientation :" << orientation;
     imageData->turnImage(orientation);
 
     imageData->saveMetaData();
@@ -976,7 +983,7 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
 
 void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> reload, bool action) {
     if (isExifTurnOrMirror(extension)) {
-        realMirror(nbr, true, reload);
+        exifMirror(nbr, true, reload);
 
         if (action) {
             addAction(
@@ -988,7 +995,7 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
                         time = TIME_UNDO_VISUALISATION;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
-                        realMirror(nbr, true, reload);
+                        exifMirror(nbr, true, reload);
                     });
                 },
                 [this, nbr, reload]() {
@@ -999,7 +1006,7 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
                         time = TIME_UNDO_VISUALISATION;
                     }
                     QTimer::singleShot(time, [this, nbr, reload]() {
-                        realMirror(nbr, true, reload);
+                        exifMirror(nbr, true, reload);
                     });
                 });
         }
@@ -1104,58 +1111,58 @@ void Data::exifMirror(int nbr, bool UpDown, std::function<void()> reload) {
     int orientation = imageData->orientation;
     if (UpDown) {
         switch (orientation) {
-            case 1:
-                orientation = 4;
+            case Const::Orientation::NORMAL:
+                orientation = Const::Orientation::FLIP_VERTICAL;
                 break;
-            case 3:
-                orientation = 2;
+            case Const::Orientation::ROTATE_180:
+                orientation = Const::Orientation::FLIP_HORIZONTAL;
                 break;
-            case 6:
-                orientation = 5;
+            case Const::Orientation::ROTATE_90:
+                orientation = Const::Orientation::TRANSVERSE;
                 break;
-            case 8:
-                orientation = 7;
+            case Const::Orientation::ROTATE_270:
+                orientation = Const::Orientation::TRANSPOSE;
                 break;
-            case 2:
-                orientation = 3;
+            case Const::Orientation::FLIP_HORIZONTAL:
+                orientation = Const::Orientation::ROTATE_180;
                 break;
-            case 4:
-                orientation = 1;
+            case Const::Orientation::FLIP_VERTICAL:
+                orientation = Const::Orientation::NORMAL;
                 break;
-            case 5:
-                orientation = 6;
+            case Const::Orientation::TRANSPOSE:
+                orientation = Const::Orientation::ROTATE_270;
                 break;
-            case 7:
-                orientation = 8;
+            case Const::Orientation::TRANSVERSE:
+                orientation = Const::Orientation::ROTATE_90;
                 break;
             default:
                 break;
         }
     } else {
         switch (orientation) {
-            case 1:
-                orientation = 2;
+            case Const::Orientation::NORMAL:
+                orientation = Const::Orientation::FLIP_HORIZONTAL;
                 break;
-            case 3:
-                orientation = 4;
+            case Const::Orientation::ROTATE_180:
+                orientation = Const::Orientation::FLIP_VERTICAL;
                 break;
-            case 6:
-                orientation = 7;
+            case Const::Orientation::ROTATE_90:
+                orientation = Const::Orientation::TRANSPOSE;
                 break;
-            case 8:
-                orientation = 5;
+            case Const::Orientation::ROTATE_270:
+                orientation = Const::Orientation::TRANSVERSE;
                 break;
-            case 2:
-                orientation = 1;
+            case Const::Orientation::FLIP_HORIZONTAL:
+                orientation = Const::Orientation::NORMAL;
                 break;
-            case 4:
-                orientation = 3;
+            case Const::Orientation::FLIP_VERTICAL:
+                orientation = Const::Orientation::ROTATE_180;
                 break;
-            case 5:
-                orientation = 8;
+            case Const::Orientation::TRANSPOSE:
+                orientation = Const::Orientation::ROTATE_90;
                 break;
-            case 7:
-                orientation = 6;
+            case Const::Orientation::TRANSVERSE:
+                orientation = Const::Orientation::ROTATE_270;
                 break;
             default:
                 break;
@@ -1163,9 +1170,7 @@ void Data::exifMirror(int nbr, bool UpDown, std::function<void()> reload) {
     }
 
     imageData->turnImage(orientation);
-
     imageData->saveMetaData();
-
     reload();
 }
 

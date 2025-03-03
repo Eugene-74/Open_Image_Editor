@@ -23,7 +23,8 @@ class ImageData {
     std::vector<std::vector<QPoint>> cropSizes;
     std::vector<Person> persons;
     Status status = Status::NotLoaded;
-    int orientation = 0;
+
+    int orientation = Const::Orientation::UNDEFINED;
     long date = 0;
 
     ImageData()

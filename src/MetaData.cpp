@@ -259,9 +259,9 @@ void displayExifData(const Exiv2::ExifData& data) {
     qDebug() << "métadonnée : ";
 
     for (const auto& item : data) {
-        if (item.key().substr(0, 10) == "Exif.Image") {
-            qDebug() << item.key() << " : " << item.value().toString();
-        }
+        // if (item.key().substr(0, 10) == "Exif.Image") {
+        qDebug() << item.key() << " : " << item.value().toString();
+        // }
     }
 }
 
