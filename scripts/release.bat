@@ -8,10 +8,9 @@ for /f "tokens=1,2 delims==" %%a in (%~dp0..\AppConfig.txt) do (
 mkdir build
 cd build
 
-cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release ..
+cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
     
-cmake --build . --config Release
-
+mingw32-make -j %NUMBER_OF_PROCESSORS% 
 
 rmdir /s /q release
 
@@ -72,7 +71,7 @@ git push origin --delete v%APP_VERSION%
 
 git tag v%APP_VERSION%
 git push origin v%APP_VERSION%
-gh release create v%APP_VERSION% %INSTALLER_APP_NAME%-%APP_VERSION%.exe --notes "Version %APP_VERSION%"
+gh release create v%APP_VERSION% %INSTALLER_APP_NAME%-%APP_VERSION%.exe --notes "Version %APP_VERSION%" --prerelease
 
 exit /b
 

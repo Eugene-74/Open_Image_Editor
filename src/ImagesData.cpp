@@ -101,10 +101,7 @@ ImageData* ImagesData::getImageDataInCurrent(int id) {
 }
 
 ImageData* ImagesData::getImageData(std::string imagePath) {
-    auto start = std::chrono::high_resolution_clock::now();
     auto it = imageMap.find(imagePath);
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
 
     if (it != imageMap.end()) {
         return it->second;

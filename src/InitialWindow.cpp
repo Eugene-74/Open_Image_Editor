@@ -140,7 +140,7 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
 
     curl = curl_easy_init();
     if (curl) {
-        std::string url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/tags";
+        std::string url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/releases";
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
@@ -161,8 +161,13 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
         if (res == CURLE_OPERATION_TIMEDOUT) {
             showWarningMessage(nullptr, "Could not check for update (low connexion)", "Checking for updates");
             qDebug() << "Error : Could not check for update (low connexion) : " << curl_easy_strerror(res);
-        } else if (res != CURLE_OK) {
+            curl_easy_cleanup(curl);
+            return "";
+        }
+        if (res != CURLE_OK) {
             qDebug() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
+            curl_easy_cleanup(curl);
+            return "";
         }
         curl_easy_cleanup(curl);
     }
@@ -174,8 +179,12 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
 
     std::istringstream s(readBuffer);
     if (Json::parseFromStream(readerBuilder, s, &root, &errs)) {
-        if (!root.empty() && root.isArray() && root.size() > 0) {
-            return root[0]["name"].asString();
+        if (!root.empty() && root.isArray()) {
+            for (const auto& release : root) {
+                if (!release["prerelease"].asBool()) {
+                    return release["tag_name"].asString();
+                }
+            }
         }
     } else {
         qDebug() << "Failed to parse JSON: " << errs;
@@ -227,12 +236,16 @@ bool checkForUpdate(QProgressDialog* progressDialog) {
 
     std::string latestTag = getLatestGitHubTag(progressDialog);
 
-    int latestMajor = 0, latestMinor = 0, latestPatch = 0;
+    int latestMajor = 0;
+    int latestMinor = 0;
+    int latestPatch = 0;
     if (!latestTag.empty()) {
         std::sscanf(latestTag.c_str(), "v%d.%d.%d", &latestMajor, &latestMinor, &latestPatch);
     }
 
-    int currentMajor = 0, currentMinor = 0, currentPatch = 0;
+    int currentMajor = 0;
+    int currentMinor = 0;
+    int currentPatch = 0;
     std::sscanf(APP_VERSION, "%d.%d.%d", &currentMajor, &currentMinor, &currentPatch);
     if (currentMajor < latestMajor || currentMinor < latestMinor || currentPatch < latestPatch) {
         showQuestionMessage(nullptr, "A new version of the application is available\nDo you want to open the download page?", [latestMajor, latestMinor, latestPatch](bool result) {
@@ -289,7 +302,24 @@ void startLog() {
     }
     static QTextStream logStream(&logFile);
     qInstallMessageHandler([](QtMsgType type, const QMessageLogContext& context, const QString& msg) {
-        logStream << msg << Qt::endl;
+        QString formattedMsg = QString("[%1] %2").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"), msg);
+        switch (type) {
+            case QtDebugMsg:
+                logStream << "[DEBUG] " << formattedMsg << Qt::endl;
+                break;
+            case QtInfoMsg:
+                logStream << "[INFO] " << formattedMsg << Qt::endl;
+                break;
+            case QtWarningMsg:
+                logStream << "[WARNING] " << formattedMsg << Qt::endl;
+                break;
+            case QtCriticalMsg:
+                logStream << "[CRITICAL] " << formattedMsg << Qt::endl;
+                break;
+            case QtFatalMsg:
+                logStream << "[FATAL] " << formattedMsg << Qt::endl;
+                abort();
+        }
         logStream.flush();
         std::cerr << msg.toStdString() << std::endl;
     });
