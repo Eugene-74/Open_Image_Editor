@@ -336,9 +336,6 @@ void InitialWindow::createImageEditor(Data* data) {
 }
 
 void InitialWindow::createImageBooth(Data* data) {
-    // TODO faire sans
-    // ToDO verif que c'est un int XD
-    // Cast to int
     data->sizes->imagesBoothSizes->imagesPerLine = std::stoi(data->options.at("Sizes::imageBooth::ImagesPerLine").value);
     data->sizes->update();
 
@@ -523,7 +520,8 @@ void InitialWindow::openOption() {
     for (const auto& [key, value] : options) {
         data->options[key].value = value;
     }
-    // TODO faire autrement
+
+    // Reload the window
     if (imageBooth) {
         showImageBooth();
     }

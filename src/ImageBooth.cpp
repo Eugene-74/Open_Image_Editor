@@ -11,9 +11,8 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     if (data->getCurrentFolders()->getName() == "*") {
         Folders* firstFolder = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
         Folders* allImagesFolder = new Folders("*");
-        // TODO utiliser setParent
-        // allImagesFolder->setParent(firstFolder);
-        allImagesFolder->parent = firstFolder;
+
+        allImagesFolder->setParent(firstFolder);
 
         auto images = data->getImagesData()->get();
         for (auto it = images->begin(); it != images->end(); ++it) {
@@ -34,12 +33,8 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
             }
         }
     }
-    // qDebug() << "ImageBooth currentImagesData size : " << data->rootFolders.getFolders()->size();
 
-    // auto images = data->imagesData.getConst();
-    // for (int i = 0; i < images.size(); i++) {
-    //     data->imagesData.currentImagesData.push_back(data->imagesData.getImageData(i));
-    // }
+    // data->sortCurrentImagesData();
 
     data->clearCache();
 
@@ -100,10 +95,9 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
 
 void ImageBooth::openFolder(int index) {
     // TODO modifier pour stocker les index dans imagesData et pouvoir les garder entre les fichiers
-    data->imagesSelected.clear();
-    data->getImagesData()
-        ->getCurrent()
-        ->clear();
+    // data->imagesSelected.clear();
+    data->getImagesData()->getCurrent()->clear();
+
     if (data->getCurrentFolders()->getFolders()->size() > index || index == -2) {
         if (index == -2) {
             // TODO utiliser getParent
@@ -144,12 +138,14 @@ void ImageBooth::openFolder(int index) {
     data->getImagesData()->setImageNumber(0);
     data->clearCache();
 
+    // data->sortCurrentImagesData();
+
     reload();
 
-    // TODO ctrl + Z fait crash quand il sagit de revenir en arriere
     data->addAction(
         [this, index]() {
-            openFolder(-2);
+            // TODO adapter ne permet pas de faire autre chose que remonter dans les dossier
+            openFolder(index);
         },
         [this, index]() {
             openFolder(index);
@@ -368,7 +364,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             std::vector<int> modifiedNbr;
             std::vector<int> modifiedNbrInTotal;
 
-            // TODO on veux les val dans current pas total
             int imageShiftSelectedInCurrent = data->getImagesData()->getImageNumberInCurrent(imageShiftSelected);
 
             int start = std::min(imageShiftSelectedInCurrent, nbr);
@@ -515,12 +510,13 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
 // Update all visible images
 void ImageBooth::updateImages() {
     try {
+        // TODO les imagesSelected s'affiche pas jutse pres un changement de dossier
         qDebug() << "updateImages";
         int spacerHeight = scrollArea->verticalScrollBar()->value();
         int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
         spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
-        int foldersLineNumber = getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber + 1;
+        int foldersLineNumber = (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber) + 1;
         int lineNbr = spacerHeight / imageHeight;
 
         int folderLinesNbr = std::min(std::max(foldersLineNumber - lineNbr, 0), maxVisibleLines);
@@ -529,7 +525,7 @@ void ImageBooth::updateImages() {
         for (int i = 1; i < 1 + folderLinesNbr; i++) {
             QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
             for (int j = 0; j < lineLayout->count(); j++) {
-                int folderNbr = (lineNbr + i - 1) * data->sizes->imagesBoothSizes->widthImageNumber + j;
+                int folderNbr = ((lineNbr + i - 1) * data->sizes->imagesBoothSizes->widthImageNumber) + j;
 
                 ClickableLabel* lastFolderButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
 
@@ -544,9 +540,8 @@ void ImageBooth::updateImages() {
                                                               this, imageSize, false, 0, true);
                             folderButton->addLogo("#00FF00", "FFFFFF", data->getImagesData()->get()->size());
                         } else {
-                            // TODO mettre le nom du dossier parent en tool tip
                             folderButton = new ClickableLabel(data, ICON_PATH_BACK,
-                                                              TOOL_TIP_IMAGE_BOOTH_BACK,
+                                                              TOOL_TIP_IMAGE_BOOTH_BACK + " : " + QString::fromStdString(data->getCurrentFolders()->getParent()->getName()),
                                                               this, imageSize, false, 0, true);
                         }
 

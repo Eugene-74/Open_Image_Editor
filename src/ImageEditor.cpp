@@ -707,7 +707,7 @@ MainImage* ImageEditor::createImageLabel() {
         imageData->status = ImageData::Status::Loading;
         QImage image = data->imageCache->at(currentImagePath).image;
 
-        image = data->rotateQImage(image, currentImagePath);
+        image = data->rotateQImage(image, imageData);
 
         QPointer<ImageEditor> self = this;
         Data* dataPtr = data;

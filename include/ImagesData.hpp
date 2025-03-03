@@ -9,15 +9,14 @@
 
 class ImagesData {
     // TODO netoyer
+   private:
+    int imageNumber = 0;
+    std::unordered_map<std::string, ImageData*> imageMap;
+
    public:
     std::vector<ImageData> imagesData;
     std::vector<ImageData*> currentImagesData;
 
-    std::unordered_map<std::string, ImageData*> imageMap;
-
-    int imageNumber = 0;
-
-    // private:
     ImagesData()
         : imageNumber(0) {}
 

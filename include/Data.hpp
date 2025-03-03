@@ -101,7 +101,6 @@ class Data {
     void saveData();
     void loadData();
 
-    void cancelTasks();
     bool isDeleted(int imageNbr);
 
     void addAction(std::function<void()> unDo, std::function<void()> reDo);
@@ -111,6 +110,7 @@ class Data {
     void reDoAction();
 
     void sortImagesData(QProgressDialog& progressDialog);
+    void sortCurrentImagesData();
 
     void rotateLeft(int nbr, std::string extension, std::function<void()> reload, bool action = true);
     void rotateRight(int nbr, std::string extension, std::function<void()> reload, bool action = true);
@@ -125,7 +125,7 @@ class Data {
     void realMirror(int nbr, bool UpDown, std::function<void()> reload);
 
     void clearActions();
-    QImage rotateQImage(QImage image, std::string imagePath);
+    QImage rotateQImage(QImage image, ImageData* imageData);
 
     Folders* getRootFolders();
     Folders* getCurrentFolders();

@@ -74,9 +74,8 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
                        bool square, bool crop, bool force) {
     QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail, force);
 
+    ImageData* imageData = imagesData.getImageData(imagePath);
     if (crop) {
-        ImageData* imageData = imagesData.getImageData(imagePath);
-
         if (imageData != nullptr) {
             if (!imageData->cropSizes.empty()) {
                 std::vector<QPoint> cropPoints = imageData->cropSizes.back();
@@ -106,11 +105,9 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     }
 
     if (rotation && imagePath.at(0) != ':') {
-        // TODO pas ouf ça
-        std::string extension = imagesData.getCurrentImageData()->getImageExtension();
+        std::string extension = imageData->getImageExtension();
         if (isExifTurnOrMirror(extension)) {
-            // TODO change imagePath to imageData
-            image = rotateQImage(image, imagePath);
+            image = rotateQImage(image, imageData);
         }
     }
 
@@ -499,14 +496,10 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
     }
 }
 
-QImage Data::rotateQImage(QImage image, std::string imagePath) {
-    ImageData* imageData = imagesData.getImageData(imagePath);
-
-    // ImageData* imageData = imagesData.getCurrentImageData();
-
+QImage Data::rotateQImage(QImage image, ImageData* imageData) {
     if (imageData != nullptr) {
         int orientation = imageData->orientation;
-        qDebug() << "rotateQImage : " << orientation << " : " << imagePath;
+        // qDebug() << "rotateQImage : " << orientation << " : " << imagePath;
 
         switch (orientation) {
             case Const::Orientation::FLIP_HORIZONTAL:
@@ -669,7 +662,6 @@ void Data::loadData() {
     }
     rootFolders.load(inFile);
 
-    // TODO save currentFolder
     // Load the path of currentFolder
     size_t pathSize;
     inFile.read(reinterpret_cast<char*>(&pathSize), sizeof(pathSize));
@@ -679,11 +671,6 @@ void Data::loadData() {
     qDebug() << "currentFolder : " << currentFolderPath;
 
     inFile.close();
-}
-
-void Data::cancelTasks() {
-    // TODO handle
-    // qThreadPool->clear();
 }
 
 void Data::addAction(std::function<void()> unDo, std::function<void()> reDo) {
@@ -704,20 +691,29 @@ void Data::addActionDone(Actions action) {
 }
 
 void Data::reDoAction() {
-    if (lastActionsDone.size() > 0) {
-        auto action = lastActionsDone.back();
-        addAction(action.unDo, action.reDo);
-        lastActionsDone.pop_back();
-        action.reDo();
+    try {
+        if (lastActionsDone.size() > 0) {
+            auto action = lastActionsDone.back();
+            addAction(action.unDo, action.reDo);
+            lastActionsDone.pop_back();
+            action.reDo();
+        }
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
     }
 }
 
 void Data::unDoAction() {
-    if (lastActions.size() > 0) {
-        auto action = lastActions.back();
-        addActionDone(action);
-        lastActions.pop_back();
-        action.unDo();
+    try {
+        if (lastActions.size() > 0) {
+            auto action = lastActions.back();
+            addActionDone(action);
+            lastActions.pop_back();
+            action.unDo();
+        }
+
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
     }
 }
 
@@ -755,9 +751,31 @@ void Data::sortImagesData(QProgressDialog& progressDialog) {
 
         return a.date > b.date;
     });
-    for (auto& imageData : *imagesData.get()) {
-        imageData.metaData.clear();
-    }
+}
+
+void Data::sortCurrentImagesData() {
+    // TODO faire marcher
+    // QProgressDialog progressDialog = QProgressDialog(nullptr);
+    // progressDialog.setWindowModality(Qt::ApplicationModal);
+    // int progress = 0;
+
+    // progressDialog.setLabelText("Sorting ...");
+    // progressDialog.setValue(0);
+    // int n = imagesData.get()->size();
+    // // TODO mieux estimer X( estimatedSteps
+    // int estimatedSteps = static_cast<int>(n * std::log(n) * 3);
+    // progressDialog.setMaximum(estimatedSteps);
+    // progressDialog.show();
+    // QApplication::processEvents();
+
+    // auto& data = *imagesData.getCurrent();
+    // std::sort(data.begin(), data.end(), [&progress, &progressDialog](const ImageData& a, const ImageData& b) {
+    //     progress++;
+    //     progressDialog.setValue(progress);
+    //     QApplication::processEvents();
+
+    //     return a.date > b.date;
+    // });
 }
 
 void Data::clearCache() {
@@ -903,9 +921,8 @@ void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
 }
 
 void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
-    qDebug() << "Exif rotate :" << nbr;
+    // qDebug() << "Exif rotate :" << nbr;
     ImageData* imageData = imagesData.getImageData(nbr);
-    // TODO ERROR WITH MIRROR
     if (!isTurnable(imageData->getImagePath())) {
         qWarning() << "Image not turnable : " << imageData->getImagePath();
         return;
@@ -973,7 +990,7 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
                 break;
         }
     }
-    qDebug() << "Exif rotate orientation :" << orientation;
+    // qDebug() << "Exif rotate orientation :" << orientation;
     imageData->turnImage(orientation);
 
     imageData->saveMetaData();

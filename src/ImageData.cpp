@@ -92,8 +92,6 @@ void ImageData::loadData() {
     try {
         if (!metaData.dataLoaded) {
             metaData.loadData(getImagePath());
-            qDebug() << "Load data for image: " << getImagePath();
-            displayData(metaData);
             orientation = metaData.getImageOrientation();
             date = metaData.getTimestamp();
 
@@ -124,7 +122,7 @@ int ImageData::getImageOrientation() {
 }
 
 void ImageData::turnImage(int rotation) {
-    qDebug() << "Turn image from  : " << orientation << " to " << rotation;
+    // qDebug() << "Turn image from  : " << orientation << " to " << rotation;
     this->orientation = rotation;
     metaData.modifyExifValue("Exif.Image.Orientation", std::to_string(rotation));
     // metaData.modifyExifValue("Exif.Thumbnail.Orientation", std::to_string(rotation));

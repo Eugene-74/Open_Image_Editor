@@ -12,6 +12,8 @@
 namespace fs = std::filesystem;
 
 class ImageData {
+    // TODO netoyer
+
    public:
     enum class Status {
         NotLoaded,

@@ -39,8 +39,8 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
 
     auto images = data->getImagesData()->get();
 
+    // ensure that it's well loaded
     data->saveData();
-    // TODO essayer de faire sans X()
     data->loadData();
 }
 
@@ -247,63 +247,8 @@ std::map<std::string, std::string> openJsonFile(std::string filePath) {
 // }
 
 bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog) {
-    // progressDialog.setMaximum(imagesData.get()->size());
-    // try {
-    //     for (int i = 0; i < imagesData.get()->size(); ++i) {
-    //         // TODO not working for now
-    //         if (progressDialog.wasCanceled()) {
-    //             return false;
-    //         }
-    //         ImageData* imageData = imagesData->getImageData(i);
-    //         std::string jsonFilePath = imageData->getImagePath() + ".json";
-
-    //         if (fs::exists(jsonFilePath)) {
-    //             qDebug() << "json found : " << jsonFilePath.c_str();
-    //             std::map<std::string, std::string> jsonMap = openJsonFile(jsonFilePath);
-
-    //             for (const auto& [key, value] : jsonMap) {
-    //                 if (!key.empty() && !value.empty()) {
-    //                     std::string exifKey = mapJsonKeyToExifKey(key);
-    //                     if (exifKey != "") {
-    //                         imageData->metaData.modifyExifValue(exifKey, value);
-    //                     }
-    //                 }
-    //             }
-    //             imageData->saveMetaData();
-    //         } else {
-    //             // displayExifData(imageData->metaData.exifMetaData);
-    //         }
-    //         progressDialog.setValue(i);
-    //         QApplication::processEvents();
-    //     }
-    //     return true;
-    // } catch (const std::exception& e) {
-    //     qDebug() << e.what();
-    //     return false;
-    // }
+    // TODO laod persons
     return true;
-}
-
-std::string mapJsonKeyToExifKey(const std::string& jsonKey) {
-    static const std::map<std::string, std::string> keyMap = {
-        // TODO mettre tous les nécessaires
-        {"description", "Exif.Image.ImageDescription"},
-        {"photoTakenTime.timestamp", "Exif.Photo.DateTimeOriginal"},
-        {"geoData.latitude", "Exif.GPSInfo.GPSLatitude"},
-        {"geoData.longitude", "Exif.GPSInfo.GPSLongitude"},
-        {"geoData.altitude", "Exif.GPSInfo.GPSAltitude"},
-        {"googlePhotosOrigin.mobileUpload.deviceModel", "Exif.Image.Model"},
-        {"googlePhotosOrigin.mobileUpload.deviceType", "Exif.Image.Make"},
-        {"googlePhotosOrigin.mobileUpload.deviceSoftwareVersion", "Exif.Image.Software"}};
-
-    std::string lowerJsonKey = jsonKey;
-    std::transform(lowerJsonKey.begin(), lowerJsonKey.end(), lowerJsonKey.begin(), ::tolower);
-
-    auto it = keyMap.find(lowerJsonKey);
-    if (it != keyMap.end()) {
-        return it->second;
-    }
-    return "";
 }
 
 bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog) {
