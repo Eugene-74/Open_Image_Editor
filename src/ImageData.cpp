@@ -26,7 +26,7 @@ std::string ImageData::get() const {
     return name;
 }
 
-MetaData* ImageData::getMetaData() {
+MetaData* ImageData::getMetaDataPtr() {
     return &metaData;
 }
 
@@ -37,6 +37,7 @@ MetaData ImageData::getMetaData() const {
 std::vector<Folders> ImageData::getFolders() {
     return *folders.getFolders();
 }
+
 
 void ImageData::addFolder(const std::string& toAddFolder) {
     folders.addFolder(toAddFolder);
@@ -147,7 +148,7 @@ void ImageData::save(std::ofstream& out) const {
         out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
     }
 
-    out.write(reinterpret_cast<const char*>(&status), sizeof(status));
+    out.write(reinterpret_cast<const char*>(&personStatus), sizeof(personStatus));
 
     size_t personsSize = persons.size();
     out.write(reinterpret_cast<const char*>(&personsSize), sizeof(personsSize));
@@ -173,10 +174,10 @@ void ImageData::load(std::ifstream& in) {
             in.read(reinterpret_cast<char*>(cropSizes[i].data()), innerSize * sizeof(QPoint));
         }
     }
-    in.read(reinterpret_cast<char*>(&status), sizeof(status));
+    in.read(reinterpret_cast<char*>(&personStatus), sizeof(personStatus));
     // TODO mettre autre part
-    if (status == Status::Loading) {
-        status = Status::NotLoaded;
+    if (this->isPersonStatusLoading()) {
+        this->setPersonStatusNotLoaded();
     }
 
     size_t personsSize;
@@ -198,4 +199,47 @@ void ImageData::setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes) 
 void ImageData::clearMetaData() {
     metaData.clear();
     metaData.dataLoaded = false;
+}
+
+ImageData::PersonStatus ImageData::getPersonStatus() const {
+    return personStatus;
+}
+
+ImageData::PersonStatus ImageData::setPersonStatus(PersonStatus personStatus) {
+    return personStatus;
+}
+
+void ImageData::setPersonStatusLoading() {
+    this->setPersonStatus(PersonStatus::Loading);
+}
+void ImageData::setPersonStatusNotLoaded() {
+    this->setPersonStatus(PersonStatus::NotLoaded);
+}
+
+void ImageData::setPersonStatusLoaded() {
+    this->setPersonStatus(PersonStatus::Loaded);
+}
+
+bool ImageData::isPersonStatusLoading() {
+    return personStatus == PersonStatus::Loading;
+}
+
+bool ImageData::isPersonStatusNotLoaded() {
+    return personStatus == ImageData::PersonStatus::NotLoaded;
+}
+
+bool ImageData::isPersonStatusLoaded() {
+    return personStatus == ImageData::PersonStatus::Loaded;
+}
+
+void ImageData::setMetaData(const MetaData& metaData) {
+    this->metaData = metaData;
+}
+
+std::vector<Person> ImageData::getpersons() const {
+    return persons;
+}
+
+void ImageData::setpersons(const std::vector<Person>& persons) {
+    this->persons = persons;
 }

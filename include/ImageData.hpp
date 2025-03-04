@@ -13,28 +13,42 @@ namespace fs = std::filesystem;
 
 class ImageData {
     // TODO netoyer
-
-   public:
-    enum class Status {
+   private:
+    enum class PersonStatus {
         NotLoaded,
         Loading,
         Loaded
     };
-    Folders folders;
+    PersonStatus personStatus = PersonStatus::NotLoaded;
     MetaData metaData;
+
+    Folders folders;
+
     std::vector<std::vector<QPoint>> cropSizes;
+
+   public:
     std::vector<Person> persons;
-    Status status = Status::NotLoaded;
+    std::vector<Person> getpersons() const;
+    void setpersons(const std::vector<Person>& persons);
+
+    PersonStatus getPersonStatus() const;
+    PersonStatus setPersonStatus(PersonStatus personStatus);
+    void setPersonStatusLoading();
+    void setPersonStatusNotLoaded();
+    void setPersonStatusLoaded();
+    bool isPersonStatusLoading();
+    bool isPersonStatusNotLoaded();
+    bool isPersonStatusLoaded();
 
     int orientation = Const::Orientation::UNDEFINED;
     long date = 0;
 
     ImageData()
-        : folders(Folders()), metaData(MetaData()), cropSizes(), orientation(), date(), persons(), status() {}
+        : folders(Folders()), metaData(MetaData()), cropSizes(), orientation(), date(), persons(), personStatus() {}
 
     // !! necessaire sinon push_back ne fonctionne pas
     ImageData(const ImageData& other)
-        : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), persons(other.persons), status(other.status) {
+        : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), persons(other.persons), personStatus(other.personStatus) {
     }
 
     ImageData(const Folders c)
@@ -47,8 +61,9 @@ class ImageData {
 
     std::string get() const;
 
-    MetaData* getMetaData();
+    MetaData* getMetaDataPtr();
     MetaData getMetaData() const;
+    void setMetaData(const MetaData& metaData);
 
     std::vector<Folders> getFolders();
 
@@ -80,14 +95,13 @@ class ImageData {
     void turnImage(int rotation);
 
     void save(std::ofstream& out) const;
-
     void load(std::ifstream& in);
 
     void setOrCreateExifData();
 
     std::vector<std::vector<QPoint>> getCropSizes() const;
-
     void setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes);
+
     void clearMetaData();
 
    private:

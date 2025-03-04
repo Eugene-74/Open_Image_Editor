@@ -324,8 +324,8 @@ void ImageEditor::updateButtons() {
     }
 
     if (imagePersons) {
-        if (data->imagesData.getCurrentImageData()->status == ImageData::Status::Loaded) {
-            imagePersons->setLogoNumber(data->imagesData.getCurrentImageData()->persons.size());
+        if (data->imagesData.getCurrentImageData()->isPersonStatusLoaded()) {
+            imagePersons->setLogoNumber(data->imagesData.getCurrentImageData()->getpersons().size());
         } else {
             imagePersons->setLogoNumber(-1);
         }
@@ -607,8 +607,8 @@ ClickableLabel* ImageEditor::createImagePersons() {
     imagePersonsNew->setInitialBackground("transparent", "#b3b3b3");
     imagePersonsNew->addLogo("#700c13", "#ffffff");
 
-    if (data->imagesData.getCurrentImageData()->status == ImageData::Status::Loaded) {
-        imagePersonsNew->setLogoNumber(data->imagesData.getCurrentImageData()->persons.size());
+    if (data->imagesData.getCurrentImageData()->isPersonStatusLoaded()) {
+        imagePersonsNew->setLogoNumber(data->imagesData.getCurrentImageData()->getpersons().size());
     } else {
         imagePersonsNew->setLogoNumber(-1);
     }
@@ -703,8 +703,8 @@ MainImage* ImageEditor::createImageLabel() {
     }
 
     int imageNbr = data->imagesData.getImageNumber();
-    if (imageData->status == ImageData::Status::NotLoaded && imageData->persons.empty()) {
-        imageData->status = ImageData::Status::Loading;
+    if (imageData->isPersonStatusNotLoaded() && imageData->getpersons().empty()) {
+        imageData->setPersonStatusLoading();
         qDebug() << "starting face recognition";
         QImage image = data->imageCache->at(currentImagePath).image;
 
@@ -717,9 +717,9 @@ MainImage* ImageEditor::createImageLabel() {
             // TODO reusir a faire un ptr avec Data (ne marche pas)
             if (!self.isNull()) {
                 ImageData* imageData = self->data->imagesData.getImageData(imageNbrIntotal);
-                imageData->status = ImageData::Status::Loaded;
+                imageData->setPersonStatusLoaded();
                 if (imageData) {
-                    imageData->persons = persons;
+                    imageData->setpersons(persons);
                 }
                 if (self->data->imagesData.getImageNumber() == imageNbr) {
                     if (self->imagePersons) {
@@ -735,8 +735,8 @@ MainImage* ImageEditor::createImageLabel() {
             }
         });
     } else {
-        qDebug() << static_cast<int>(imageData->status);
-        qDebug() << "l'image a deja ete charger : " << imageData->persons.size();
+        qDebug() << static_cast<int>(imageData->getPersonStatus());
+        qDebug() << "l'image a deja ete charger : " << imageData->getpersons().size();
     }
 
     connect(imageLabelNew, &MainImage::leftClicked, [this]() {
@@ -1048,7 +1048,7 @@ void ImageEditor::deleteImage() {
 void ImageEditor::populateMetadataFields() {
     ImagesData* imagesData = &data->imagesData;
     ImageData* imageData = imagesData->getCurrentImageData();
-    Exiv2::ExifData exifData = imageData->getMetaData()->getExifData();
+    Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
 
     nameEdit->clear();
     dateEdit->setDateTime(QDateTime::currentDateTime());
@@ -1075,7 +1075,7 @@ void ImageEditor::populateMetadataFields() {
 void ImageEditor::validateMetadata() {
     ImagesData* imagesData = &data->imagesData;
     ImageData* imageData = imagesData->getCurrentImageData();
-    MetaData* metaData = imageData->getMetaData();
+    MetaData* metaData = imageData->getMetaDataPtr();
 
     QString dateTimeStr = dateEdit->dateTime().toString("yyyy:MM:dd HH:mm:ss");
     metaData->modifyExifValue("Exif.Image.DateTime", dateTimeStr.toStdString());

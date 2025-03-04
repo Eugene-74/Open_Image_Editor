@@ -179,7 +179,9 @@ void MainImage::cropImage() {
 
         std::vector<QPoint> adjustedCropPoints = adjustPointsForOrientation(cropPoints, orientation, qImageReel.size());
 
-        data->imagesData.getCurrentImageData()->cropSizes.push_back(adjustedCropPoints);
+        std::vector<std::vector<QPoint>> cropSizes = data->imagesData.getCurrentImageData()->getCropSizes();
+        cropSizes.push_back(adjustedCropPoints);
+        data->imagesData.getCurrentImageData()->setCropSizes(cropSizes);
 
         int nbr = data->getImagesData()->getImageNumber();
 
@@ -236,7 +238,7 @@ void MainImage::paintEvent(QPaintEvent* event) {
         painter.setPen(Qt::DashLine);
         painter.drawRect(QRect(cropStart, cropEnd));
     }
-    if (personsEditor && !data->imagesData.getCurrentImageData()->persons.empty()) {
+    if (personsEditor && !data->imagesData.getCurrentImageData()->getpersons().empty()) {
         painter.setPen(QPen(Qt::blue, 2));
 
         QSize scaledSize = qImage.size();
@@ -247,7 +249,7 @@ void MainImage::paintEvent(QPaintEvent* event) {
 
         int xOffset = (this->width() - scaledSize.width()) / 2;
         int yOffset = (this->height() - scaledSize.height()) / 2;
-
+        // TODO utilise getPersons mais ça marche pas
         for (const auto& person : data->imagesData.getCurrentImageData()->persons) {
             cv::Rect face = person.getFace();
             int x = static_cast<int>(face.x * xScale) + xOffset;

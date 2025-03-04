@@ -77,8 +77,8 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     ImageData* imageData = imagesData.getImageData(imagePath);
     if (crop) {
         if (imageData != nullptr) {
-            if (!imageData->cropSizes.empty()) {
-                std::vector<QPoint> cropPoints = imageData->cropSizes.back();
+            if (!imageData->getCropSizes().empty()) {
+                std::vector<QPoint> cropPoints = imageData->getCropSizes().back();
 
                 if (cropPoints.size() == 2) {
                     QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
@@ -420,7 +420,7 @@ Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const 
     }
     for (const auto& folder : currentFolder.folders) {
         for (ImageData imageData : imagesData.imagesData) {
-            for (Folders folderBis : imageData.folders.folders) {
+            for (Folders folderBis : imageData.getFolders()) {
                 if (folderBis.name == folder.name) {
                     return const_cast<Folders*>(&currentFolder);
                 }
@@ -442,8 +442,8 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
     int progress = 0;
 
     for (auto& imageData : imagesData.imagesData) {
-        for (auto& folder : imageData.folders.folders) {
-            std::string fileName = fs::path(imageData.folders.name).filename().string();
+        for (auto& folder : imageData.getFolders()) {
+            std::string fileName = fs::path(imageData.getImagePath()).filename().string();
 
             std::string folderName = folder.name;
 
@@ -456,7 +456,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
 
             if (dateInName) {
                 imageData.loadData();
-                Exiv2::ExifData exifData = imageData.getMetaData()->getExifData();
+                Exiv2::ExifData exifData = imageData.getMetaDataPtr()->getExifData();
                 if (exifData["Exif.Image.DateTime"].count() != 0) {
                     std::string date = exifData["Exif.Image.DateTime"].toString();
                     std::replace(date.begin(), date.end(), ':', '-');
@@ -468,10 +468,10 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
             } else {
                 destinationFile = destinationPath + "/" + folderName + "/" + fileName;
             }
-            if (!imageData.cropSizes.empty()) {
-                QImage image(QString::fromStdString(imageData.folders.name));
+            if (!imageData.getCropSizes().empty()) {
+                QImage image(QString::fromStdString(imageData.getImagePath()));
                 if (!image.isNull()) {
-                    std::vector<QPoint> cropPoints = imageData.cropSizes.back();
+                    std::vector<QPoint> cropPoints = imageData.getCropSizes().back();
                     if (cropPoints.size() == 2) {
                         QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
                         image = image.copy(cropRect);
@@ -479,7 +479,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
                 }
                 image.save(QString::fromStdString(destinationFile));
 
-                Exiv2::Image::AutoPtr srcImage = Exiv2::ImageFactory::open(imageData.folders.name);
+                Exiv2::Image::AutoPtr srcImage = Exiv2::ImageFactory::open(imageData.getImagePath());
                 srcImage->readMetadata();
                 Exiv2::Image::AutoPtr destImage = Exiv2::ImageFactory::open(destinationFile);
                 destImage->setExifData(srcImage->exifData());
@@ -487,7 +487,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
                 destImage->setXmpData(srcImage->xmpData());
                 destImage->writeMetadata();
             } else {
-                QFile::copy(QString::fromStdString(imageData.folders.name), QString::fromStdString(destinationFile));
+                QFile::copy(QString::fromStdString(imageData.getImagePath()), QString::fromStdString(destinationFile));
             }
             if (progressDialog.wasCanceled()) {
                 return;
