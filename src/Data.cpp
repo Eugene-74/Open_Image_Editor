@@ -601,9 +601,9 @@ void Data::saveData() {
     rootFolders.save(outFile);
 
     // Save the path of currentFolder
-    qDebug() << "currentFolder : " << currentFolder->getName();
+    // qDebug() << "currentFolder : " << currentFolder->getName();
     std::string currentFolderPath = getFolderPath(currentFolder);
-    qDebug() << "currentFolderPath : " << currentFolderPath;
+    // qDebug() << "currentFolderPath : " << currentFolderPath;
     size_t pathSize = currentFolderPath.size();
     outFile.write(reinterpret_cast<const char*>(&pathSize), sizeof(pathSize));
     outFile.write(currentFolderPath.c_str(), pathSize);

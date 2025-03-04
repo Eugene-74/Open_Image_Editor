@@ -705,22 +705,22 @@ MainImage* ImageEditor::createImageLabel() {
     int imageNbr = data->imagesData.getImageNumber();
     if (imageData->status == ImageData::Status::NotLoaded && imageData->persons.empty()) {
         imageData->status = ImageData::Status::Loading;
+        qDebug() << "starting face recognition";
         QImage image = data->imageCache->at(currentImagePath).image;
 
         image = data->rotateQImage(image, imageData);
 
         QPointer<ImageEditor> self = this;
-        Data* dataPtr = data;
         int imageNbrIntotal = data->getImagesData()->getImageNumberInTotal(imageNbr);
 
-        detectFacesAsync(currentImagePath, image, [self, dataPtr, imageNbr, imageNbrIntotal](std::vector<Person> persons) {
-            ImageData* imageData = dataPtr->imagesData.getImageData(imageNbrIntotal);
-            imageData->status = ImageData::Status::Loaded;
-            if (imageData) {
-                imageData->persons = persons;
-            }
-
+        detectFacesAsync(currentImagePath, image, [self, imageNbr, imageNbrIntotal](std::vector<Person> persons) {
+            // TODO reusir a faire un ptr avec Data (ne marche pas)
             if (!self.isNull()) {
+                ImageData* imageData = self->data->imagesData.getImageData(imageNbrIntotal);
+                imageData->status = ImageData::Status::Loaded;
+                if (imageData) {
+                    imageData->persons = persons;
+                }
                 if (self->data->imagesData.getImageNumber() == imageNbr) {
                     if (self->imagePersons) {
                         self->imagePersons->setLogoNumber(persons.size());
@@ -734,6 +734,9 @@ MainImage* ImageEditor::createImageLabel() {
                 }
             }
         });
+    } else {
+        qDebug() << static_cast<int>(imageData->status);
+        qDebug() << "l'image a deja ete charger : " << imageData->persons.size();
     }
 
     connect(imageLabelNew, &MainImage::leftClicked, [this]() {

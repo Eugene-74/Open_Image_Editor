@@ -28,7 +28,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
             if (imageData == nullptr) {
                 qDebug() << "imageData is null";
             } else {
-                data->getImagesData()->getCurrent()->push_back(&*imageData);
+                data->getImagesData()->getCurrent()->push_back(imageData);
             }
         }
     }
