@@ -73,7 +73,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     data->rootFolders = Folders("");
 
-    data->imagesData = ImagesData(std::vector<ImageData>{});
+    data->imagesData = ImagesData(std::vector<ImageData*>{});
 
     qDebug() << "adding to tree: " << data->getRootFolders()->getFolders()->size();
 
@@ -85,7 +85,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     QApplication::processEvents();
 
     // TODO cancel marche pas (le faire marcher)
-    ImagesData* imagesData = new ImagesData(std::vector<ImageData>{});
+    ImagesData* imagesData = new ImagesData(std::vector<ImageData*>{});
     if (!addFilesToTree(&data->rootFolders, imagesData, imagePaths, nbrImage, progressDialog)) {
         return false;
     }
@@ -287,11 +287,11 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
                 Folders folders = Folders(entry.path().string());
                 rootFolder.addFile(entry.path().string());
                 folders.addFolder(fs::absolute(entry.path()).parent_path().string());
-                ImageData imageData(folders);
-                imageData.loadData();
-                imageData.clearMetaData();
+                ImageData* imageData = new ImageData(folders);
+                imageData->loadData();
+                imageData->clearMetaData();
 
-                imagesData->addImage(imageData);
+                imagesData->get()->push_back(imageData);
 
                 nbrImage += 1;
                 progressDialog.setLabelText(QString("Scaning for images : %1").arg(nbrImage));

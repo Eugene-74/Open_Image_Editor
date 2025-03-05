@@ -47,10 +47,10 @@ int ImagesData::getImageNumberInCurrent(int imageNbrInTotal) {
 }
 
 void ImagesData::print() const {
-    qDebug() << "ImagesData : \n";
-    for (const ImageData valeur : imagesData) {
-        qDebug() << valeur.get();
-    }
+    // qDebug() << "ImagesData : \n";
+    // for (const ImageData valeur : imagesData) {
+    //     qDebug() << valeur.get();
+    // }
 }
 
 void ImagesData::addImage(ImageData& imageD) {
@@ -65,7 +65,7 @@ void ImagesData::addImage(ImageData& imageD) {
     // imageD.addFolders(lastImageD.getFolders());
     // imageD.setCropSizes(lastImageD.getCropSizes());
 
-    imagesData.push_back(imageD);
+    imagesData.push_back(&imageD);
     // } else {
     //     imagesData.push_back(imageD);
     //     for (const auto& crop : imageD.getCropSizes()) {
@@ -77,7 +77,10 @@ void ImagesData::addImage(ImageData& imageD) {
 }
 
 void ImagesData::removeImage(const ImageData& image) {
-    auto foundImageData = std::find(imagesData.begin(), imagesData.end(), image);
+    auto foundImageData = std::find_if(imagesData.begin(), imagesData.end(),
+                                       [&image](ImageData* imgPtr) {
+                                           return *imgPtr == image;
+                                       });
 
     if (foundImageData != imagesData.end()) {
         imagesData.erase(foundImageData);
@@ -88,7 +91,7 @@ ImageData* ImagesData::getImageData(int id) {
     if (id < 0 || id >= imagesData.size()) {
         throw std::out_of_range("getImageData :: Index hors limites" + std::to_string(id));
     }
-    return &imagesData.at(id);
+    return imagesData.at(id);
 }
 
 ImageData* ImagesData::getImageDataInCurrent(int id) {
@@ -99,11 +102,15 @@ ImageData* ImagesData::getImageDataInCurrent(int id) {
 }
 
 ImageData* ImagesData::getImageData(std::string imagePath) {
+    qDebug() << "getImageData : " << imageMap.size();
     auto foundImageData = imageMap.find(imagePath);
 
     if (foundImageData != imageMap.end()) {
+        qDebug() << "foundImageData : " << imagePath.c_str();
         return foundImageData->second;
     }
+    qDebug() << "not foundImageData : " << imagePath.c_str();
+
     return nullptr;
 }
 
@@ -114,11 +121,11 @@ ImageData* ImagesData::getCurrentImageData() {
 
     return currentImagesData.at(imageNumber);
 }
-std::vector<ImageData>* ImagesData::get() {
+std::vector<ImageData*>* ImagesData::get() {
     return &imagesData;
 }
 
-std::vector<ImageData> ImagesData::getConst() const {
+std::vector<ImageData*> ImagesData::getConst() const {
     return imagesData;
 }
 
@@ -128,8 +135,8 @@ std::vector<ImageData*>* ImagesData::getCurrent() {
 
 int ImagesData::getImageDataIdInCurrent(std::string imagePath) {
     auto foundImageData = std::find_if(currentImagesData.begin(), currentImagesData.end(),
-                                       [&imagePath](const ImageData* imgD) {
-                                           return imgD->getImagePathConst() == imagePath;
+                                       [&imagePath](ImageData* imgPtr) {
+                                           return imgPtr->getImagePathConst() == imagePath;
                                        });
 
     if (foundImageData != currentImagesData.end()) {
@@ -141,8 +148,8 @@ int ImagesData::getImageDataIdInCurrent(std::string imagePath) {
 
 int ImagesData::getImageDataId(std::string imagePath) {
     auto foundImageData = std::find_if(imagesData.begin(), imagesData.end(),
-                                       [&imagePath](const ImageData& imgD) {
-                                           return imgD.getImagePathConst() == imagePath;
+                                       [&imagePath](ImageData* imgPtr) {
+                                           return imgPtr->getImagePathConst() == imagePath;
                                        });
 
     if (foundImageData != imagesData.end()) {
@@ -157,5 +164,6 @@ std::unordered_map<std::string, ImageData*>* ImagesData::getImageMap() {
 }
 
 void ImagesData::setImageMapValue(std::string imagePath, ImageData* imageData) {
+    // qDebug() << "setImageMapValue : " << imagePath.c_str();
     imageMap[imagePath] = imageData;
 }

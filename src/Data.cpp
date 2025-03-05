@@ -40,9 +40,9 @@ void Data::removeDeletedImages() {
         auto it = std::find(imagesData.get()->begin(), imagesData.get()->end(),
                             deletedImage);
 
-        removeImageFromFolders(*it);
+        removeImageFromFolders(**it);
 
-        auto itPtr = std::find(imagesData.getCurrent()->begin(), imagesData.getCurrent()->end(), &(*it));
+        auto itPtr = std::find(imagesData.getCurrent()->begin(), imagesData.getCurrent()->end(), *it);
         if (itPtr != imagesData.getCurrent()->end()) {
             qInfo() << "remove image from currentImagesData";
             imagesData.getCurrent()->erase(itPtr);
@@ -56,8 +56,8 @@ bool Data::isDeleted(int imageNbr) {
     std::string imagePath = imagesData.getImageData(imageNbr)->getImagePathConst();
     auto it = std::find_if(deletedImagesData.get()->begin(),
                            deletedImagesData.get()->end(),
-                           [imagePath, this](const ImageData img) {
-                               return img.getImagePathConst() == imagePath;
+                           [imagePath, this](ImageData* imgPtr) {
+                               return imgPtr->getImagePathConst() == imagePath;
                            });
 
     if (it != deletedImagesData.get()->end()) {
@@ -419,12 +419,15 @@ Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const 
         return const_cast<Folders*>(&currentFolder);
     }
     for (const auto& folder : currentFolder.folders) {
-        for (ImageData imageData : imagesData.getConst()) {
-            for (Folders folderBis : imageData.getFolders()) {
-                if (folderBis.getName() == folder.getName()) {
-                    return const_cast<Folders*>(&currentFolder);
-                }
-            }
+        // for (ImageData* imageData : imagesData.getConst()) {
+        //     for (Folders folderBis : imageData->getFolders()) {
+        //         if (folderBis.getName() == folder.getName()) {
+        //             return const_cast<Folders*>(&currentFolder);
+        //         }
+        //     }
+        // }
+        if (folder.getFilesConst().size() > 0) {
+            return const_cast<Folders*>(&folder);
         }
         return findFirstFolderWithAllImages(imagesData, folder);
     }
@@ -441,9 +444,9 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
 
     int progress = 0;
 
-    for (auto& imageData : imagesData.getConst()) {
-        for (auto& folder : imageData.getFolders()) {
-            std::string fileName = fs::path(imageData.getImagePath()).filename().string();
+    for (auto* imageData : imagesData.getConst()) {
+        for (auto& folder : imageData->getFolders()) {
+            std::string fileName = fs::path(imageData->getImagePath()).filename().string();
 
             std::string folderName = folder.getName();
 
@@ -455,8 +458,8 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
             std::string destinationFile;
 
             if (dateInName) {
-                imageData.loadData();
-                Exiv2::ExifData exifData = imageData.getMetaDataPtr()->getExifData();
+                imageData->loadData();
+                Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
                 if (exifData["Exif.Image.DateTime"].count() != 0) {
                     std::string date = exifData["Exif.Image.DateTime"].toString();
                     std::replace(date.begin(), date.end(), ':', '-');
@@ -468,10 +471,10 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
             } else {
                 destinationFile = destinationPath + "/" + folderName + "/" + fileName;
             }
-            if (!imageData.getCropSizes().empty()) {
-                QImage image(QString::fromStdString(imageData.getImagePath()));
+            if (!imageData->getCropSizes().empty()) {
+                QImage image(QString::fromStdString(imageData->getImagePath()));
                 if (!image.isNull()) {
-                    std::vector<QPoint> cropPoints = imageData.getCropSizes().back();
+                    std::vector<QPoint> cropPoints = imageData->getCropSizes().back();
                     if (cropPoints.size() == 2) {
                         QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
                         image = image.copy(cropRect);
@@ -479,7 +482,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
                 }
                 image.save(QString::fromStdString(destinationFile));
 
-                Exiv2::Image::AutoPtr srcImage = Exiv2::ImageFactory::open(imageData.getImagePath());
+                Exiv2::Image::AutoPtr srcImage = Exiv2::ImageFactory::open(imageData->getImagePath());
                 srcImage->readMetadata();
                 Exiv2::Image::AutoPtr destImage = Exiv2::ImageFactory::open(destinationFile);
                 destImage->setExifData(srcImage->exifData());
@@ -487,7 +490,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
                 destImage->setXmpData(srcImage->xmpData());
                 destImage->writeMetadata();
             } else {
-                QFile::copy(QString::fromStdString(imageData.getImagePath()), QString::fromStdString(destinationFile));
+                QFile::copy(QString::fromStdString(imageData->getImagePath()), QString::fromStdString(destinationFile));
             }
             if (progressDialog.wasCanceled()) {
                 return;
@@ -568,17 +571,15 @@ void Data::saveData() {
     }
 
     size_t imagesDataSize = imagesData.get()->size();
-    outFile.write(reinterpret_cast<const char*>(&imagesDataSize),
-                  sizeof(imagesDataSize));
-    for (const auto& imageData : *imagesData.get()) {
-        imageData.save(outFile);
+    outFile.write(reinterpret_cast<const char*>(&imagesDataSize), sizeof(imagesDataSize));
+    for (const auto* imageData : *imagesData.get()) {
+        imageData->save(outFile);
     }
 
     size_t deletedImagesDataSize = deletedImagesData.get()->size();
-    outFile.write(reinterpret_cast<const char*>(&deletedImagesDataSize),
-                  sizeof(deletedImagesDataSize));
-    for (const auto& imageData : *deletedImagesData.get()) {
-        imageData.save(outFile);
+    outFile.write(reinterpret_cast<const char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
+    for (const auto* imageData : *deletedImagesData.get()) {
+        imageData->save(outFile);
     }
 
     size_t optionsSize = options.size();
@@ -609,6 +610,7 @@ void Data::saveData() {
     outFile.write(currentFolderPath.c_str(), pathSize);
 
     outFile.close();
+    qDebug() << "data saved";
 }
 
 void Data::loadData() {
@@ -622,24 +624,22 @@ void Data::loadData() {
     size_t imagesDataSize;
     inFile.read(reinterpret_cast<char*>(&imagesDataSize), sizeof(imagesDataSize));
     for (size_t i = 0; i < imagesDataSize; ++i) {
-        ImageData imageData;
-        imageData.load(inFile);
-
+        ImageData* imageData = new ImageData();
+        imageData->load(inFile);
         imagesData.get()->push_back(imageData);
     }
 
     // Update imageMap with pointers to ImageData in imagesData
-    for (auto& imageData : *imagesData.get()) {
-        imagesData.setImageMapValue(imageData.getImagePath(), &imageData);
+    for (auto* imageData : *imagesData.get()) {
+        imagesData.setImageMapValue(imageData->getImagePath(), imageData);
     }
 
     size_t deletedImagesDataSize;
-    inFile.read(reinterpret_cast<char*>(&deletedImagesDataSize),
-                sizeof(deletedImagesDataSize));
+    inFile.read(reinterpret_cast<char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
     for (size_t i = 0; i < deletedImagesDataSize; ++i) {
-        ImageData imageData;
-        imageData.load(inFile);
-        deletedImagesData.addImage(imageData);
+        ImageData* imageData = new ImageData();
+        imageData->load(inFile);
+        // deletedImagesData.push_back(*imageData);
     }
 
     options.clear();
@@ -1194,8 +1194,9 @@ Folders* Data::getRootFolders() {
 }
 Folders* Data::getCurrentFolders() {
     if (currentFolder == nullptr || currentFolder->getName() == "") {
+        qDebug() << "currentFolder is null 0 ";
         currentFolder = findFirstFolderWithAllImages(imagesData, rootFolders);
-        qWarning() << "currentFolder is null";
+        qWarning() << "currentFolder is null 1";
     }
     return currentFolder;
 }
@@ -1233,7 +1234,7 @@ void Data::removeImageFromFolders(ImageData& imageData) {
                 // }
                 qDebug() << "Image to find: " << QString::fromStdString(imageData.getImagePath());
                 auto it = std::find(currentFolderBis->getFilesPtr()->begin(), currentFolderBis->getFilesPtr()->end(), imageData.getImagePath());
-                if (it != currentFolderBis->files.end()) {
+                if (it != currentFolderBis->getFilesPtr()->end()) {
                     qDebug() << "find to remove";
                     // currentFolderBis->files.erase(it);
                     currentFolder->getFilesPtr()->erase(it);

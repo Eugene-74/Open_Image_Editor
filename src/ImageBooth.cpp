@@ -2,6 +2,7 @@
 
 ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
+    qDebug() << "ImageBooth::ImageBooth";
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
 
     qDebug() << "ImageBooth name  : " << data->getCurrentFolders()->getName();
@@ -16,7 +17,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
 
         auto images = data->getImagesData()->get();
         for (auto it = images->begin(); it != images->end(); ++it) {
-            ImageData* imageData = &(*it);
+            ImageData* imageData = *it;
             data->getImagesData()->getCurrent()->push_back(imageData);
         }
         data->currentFolder = allImagesFolder;
@@ -121,7 +122,7 @@ void ImageBooth::openFolder(int index) {
         // allImagesFolder->parent = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
         auto images = data->getImagesData()->get();
         for (auto it = images->begin(); it != images->end(); ++it) {
-            ImageData* imageData = &(*it);
+            ImageData* imageData = *it;
             data->getImagesData()->getCurrent()->push_back(imageData);
         }
 
@@ -812,7 +813,7 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
         }
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
-            std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
+            std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i))->getImageExtension();
             data->rotateRight(data->imagesSelected.at(i), extension, [this]() {}, false);
         }
         data->imagesSelected.clear();
@@ -825,7 +826,7 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
                     gotToImage(imagesSelectedBeforeInCurrent0);
                 }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->getImagesData()->get()->at(imagesSelectedBefore.at(i)).getImageExtension();
+                    std::string extension = data->getImagesData()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->rotateLeft(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
                 reload();
@@ -836,7 +837,7 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
                     gotToImage(imagesSelectedBeforeInCurrent0);
                 }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i)).getImageExtension();
+                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->rotateRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
                 reload();
@@ -861,7 +862,7 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
         }
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
-            std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
+            std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i))->getImageExtension();
             data->rotateLeft(data->imagesSelected.at(i), extension, [this]() {}, false);
         }
         data->imagesSelected.clear();
@@ -874,7 +875,7 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
                     gotToImage(imagesSelectedBeforeInCurrent0);
                 }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i)).getImageExtension();
+                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->rotateRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
                 reload();
@@ -885,7 +886,7 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
                     gotToImage(imagesSelectedBeforeInCurrent0);
                 }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i)).getImageExtension();
+                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->rotateLeft(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
                 reload();
@@ -911,7 +912,7 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
 
         for (int i = 0; i < data->imagesSelected.size(); i++) {
-            std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
+            std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i))->getImageExtension();
             data->mirrorUpDown(data->imagesSelected.at(i), extension, [this]() {}, false);
         }
         data->imagesSelected.clear();
@@ -924,7 +925,7 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
                     gotToImage(imagesSelectedBeforeInCurrent0);
                 }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i)).getImageExtension();
+                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->mirrorUpDown(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
                 reload();
@@ -935,7 +936,7 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
                     gotToImage(imagesSelectedBeforeInCurrent0);
                 }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i)).getImageExtension();
+                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->mirrorUpDown(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
                 reload();
@@ -960,7 +961,7 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
         }
         std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
-            std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i)).getImageExtension();
+            std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i))->getImageExtension();
             data->mirrorLeftRight(data->imagesSelected.at(i), extension, [this]() {}, false);
         }
         data->imagesSelected.clear();
@@ -973,7 +974,7 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
                     gotToImage(imagesSelectedBeforeInCurrent0);
                 }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i)).getImageExtension();
+                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->mirrorLeftRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
                 reload();
@@ -984,7 +985,7 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
                     gotToImage(imagesSelectedBeforeInCurrent0);
                 }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i)).getImageExtension();
+                    std::string extension = data->imagesData.get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->mirrorLeftRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
                 reload();

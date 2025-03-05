@@ -135,10 +135,13 @@ void ImageData::setOrCreateExifData() {
 }
 
 void ImageData::save(std::ofstream& out) const {
+    // qDebug() << "Saving image data 1";
     out.write(reinterpret_cast<const char*>(&orientation), sizeof(orientation));
     out.write(reinterpret_cast<const char*>(&date), sizeof(date));
+    // qDebug() << "Saving image data 2";
 
     folders.save(out);
+    // qDebug() << "Saving image data 3";
 
     size_t cropSizesSize = cropSizes.size();
     out.write(reinterpret_cast<const char*>(&cropSizesSize), sizeof(cropSizesSize));
@@ -147,14 +150,17 @@ void ImageData::save(std::ofstream& out) const {
         out.write(reinterpret_cast<const char*>(&innerSize), sizeof(innerSize));
         out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
     }
+    // qDebug() << "Saving image data 4";
 
     out.write(reinterpret_cast<const char*>(&personStatus), sizeof(personStatus));
+    // qDebug() << "Saving image data 5";
 
     size_t personsSize = persons.size();
     out.write(reinterpret_cast<const char*>(&personsSize), sizeof(personsSize));
     for (const auto& person : persons) {
         person.save(out);
     }
+    // qDebug() << "Saving image data 5";
 }
 
 void ImageData::load(std::ifstream& in) {

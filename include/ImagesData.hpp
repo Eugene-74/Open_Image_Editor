@@ -13,7 +13,7 @@ class ImagesData {
     int imageNumber = 0;
     std::unordered_map<std::string, ImageData*> imageMap;
     std::vector<ImageData*> currentImagesData;
-    std::vector<ImageData> imagesData;
+    std::vector<ImageData*> imagesData;
 
    public:
     ImagesData()
@@ -24,7 +24,7 @@ class ImagesData {
         : imagesData(other.imagesData), imageNumber(other.imageNumber), currentImagesData(other.currentImagesData), imageMap(other.imageMap) {
     }
 
-    ImagesData(const std::vector<ImageData> ImageDataList)
+    ImagesData(const std::vector<ImageData*> ImageDataList)
         : imagesData(ImageDataList) {}
 
     ImagesData& operator=(const ImagesData& other);
@@ -50,8 +50,8 @@ class ImagesData {
     ImageData* getCurrentImageData();
 
     // Permet de recuperer imagesData
-    std::vector<ImageData>* get();
-    std::vector<ImageData> getConst() const;
+    std::vector<ImageData*>* get();
+    std::vector<ImageData*> getConst() const;
 
     std::vector<ImageData*>* getCurrent();
 

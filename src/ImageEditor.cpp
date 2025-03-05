@@ -691,7 +691,7 @@ MainImage* ImageEditor::createImageLabel() {
     MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, *mainImageSize, false);
     imageLabelNew->personsEditor = personsEditor;
 
-    startDlib();
+    // startDlib();
 
     std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
 

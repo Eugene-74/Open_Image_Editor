@@ -38,8 +38,8 @@ InitialWindow::InitialWindow() {
             qDebug() << "Translation file not found for language:" << language;
         }
 
-        ImagesData imagesData(std::vector<ImageData>{});
-        ImagesData deletedImagesData(std::vector<ImageData>{});
+        ImagesData imagesData(std::vector<ImageData*>{});
+        ImagesData deletedImagesData(std::vector<ImageData*>{});
         data->imageCache = new std::map<std::string, QImageAndPath>();
 
         data->imagesData = imagesData;
@@ -366,6 +366,7 @@ void InitialWindow::createImageEditor(Data* data) {
 }
 
 void InitialWindow::createImageBooth(Data* data) {
+    qDebug() << "createImageBooth";
     data->sizes->imagesBoothSizes->imagesPerLine = std::stoi(data->options.at("Sizes::imageBooth::ImagesPerLine").value);
     data->sizes->update();
 
