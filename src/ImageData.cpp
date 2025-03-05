@@ -243,3 +243,19 @@ std::vector<Person> ImageData::getpersons() const {
 void ImageData::setpersons(const std::vector<Person>& persons) {
     this->persons = persons;
 }
+
+void ImageData::setDate(long date) {
+    this->date = date;
+}
+
+long ImageData::getDate() const {
+    return date;
+}
+
+void ImageData::setOrientation(int orientation) {
+    this->orientation = orientation;
+}
+
+int ImageData::getOrientation() const {
+    return orientation;
+}

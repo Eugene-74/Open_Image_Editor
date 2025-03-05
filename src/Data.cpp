@@ -500,7 +500,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
 
 QImage Data::rotateQImage(QImage image, ImageData* imageData) {
     if (imageData != nullptr) {
-        int orientation = imageData->orientation;
+        int orientation = imageData->getOrientation();
         // qDebug() << "rotateQImage : " << orientation << " : " << imagePath;
 
         switch (orientation) {
@@ -740,7 +740,7 @@ void Data::sortCurrentImagesData() {
     QApplication::processEvents();
 
     auto& data = *imagesData.getCurrent();
-    std::sort(data.begin(), data.end(), [&progress, &progressDialog, &timer](const ImageData* a, const ImageData* b) {
+    std::sort(data.begin(), data.end(), [&progress, &progressDialog, &timer](const ImageData* firstImageData, const ImageData* secondImageData) {
         progress++;
         progressDialog.setValue(progress);
         QApplication::processEvents();
@@ -748,7 +748,7 @@ void Data::sortCurrentImagesData() {
             progressDialog.show();
             timer.invalidate();
         }
-        return a->date > b->date;
+        return firstImageData->getDate() > secondImageData->getDate();
     });
 
     timer.invalidate();
@@ -903,7 +903,7 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
         qWarning() << "Image not turnable : " << imageData->getImagePath();
         return;
     }
-    int orientation = imageData->orientation;
+    int orientation = imageData->getOrientation();
     if (rotation == Const::Rotation::LEFT) {
         switch (orientation) {
             case Const::Orientation::NORMAL:
@@ -1101,7 +1101,7 @@ void Data::exifMirror(int nbr, bool UpDown, std::function<void()> reload) {
     if (!isTurnable(imageData->getImagePath())) {
         return;
     }
-    int orientation = imageData->orientation;
+    int orientation = imageData->getOrientation();
     if (UpDown) {
         switch (orientation) {
             case Const::Orientation::NORMAL:

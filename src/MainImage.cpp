@@ -175,7 +175,7 @@ void MainImage::cropImage() {
         std::vector<QPoint> cropPoints = {
             QPoint(imageCropRect.left(), imageCropRect.top()),
             QPoint(imageCropRect.right(), imageCropRect.bottom())};
-        int orientation = data->imagesData.getCurrentImageData()->orientation;
+        int orientation = data->imagesData.getCurrentImageData()->getOrientation();
 
         std::vector<QPoint> adjustedCropPoints = adjustPointsForOrientation(cropPoints, orientation, qImageReel.size());
 
@@ -250,7 +250,7 @@ void MainImage::paintEvent(QPaintEvent* event) {
         int xOffset = (this->width() - scaledSize.width()) / 2;
         int yOffset = (this->height() - scaledSize.height()) / 2;
         // TODO utilise getPersons mais ça marche pas
-        for (const auto& person : data->imagesData.getCurrentImageData()->persons) {
+        for (const auto& person : data->imagesData.getCurrentImageData()->getpersons()) {
             cv::Rect face = person.getFace();
             int x = static_cast<int>(face.x * xScale) + xOffset;
             int y = static_cast<int>(face.y * yScale) + yOffset;

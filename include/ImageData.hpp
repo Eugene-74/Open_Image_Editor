@@ -19,18 +19,46 @@ class ImageData {
         Loading,
         Loaded
     };
-    PersonStatus personStatus = PersonStatus::NotLoaded;
+
     MetaData metaData;
 
     Folders folders;
+    std::vector<Person> persons;
+    PersonStatus personStatus = PersonStatus::NotLoaded;
 
     std::vector<std::vector<QPoint>> cropSizes;
+    int orientation = Const::Orientation::UNDEFINED;
+    long date = 0;
 
    public:
-    std::vector<Person> persons;
+   
+   ImageData()
+   : folders(Folders()), metaData(MetaData()), cropSizes(), orientation(), date(), persons(), personStatus() {}
+   
+   // !! necessaire sinon push_back ne fonctionne pas
+   ImageData(const ImageData& other)
+   : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), persons(other.persons), personStatus(other.personStatus) {
+}
+
+ImageData(const Folders folders)
+        : folders(folders) {}
+        
+    // Opérateur d'affectation
+    ImageData& operator=(const ImageData& other);
+
+    void print() const;
+    
+    std::string get() const;
+    
+    void setDate(long date);
+    long getDate() const;
+    
+    void setOrientation(int orientation);
+    int getOrientation() const;
+
     std::vector<Person> getpersons() const;
     void setpersons(const std::vector<Person>& persons);
-
+    
     PersonStatus getPersonStatus() const;
     PersonStatus setPersonStatus(PersonStatus personStatus);
     void setPersonStatusLoading();
@@ -39,27 +67,6 @@ class ImageData {
     bool isPersonStatusLoading();
     bool isPersonStatusNotLoaded();
     bool isPersonStatusLoaded();
-
-    int orientation = Const::Orientation::UNDEFINED;
-    long date = 0;
-
-    ImageData()
-        : folders(Folders()), metaData(MetaData()), cropSizes(), orientation(), date(), persons(), personStatus() {}
-
-    // !! necessaire sinon push_back ne fonctionne pas
-    ImageData(const ImageData& other)
-        : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), persons(other.persons), personStatus(other.personStatus) {
-    }
-
-    ImageData(const Folders c)
-        : folders(c) {}
-
-    // Opérateur d'affectation
-    ImageData& operator=(const ImageData& other);
-
-    void print() const;
-
-    std::string get() const;
 
     MetaData* getMetaDataPtr();
     MetaData getMetaData() const;
@@ -103,6 +110,4 @@ class ImageData {
     void setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes);
 
     void clearMetaData();
-
-   private:
 };
