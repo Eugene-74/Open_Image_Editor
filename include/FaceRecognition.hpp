@@ -15,6 +15,11 @@ class Person {
     cv::Rect face;
 
    public:
+    bool operator==(const Person& other) const {
+        return this->face == other.face &&
+               this->name == other.name;
+    }
+
     void save(std::ofstream& out) const;
     void load(std::ifstream& in);
 

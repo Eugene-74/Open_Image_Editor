@@ -9,7 +9,7 @@
 #include "Data.hpp"
 #include "FileSelector.hpp"
 #include "ImagesData.hpp"
-#include "Main.hpp"
+// #include "Main.hpp"
 
 class ThumbnailTask : public QObject, public QRunnable {
     Q_OBJECT

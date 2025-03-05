@@ -1,6 +1,7 @@
 *~
 .vscode/
 build/
+testing/
 
 install/nsis_variables.nsh
 include/Version.hpp

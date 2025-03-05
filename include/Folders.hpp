@@ -32,9 +32,9 @@ class Folders {
         : name(other.name), files(other.files), folders(other.folders) {}
 
     Folders& operator=(const Folders& other);
+    bool operator==(const Folders& other) const;
 
     void save(std::ofstream& out) const;
-
     void load(std::ifstream& in);
 
     void addFolder(std::string name);

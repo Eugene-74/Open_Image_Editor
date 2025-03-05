@@ -12,7 +12,6 @@
 namespace fs = std::filesystem;
 
 class ImageData {
-    // TODO netoyer
    private:
     enum class PersonStatus {
         NotLoaded,
@@ -40,6 +39,7 @@ class ImageData {
         : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), persons(other.persons), personStatus(other.personStatus) {}
 
     ImageData& operator=(const ImageData& other);
+    bool operator==(const ImageData& other) const;
 
     void print() const;
     
@@ -74,8 +74,6 @@ class ImageData {
     void addFolders(const std::vector<std::string>& toAddFolders);
 
     std::string getImageName() const;
-
-    bool operator==(const ImageData& other) const;
 
     std::string getImagePath();
     std::string getImagePathConst() const;

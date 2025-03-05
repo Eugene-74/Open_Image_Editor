@@ -5,11 +5,11 @@ mkdir build
 cd build
 
 
-cmake -G "Ninja" ..
+cmake -G "MinGW Makefiles" ..
 
 rm -rf CMakeCache.txt CMakeFiles
 cmake --build .
 
-ctest --output-on-failure
+ctest --verbose
 
 endlocal

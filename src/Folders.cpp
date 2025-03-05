@@ -11,6 +11,12 @@ Folders& Folders::operator=(const Folders& other) {
     return *this;
 }
 
+bool Folders::operator==(const Folders& other) const {
+    return this->name == other.name &&
+           this->files == other.files &&
+           this->folders == other.folders;
+}
+
 void Folders::save(std::ofstream& out) const {
     size_t folderNameSize = name.size();
     out.write(reinterpret_cast<const char*>(&folderNameSize), sizeof(folderNameSize));

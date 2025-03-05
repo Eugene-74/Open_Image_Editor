@@ -33,6 +33,13 @@ file(GLOB_RECURSE TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 # Main project sources
 set(SOURCE_FILES
     "${CMAKE_SOURCE_DIR}/src/Verification.cpp"
+    "${CMAKE_SOURCE_DIR}/src/ImageData.cpp"
+    # "${CMAKE_SOURCE_DIR}/src/Data.cpp"
+    # "${CMAKE_SOURCE_DIR}/src/MainWindow.cpp"
+    "${CMAKE_SOURCE_DIR}/src/FaceRecognition.cpp"
+    "${CMAKE_SOURCE_DIR}/src/MetaData.cpp"
+    "${CMAKE_SOURCE_DIR}/src/Folders.cpp"
+
 
     # Add other necessary source files here
 )
@@ -50,6 +57,7 @@ target_link_libraries(${PROJECT_NAME}
     Qt6::Widgets
     CURL::libcurl
     jsoncpp_lib
+    dlib::dlib
     ${OpenCV_LIBS}
     ${EXIV2_LIBRARIES}
     ${HEIF_LIBRARIES}

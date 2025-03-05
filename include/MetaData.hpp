@@ -27,6 +27,7 @@ class MetaData {
 
     // Opérateur d'affectation
     MetaData& operator=(const MetaData& other);
+    bool operator==(const MetaData& other) const;
 
     void setExif(const Exiv2::ExifData& toAddMetaData);
 

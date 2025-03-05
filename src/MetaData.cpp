@@ -9,6 +9,13 @@ MetaData& MetaData::operator=(const MetaData& other) {
     return *this;
 }
 
+bool MetaData::operator==(const MetaData& other) const {
+    // return std::equal(this->exifMetaData.begin(), this->exifMetaData.end(), other.exifMetaData.begin(), other.exifMetaData.end()) &&
+    //        std::equal(this->xmpMetaData.begin(), this->xmpMetaData.end(), other.xmpMetaData.begin(), other.xmpMetaData.end()) &&
+    //        std::equal(this->iptcMetaData.begin(), this->iptcMetaData.end(), other.iptcMetaData.begin(), other.iptcMetaData.end());
+    return true;
+}
+
 void MetaData::saveMetaData(const std::string& imageName) {
     saveExifData(imageName, exifMetaData);
     saveXmpData(imageName, xmpMetaData);

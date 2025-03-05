@@ -3,15 +3,24 @@
 ImageData& ImageData::operator=(const ImageData& other) {
     if (this != &other) {
         folders.getName() = other.folders.getName();
-        // metaData = other.metaData;
-        // cropSizes = other.cropSizes;
-        // orientation = other.orientation;
-        // persons = other.persons;
-        // personStatus = other.personStatus;
-
+        metaData = other.metaData;
+        cropSizes = other.cropSizes;
+        orientation = other.orientation;
+        persons = other.persons;
+        personStatus = other.personStatus;
         date = other.date;
     }
     return *this;
+}
+
+bool ImageData::operator==(const ImageData& other) const {
+    return this->folders == other.folders &&
+           this->metaData == other.metaData &&
+           this->cropSizes == other.cropSizes &&
+           this->orientation == other.orientation &&
+           this->persons == other.persons &&
+           this->personStatus == other.personStatus &&
+           this->date == other.date;
 }
 
 void ImageData::print() const {
@@ -55,20 +64,6 @@ void ImageData::addFolders(const std::vector<std::string>& toAddFolders) {
 std::string ImageData::getImageName() const {
     std::filesystem::path filePath(getImagePathConst());
     return filePath.filename().string();
-}
-
-bool ImageData::operator==(const ImageData& other) const {
-    std::filesystem::path filePath(getImagePathConst());
-    std::string imageName = filePath.filename().string();
-    std::transform(imageName.begin(), imageName.end(), imageName.begin(),
-                   [](unsigned char chr) { return std::tolower(chr); });
-
-    std::filesystem::path filePathOther(other.getImagePathConst());
-    std::string imageNameOther = filePathOther.filename().string();
-    std::transform(imageNameOther.begin(), imageNameOther.end(), imageNameOther.begin(),
-                   [](unsigned char chr) { return std::tolower(chr); });
-
-    return imageName == imageNameOther;
 }
 
 std::string ImageData::getImagePath() {

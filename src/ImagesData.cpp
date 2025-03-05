@@ -180,14 +180,14 @@ std::unordered_map<std::string, ImageData*>* ImagesData::getImageMap() {
 }
 
 void ImagesData::setImageMapValue(std::string imagePath, ImageData* imageData) {
-    qDebug() << "setImageMapValue : " << imagePath.c_str();
-    if (imageData->getpersons().size() > 0) {
-        qDebug() << "load person 3 : " << imageData->getImagePath();
-    }
+    // qDebug() << "setImageMapValue : " << imagePath.c_str();
+    // if (imageData->getpersons().size() > 0) {
+    //     qDebug() << "load person 3 : " << imageData->getImagePath();
+    // }
     imageMap[imagePath] = imageData;
-    if (imageMap[imagePath]->getpersons().size() > 0) {
-        qDebug() << "load person 4 : " << imageData->getImagePath();
-    }
+    // if (imageMap[imagePath]->getpersons().size() > 0) {
+    //     qDebug() << "load person 4 : " << imageData->getImagePath();
+    // }
 }
 
 void ImagesData::setImageMapIntValue(int index, ImageData* imageData) {
