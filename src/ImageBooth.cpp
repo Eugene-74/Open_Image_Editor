@@ -22,7 +22,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
         }
         data->currentFolder = allImagesFolder;
     } else {
-        for (auto it = data->getCurrentFolders()->getFilesPtr()->begin(); it != data->getCurrentFolders()->getFilesPtr()->end(); ++it) {
+                for (auto it = data->getCurrentFolders()->getFilesPtr()->begin(); it != data->getCurrentFolders()->getFilesPtr()->end(); ++it) {
             std::string imagePath = *it;
             ImageData* imageData = data->imagesData.getImageData(imagePath);
 

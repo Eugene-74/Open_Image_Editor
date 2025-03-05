@@ -280,7 +280,7 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
     std::hash<std::string> hasher;
     size_t hashValue = hasher(fs::path(imagePath).filename().string());
 
-    std::string extension = ".png";
+    std::string extension = ".webp";
 
     std::string outputImage;
     // if (maxDim == 128) {
@@ -318,7 +318,7 @@ bool Data::hasThumbnail(const std::string& imagePath, const int maxDim) {
     std::hash<std::string> hasher;
     size_t hashValue = hasher(fs::path(imagePath).filename().string());
 
-    std::string extension = ".png";
+    std::string extension = ".webp";
 
     std::string outputImage;
 
@@ -369,7 +369,7 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
                                    const int size) {
     std::hash<std::string> hasher;
     size_t hashValue = hasher(fs::path(imagePath).filename().string());
-    std::string extension = ".png";
+    std::string extension = ".webp";
 
     std::string outputImage;
 
