@@ -37,12 +37,14 @@ void Data::revocerDeletedImage(int imageNbr) {
 // Delete in imagesData images that are also in deletedImagesData
 void Data::removeDeletedImages() {
     for (const auto& deletedImage : *deletedImagesData.get()) {
-        auto it = std::find(imagesData.get()->begin(), imagesData.get()->end(),
-                            deletedImage);
+        // auto it = std::find(imagesData.get()->begin(), imagesData.get()->end(),
+        //                     deletedImage);
+        // TODO faire sans mais ça marche pas ...
+        ImageData* imageData = getImagesData()->getImageData(deletedImage->getImagePath());
 
-        removeImageFromFolders(**it);
+        removeImageFromFolders(*imageData);
 
-        auto itPtr = std::find(imagesData.getCurrent()->begin(), imagesData.getCurrent()->end(), *it);
+        auto itPtr = std::find(imagesData.getCurrent()->begin(), imagesData.getCurrent()->end(), imageData);
         if (itPtr != imagesData.getCurrent()->end()) {
             qInfo() << "remove image from currentImagesData";
             imagesData.getCurrent()->erase(itPtr);

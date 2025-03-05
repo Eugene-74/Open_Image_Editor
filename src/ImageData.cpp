@@ -2,12 +2,12 @@
 
 ImageData& ImageData::operator=(const ImageData& other) {
     if (this != &other) {
-        folders = other.folders;
-        metaData = other.metaData;
-        cropSizes = other.cropSizes;
-        orientation = other.orientation;
-        persons = other.persons;
-        personStatus = other.personStatus;
+        folders.getName() = other.folders.getName();
+        // metaData = other.metaData;
+        // cropSizes = other.cropSizes;
+        // orientation = other.orientation;
+        // persons = other.persons;
+        // personStatus = other.personStatus;
 
         date = other.date;
     }
