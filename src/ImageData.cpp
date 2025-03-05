@@ -6,6 +6,9 @@ ImageData& ImageData::operator=(const ImageData& other) {
         metaData = other.metaData;
         cropSizes = other.cropSizes;
         orientation = other.orientation;
+        persons = other.persons;
+        personStatus = other.personStatus;
+
         date = other.date;
     }
     return *this;
@@ -135,13 +138,10 @@ void ImageData::setOrCreateExifData() {
 }
 
 void ImageData::save(std::ofstream& out) const {
-    // qDebug() << "Saving image data 1";
     out.write(reinterpret_cast<const char*>(&orientation), sizeof(orientation));
     out.write(reinterpret_cast<const char*>(&date), sizeof(date));
-    // qDebug() << "Saving image data 2";
 
     folders.save(out);
-    // qDebug() << "Saving image data 3";
 
     size_t cropSizesSize = cropSizes.size();
     out.write(reinterpret_cast<const char*>(&cropSizesSize), sizeof(cropSizesSize));
@@ -150,17 +150,15 @@ void ImageData::save(std::ofstream& out) const {
         out.write(reinterpret_cast<const char*>(&innerSize), sizeof(innerSize));
         out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
     }
-    // qDebug() << "Saving image data 4";
 
     out.write(reinterpret_cast<const char*>(&personStatus), sizeof(personStatus));
-    // qDebug() << "Saving image data 5";
 
     size_t personsSize = persons.size();
     out.write(reinterpret_cast<const char*>(&personsSize), sizeof(personsSize));
     for (const auto& person : persons) {
+        qDebug() << "save person : " << folders.getName();
         person.save(out);
     }
-    // qDebug() << "Saving image data 5";
 }
 
 void ImageData::load(std::ifstream& in) {
@@ -182,7 +180,7 @@ void ImageData::load(std::ifstream& in) {
     }
     in.read(reinterpret_cast<char*>(&personStatus), sizeof(personStatus));
     // TODO mettre autre part
-    if (this->isPersonStatusLoading()) {
+    if (isPersonStatusLoading()) {
         setPersonStatusNotLoaded();
     }
 
@@ -190,7 +188,12 @@ void ImageData::load(std::ifstream& in) {
     in.read(reinterpret_cast<char*>(&personsSize), sizeof(personsSize));
     persons.resize(personsSize);
     for (auto& person : persons) {
+        qDebug() << "load person" << folders.getName();
         person.load(in);
+    }
+    if (persons.size() > 0) {
+        // setPersonStatusLoaded();
+        qDebug() << "load person done" << persons.size();
     }
 }
 
@@ -211,8 +214,8 @@ ImageData::PersonStatus ImageData::getPersonStatus() const {
     return personStatus;
 }
 
-ImageData::PersonStatus ImageData::setPersonStatus(PersonStatus personStatus) {
-    return personStatus;
+void ImageData::setPersonStatus(PersonStatus personStatus) {
+    this->personStatus = personStatus;
 }
 
 void ImageData::setPersonStatusLoading() {

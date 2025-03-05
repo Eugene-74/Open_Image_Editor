@@ -325,8 +325,11 @@ void ImageEditor::updateButtons() {
 
     if (imagePersons) {
         if (data->imagesData.getCurrentImageData()->isPersonStatusLoaded()) {
+            qDebug() << "setLogoNumber";
             imagePersons->setLogoNumber(data->imagesData.getCurrentImageData()->getpersons().size());
         } else {
+            qDebug() << "not setLogoNumber";
+
             imagePersons->setLogoNumber(-1);
         }
     }
@@ -607,6 +610,8 @@ ClickableLabel* ImageEditor::createImagePersons() {
     imagePersonsNew->setInitialBackground("transparent", "#b3b3b3");
     imagePersonsNew->addLogo("#700c13", "#ffffff");
 
+    qDebug() << "status : " << static_cast<int>(data->imagesData.getCurrentImageData()->getPersonStatus());
+
     if (data->imagesData.getCurrentImageData()->isPersonStatusLoaded()) {
         imagePersonsNew->setLogoNumber(data->imagesData.getCurrentImageData()->getpersons().size());
     } else {
@@ -696,6 +701,9 @@ MainImage* ImageEditor::createImageLabel() {
     std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
 
     ImageData* imageData = data->imagesData.getCurrentImageData();
+    qDebug() << "currentImagePath : " << currentImagePath.c_str();
+    qDebug() << "person actual size" << imageData->getpersons().size();
+    qDebug() << "person actual status" << static_cast<int>(imageData->getPersonStatus());
 
     auto it = data->imageCache->find(currentImagePath);
     if (it == data->imageCache->end()) {
@@ -711,15 +719,15 @@ MainImage* ImageEditor::createImageLabel() {
         image = data->rotateQImage(image, imageData);
 
         QPointer<ImageEditor> self = this;
-        int imageNbrIntotal = data->getImagesData()->getImageNumberInTotal(imageNbr);
 
-        detectFacesAsync(currentImagePath, image, [self, imageNbr, imageNbrIntotal](std::vector<Person> persons) {
-            // TODO reusir a faire un ptr avec Data (ne marche pas)
+        detectFacesAsync(currentImagePath, image, [self, imageNbr, currentImagePath](std::vector<Person> persons) {
             if (!self.isNull()) {
-                ImageData* imageData = self->data->imagesData.getImageData(imageNbrIntotal);
-                imageData->setPersonStatusLoaded();
+                ImageData* imageData = self->data->getImagesData()->getImageData(currentImagePath);
+
                 if (imageData) {
+                    qDebug() << "face recognition done";
                     imageData->setpersons(persons);
+                    imageData->setPersonStatusLoaded();
                 }
                 if (self->data->imagesData.getImageNumber() == imageNbr) {
                     if (self->imagePersons) {
@@ -735,8 +743,8 @@ MainImage* ImageEditor::createImageLabel() {
             }
         });
     } else {
-        qDebug() << static_cast<int>(imageData->getPersonStatus());
-        qDebug() << "l'image a deja ete charger : " << imageData->getpersons().size();
+        // qDebug() << static_cast<int>(imageData->getPersonStatus());
+        // qDebug() << "l'image a deja ete charger : " << imageData->getpersons().size();
     }
 
     connect(imageLabelNew, &MainImage::leftClicked, [this]() {

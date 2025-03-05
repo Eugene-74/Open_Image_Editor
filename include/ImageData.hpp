@@ -32,7 +32,7 @@ class ImageData {
 
    public:
     ImageData()
-        : folders(Folders()), metaData(MetaData()), cropSizes(), orientation(), date(), persons(), personStatus() {}
+        : folders(Folders()), cropSizes(), orientation(), date() {}
     ImageData(const Folders folders)
         : folders(folders) {}
     //    Copie
@@ -55,10 +55,10 @@ class ImageData {
     void setpersons(const std::vector<Person>& persons);
     
     PersonStatus getPersonStatus() const;
-    static PersonStatus setPersonStatus(PersonStatus personStatus);
-    static void setPersonStatusLoading();
-    static void setPersonStatusNotLoaded();
-    static void setPersonStatusLoaded();
+    void setPersonStatus(PersonStatus personStatus);
+    void setPersonStatusLoading();
+    void setPersonStatusNotLoaded();
+    void setPersonStatusLoaded();
     bool isPersonStatusLoading();
     bool isPersonStatusNotLoaded();
     bool isPersonStatusLoaded();

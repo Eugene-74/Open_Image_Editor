@@ -88,10 +88,14 @@ void ImagesData::removeImage(const ImageData& image) {
 }
 
 ImageData* ImagesData::getImageData(int id) {
-    if (id < 0 || id >= imagesData.size()) {
+    if (id < 0 || id >= imageMapInt.size()) {
         throw std::out_of_range("getImageData :: Index hors limites" + std::to_string(id));
     }
-    return imagesData.at(id);
+    auto foundImageData = imageMapInt.find(id);
+    if (foundImageData != imageMapInt.end()) {
+        return foundImageData->second;
+    }
+    return nullptr;
 }
 
 ImageData* ImagesData::getImageDataInCurrent(int id) {
@@ -105,9 +109,21 @@ ImageData* ImagesData::getImageData(std::string imagePath) {
     qDebug() << "getImageData : " << imageMap.size();
     auto foundImageData = imageMap.find(imagePath);
 
+    // for (const auto& pair : imageMap) {
+    //     if (!pair.second->getpersons().empty()) {
+    //         qDebug() << "Image with persons found: " << pair.first.c_str();
+    //         break;
+    //     }
+    // }
+
     if (foundImageData != imageMap.end()) {
+        ImageData* imageData = foundImageData->second;
+        if (imageMap[imagePath]->getpersons().size() > 0) {
+            qDebug() << "load person 5 : " << imageData->getImagePath();
+        }
         qDebug() << "foundImageData : " << imagePath.c_str();
-        return foundImageData->second;
+        qDebug() << "persons : " << foundImageData->second->getpersons().size();
+        return imageData;
     }
     qDebug() << "not foundImageData : " << imagePath.c_str();
 
@@ -164,6 +180,16 @@ std::unordered_map<std::string, ImageData*>* ImagesData::getImageMap() {
 }
 
 void ImagesData::setImageMapValue(std::string imagePath, ImageData* imageData) {
-    // qDebug() << "setImageMapValue : " << imagePath.c_str();
+    qDebug() << "setImageMapValue : " << imagePath.c_str();
+    if (imageData->getpersons().size() > 0) {
+        qDebug() << "load person 3 : " << imageData->getImagePath();
+    }
     imageMap[imagePath] = imageData;
+    if (imageMap[imagePath]->getpersons().size() > 0) {
+        qDebug() << "load person 4 : " << imageData->getImagePath();
+    }
+}
+
+void ImagesData::setImageMapIntValue(int index, ImageData* imageData) {
+    imageMapInt[index] = imageData;
 }

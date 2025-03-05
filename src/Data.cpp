@@ -283,16 +283,9 @@ void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
     std::string extension = ".webp";
 
     std::string outputImage;
-    // if (maxDim == 128) {
+
     outputImage = THUMBNAIL_PATH + "/" + std::to_string(maxDim) + "/" +
                   std::to_string(hashValue) + extension;
-    // } else if (maxDim == 256) {
-    //     outputImage = THUMBNAIL_PATH + "/large/" +
-    //                   std::to_string(hashValue) + extension;
-    // } else if (maxDim == 512) {
-    //     outputImage = THUMBNAIL_PATH + "/x-large/" +
-    //                   std::to_string(hashValue) + extension;
-    // }
 
     if (!fs::exists(fs::path(outputImage).parent_path())) {
         fs::create_directories(fs::path(outputImage).parent_path());
@@ -322,16 +315,8 @@ bool Data::hasThumbnail(const std::string& imagePath, const int maxDim) {
 
     std::string outputImage;
 
-    // if (maxDim == 128) {
     outputImage = THUMBNAIL_PATH + "/" + std::to_string(maxDim) + "/" +
                   std::to_string(hashValue) + extension;
-    // } else if (maxDim == 256) {
-    //     outputImage = THUMBNAIL_PATH + "/large/" +
-    //                   std::to_string(hashValue) + extension;
-    // } else if (maxDim == 512) {
-    //     outputImage = THUMBNAIL_PATH + "/x-large/" +
-    //                   std::to_string(hashValue) + extension;
-    // }
     return fs::exists(outputImage);
 }
 
@@ -373,16 +358,9 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
 
     std::string outputImage;
 
-    // if (size == 128) {
     outputImage = THUMBNAIL_PATH + "/" + std::to_string(size) + "/" +
                   std::to_string(hashValue) + extension;
-    // } else if (size == 256) {
-    //     outputImage = THUMBNAIL_PATH + "/large/" +
-    //                   std::to_string(hashValue) + extension;
-    // } else if (size == 512) {
-    //     outputImage = THUMBNAIL_PATH + "/x-large/" +
-    //                   std::to_string(hashValue) + extension;
-    // }
+
     return outputImage;
 }
 
@@ -572,15 +550,18 @@ void Data::saveData() {
 
     size_t imagesDataSize = imagesData.get()->size();
     outFile.write(reinterpret_cast<const char*>(&imagesDataSize), sizeof(imagesDataSize));
-    for (const auto* imageData : *imagesData.get()) {
+    for (auto* imageData : *imagesData.get()) {
+        if (imageData->getpersons().size() > 0) {
+            qDebug() << "save person 1 : " << imageData->getImagePath();
+        }
         imageData->save(outFile);
     }
 
-    size_t deletedImagesDataSize = deletedImagesData.get()->size();
-    outFile.write(reinterpret_cast<const char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
-    for (const auto* imageData : *deletedImagesData.get()) {
-        imageData->save(outFile);
-    }
+    // size_t deletedImagesDataSize = deletedImagesData.get()->size();
+    // outFile.write(reinterpret_cast<const char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
+    // for (const auto* imageData : *deletedImagesData.get()) {
+    //     imageData->save(outFile);
+    // }
 
     size_t optionsSize = options.size();
     outFile.write(reinterpret_cast<const char*>(&optionsSize),
@@ -601,10 +582,7 @@ void Data::saveData() {
 
     rootFolders.save(outFile);
 
-    // Save the path of currentFolder
-    // qDebug() << "currentFolder : " << currentFolder->getName();
     std::string currentFolderPath = getFolderPath(currentFolder);
-    // qDebug() << "currentFolderPath : " << currentFolderPath;
     size_t pathSize = currentFolderPath.size();
     outFile.write(reinterpret_cast<const char*>(&pathSize), sizeof(pathSize));
     outFile.write(currentFolderPath.c_str(), pathSize);
@@ -626,21 +604,30 @@ void Data::loadData() {
     for (size_t i = 0; i < imagesDataSize; ++i) {
         ImageData* imageData = new ImageData();
         imageData->load(inFile);
+        if (imageData->getpersons().size() > 0) {
+            qDebug() << "load person 1 : " << imageData->getImagePath();
+        }
         imagesData.get()->push_back(imageData);
     }
 
     // Update imageMap with pointers to ImageData in imagesData
+    int index = 0;
     for (auto* imageData : *imagesData.get()) {
+        if (imageData->getpersons().size() > 0) {
+            qDebug() << "load person 2 : " << imageData->getImagePath();
+        }
         imagesData.setImageMapValue(imageData->getImagePath(), imageData);
+        imagesData.setImageMapIntValue(index, imageData);
+        index++;
     }
 
-    size_t deletedImagesDataSize;
-    inFile.read(reinterpret_cast<char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
-    for (size_t i = 0; i < deletedImagesDataSize; ++i) {
-        ImageData* imageData = new ImageData();
-        imageData->load(inFile);
-        // deletedImagesData.push_back(*imageData);
-    }
+    // size_t deletedImagesDataSize;
+    // inFile.read(reinterpret_cast<char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
+    // for (size_t i = 0; i < deletedImagesDataSize; ++i) {
+    //     ImageData* imageData = new ImageData();
+    //     imageData->load(inFile);
+    //     // deletedImagesData.push_back(*imageData);
+    // }
 
     options.clear();
     size_t optionsSize;
@@ -899,6 +886,9 @@ void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
 void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
     // qDebug() << "Exif rotate :" << nbr;
     ImageData* imageData = imagesData.getImageData(nbr);
+    // TODO faire sans mais ça marche pas ...
+    imageData = getImagesData()->getImageData(imageData->getImagePath());
+
     if (!isTurnable(imageData->getImagePath())) {
         qWarning() << "Image not turnable : " << imageData->getImagePath();
         return;

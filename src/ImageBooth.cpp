@@ -22,14 +22,16 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
         }
         data->currentFolder = allImagesFolder;
     } else {
-                for (auto it = data->getCurrentFolders()->getFilesPtr()->begin(); it != data->getCurrentFolders()->getFilesPtr()->end(); ++it) {
+        for (auto it = data->getCurrentFolders()->getFilesPtr()->begin(); it != data->getCurrentFolders()->getFilesPtr()->end(); ++it) {
             std::string imagePath = *it;
             ImageData* imageData = data->imagesData.getImageData(imagePath);
+            qDebug() << "test 1 : " << imageData->getpersons().size();
 
             if (imageData == nullptr) {
                 qDebug() << "imageData is null";
             } else {
                 data->getImagesData()->getCurrent()->push_back(imageData);
+                qDebug() << "test 2 : " << data->getImagesData()->getCurrent()->back()->getpersons().size();
             }
         }
     }
@@ -101,13 +103,10 @@ void ImageBooth::openFolder(int index) {
 
     if (data->getCurrentFolders()->getFolders()->size() > index || index == -2) {
         if (index == -2) {
-            // TODO utiliser getParent
             if (data->getCurrentFolders()->getParent() == nullptr) {
                 qCritical() << "Error : getCurrentFolders parent is null";
             }
-            // data->currentFolder = data->getCurrentFolders()->getParent();
             data->currentFolder = data->getCurrentFolders()->getParent();
-
         } else {
             data->currentFolder = data->getCurrentFolders()->getFolder(index);
         }
@@ -117,10 +116,9 @@ void ImageBooth::openFolder(int index) {
         }
     } else {
         Folders* allImagesFolder = new Folders("*");
-        // TODO utiliser setParent
         allImagesFolder->setParent(data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders()));
-        // allImagesFolder->parent = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
-        auto images = data->getImagesData()->get();
+
+        auto* images = data->getImagesData()->get();
         for (auto it = images->begin(); it != images->end(); ++it) {
             ImageData* imageData = *it;
             data->getImagesData()->getCurrent()->push_back(imageData);

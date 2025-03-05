@@ -12,6 +12,8 @@ class ImagesData {
    private:
     int imageNumber = 0;
     std::unordered_map<std::string, ImageData*> imageMap;
+    std::unordered_map<int, ImageData*> imageMapInt;
+
     std::vector<ImageData*> currentImagesData;
     std::vector<ImageData*> imagesData;
 
@@ -64,4 +66,6 @@ class ImagesData {
 
     std::unordered_map<std::string, ImageData*>* getImageMap();
     void setImageMapValue(std::string imagePath, ImageData* imageData);
+
+    void setImageMapIntValue(int index, ImageData* imageData);
 };
