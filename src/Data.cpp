@@ -421,7 +421,7 @@ Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const 
     for (const auto& folder : currentFolder.folders) {
         for (ImageData imageData : imagesData.getConst()) {
             for (Folders folderBis : imageData.getFolders()) {
-                if (folderBis.name == folder.name) {
+                if (folderBis.getName() == folder.getName()) {
                     return const_cast<Folders*>(&currentFolder);
                 }
             }
@@ -445,7 +445,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
         for (auto& folder : imageData.getFolders()) {
             std::string fileName = fs::path(imageData.getImagePath()).filename().string();
 
-            std::string folderName = folder.name;
+            std::string folderName = folder.getName();
 
             size_t pos = folderName.find(initialFolder);
             if (pos != std::string::npos) {
@@ -539,7 +539,7 @@ void Data::createFolders(Folders* currentFolders, std::string folderPath) {
     }
 
     for (auto& folder : currentFolders->folders) {
-        folderPath = initialFolderPath + "/" + folder.name;
+        folderPath = initialFolderPath + "/" + folder.getName();
         if (!fs::exists(folderPath)) {
             fs::create_directories(folderPath);
         }
@@ -1216,7 +1216,7 @@ void Data::removeImageFromFolders(ImageData& imageData) {
         qDebug() << "Remove image from folder :  1" << folderPath;
         while (run && std::getline(iss, token, '/')) {
             auto it = std::find_if(currentFolderBis->folders.begin(), currentFolderBis->folders.end(),
-                                   [&token](const Folders& f) { return f.name == token; });
+                                   [&token](const Folders& f) { return f.getName() == token; });
             if (it != currentFolderBis->folders.end()) {
                 currentFolderBis = &(*it);
             } else {
@@ -1226,17 +1226,17 @@ void Data::removeImageFromFolders(ImageData& imageData) {
         }
         if (currentFolderBis) {
             try {
-                qDebug() << "Remove image from folder :  2" << folderPath;
-                qDebug() << "Current folder files:";
-                for (const auto& file : currentFolderBis->files) {
-                    qDebug() << QString::fromStdString(file);
-                }
+                // qDebug() << "Remove image from folder :  2" << folderPath;
+                // qDebug() << "Current folder files:";
+                // for (const auto& file : currentFolderBis->files) {
+                //     qDebug() << QString::fromStdString(file);
+                // }
                 qDebug() << "Image to find: " << QString::fromStdString(imageData.getImagePath());
-                auto it = std::find(currentFolderBis->files.begin(), currentFolderBis->files.end(), imageData.getImagePath());
+                auto it = std::find(currentFolderBis->getFilesPtr()->begin(), currentFolderBis->getFilesPtr()->end(), imageData.getImagePath());
                 if (it != currentFolderBis->files.end()) {
                     qDebug() << "find to remove";
-                    currentFolderBis->files.erase(it);
-                    // currentFolder->files.erase(it);
+                    // currentFolderBis->files.erase(it);
+                    currentFolder->getFilesPtr()->erase(it);
                 }
             } catch (const std::exception& e) {
                 std::cerr << "removeImageFromFolders" << e.what() << '\n';
@@ -1256,7 +1256,7 @@ std::string Data::getFolderPath(Folders* folder) {
     while (folder != &rootFolders) {
         path = "/" + folder->getName() + path;
 
-        Folders* parent = folder->parent;
+        Folders* parent = folder->getParent();
         if (parent == nullptr) {
             qCritical() << "getFolderPath folder has no parent";
             return "/";

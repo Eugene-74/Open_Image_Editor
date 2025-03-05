@@ -10,15 +10,15 @@
 #include "Verification.hpp"
 
 class Folders {
-    //    private:
-   public:
+   private:
     Folders* parent = nullptr;
     std::string name;
-    std::vector<Folders> folders;
-
     std::vector<std::string> files;
 
-    //    public:
+   public:
+    std::vector<Folders> folders;
+
+   public:
     Folders() = default;
 
     Folders(std::string name)
@@ -46,7 +46,8 @@ class Folders {
     std::vector<Folders>* getFolders();
     std::vector<Folders> getFoldersConst() const;
 
-    std::vector<std::string>* getFiles();
+    std::vector<std::string> getFiles();
+    std::vector<std::string>* getFilesPtr();
     std::vector<std::string> getFilesConst() const;
 
     Folders* getFolder(int index);

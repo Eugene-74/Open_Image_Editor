@@ -93,7 +93,11 @@ std::vector<Folders> Folders::getFoldersConst() const {
     return folders;
 }
 
-std::vector<std::string>* Folders::getFiles() {
+std::vector<std::string> Folders::getFiles() {
+    return files;
+}
+
+std::vector<std::string>* Folders::getFilesPtr() {
     return &files;
 }
 

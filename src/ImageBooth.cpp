@@ -21,7 +21,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
         }
         data->currentFolder = allImagesFolder;
     } else {
-        for (auto it = data->getCurrentFolders()->getFiles()->begin(); it != data->getCurrentFolders()->getFiles()->end(); ++it) {
+        for (auto it = data->getCurrentFolders()->getFilesPtr()->begin(); it != data->getCurrentFolders()->getFilesPtr()->end(); ++it) {
             std::string imagePath = *it;
             ImageData* imageData = data->imagesData.getImageData(imagePath);
 
@@ -101,24 +101,24 @@ void ImageBooth::openFolder(int index) {
     if (data->getCurrentFolders()->getFolders()->size() > index || index == -2) {
         if (index == -2) {
             // TODO utiliser getParent
-            if (data->getCurrentFolders()->parent == nullptr) {
+            if (data->getCurrentFolders()->getParent() == nullptr) {
                 qCritical() << "Error : getCurrentFolders parent is null";
             }
             // data->currentFolder = data->getCurrentFolders()->getParent();
-            data->currentFolder = data->getCurrentFolders()->parent;
+            data->currentFolder = data->getCurrentFolders()->getParent();
 
         } else {
             data->currentFolder = data->getCurrentFolders()->getFolder(index);
         }
 
-        for (int i = 0; i < data->currentFolder->getFiles()->size(); i++) {
-            data->getImagesData()->getCurrent()->push_back(data->imagesData.getImageData(data->currentFolder->getFiles()->at(i)));
+        for (int i = 0; i < data->currentFolder->getFilesPtr()->size(); i++) {
+            data->getImagesData()->getCurrent()->push_back(data->imagesData.getImageData(data->currentFolder->getFilesPtr()->at(i)));
         }
     } else {
         Folders* allImagesFolder = new Folders("*");
         // TODO utiliser setParent
-        // allImagesFolder->setParent(data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders()));
-        allImagesFolder->parent = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
+        allImagesFolder->setParent(data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders()));
+        // allImagesFolder->parent = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
         auto images = data->getImagesData()->get();
         for (auto it = images->begin(); it != images->end(); ++it) {
             ImageData* imageData = &(*it);
@@ -571,7 +571,7 @@ void ImageBooth::updateImages() {
                         ClickableLabel* folderButton = new ClickableLabel(data, ICON_PATH_FOLDER,
                                                                           QString::fromStdString(data->getCurrentFolders()->getFolder(folderNbr - 1)->getName()),
                                                                           this, imageSize, false, 0, true);
-                        folderButton->addLogo("#00FF00", "FFFFFF", data->getCurrentFolders()->getFolder(folderNbr - 1)->getFiles()->size());
+                        folderButton->addLogo("#00FF00", "FFFFFF", data->getCurrentFolders()->getFolder(folderNbr - 1)->getFilesPtr()->size());
 
                         connect(folderButton, &ClickableLabel::leftClicked, [this, folderNbr]() {
                             openFolder(folderNbr - 1);
