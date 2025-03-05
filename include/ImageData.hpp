@@ -31,19 +31,14 @@ class ImageData {
     long date = 0;
 
    public:
-   
-   ImageData()
-   : folders(Folders()), metaData(MetaData()), cropSizes(), orientation(), date(), persons(), personStatus() {}
-   
-   // !! necessaire sinon push_back ne fonctionne pas
-   ImageData(const ImageData& other)
-   : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), persons(other.persons), personStatus(other.personStatus) {
-}
-
-ImageData(const Folders folders)
+    ImageData()
+        : folders(Folders()), metaData(MetaData()), cropSizes(), orientation(), date(), persons(), personStatus() {}
+    ImageData(const Folders folders)
         : folders(folders) {}
-        
-    // Opérateur d'affectation
+    //    Copie
+    ImageData(const ImageData& other)
+        : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), persons(other.persons), personStatus(other.personStatus) {}
+
     ImageData& operator=(const ImageData& other);
 
     void print() const;
@@ -60,10 +55,10 @@ ImageData(const Folders folders)
     void setpersons(const std::vector<Person>& persons);
     
     PersonStatus getPersonStatus() const;
-    PersonStatus setPersonStatus(PersonStatus personStatus);
-    void setPersonStatusLoading();
-    void setPersonStatusNotLoaded();
-    void setPersonStatusLoaded();
+    static PersonStatus setPersonStatus(PersonStatus personStatus);
+    static void setPersonStatusLoading();
+    static void setPersonStatusNotLoaded();
+    static void setPersonStatusLoaded();
     bool isPersonStatusLoading();
     bool isPersonStatusNotLoaded();
     bool isPersonStatusLoaded();

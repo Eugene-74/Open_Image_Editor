@@ -177,7 +177,7 @@ void ImageData::load(std::ifstream& in) {
     in.read(reinterpret_cast<char*>(&personStatus), sizeof(personStatus));
     // TODO mettre autre part
     if (this->isPersonStatusLoading()) {
-        this->setPersonStatusNotLoaded();
+        setPersonStatusNotLoaded();
     }
 
     size_t personsSize;
@@ -210,14 +210,15 @@ ImageData::PersonStatus ImageData::setPersonStatus(PersonStatus personStatus) {
 }
 
 void ImageData::setPersonStatusLoading() {
-    this->setPersonStatus(PersonStatus::Loading);
+    setPersonStatus(PersonStatus::Loading);
 }
+
 void ImageData::setPersonStatusNotLoaded() {
-    this->setPersonStatus(PersonStatus::NotLoaded);
+    setPersonStatus(PersonStatus::NotLoaded);
 }
 
 void ImageData::setPersonStatusLoaded() {
-    this->setPersonStatus(PersonStatus::Loaded);
+    setPersonStatus(PersonStatus::Loaded);
 }
 
 bool ImageData::isPersonStatusLoading() {

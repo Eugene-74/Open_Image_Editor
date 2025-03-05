@@ -12,12 +12,10 @@ class ImagesData {
    private:
     int imageNumber = 0;
     std::unordered_map<std::string, ImageData*> imageMap;
+    std::vector<ImageData*> currentImagesData;
+    std::vector<ImageData> imagesData;
 
    public:
-    std::vector<ImageData> imagesData;
-    std::vector<ImageData*> currentImagesData;
-    // bool currentImagesDataSorted = false;
-
     ImagesData()
         : imageNumber(0) {}
 
@@ -31,13 +29,9 @@ class ImagesData {
 
     ImagesData& operator=(const ImagesData& other);
 
-    //  Définit le numéro de l'image actuel dans imagesData
     void setImageNumber(int nbr);
+    int getImageNumber() const;
 
-    //  Renvoie le numéro de l'image actuel dans imagesData
-    int getImageNumber();
-
-    // Affiche imagesData
     void print() const;
 
     // Permet d'ajouter une ImageData à imagesData
@@ -57,13 +51,13 @@ class ImagesData {
 
     // Permet de recuperer imagesData
     std::vector<ImageData>* get();
+    std::vector<ImageData> getConst() const;
+
     std::vector<ImageData*>* getCurrent();
 
     int getImageNumberInTotal();
     int getImageNumberInTotal(int imageNbrInCurrent);
     int getImageNumberInCurrent(int imageNbrInTotal);
-
-    std::vector<ImageData> getConst() const;
 
     int getImageDataIdInCurrent(std::string imagePath);
     int getImageDataId(std::string imagePath);

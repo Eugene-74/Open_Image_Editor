@@ -419,7 +419,7 @@ Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const 
         return const_cast<Folders*>(&currentFolder);
     }
     for (const auto& folder : currentFolder.folders) {
-        for (ImageData imageData : imagesData.imagesData) {
+        for (ImageData imageData : imagesData.getConst()) {
             for (Folders folderBis : imageData.getFolders()) {
                 if (folderBis.name == folder.name) {
                     return const_cast<Folders*>(&currentFolder);
@@ -441,7 +441,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
 
     int progress = 0;
 
-    for (auto& imageData : imagesData.imagesData) {
+    for (auto& imageData : imagesData.getConst()) {
         for (auto& folder : imageData.getFolders()) {
             std::string fileName = fs::path(imageData.getImagePath()).filename().string();
 
