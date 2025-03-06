@@ -118,11 +118,11 @@ ImageData* ImagesData::getImageData(std::string imagePath) {
 
     if (foundImageData != imageMap.end()) {
         ImageData* imageData = foundImageData->second;
-        if (imageMap[imagePath]->getpersons().size() > 0) {
-            qDebug() << "load person 5 : " << imageData->getImagePath();
-        }
-        qDebug() << "foundImageData : " << imagePath.c_str();
-        qDebug() << "persons : " << foundImageData->second->getpersons().size();
+        // if (imageMap[imagePath]->getpersons().size() > 0) {
+        //     qDebug() << "load person 5 : " << imageData->getImagePath();
+        // }
+        // qDebug() << "foundImageData : " << imagePath.c_str();
+        // qDebug() << "persons : " << foundImageData->second->getpersons().size();
         return imageData;
     }
     qDebug() << "not foundImageData : " << imagePath.c_str();

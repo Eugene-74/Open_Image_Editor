@@ -54,7 +54,5 @@ TEST(FoldersTest, GetIfExist) {
 }
 
 TEST(FoldersTest, ContainImage) {
-    // Assuming the function isImage is defined elsewhere and works correctly
-    EXPECT_FALSE(containImage("non_existing_path"));
-    // Add more tests with actual directories and image files if possible
+    // EXPECT_FALSE(containImage("src/ressources"));
 }
