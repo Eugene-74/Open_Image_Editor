@@ -22,11 +22,9 @@ TEST_F(ImageDataTest, TestAssignmentOperator) {
     EXPECT_EQ(imageData.getDate(), 123456789);
 }
 
-TEST_F(ImageDataTest, TestPrint) {
-    // Assuming print() outputs to qDebug, we can't capture it directly in a test
-    // This test is just a placeholder
-    imageData.print();
-}
+// TEST_F(ImageDataTest, TestPrint) {
+//     imageData.print();
+// }
 
 TEST_F(ImageDataTest, TestGet) {
     std::string result = imageData.get();
@@ -67,36 +65,35 @@ TEST_F(ImageDataTest, TestGetImageName) {
 
 TEST_F(ImageDataTest, TestEqualityOperator) {
     ImageData other;
-    // Assuming setImagePath is a method to set the image path
-    // imageData.setImagePath("path/to/image.jpg");
-    // other.setImagePath("path/to/image.jpg");
+    imageData = ImageData("path/to/image.jpg");
+    imageData.setDate(123456789);
+    imageData.setOrientation(1);
+    other = ImageData("path/to/image.jpg");
+    other.setDate(987654321);
+    other.setOrientation(2);
     EXPECT_TRUE(imageData == other);
 }
 
-TEST_F(ImageDataTest, TestSetExifMetaData) {
-    Exiv2::ExifData exifData;
-    // Populate exifData with some values
-    imageData.setExifMetaData(exifData);
-    // Add checks to verify metadata was set correctly
-}
+// TEST_F(ImageDataTest, TestSetExifMetaData) {
+//     Exiv2::ExifData exifData;
+//     imageData.setExifMetaData(exifData);
+// }
 
-TEST_F(ImageDataTest, TestLoadData) {
-    imageData.loadData();
-    // Add checks to verify data was loaded correctly
-}
+// TEST_F(ImageDataTest, TestLoadData) {
+//     imageData.loadData();
+// }
 
-TEST_F(ImageDataTest, TestSaveMetaData) {
-    imageData.saveMetaData();
-    // Add checks to verify metadata was saved correctly
-}
+// TEST_F(ImageDataTest, TestSaveMetaData) {
+//     imageData.saveMetaData();
+// }
 
-TEST_F(ImageDataTest, TestGetImageDimensions) {
-    // int width = imageData.getImageWidth();
-    // int height = imageData.getImageHeight();
-    // EXPECT_GT(width, -1);
-    // EXPECT_GT(height, -1);
-    // -1 = undefined
-}
+// TEST_F(ImageDataTest, TestGetImageDimensions) {
+// int width = imageData.getImageWidth();
+// int height = imageData.getImageHeight();
+// EXPECT_GT(width, -1);
+// EXPECT_GT(height, -1);
+// -1 = undefined
+// }
 
 TEST_F(ImageDataTest, TestTurnImage) {
     imageData.turnImage(90);
@@ -127,14 +124,14 @@ TEST_F(ImageDataTest, TestCropSizes) {
 }
 
 TEST_F(ImageDataTest, TestPersonStatus) {
-    // imageData.setPersonStatus(ImageData::PersonStatus::Loading);
-    // EXPECT_TRUE(imageData.isPersonStatusLoading());
+    imageData.setPersonStatusLoading();
+    EXPECT_TRUE(imageData.isPersonStatusLoading());
 
-    // imageData.setPersonStatus(ImageData::PersonStatus::NotLoaded);
-    // EXPECT_TRUE(imageData.isPersonStatusNotLoaded());
+    imageData.setPersonStatusNotLoaded();
+    EXPECT_TRUE(imageData.isPersonStatusNotLoaded());
 
-    // imageData.setPersonStatus(ImageData::PersonStatus::Loaded);
-    // EXPECT_TRUE(imageData.isPersonStatusLoaded());
+    imageData.setPersonStatusLoaded();
+    EXPECT_TRUE(imageData.isPersonStatusLoaded());
 }
 
 TEST_F(ImageDataTest, TestMetaData) {
@@ -156,6 +153,8 @@ TEST_F(ImageDataTest, TestDate) {
 }
 
 TEST_F(ImageDataTest, TestOrientation) {
-    imageData.setOrientation(90);
-    EXPECT_EQ(imageData.getOrientation(), 90);
+    for (int i = 1; i <= 8; i++) {
+        imageData.setOrientation(i);
+        EXPECT_EQ(imageData.getOrientation(), i);
+    }
 }

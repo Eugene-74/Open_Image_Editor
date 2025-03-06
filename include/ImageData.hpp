@@ -32,9 +32,13 @@ class ImageData {
    public:
     ImageData()
         : folders(Folders()), cropSizes(), orientation(), date() {}
+
     ImageData(const Folders folders)
         : folders(folders) {}
-    //    Copie
+
+    ImageData(std::string imagePath)
+        : folders(Folders(imagePath)) {}
+
     ImageData(const ImageData& other)
         : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), persons(other.persons), personStatus(other.personStatus) {}
 

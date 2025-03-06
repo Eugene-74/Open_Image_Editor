@@ -14,13 +14,7 @@ ImageData& ImageData::operator=(const ImageData& other) {
 }
 
 bool ImageData::operator==(const ImageData& other) const {
-    return this->folders == other.folders &&
-           this->metaData == other.metaData &&
-           this->cropSizes == other.cropSizes &&
-           this->orientation == other.orientation &&
-           this->persons == other.persons &&
-           this->personStatus == other.personStatus &&
-           this->date == other.date;
+    return this->folders.getName() == other.folders.getName();
 }
 
 void ImageData::print() const {
@@ -250,6 +244,10 @@ void ImageData::setpersons(const std::vector<Person>& persons) {
 }
 
 void ImageData::setDate(long date) {
+    if (date < 0) {
+        qWarning() << "Date invalide : " << date;
+        date = 0;
+    }
     this->date = date;
 }
 
@@ -258,6 +256,10 @@ long ImageData::getDate() const {
 }
 
 void ImageData::setOrientation(int orientation) {
+    if (orientation < 0 || orientation > 8) {
+        qWarning() << "Orientation invalide : " << orientation;
+        orientation = 1;
+    }
     this->orientation = orientation;
 }
 

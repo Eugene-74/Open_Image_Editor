@@ -10,6 +10,6 @@ cmake -G "MinGW Makefiles" ..
 rm -rf CMakeCache.txt CMakeFiles
 cmake --build .
 
-ctest --verbose
+ctest --output-on-failure
 
 endlocal

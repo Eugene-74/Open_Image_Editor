@@ -87,10 +87,15 @@ bool MetaData::modifyExifValue(const std::string& key, const std::string& newVal
     // Chercher la clé dans les métadonnées
     auto pos = exifMetaData.findKey(exifKey);
     if (pos != exifMetaData.end()) {
-        pos->setValue(newValue);
-
+        try {
+            pos->setValue(newValue);  // Assigner la nouvelle valeur
+            return true;
+        } catch (const Exiv2::Error& e) {
+            qDebug() << "Invalid value for key " << key.c_str() << ": " << e.what();
+            return false;
+        }
         return true;
-    } else {
+    }
         try {
             Exiv2::Exifdatum newDatum(exifKey);
             newDatum.setValue(newValue);  // Assigner la nouvelle valeur
@@ -102,7 +107,6 @@ bool MetaData::modifyExifValue(const std::string& key, const std::string& newVal
             qDebug() << "Erreur lors de l'ajout de la clé : " << e.what();
             return false;
         }
-    }
 }
 
 // Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
