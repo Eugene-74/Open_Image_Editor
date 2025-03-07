@@ -20,6 +20,8 @@ pacman -Syu
 
 pacman -S base-devel mingw-w64-x86_64-toolchain
 
+pacman -S mingw-w64-x86_64-cmake
+
 pacman -S mingw-w64-x86_64-opencv
 
 pacman -S mingw-w64-x86_64-qt6
@@ -33,6 +35,8 @@ pacman -S mingw-w64-x86_64-curl
 pacman -S mingw-w64-x86_64-jsoncpp
 
 pacman -S mingw-w64-x86_64-dlib
+
+pacman -S mingw-w64-x86_64-gtest
 
 ```
 
