@@ -10,12 +10,10 @@ cd build
 
 if exist %APP_NAME%-%APP_VERSION%.exe del %APP_NAME%-%APP_VERSION%.exe
 
-@REM cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Build ..
-cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Build ..
+cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Build -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache ..
 
 
-@REM cmake --build .
-mingw32-make -j %NUMBER_OF_PROCESSORS% 
+cmake --build .
 
 ctest --output-on-failure
 if %errorlevel% neq 0 (
