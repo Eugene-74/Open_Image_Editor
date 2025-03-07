@@ -9,6 +9,16 @@ endforeach()
 project(${APP_NAME}-${APP_VERSION} VERSION ${APP_VERSION})
 
 
+find_package(CUDA REQUIRED)
+if(CUDA_FOUND)
+    message(STATUS "CUDA found, enabling GPU acceleration")
+    include_directories(${CUDA_INCLUDE_DIRS})
+    file(GLOB_RECURSE CUDA_SOURCES "src/*.cu")
+else()
+    message(STATUS "CUDA not found, proceeding without GPU acceleration")
+    set(CUDA_SOURCES "")
+endif()
+
 if(WIN32)
     message(STATUS "Configuring for Windows")
     set(CMAKE_PREFIX_PATH "C:/msys64/mingw64")
@@ -117,8 +127,9 @@ if(WIN32)
     #         INTERFACE_INCLUDE_DIRECTORIES "${OpenCL_INCLUDE_DIR}"
     #     )
     # endif()
-
-    add_library(OpenImageEditorLib ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
+    
+    # add_library(OpenImageEditorLib ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
+    add_library(OpenImageEditorLib ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES} ${CUDA_SOURCES})
 
     target_link_libraries(OpenImageEditorLib 
         PRIVATE
@@ -131,9 +142,11 @@ if(WIN32)
         ${OpenCV_LIBS}
         ${EXIV2_LIBRARIES}
         ${HEIF_LIBRARIES}
+            
+        ${CUDA_LIBRARIES}
         # OpenCL::OpenCL
     )
-
+    
     add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
     target_link_libraries(${PROJECT_NAME} PRIVATE OpenImageEditorLib)
 

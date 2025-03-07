@@ -38,6 +38,9 @@ pacman -S mingw-w64-x86_64-dlib
 
 pacman -S mingw-w64-x86_64-gtest
 
+pacman -S mingw-w64-x86_64-ccache
+
+
 ```
 
 When all in well installed just launch scripts\compile.bat
