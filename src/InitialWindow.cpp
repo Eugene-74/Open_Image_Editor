@@ -559,19 +559,15 @@ void InitialWindow::openOption() {
 }
 
 bool isDarkMode() {
-    bool darkMode = false;
     HKEY hKey;
-    LONG result = RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", 0, KEY_READ, &hKey);
+    DWORD value = 0;
+    DWORD valueSize = sizeof(value);
+    LONG result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", 0, KEY_READ, &hKey);
     if (result == ERROR_SUCCESS) {
-        DWORD value = 0;
-        DWORD valueSize = sizeof(value);
-        result = RegQueryValueEx(hKey, L"AppsUseLightTheme", nullptr, nullptr, reinterpret_cast<LPBYTE>(&value), &valueSize);
-        if (result == ERROR_SUCCESS) {
-            darkMode = (value == 0);
-        }
+        result = RegQueryValueExW(hKey, L"AppsUseLightTheme", nullptr, nullptr, reinterpret_cast<LPBYTE>(&value), &valueSize);
         RegCloseKey(hKey);
     }
-    return darkMode;
+    return (result == ERROR_SUCCESS) && (value == 0);
 }
 
 void InitialWindow::resizeEvent(QResizeEvent* event) {
