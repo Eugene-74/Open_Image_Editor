@@ -723,7 +723,6 @@ void Data::sortCurrentImagesData() {
     // TODO mieux estimer X( estimatedSteps
     int estimatedSteps = static_cast<int>(n * std::log(n) * 3);
     progressDialog.setMaximum(estimatedSteps);
-    // progressDialog.show();
     progressDialog.hide();
 
     QApplication::processEvents();
@@ -739,7 +738,6 @@ void Data::sortCurrentImagesData() {
         }
         return firstImageData->getDate() > secondImageData->getDate();
     });
-
     timer.invalidate();
 }
 

@@ -35,6 +35,15 @@ bool is_slow_cpu() {
     return elapsed.count() > 1.0;
 }
 
+bool isCudaAvailable() {
+    try {
+        dlib::cuda::get_num_devices();
+        return true;
+    } catch (dlib::cuda_error& e) {
+        return false;
+    }
+}
+
 bool startDlib() {
     return true;
 }
@@ -59,7 +68,7 @@ cv::Mat QImageToCvMat(const QImage& inImage) {
     return cv::Mat();
 }
 
-std::vector<Person> detectFaces(std::string imagePath, QImage image) {
+std::vector<Person> detectFacesCPU(std::string imagePath, QImage image) {
     try {
         array2d<unsigned char> img;
         cv::Mat mat = QImageToCvMat(image);
@@ -70,11 +79,8 @@ std::vector<Person> detectFaces(std::string imagePath, QImage image) {
         cv::Mat resizedMat;
         cv::resize(mat, resizedMat, cv::Size(), invNewSize, invNewSize);
 
-        // qDebug() << "Image dimensions: " << mat.cols << "x" << mat.rows;
         cv::Mat gray;
         cv::cvtColor(resizedMat, gray, cv::COLOR_BGR2GRAY);
-
-        // qDebug() << "resized Image dimensions: " << resizedMat.cols << "x" << resizedMat.rows;
 
         dlib::cv_image<unsigned char> dlibImage(gray);
 
@@ -104,9 +110,60 @@ std::vector<Person> detectFaces(std::string imagePath, QImage image) {
     return {};
 }
 
+std::vector<Person> detectFacesCUDA(std::string imagePath, QImage image) {
+    qDebug() << "not working";
+    try {
+        array2d<unsigned char> img;
+        cv::Mat mat = QImageToCvMat(image);
+
+        int newSize = std::max(1, std::min(mat.cols, mat.rows) / 1000);
+        float invNewSize = 1.0f / newSize;
+
+        cv::Mat resizedMat;
+        cv::resize(mat, resizedMat, cv::Size(), invNewSize, invNewSize);
+
+        cv::Mat gray;
+        cv::cvtColor(resizedMat, gray, cv::COLOR_BGR2GRAY);
+
+        dlib::cv_image<unsigned char> dlibImage(gray);
+
+        // Use CUDA for face detection
+        frontal_face_detector detector = get_frontal_face_detector();
+        std::vector<rectangle> dets = detector(dlibImage);
+
+        qDebug() << "Number of faces detected: " << dets.size();
+
+        std::vector<Person> persons;
+
+        for (const auto& d : dets) {
+            Person person;
+            cv::Rect face;
+            face.x = d.left() * newSize;
+            face.y = d.top() * newSize;
+            face.width = d.width() * newSize;
+            face.height = d.height() * newSize;
+            person.setFace(face);
+            person.setName("Unknown");
+            persons.push_back(person);
+        }
+        return persons;
+    } catch (std::exception& e) {
+        qDebug() << "Exception: " << e.what();
+    }
+    return {};
+}
+
 void detectFacesAsync(std::string imagePath, QImage image, std::function<void(std::vector<Person>)> callback) {
     std::thread([=]() {
-        auto persons = detectFaces(imagePath, image);
+        std::vector<Person> persons;
+        if (isCudaAvailable()) {
+            qDebug() << "launch CUDA";
+            persons = detectFacesCUDA(imagePath, image);
+        } else {
+            qDebug() << "launch CPU";
+
+            persons = detectFacesCPU(imagePath, image);
+        }
         try {
             callback(persons);
         } catch (const std::exception& e) {

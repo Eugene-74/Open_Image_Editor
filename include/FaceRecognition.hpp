@@ -1,5 +1,6 @@
 #pragma once
 
+#include <dlib/cuda/cuda_dlib.h>
 #include <dlib/dnn.h>
 #include <dlib/image_processing/frontal_face_detector.h>
 #include <dlib/opencv.h>
@@ -32,5 +33,7 @@ class Person {
 
 bool is_slow_cpu();
 bool startDlib();
-std::vector<Person> detectFaces(std::string imagePath, QImage image);
+bool isCudaAvailable();
+std::vector<Person> detectFacesCUDA(std::string imagePath, QImage image);
+std::vector<Person> detectFacesCPU(std::string imagePath, QImage image);
 void detectFacesAsync(std::string imagePath, QImage image, std::function<void(std::vector<Person>)> callback);
