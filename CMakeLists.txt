@@ -8,17 +8,6 @@ endforeach()
 
 project(${APP_NAME}-${APP_VERSION} VERSION ${APP_VERSION})
 
-
-find_package(CUDA REQUIRED)
-if(CUDA_FOUND)
-    message(STATUS "CUDA found, enabling GPU acceleration")
-    include_directories(${CUDA_INCLUDE_DIRS})
-    file(GLOB_RECURSE CUDA_SOURCES "src/*.cu")
-else()
-    message(STATUS "CUDA not found, proceeding without GPU acceleration")
-    set(CUDA_SOURCES "")
-endif()
-
 if(WIN32)
     message(STATUS "Configuring for Windows")
     set(CMAKE_PREFIX_PATH "C:/msys64/mingw64")
@@ -106,30 +95,8 @@ if(WIN32)
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Releasing translations"
     )
-
-     # Find OpenCL if available
-    # find_package(OpenCL)
-    # if(OpenCL_FOUND)
-    #     message(STATUS "OpenCL found, enabling GPU acceleration")
-    #     include_directories(${OpenCL_INCLUDE_DIRS})
-    #     file(GLOB_RECURSE OPENCL_SOURCES "src/*.cl")
-    # else()
-    #     message(STATUS "OpenCL not found, proceeding without GPU acceleration")
-    #     set(OPENCL_SOURCES "")
-    #     # Manually specify OpenCL paths for MSYS2
-    #     set(OpenCL_INCLUDE_DIR "C:/msys64/mingw64/include")
-    #     set(OpenCL_LIBRARY "C:/msys64/mingw64/lib/OpenCL.dll.a")
-    #     include_directories(${OpenCL_INCLUDE_DIR})
-    #     link_directories(${OpenCL_LIBRARY})
-    #     add_library(OpenCL::OpenCL UNKNOWN IMPORTED)
-    #     set_target_properties(OpenCL::OpenCL PROPERTIES
-    #         IMPORTED_LOCATION "${OpenCL_LIBRARY}"
-    #         INTERFACE_INCLUDE_DIRECTORIES "${OpenCL_INCLUDE_DIR}"
-    #     )
-    # endif()
     
-    # add_library(OpenImageEditorLib ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
-    add_library(OpenImageEditorLib ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES} ${CUDA_SOURCES})
+    add_library(OpenImageEditorLib ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
 
     target_link_libraries(OpenImageEditorLib 
         PRIVATE
@@ -142,9 +109,6 @@ if(WIN32)
         ${OpenCV_LIBS}
         ${EXIV2_LIBRARIES}
         ${HEIF_LIBRARIES}
-            
-        ${CUDA_LIBRARIES}
-        # OpenCL::OpenCL
     )
     
     add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
