@@ -26,7 +26,7 @@ InitialWindow::InitialWindow() {
     });
 
     QTimer::singleShot(1, this, [this]() {
-        qDebug() << "Application started at:" << getCurrentFormattedDate();
+        qDebug() << "Application started";
         data = new Data();
 
         QTranslator translator;

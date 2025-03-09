@@ -1,16 +1,47 @@
 #include <gtest/gtest.h>
 
-// #include "Const.hpp"
+#include <filesystem>
+
 #include "Conversion.hpp"
+
+namespace fs = std::filesystem;
 
 TEST(ConversionTest, readHeicAndHeif) {
     std::string imagePath;
-    imagePath = std::string(TESTS_PATH.toStdString()) + "/images/heic.heic";
+    imagePath = TESTS_PATH.toStdString() + "/images/heic.heic";
     EXPECT_FALSE(readHeicAndHeif(imagePath).isNull());
 
-    imagePath = std::string(TESTS_PATH.toStdString()) + "/images/heif.heif";
+    imagePath = TESTS_PATH.toStdString() + "/images/heif.heif";
     EXPECT_FALSE(readHeicAndHeif(imagePath).isNull());
 }
+
+// TEST(ConversionTest, writeHeicAndHeif) {
+//     std::string imagePath;
+//     std::string outPath;
+//     QImage image;
+
+//     imagePath = TESTS_PATH.toStdString() + "/images/heic.heic";
+//     outPath = TESTS_PATH.toStdString() + "images/heicWriteHeicAndHeif.heic";
+//     image = readHeicAndHeif(imagePath);
+
+//     EXPECT_TRUE(writeHeicAndHeif(image, outPath));
+//     EXPECT_FALSE(readHeicAndHeif(outPath).isNull());
+
+//     if (fs::exists(outPath)) {
+//         fs::remove(outPath);
+//     }
+
+//     imagePath = TESTS_PATH.toStdString() + "/images/heif.heif";
+//     outPath = TESTS_PATH.toStdString() + "images/heicWriteHeicAndHeif.heif";
+//     image = readHeicAndHeif(imagePath);
+
+//     EXPECT_TRUE(writeHeicAndHeif(image, outPath));
+//     EXPECT_FALSE(readHeicAndHeif(outPath).isNull());
+
+//     if (fs::exists(outPath)) {
+//         fs::remove(outPath);
+//     }
+// }
 
 TEST(ConversionTest, convertion) {
     for (const auto& imageFormat1 : IMAGE_CONVERTION) {

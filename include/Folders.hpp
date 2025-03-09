@@ -56,9 +56,6 @@ class Folders {
     void setParent(Folders* parent);
 };
 
-bool createIfNotExist(Folders*& currentFolder, const std::string& path);
 bool getIfExist(Folders* currentFolder, const std::string& path);
-
-void addFiles(Folders* root, const std::string& path);
 
 bool containImage(const std::string& path);

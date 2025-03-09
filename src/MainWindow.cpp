@@ -2,7 +2,7 @@
 
 MainWindow::MainWindow(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
-    qDebug() << "MainWindow started at:" << getCurrentFormattedDate();
+    qDebug() << "MainWindow started";
 
     parent->setWindowTitle(MAIN_WINDOW_WINDOW_NAME);
 

@@ -89,6 +89,45 @@ QImage readHeicAndHeif(const std::string& filename) {
     return qImage;
 }
 
+bool writeHeicAndHeif(const QImage& image, const std::string& imagePath) {
+    struct heif_context* ctx = heif_context_alloc();
+    struct heif_encoder* encoder;
+    struct heif_image* img;
+
+    heif_context_get_encoder_for_format(ctx, heif_compression_HEVC, &encoder);
+
+    heif_image_create(image.width(), image.height(), heif_colorspace_RGB, heif_chroma_interleaved_RGB, &img);
+
+    uint8_t* data = heif_image_get_plane(img, heif_channel_interleaved, nullptr);
+    for (int y = 0; y < image.height(); ++y) {
+        memcpy(data + y * image.bytesPerLine(), image.scanLine(y), image.bytesPerLine());
+    }
+
+    struct heif_error err = heif_context_encode_image(ctx, img, encoder, nullptr, nullptr);
+    if (err.code != heif_error_Ok) {
+        qCritical() << "Error: Unable to encode HEIC/HEIF image: " << imagePath.c_str();
+        heif_image_release(img);
+        heif_encoder_release(encoder);
+        heif_context_free(ctx);
+        return false;
+    }
+
+    err = heif_context_write_to_file(ctx, imagePath.c_str());
+    if (err.code != heif_error_Ok) {
+        qCritical() << "Error: Unable to write HEIC/HEIF file: " << imagePath.c_str();
+        heif_image_release(img);
+        heif_encoder_release(encoder);
+        heif_context_free(ctx);
+        return false;
+    }
+
+    heif_image_release(img);
+    heif_encoder_release(encoder);
+    heif_context_free(ctx);
+
+    return true;
+}
+
 void launchConversionDialogAndConvert(const QString& inputImagePath) {
     ConversionDialog dialog;
     if (dialog.exec() == QDialog::Accepted) {

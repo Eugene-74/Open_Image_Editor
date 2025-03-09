@@ -1,58 +1,90 @@
-// #include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
-// #include <fstream>
+#include <fstream>
 
-// #include "Folders.hpp"
+#include "Folders.hpp"
 
-// TEST(FoldersTest, AddFolder) {
-//     Folders root("root");
-//     root.addFolder("child1");
-//     root.addFolder("child2");
+TEST(FoldersTest, AddFolder) {
+    Folders root("root");
+    root.addFolder("child1");
+    root.addFolder("child2");
 
-//     ASSERT_EQ(root.getFolders()->size(), 2);
-//     EXPECT_EQ(root.getFolders()->at(0).getName(), "child1");
-//     EXPECT_EQ(root.getFolders()->at(1).getName(), "child2");
-// }
+    ASSERT_EQ(root.getFolders()->size(), 2);
+    EXPECT_EQ(root.getFolders()->at(0).getName(), "child1");
+    EXPECT_EQ(root.getFolders()->at(1).getName(), "child2");
+}
 
-// TEST(FoldersTest, AddFile) {
-//     Folders root("root");
-//     root.addFile("file1.txt");
-//     root.addFile("file2.txt");
+TEST(FoldersTest, modifyParent) {
+    Folders* parent = new Folders("parent");
 
-//     ASSERT_EQ(root.getFiles().size(), 2);
-//     EXPECT_EQ(root.getFiles().at(0), "file1.txt");
-//     EXPECT_EQ(root.getFiles().at(1), "file2.txt");
-// }
+    Folders root("root");
+    root.addFolder("child");
 
-// TEST(FoldersTest, SaveAndLoad) {
-//     Folders root("root");
-//     root.addFolder("child1");
-//     root.addFile("file1.txt");
+    EXPECT_EQ(root.getFolder(0)->getParent()->getName(), "root");
 
-//     std::ofstream out("test_save.dat", std::ios::binary);
-//     root.save(out);
-//     out.close();
+    root.setParent(parent);
 
-//     Folders loadedRoot;
-//     std::ifstream in("test_save.dat", std::ios::binary);
-//     loadedRoot.load(in);
-//     in.close();
+    EXPECT_EQ(root.getParent()->getName(), "parent");
+}
 
-//     EXPECT_EQ(loadedRoot.getName(), "root");
-//     ASSERT_EQ(loadedRoot.getFolders()->size(), 1);
-//     EXPECT_EQ(loadedRoot.getFolders()->at(0).getName(), "child1");
-//     ASSERT_EQ(loadedRoot.getFiles().size(), 1);
-//     EXPECT_EQ(loadedRoot.getFiles().at(0), "file1.txt");
-// }
+TEST(FoldersTest, modifyFolderPtr) {
+    Folders* parent = new Folders("parent");
 
-// TEST(FoldersTest, GetIfExist) {
-//     Folders root("root");
-//     root.addFolder("child1");
+    Folders root("root");
+    root.addFolder("child1");
 
-//     EXPECT_TRUE(getIfExist(&root, "child1"));
-//     EXPECT_FALSE(getIfExist(&root, "child2"));
-// }
+    root.getFolder(0)->setParent(parent);
 
-// TEST(FoldersTest, ContainImage) {
-//     // EXPECT_FALSE(containImage("src/ressources"));
-// }
+    EXPECT_EQ(root.getFolder(0)->getParent()->getName(), "parent");
+}
+
+TEST(FoldersTest, AddFile) {
+    Folders root("root");
+    root.addFile("image1.jpeg");
+    root.addFile("image2.jpeg");
+
+    ASSERT_EQ(root.getFiles().size(), 2);
+    EXPECT_EQ(root.getFiles().at(0), "image1.jpeg");
+    EXPECT_EQ(root.getFiles().at(1), "image2.jpeg");
+}
+
+TEST(FoldersTest, SaveAndLoad) {
+    Folders root("root");
+    root.addFolder("folder1");
+    root.addFile("image1.jpeg");
+
+    std::ofstream out(TESTS_PATH.toStdString() + "/test_save.dat", std::ios::binary);
+    root.save(out);
+    out.close();
+
+    Folders loadedRoot;
+    std::ifstream in(TESTS_PATH.toStdString() + "/test_save.dat", std::ios::binary);
+    loadedRoot.load(in);
+    in.close();
+
+    EXPECT_EQ(loadedRoot.getName(), "root");
+    ASSERT_EQ(loadedRoot.getFolders()->size(), 1);
+    EXPECT_EQ(loadedRoot.getFolders()->at(0).getName(), "folder1");
+    ASSERT_EQ(loadedRoot.getFiles().size(), 1);
+    EXPECT_EQ(loadedRoot.getFiles().at(0), "image1.jpeg");
+}
+
+TEST(FoldersTest, GetIfExist) {
+    Folders root("root");
+    root.addFolder("folder1");
+
+    EXPECT_TRUE(getIfExist(&root, "folder1"));
+    EXPECT_FALSE(getIfExist(&root, "folder2"));
+}
+
+TEST(FoldersTest, ContainImage) {
+    EXPECT_TRUE(containImage(TESTS_PATH.toStdString() + "/images"));
+    QDir dir(TESTS_PATH + "/test");
+    dir.mkpath(".");
+
+    EXPECT_FALSE(containImage(TESTS_PATH.toStdString() + "/test"));
+
+    if (dir.exists()) {
+        dir.removeRecursively();
+    }
+}

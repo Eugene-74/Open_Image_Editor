@@ -12,7 +12,6 @@
 #include "Box.hpp"
 #include "Const.hpp"
 #include "Data.hpp"
-#include "Date.hpp"
 #include "FaceRecognition.hpp"
 #include "ImageBooth.hpp"
 #include "ImageEditor.hpp"
