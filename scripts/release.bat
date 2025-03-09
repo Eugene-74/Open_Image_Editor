@@ -8,9 +8,15 @@ for /f "tokens=1,2 delims==" %%a in (%~dp0..\AppConfig.txt) do (
 mkdir build
 cd build
 
-cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
-    
-mingw32-make -j %NUMBER_OF_PROCESSORS% 
+cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CUDA_COMPILER=nvcc -DCMAKE_CUDA_ARCHITECTURES=all ..
+
+cmake --build . 
+
+ctest --output-on-failure
+if %errorlevel% neq 0 (
+    echo Tests failed, aborting execution.
+    exit /b %errorlevel%
+)
 
 rmdir /s /q release
 

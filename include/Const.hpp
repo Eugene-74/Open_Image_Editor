@@ -15,6 +15,7 @@ const QString HOME_PATH = QStandardPaths::writableLocation(QStandardPaths::HomeL
 const QString CACHE_PATH = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 const QString APPDATA_PATH = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 const QString DOWNLOAD_PATH = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+const QString TESTS_PATH = DOCUMENTS_PATH + "/MesDocuments/git/Open_Image_Editor/tests/ressources";
 
 const int PREVIEW_NBR = 3;
 const int PRE_LOAD_RADIUS = 5;  // on en precharge 2 de plus comme ça l'utilisateut ne vois meme pas les images charger
@@ -53,6 +54,7 @@ const std::map<std::string, Option> DEFAULT_OPTIONS = {
 
     // {THUMBNAIL_PATH_OPTION, Option("directory", SAVE_PATH + "/thumbnails")},
 };
+const std::vector<std::string> IMAGE_CONVERTION = {"jpg", "jpeg", "png", "webp", "tiff", "bmp"};
 
 const std::vector<std::string> IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".svg", ".tiff", ".bmp"};
 const std::vector<std::string> TURNABLE_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".tiff", ".bmp"};

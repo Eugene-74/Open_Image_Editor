@@ -379,6 +379,8 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
             int start = std::min(imageShiftSelectedInCurrent, nbr);
             int end = std::max(imageShiftSelectedInCurrent, nbr);
+            // TODO probleme ne garde pas la premiere
+            qDebug() << start << " : " << end;
             for (int i = start; i <= end; ++i) {
                 int imageNumberInTotal = data->getImagesData()->getImageNumberInTotal(i);
                 auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNumberInTotal);

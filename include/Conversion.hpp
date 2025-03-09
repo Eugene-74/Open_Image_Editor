@@ -54,6 +54,6 @@ class ConversionDialog : public QDialog {
 void launchConversionDialogAndConvert(const QString& inputImagePath);
 QString launchConversionDialog();
 void convertion(const QString& inputImagePath, const QString& selectedFormat);
-
+bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath);
 QImage readHeicAndHeif(const std::string& filename);
 QImage readRaw(const std::string& filename);

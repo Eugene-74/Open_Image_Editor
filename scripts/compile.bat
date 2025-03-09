@@ -15,12 +15,6 @@ cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Build -DCMAKE_C_COMPILER_LAUNCHER=ccache -DC
 
 cmake --build .
 
-ctest --output-on-failure
-if %errorlevel% neq 0 (
-    echo Tests failed, aborting execution.
-    exit /b %errorlevel%
-)
-
 %APP_NAME%-%APP_VERSION%.exe 
 
 endlocal

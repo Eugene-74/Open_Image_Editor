@@ -145,7 +145,7 @@ void ImageData::save(std::ofstream& out) const {
     size_t personsSize = persons.size();
     out.write(reinterpret_cast<const char*>(&personsSize), sizeof(personsSize));
     for (const auto& person : persons) {
-        qDebug() << "save person : " << folders.getName();
+        // qDebug() << "save person : " << folders.getName();
         person.save(out);
     }
 }

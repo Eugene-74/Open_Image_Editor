@@ -25,15 +25,16 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
             qWarning() << "Could not write the image : " << QString::fromStdString(outputPath);
             return false;
         }
+        if (isExifPath(inputPath) && isExifPath(outputPath)) {
+            Exiv2::Image::AutoPtr exivOutputImage = Exiv2::ImageFactory::open(outputPath);
+            exivOutputImage->readMetadata();
 
-        Exiv2::Image::AutoPtr exivOutputImage = Exiv2::ImageFactory::open(outputPath);
-        exivOutputImage->readMetadata();
+            exivOutputImage->setExifData(exivImage->exifData());
+            exivOutputImage->setIptcData(exivImage->iptcData());
+            exivOutputImage->setXmpData(exivImage->xmpData());
 
-        exivOutputImage->setExifData(exivImage->exifData());
-        exivOutputImage->setIptcData(exivImage->iptcData());
-        exivOutputImage->setXmpData(exivImage->xmpData());
-
-        exivOutputImage->writeMetadata();
+            exivOutputImage->writeMetadata();
+        }
 
         qInfo() << "Image converted successfully with metadata";
         return true;

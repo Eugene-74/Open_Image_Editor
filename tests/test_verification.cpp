@@ -25,18 +25,18 @@ TEST(VerificationTest, IsMirrorable) {
     EXPECT_FALSE(isMirrorable("test.mp4"));
 }
 
-TEST(VerificationTest, IsExifTurnOrMirror) {
-    EXPECT_TRUE(isExifTurnOrMirror(".jpg"));
-    EXPECT_TRUE(isExifTurnOrMirror(".jpeg"));
-    EXPECT_FALSE(isExifTurnOrMirror(".png"));
-    EXPECT_FALSE(isExifTurnOrMirror(".bmp"));
+TEST(VerificationTest, isExif) {
+    EXPECT_TRUE(isExif(".jpg"));
+    EXPECT_TRUE(isExif(".jpeg"));
+    EXPECT_FALSE(isExif(".png"));
+    EXPECT_FALSE(isExif(".bmp"));
 }
 
-TEST(VerificationTest, IsRealTurnOrMirror) {
-    EXPECT_TRUE(isRealTurnOrMirror(".png"));
-    EXPECT_TRUE(isRealTurnOrMirror(".bmp"));
-    EXPECT_FALSE(isRealTurnOrMirror(".jpeg"));
-    EXPECT_FALSE(isRealTurnOrMirror(".tiff"));
+TEST(VerificationTest, isReal) {
+    EXPECT_TRUE(isReal(".png"));
+    EXPECT_TRUE(isReal(".bmp"));
+    EXPECT_FALSE(isReal(".jpeg"));
+    EXPECT_FALSE(isReal(".tiff"));
 }
 
 TEST(VerificationTest, IsHeicOrHeif) {

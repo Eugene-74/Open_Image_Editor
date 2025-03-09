@@ -80,39 +80,40 @@ if(WIN32)
     )
     qt6_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        target_link_options(${PROJECT_NAME} PRIVATE -mwindows)
-    endif()
-
+    
     add_custom_target(update_translations
-        COMMAND lupdate-qt6 ${SOURCES} -ts ${TS_FILES}
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Updating translations"
+    COMMAND lupdate-qt6 ${SOURCES} -ts ${TS_FILES}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Updating translations"
     )
-
+    
     add_custom_target(release_translations
-        COMMAND lrelease-qt6 ${TS_FILES}
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Releasing translations"
+    COMMAND lrelease-qt6 ${TS_FILES}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Releasing translations"
     )
     
     add_library(OpenImageEditorLib ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
-
+    
     target_link_libraries(OpenImageEditorLib 
-        PRIVATE
-        Qt6::Core
-        Qt6::Gui
-        Qt6::Widgets
-        CURL::libcurl 
-        jsoncpp_lib
-        dlib::dlib
-        ${OpenCV_LIBS}
-        ${EXIV2_LIBRARIES}
-        ${HEIF_LIBRARIES}
+    PRIVATE
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
+    CURL::libcurl 
+    jsoncpp_lib
+    dlib::dlib
+    ${OpenCV_LIBS}
+    ${EXIV2_LIBRARIES}
+    ${HEIF_LIBRARIES}
     )
     
     add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
     target_link_libraries(${PROJECT_NAME} PRIVATE OpenImageEditorLib)
+    
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        target_link_options(${PROJECT_NAME} PRIVATE -mwindows)
+    endif()
 
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs)

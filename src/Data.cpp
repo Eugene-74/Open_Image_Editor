@@ -109,7 +109,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     if (rotation && imagePath.at(0) != ':') {
         if (imageData != nullptr) {
             std::string extension = imageData->getImageExtension();
-            if (isExifTurnOrMirror(extension)) {
+            if (isExif(extension)) {
                 image = rotateQImage(image, imageData);
             }
         }
@@ -553,9 +553,9 @@ void Data::saveData() {
     size_t imagesDataSize = imagesData.get()->size();
     outFile.write(reinterpret_cast<const char*>(&imagesDataSize), sizeof(imagesDataSize));
     for (auto* imageData : *imagesData.get()) {
-        if (imageData->getpersons().size() > 0) {
-            qDebug() << "save person 1 : " << imageData->getImagePath();
-        }
+        // if (imageData->getpersons().size() > 0) {
+        //     qDebug() << "save person 1 : " << imageData->getImagePath();
+        // }
         imageData->save(outFile);
     }
 
@@ -754,7 +754,7 @@ void LoadImageTask::run() {
 }
 
 void Data::rotateLeft(int nbr, std::string extension, std::function<void()> reload, bool action) {
-    if (isExifTurnOrMirror(extension)) {
+    if (isExif(extension)) {
         exifRotate(nbr, Const::Rotation::LEFT, reload);
         if (action) {
             addAction(
@@ -781,7 +781,7 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
                     });
                 });
         }
-    } else if (isRealTurnOrMirror(extension)) {
+    } else if (isReal(extension)) {
         realRotate(nbr, Const::Rotation::LEFT, reload);
         if (action) {
             addAction(
@@ -812,7 +812,7 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
 }
 
 void Data::rotateRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
-    if (isExifTurnOrMirror(extension)) {
+    if (isExif(extension)) {
         exifRotate(nbr, Const::Rotation::RIGHT, reload);
 
         if (action) {
@@ -840,7 +840,7 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
                     });
                 });
         }
-    } else if (isRealTurnOrMirror(extension)) {
+    } else if (isReal(extension)) {
         realRotate(nbr, Const::Rotation::RIGHT, reload);
         if (action) {
             addAction(
@@ -965,7 +965,7 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
 }
 
 void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> reload, bool action) {
-    if (isExifTurnOrMirror(extension)) {
+    if (isExif(extension)) {
         exifMirror(nbr, true, reload);
 
         if (action) {
@@ -993,7 +993,7 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
                     });
                 });
         }
-    } else if (isRealTurnOrMirror(extension)) {
+    } else if (isReal(extension)) {
         realMirror(nbr, true, reload);
 
         if (action) {
@@ -1026,7 +1026,7 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
 }
 
 void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
-    if (isExifTurnOrMirror(extension)) {
+    if (isExif(extension)) {
         exifMirror(nbr, false, reload);
 
         if (action) {
@@ -1054,7 +1054,7 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
                     });
                 });
         }
-    } else if (isRealTurnOrMirror(extension)) {
+    } else if (isReal(extension)) {
         realMirror(nbr, false, reload);
         if (action) {
             addAction(
