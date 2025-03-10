@@ -14,10 +14,9 @@ void Data::preDeleteImage(int imageNbr) {
 }
 
 void Data::unPreDeleteImage(int imageNbr) {
-    ImageData* imageData;
-    imageData = imagesData.getImageData(imageNbr);
+    const ImageData imageData = *imagesData.getImageData(imageNbr);
 
-    deletedImagesData.removeImage(*imageData);
+    deletedImagesData.removeImage(imageData);
 }
 
 void Data::revocerDeletedImage(ImageData& imageData) {
@@ -26,12 +25,11 @@ void Data::revocerDeletedImage(ImageData& imageData) {
 }
 
 void Data::revocerDeletedImage(int imageNbr) {
-    ImageData* imageData;
-    imageData = deletedImagesData.getImageData(imageNbr);
-    revocerDeletedImage(*imageData);
+    ImageData imageData = *deletedImagesData.getImageData(imageNbr);
+    revocerDeletedImage(imageData);
 
-    imagesData.addImage(*imageData);
-    deletedImagesData.removeImage(*imageData);
+    imagesData.addImage(imageData);
+    deletedImagesData.removeImage(imageData);
 }
 
 // Delete in imagesData images that are also in deletedImagesData
@@ -77,23 +75,19 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail, force);
 
     ImageData* imageData = imagesData.getImageData(imagePath);
-    if (crop) {
-        if (imageData != nullptr) {
-            if (!imageData->getCropSizes().empty()) {
-                std::vector<QPoint> cropPoints = imageData->getCropSizes().back();
+    if (crop && imageData != nullptr && !imageData->getCropSizes().empty()) {
+        std::vector<QPoint> cropPoints = imageData->getCropSizes().back();
 
-                if (cropPoints.size() == 2) {
-                    QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
+        if (cropPoints.size() == 2) {
+            QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
 
-                    QRect imageRect(0, 0, image.width(), image.height());
-                    cropRect = cropRect.intersected(imageRect);
+            QRect imageRect(0, 0, image.width(), image.height());
+            cropRect = cropRect.intersected(imageRect);
 
-                    if (cropRect.isValid() && !image.isNull()) {
-                        QImage croppedImage = image.copy(cropRect);
+            if (cropRect.isValid() && !image.isNull()) {
+                QImage croppedImage = image.copy(cropRect);
 
-                        image = croppedImage;
-                    }
-                }
+                image = croppedImage;
             }
         }
     }
@@ -106,15 +100,9 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
         image = image.copy(xOffset, yOffset, cropSize, cropSize);
     }
 
-    if (rotation && imagePath.at(0) != ':') {
-        if (imageData != nullptr) {
-            std::string extension = imageData->getImageExtension();
-            if (isExif(extension)) {
-                image = rotateQImage(image, imageData);
-            }
-        }
+    if (rotation && imagePath.at(0) != ':' && imageData != nullptr && isExif(imageData->getImageExtension())) {
+        image = rotateQImage(image, imageData);
     }
-
     return image;
 }
 
@@ -482,7 +470,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
 QImage Data::rotateQImage(QImage image, ImageData* imageData) {
     if (imageData != nullptr) {
         int orientation = imageData->getOrientation();
-        // qDebug() << "rotateQImage : " << orientation << " : " << imagePath;
+        qDebug() << "rotateQImage : " << orientation << " : " << imageData->getImagePath();
 
         switch (orientation) {
             case Const::Orientation::FLIP_HORIZONTAL:

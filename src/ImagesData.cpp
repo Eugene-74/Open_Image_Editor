@@ -106,23 +106,10 @@ ImageData* ImagesData::getImageDataInCurrent(int id) {
 }
 
 ImageData* ImagesData::getImageData(std::string imagePath) {
-    qDebug() << "getImageData : " << imageMap.size();
     auto foundImageData = imageMap.find(imagePath);
-
-    // for (const auto& pair : imageMap) {
-    //     if (!pair.second->getpersons().empty()) {
-    //         qDebug() << "Image with persons found: " << pair.first.c_str();
-    //         break;
-    //     }
-    // }
 
     if (foundImageData != imageMap.end()) {
         ImageData* imageData = foundImageData->second;
-        // if (imageMap[imagePath]->getpersons().size() > 0) {
-        //     qDebug() << "load person 5 : " << imageData->getImagePath();
-        // }
-        // qDebug() << "foundImageData : " << imagePath.c_str();
-        // qDebug() << "persons : " << foundImageData->second->getpersons().size();
         return imageData;
     }
     qDebug() << "not foundImageData : " << imagePath.c_str();

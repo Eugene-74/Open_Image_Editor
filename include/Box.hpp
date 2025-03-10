@@ -9,9 +9,9 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QWidget>
 #include <map>
 #include <string>
-
 struct Option {
     std::string type;
     std::string value;

@@ -5,7 +5,6 @@ void ThumbnailTask::run() {
         ImageData* imageData = imagesData->getImageData(i);
 
         data->createThumbnailIfNotExists(imageData->getImagePath(), 16);
-
         data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
         data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
         data->createThumbnailIfNotExists(imageData->getImagePath(), 512);

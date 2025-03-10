@@ -1,6 +1,5 @@
 #include "Box.hpp"
 
-// Helper function to create and show a modal dialog
 void showModalDialog(QWidget* parent, QMessageBox::Icon icon, std::string text, std::string title, int x, int y, bool async) {
     QMessageBox* msgBox = new QMessageBox(parent);
     msgBox->setIcon(icon);
