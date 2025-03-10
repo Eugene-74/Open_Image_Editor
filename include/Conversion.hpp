@@ -28,7 +28,10 @@ class ConversionDialog : public QDialog {
         QVBoxLayout* layout = new QVBoxLayout(this);
 
         // Liste des formats de sortie possibles
-        QStringList formats = {".png", ".jpeg", ".jpg", ".jpe", ".bmp", ".gif", ".tiff", ".webp"};
+        QStringList formats;
+        for (const auto& format : IMAGE_CONVERTION) {
+            formats.append(QString::fromStdString(format));
+        }
 
         // ComboBox pour choisir le format de sortie
         comboBox = new QComboBox(this);
@@ -55,5 +58,8 @@ void launchConversionDialogAndConvert(const QString& inputImagePath);
 QString launchConversionDialog();
 void convertion(const QString& inputImagePath, const QString& selectedFormat);
 bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath);
+
 QImage readHeicAndHeif(const std::string& filename);
+bool writeHeicAndHeif(const QImage& image, const std::string& imagePath);
+
 QImage readRaw(const std::string& filename);
