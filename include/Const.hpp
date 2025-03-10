@@ -54,7 +54,7 @@ const std::map<std::string, Option> DEFAULT_OPTIONS = {
 
     // {THUMBNAIL_PATH_OPTION, Option("directory", SAVE_PATH + "/thumbnails")},
 };
-const std::vector<std::string> IMAGE_CONVERTION = {"jpg", "jpeg", "png", "webp", "tiff", "bmp"};
+const std::vector<std::string> IMAGE_CONVERTION = {"jpg", "jpeg", "png", "webp", "tiff", "bmp", "heic", "heif"};
 
 const std::vector<std::string> IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".svg", ".tiff", ".bmp"};
 const std::vector<std::string> TURNABLE_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".tiff", ".bmp"};

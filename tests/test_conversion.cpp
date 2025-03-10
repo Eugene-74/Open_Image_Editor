@@ -15,34 +15,7 @@ TEST(ConversionTest, readHeicAndHeif) {
     EXPECT_FALSE(readHeicAndHeif(imagePath).isNull());
 }
 
-// TEST(ConversionTest, writeHeicAndHeif) {
-//     std::string imagePath;
-//     std::string outPath;
-//     QImage image;
-
-//     imagePath = TESTS_PATH.toStdString() + "/images/heic.heic";
-//     outPath = TESTS_PATH.toStdString() + "images/heicWriteHeicAndHeif.heic";
-//     image = readHeicAndHeif(imagePath);
-
-//     EXPECT_TRUE(writeHeicAndHeif(image, outPath));
-//     EXPECT_FALSE(readHeicAndHeif(outPath).isNull());
-
-//     if (fs::exists(outPath)) {
-//         fs::remove(outPath);
-//     }
-
-//     imagePath = TESTS_PATH.toStdString() + "/images/heif.heif";
-//     outPath = TESTS_PATH.toStdString() + "images/heicWriteHeicAndHeif.heif";
-//     image = readHeicAndHeif(imagePath);
-
-//     EXPECT_TRUE(writeHeicAndHeif(image, outPath));
-//     EXPECT_FALSE(readHeicAndHeif(outPath).isNull());
-
-//     if (fs::exists(outPath)) {
-//         fs::remove(outPath);
-//     }
-// }
-
+// also test read and write
 TEST(ConversionTest, convertion) {
     for (const auto& imageFormat1 : IMAGE_CONVERTION) {
         QDir dir(TESTS_PATH + "/ressources/images/" + QString::fromStdString(imageFormat1));
@@ -58,7 +31,13 @@ TEST(ConversionTest, convertion) {
             outputPath = TESTS_PATH.toStdString() + "/ressources/images/" + imageFormat1 + "/" + imageFormat1 + "." + imageFormat2;
             EXPECT_TRUE(convertImageWithMetadata(imagePath, outputPath));
             EXPECT_TRUE(QFile::exists(QString::fromStdString(outputPath)));
-            QImage image(QString::fromStdString(outputPath));
+            QImage image;
+            if (isHeicOrHeif(outputPath)) {
+                image = readHeicAndHeif(outputPath);
+            } else if (isRaw(outputPath)) {
+            } else {
+                image = QImage(QString::fromStdString(outputPath));
+            }
             EXPECT_FALSE(image.isNull());
         }
         if (dir.exists()) {

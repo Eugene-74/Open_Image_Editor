@@ -1,5 +1,7 @@
 #include "Conversion.hpp"
 
+#include <qbuffer.h>
+
 namespace fs = std::filesystem;
 
 bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath) {
@@ -21,9 +23,14 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
         Exiv2::Image::AutoPtr exivImage = Exiv2::ImageFactory::open(inputPath);
         exivImage->readMetadata();
 
-        if (!image.save(QString::fromStdString(outputPath))) {
-            qWarning() << "Could not write the image : " << QString::fromStdString(outputPath);
-            return false;
+        if (isHeicOrHeif(outputPath)) {
+            writeHeicAndHeif(image, outputPath);
+        } else if (isRaw(outputPath)) {
+        } else {
+            if (!image.save(QString::fromStdString(outputPath))) {
+                qWarning() << "Could not write the image : " << QString::fromStdString(outputPath);
+                return false;
+            }
         }
         if (isExifPath(inputPath) && isExifPath(outputPath)) {
             Exiv2::Image::AutoPtr exivOutputImage = Exiv2::ImageFactory::open(outputPath);
@@ -89,40 +96,93 @@ QImage readHeicAndHeif(const std::string& filename) {
     return qImage;
 }
 
-bool writeHeicAndHeif(const QImage& image, const std::string& imagePath) {
-    struct heif_context* ctx = heif_context_alloc();
-    struct heif_encoder* encoder;
-    struct heif_image* img;
+#include <heif.h>
 
-    heif_context_get_encoder_for_format(ctx, heif_compression_HEVC, &encoder);
+#include <QDebug>
+#include <QImage>
+#include <cstring>
+#include <string>
 
-    heif_image_create(image.width(), image.height(), heif_colorspace_RGB, heif_chroma_interleaved_RGB, &img);
+bool writeHeicAndHeif(const QImage& qImage, const std::string& imagePath) {
+    QImage img = qImage.convertToFormat(QImage::Format_RGBA8888);
+    int width = img.width();
+    int height = img.height();
 
-    uint8_t* data = heif_image_get_plane(img, heif_channel_interleaved, nullptr);
-    for (int y = 0; y < image.height(); ++y) {
-        memcpy(data + y * image.bytesPerLine(), image.scanLine(y), image.bytesPerLine());
+    int imageSize = height * img.bytesPerLine();
+
+    heif_context* ctx = heif_context_alloc();
+    if (!ctx) {
+        qCritical() << "Erreur: Impossible d'allouer le contexte libheif";
+        return false;
     }
 
-    struct heif_error err = heif_context_encode_image(ctx, img, encoder, nullptr, nullptr);
+    heif_image* heifImg = nullptr;
+    heif_error err = heif_image_create(width, height, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, &heifImg);
     if (err.code != heif_error_Ok) {
-        qCritical() << "Error: Unable to encode HEIC/HEIF image: " << imagePath.c_str();
-        heif_image_release(img);
+        qCritical() << "Erreur: heif_image_create a échoué:" << err.message;
+        heif_context_free(ctx);
+        return false;
+    }
+
+    err = heif_image_add_plane(heifImg, heif_channel_interleaved, width, height, 32);
+
+    if (err.code != heif_error_Ok) {
+        qCritical() << "Erreur: heif_image_add_plane a échoué:" << err.message;
+        heif_image_release(heifImg);
+        heif_context_free(ctx);
+        return false;
+    }
+
+    int stride = 0;
+    uint8_t* dst = heif_image_get_plane(heifImg, heif_channel_interleaved, &stride);
+    if (!dst) {
+        qCritical() << "Erreur: heif_image_get_plane a renvoyé NULL";
+        heif_image_release(heifImg);
+        heif_context_free(ctx);
+        return false;
+    }
+
+    memcpy(dst, img.bits(), imageSize);
+
+    // Récupérer l'encodeur pour la compression HEVC (HEIC)
+    heif_encoder* encoder = nullptr;
+    err = heif_context_get_encoder_for_format(ctx, heif_compression_HEVC, &encoder);
+    if (err.code != heif_error_Ok) {
+        qCritical() << "Erreur: heif_context_get_encoder_for_format a échoué:" << err.message;
+        heif_image_release(heifImg);
+        heif_context_free(ctx);
+        return false;
+    }
+
+    err = heif_encoder_set_lossy_quality(encoder, 90);
+    if (err.code != heif_error_Ok) {
+        qCritical() << "Erreur: heif_encoder_set_lossy_quality a échoué:" << err.message;
         heif_encoder_release(encoder);
+        heif_image_release(heifImg);
+        heif_context_free(ctx);
+        return false;
+    }
+
+    err = heif_context_encode_image(ctx, heifImg, encoder, nullptr, nullptr);
+    if (err.code != heif_error_Ok) {
+        qCritical() << "Erreur: heif_context_encode_image a échoué:" << err.message;
+        heif_encoder_release(encoder);
+        heif_image_release(heifImg);
         heif_context_free(ctx);
         return false;
     }
 
     err = heif_context_write_to_file(ctx, imagePath.c_str());
     if (err.code != heif_error_Ok) {
-        qCritical() << "Error: Unable to write HEIC/HEIF file: " << imagePath.c_str();
-        heif_image_release(img);
+        qCritical() << "Erreur: heif_context_write_to_file a échoué:" << err.message;
         heif_encoder_release(encoder);
+        heif_image_release(heifImg);
         heif_context_free(ctx);
         return false;
     }
 
-    heif_image_release(img);
     heif_encoder_release(encoder);
+    heif_image_release(heifImg);
     heif_context_free(ctx);
 
     return true;
@@ -131,8 +191,7 @@ bool writeHeicAndHeif(const QImage& image, const std::string& imagePath) {
 void launchConversionDialogAndConvert(const QString& inputImagePath) {
     ConversionDialog dialog;
     if (dialog.exec() == QDialog::Accepted) {
-        QString selectedFormat = dialog.getSelectedFormat().mid(1);  // Retirer le point (.) du format
-
+        QString selectedFormat = dialog.getSelectedFormat();
         convertion(inputImagePath, selectedFormat);
     }
 }
@@ -140,7 +199,7 @@ void launchConversionDialogAndConvert(const QString& inputImagePath) {
 QString launchConversionDialog() {
     ConversionDialog dialog;
     if (dialog.exec() == QDialog::Accepted) {
-        QString selectedFormat = dialog.getSelectedFormat().mid(1);
+        QString selectedFormat = dialog.getSelectedFormat();
         return selectedFormat;
     }
     return nullptr;
