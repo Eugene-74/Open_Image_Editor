@@ -9,6 +9,7 @@
 #include <QScreen>
 #include <QVBoxLayout>
 
+#include "AppConfig.hpp"
 #include "Box.hpp"
 #include "Const.hpp"
 #include "Data.hpp"
@@ -18,7 +19,6 @@
 #include "ImageEditor.hpp"
 #include "ImagesData.hpp"
 #include "MainWindow.hpp"
-#include "Version.hpp"
 
 class ImageEditor;
 class ImageBooth;

@@ -1112,7 +1112,7 @@ void ImageEditor::startImageOpen() {
                     self->reloadImageLabel();
                 }
             } catch (const std::exception& e) {
-                std::cerr << e.what() << '\n';
+                qCritical() << e.what();
             }
         });
         imageOpenTimer->stop();

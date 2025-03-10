@@ -167,7 +167,7 @@ void detectFacesAsync(std::string imagePath, QImage image, std::function<void(st
         try {
             callback(persons);
         } catch (const std::exception& e) {
-            std::cerr << e.what() << '\n';
+            qCritical() << e.what();
         }
     }).detach();
 }

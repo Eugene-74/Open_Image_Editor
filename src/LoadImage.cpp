@@ -145,7 +145,7 @@ bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& pr
                 }
 
             } catch (const std::exception& e) {
-                std::cerr << e.what() << '\n';
+                qCritical() << e.what();
             }
         });
 
@@ -174,7 +174,7 @@ bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& pr
         }
         return true;
     } catch (const std::exception& e) {
-        std::cerr << e.what() << '\n';
+        qCritical() << e.what();
         return false;
     }
 }

@@ -28,6 +28,11 @@ if(WIN32)
     set(CMAKE_AUTORCC ON)
     set(CMAKE_AUTOUIC ON)
 
+    set(Qt6_USE_STATIC_LIBS OFF)
+    set(Qt6_USE_STATIC_RUNTIME OFF)
+
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os -s")
+
     set(ENV{QTFRAMEWORK_BYPASS_LICENSE_CHECK} "1")
 
     find_package(Qt6 COMPONENTS Core Gui Widgets LinguistTools REQUIRED)
@@ -46,8 +51,8 @@ if(WIN32)
     include_directories(${HEIF_INCLUDE_DIRS})
 
     configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/Version.hpp.in
-        ${CMAKE_CURRENT_BINARY_DIR}/../include/Version.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/AppConfig.hpp.in
+        ${CMAKE_CURRENT_BINARY_DIR}/../include/AppConfig.hpp
         @ONLY
     )
     
@@ -107,16 +112,17 @@ if(WIN32)
     ${EXIV2_LIBRARIES}
     ${HEIF_LIBRARIES}
     )
-    
-    add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
-    target_link_libraries(${PROJECT_NAME} PRIVATE OpenImageEditorLib)
-    
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        target_link_options(${PROJECT_NAME} PRIVATE -mwindows)
-    endif()
+    if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Build")
+        add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
+        target_link_libraries(${PROJECT_NAME} PRIVATE OpenImageEditorLib)
+        
+        if(CMAKE_BUILD_TYPE STREQUAL "Release")
+            target_link_options(${PROJECT_NAME} PRIVATE -mwindows)
+        endif()
 
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs)
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs)
+        endif()
     endif()
 
 endif()

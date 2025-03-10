@@ -237,23 +237,25 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                                          "", this, imageSize, false, 0, true);
 
         QPointer<ImageBooth> self = this;
-        Data* dataPtr = data;
-        data->loadInCacheAsync(data->getThumbnailPath(imagePath, imageQuality), [self, dataPtr, imagePath, nbr]() {
-            if (!self.isNull()) {
-                QHBoxLayout* lineLayout = nullptr;
-                ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
-                if (lastImageButton != nullptr) {
-                    ClickableLabel* newImageButton = self->createImage(imagePath, nbr);
-                    if (lineLayout != nullptr) {
-                        lineLayout->replaceWidget(lastImageButton, newImageButton);
-                        lastImageButton->deleteLater();
-                    } else {
-                        newImageButton->deleteLater();
+        data->loadInCacheAsync(data->getThumbnailPath(imagePath, imageQuality), [self, imagePath, nbr]() {
+            QTimer::singleShot(TIME_BEFORE_FULL_QUALITY, self, [self, imagePath, nbr]() {
+                if (!self.isNull()) {
+                    QHBoxLayout* lineLayout = nullptr;
+                    ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
+                    if (lastImageButton != nullptr) {
+                        ClickableLabel* newImageButton = self->createImage(imagePath, nbr);
+                        if (lineLayout != nullptr) {
+                            lineLayout->replaceWidget(lastImageButton, newImageButton);
+                            lastImageButton->deleteLater();
+                        } else {
+                            newImageButton->deleteLater();
+                        }
                     }
                 }
-            }
+            });
         });
     } else {
+        qDebug() << "no thumbnail found : " << imagePath;
         imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING,
                                          "", this, imageSize, false, 0, true);
 
@@ -621,7 +623,7 @@ void ImageBooth::updateImages() {
         }
 
     } catch (const std::exception& e) {
-        std::cerr << "update : " << e.what() << '\n';
+        qCritical() << "update : " << e.what() ;
     }
 }
 

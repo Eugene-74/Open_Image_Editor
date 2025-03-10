@@ -270,30 +270,41 @@ void Data::createThumbnails(const std::vector<std::string>& imagePaths,
 }
 
 void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
-    QImage image =
-        loadImageNormal(nullptr, imagePath, QSize(maxDim, maxDim), false, 0);
+    try {
+        qDebug() << "createThumbnail : " << imagePath << " : " << maxDim;
+        QImage image = loadImageNormal(nullptr, imagePath, QSize(maxDim, maxDim), false, 0);
+        qDebug() << "createThumbnail : imageLoaded";
+        double scale = std::min(static_cast<double>(maxDim) / image.width(),
+                                static_cast<double>(maxDim) / image.height());
 
-    double scale = std::min(static_cast<double>(maxDim) / image.width(),
-                            static_cast<double>(maxDim) / image.height());
+        QImage thumbnail = image.scaled(image.width() * scale, image.height() * scale,
+                                        Qt::KeepAspectRatio);
+        qDebug() << "createThumbnail : scaled";
 
-    QImage thumbnail = image.scaled(image.width() * scale, image.height() * scale,
-                                    Qt::KeepAspectRatio);
+        std::hash<std::string> hasher;
+        size_t hashValue = hasher(fs::path(imagePath).filename().string());
+        qDebug() << "createThumbnail : hash : " << hashValue;
 
-    std::hash<std::string> hasher;
-    size_t hashValue = hasher(fs::path(imagePath).filename().string());
+        std::string extension = ".webp";
 
-    std::string extension = ".webp";
+        std::string outputImage;
 
-    std::string outputImage;
+        outputImage = THUMBNAIL_PATH + "/" + std::to_string(maxDim) + "/" +
+                      std::to_string(hashValue) + extension;
+        qDebug() << "createThumbnail : outputImage : " << outputImage;
 
-    outputImage = THUMBNAIL_PATH + "/" + std::to_string(maxDim) + "/" +
-                  std::to_string(hashValue) + extension;
+        if (!fs::exists(fs::path(outputImage).parent_path())) {
+            fs::create_directories(fs::path(outputImage).parent_path());
+        }
+        qDebug() << "createThumbnail : folder created if not exist";
 
-    if (!fs::exists(fs::path(outputImage).parent_path())) {
-        fs::create_directories(fs::path(outputImage).parent_path());
-    }
-    if (!thumbnail.save(QString::fromStdString(outputImage))) {
-        qCritical() << "Error: Could not save thumbnail: " << outputImage;
+        if (!thumbnail.save(QString::fromStdString(outputImage))) {
+            qCritical() << "Error: Could not save thumbnail: " << outputImage;
+        }
+        qDebug() << "createThumbnail : saved";
+
+    } catch (const std::exception& e) {
+        qCritical() << "createThumbnail : " << e.what();
     }
 }
 void Data::createThumbnailsIfNotExists(
@@ -690,7 +701,7 @@ void Data::reDoAction() {
             action.reDo();
         }
     } catch (const std::exception& e) {
-        std::cerr << e.what() << '\n';
+        qCritical() << e.what();
     }
 }
 
@@ -704,7 +715,7 @@ void Data::unDoAction() {
         }
 
     } catch (const std::exception& e) {
-        std::cerr << e.what() << '\n';
+        qCritical() << e.what();
     }
 }
 
@@ -1230,7 +1241,7 @@ void Data::removeImageFromFolders(ImageData& imageData) {
                     currentFolder->getFilesPtr()->erase(it);
                 }
             } catch (const std::exception& e) {
-                std::cerr << "removeImageFromFolders" << e.what() << '\n';
+                qCritical() << "removeImageFromFolders" << e.what();
             }
         }
 
