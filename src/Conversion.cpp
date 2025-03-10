@@ -189,9 +189,8 @@ bool writeHeicAndHeif(const QImage& qImage, const std::string& imagePath) {
 }
 
 void launchConversionDialogAndConvert(const QString& inputImagePath) {
-    ConversionDialog dialog;
-    if (dialog.exec() == QDialog::Accepted) {
-        QString selectedFormat = dialog.getSelectedFormat();
+    QString selectedFormat = launchConversionDialog();
+    if (selectedFormat != nullptr) {
         convertion(inputImagePath, selectedFormat);
     }
 }
