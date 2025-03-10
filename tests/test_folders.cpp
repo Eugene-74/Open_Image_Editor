@@ -80,11 +80,11 @@ TEST(FoldersTest, GetIfExist) {
 }
 
 TEST(FoldersTest, ContainImage) {
-    EXPECT_TRUE(containImage(TESTS_PATH.toStdString() + "/images"));
-    QDir dir(TESTS_PATH + "/test");
+    EXPECT_TRUE(containImage(TESTS_PATH.toStdString() + "/ressources/images"));
+    QDir dir(TESTS_PATH + "/ressources/test");
     dir.mkpath(".");
 
-    EXPECT_FALSE(containImage(TESTS_PATH.toStdString() + "/test"));
+    EXPECT_FALSE(containImage(TESTS_PATH.toStdString() + "/ressources/test"));
 
     if (dir.exists()) {
         dir.removeRecursively();

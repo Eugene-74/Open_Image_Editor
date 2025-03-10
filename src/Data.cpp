@@ -269,44 +269,47 @@ void Data::createThumbnails(const std::vector<std::string>& imagePaths,
     }
 }
 
-void Data::createThumbnail(const std::string& imagePath, const int maxDim) {
+bool Data::createThumbnail(const std::string& imagePath, const int maxDim) {
     try {
-        qDebug() << "createThumbnail : " << imagePath << " : " << maxDim;
+        // qDebug() << "createThumbnail : " << imagePath << " : " << maxDim;
         QImage image = loadImageNormal(nullptr, imagePath, QSize(maxDim, maxDim), false, 0);
-        qDebug() << "createThumbnail : imageLoaded";
+        // qDebug() << "createThumbnail : imageLoaded";
         double scale = std::min(static_cast<double>(maxDim) / image.width(),
                                 static_cast<double>(maxDim) / image.height());
 
         QImage thumbnail = image.scaled(image.width() * scale, image.height() * scale,
                                         Qt::KeepAspectRatio);
-        qDebug() << "createThumbnail : scaled";
+        // qDebug() << "createThumbnail : scaled";
 
-        std::hash<std::string> hasher;
-        size_t hashValue = hasher(fs::path(imagePath).filename().string());
-        qDebug() << "createThumbnail : hash : " << hashValue;
-
-        std::string extension = ".webp";
-
-        std::string outputImage;
-
-        outputImage = THUMBNAIL_PATH + "/" + std::to_string(maxDim) + "/" +
-                      std::to_string(hashValue) + extension;
-        qDebug() << "createThumbnail : outputImage : " << outputImage;
+        std::string outputImage = getThumbnailPath(imagePath, maxDim);
 
         if (!fs::exists(fs::path(outputImage).parent_path())) {
             fs::create_directories(fs::path(outputImage).parent_path());
         }
-        qDebug() << "createThumbnail : folder created if not exist";
+        // qDebug() << "createThumbnail : folder created if not exist";
 
         if (!thumbnail.save(QString::fromStdString(outputImage))) {
             qCritical() << "Error: Could not save thumbnail: " << outputImage;
+            return false;
         }
-        qDebug() << "createThumbnail : saved";
+        // qDebug() << "createThumbnail : saved";
 
     } catch (const std::exception& e) {
         qCritical() << "createThumbnail : " << e.what();
+        return false;
     }
+    return true;
 }
+
+bool Data::deleteThumbnail(const std::string& imagePath, const int maxDim) {
+    std::string thumbnailPath = getThumbnailPath(imagePath, maxDim);
+
+    if (fs::exists(thumbnailPath)) {
+        return fs::remove(thumbnailPath);
+    }
+    return false;
+}
+
 void Data::createThumbnailsIfNotExists(
     const std::vector<std::string>& imagePaths, const int maxDim) {
     for (const auto& imagePath : imagePaths) {
@@ -321,16 +324,9 @@ void Data::createThumbnailIfNotExists(const std::string& imagePath,
     }
 }
 bool Data::hasThumbnail(const std::string& imagePath, const int maxDim) {
-    std::hash<std::string> hasher;
-    size_t hashValue = hasher(fs::path(imagePath).filename().string());
+    std::string thumbnailPath = getThumbnailPath(imagePath, maxDim);
 
-    std::string extension = ".webp";
-
-    std::string outputImage;
-
-    outputImage = THUMBNAIL_PATH + "/" + std::to_string(maxDim) + "/" +
-                  std::to_string(hashValue) + extension;
-    return fs::exists(outputImage);
+    return fs::exists(thumbnailPath);
 }
 
 void Data::createAllThumbnailIfNotExists(const std::string& imagePath, const int size) {
@@ -369,12 +365,10 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
     size_t hashValue = hasher(fs::path(imagePath).filename().string());
     std::string extension = ".webp";
 
-    std::string outputImage;
+    std::string thumbnailPath = THUMBNAIL_PATH + "/" + std::to_string(size) + "/" +
+                                std::to_string(hashValue) + extension;
 
-    outputImage = THUMBNAIL_PATH + "/" + std::to_string(size) + "/" +
-                  std::to_string(hashValue) + extension;
-
-    return outputImage;
+    return thumbnailPath;
 }
 
 bool Data::unloadFromCache(std::string imagePath) {
@@ -410,13 +404,6 @@ Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const 
         return const_cast<Folders*>(&currentFolder);
     }
     for (const auto& folder : currentFolder.folders) {
-        // for (ImageData* imageData : imagesData.getConst()) {
-        //     for (Folders folderBis : imageData->getFolders()) {
-        //         if (folderBis.getName() == folder.getName()) {
-        //             return const_cast<Folders*>(&currentFolder);
-        //         }
-        //     }
-        // }
         if (folder.getFilesConst().size() > 0) {
             return const_cast<Folders*>(&folder);
         }

@@ -82,66 +82,68 @@ class Data {
 
     bool isInCache(std::string imagePath);
     bool getLoadedImage(std::string imagePath, QImage& image);
+    
+    bool createThumbnail(const std::string& imagePath, const int maxDim);
+        bool deleteThumbnail(const std::string& imagePath, const int maxDim);
 
-    void createThumbnails(const std::vector<std::string>& imagePaths, const int maxDim);
-    void createThumbnail(const std::string& imagePath, const int maxDim);
+        void createThumbnails(const std::vector<std::string>& imagePaths, const int maxDim);
 
-    void createThumbnailIfNotExists(const std::string& imagePath, const int maxDim);
-    void createThumbnailsIfNotExists(const std::vector<std::string>& imagePaths, const int maxDim);
+        void createThumbnailIfNotExists(const std::string& imagePath, const int maxDim);
+        void createThumbnailsIfNotExists(const std::vector<std::string>& imagePaths, const int maxDim);
 
-    void createAllThumbnail(const std::string& imagePath, const int maxDim);
-    void createAllThumbnailIfNotExists(const std::string& imagePath, const int maxDim);
+        void createAllThumbnail(const std::string& imagePath, const int maxDim);
+        void createAllThumbnailIfNotExists(const std::string& imagePath, const int maxDim);
 
-    bool hasThumbnail(const std::string& imagePath, const int maxDim);
+        bool hasThumbnail(const std::string& imagePath, const int maxDim);
 
-    std::string getThumbnailPath(const std::string& imagePath, const int size);
+        std::string getThumbnailPath(const std::string& imagePath, const int size);
 
-    void exportImages(std::string exportPath, bool dateInName);
+        void exportImages(std::string exportPath, bool dateInName);
 
-    void saveData();
-    void loadData();
+        void saveData();
+        void loadData();
 
-    bool isDeleted(int imageNbr);
+        bool isDeleted(int imageNbr);
 
-    void addAction(std::function<void()> unDo, std::function<void()> reDo);
-    void addActionDone(Actions action);
+        void addAction(std::function<void()> unDo, std::function<void()> reDo);
+        void addActionDone(Actions action);
 
-    void unDoAction();
-    void reDoAction();
+        void unDoAction();
+        void reDoAction();
 
-    void sortCurrentImagesData();
+        void sortCurrentImagesData();
 
-    void rotateLeft(int nbr, std::string extension, std::function<void()> reload, bool action = true);
-    void rotateRight(int nbr, std::string extension, std::function<void()> reload, bool action = true);
+        void rotateLeft(int nbr, std::string extension, std::function<void()> reload, bool action = true);
+        void rotateRight(int nbr, std::string extension, std::function<void()> reload, bool action = true);
 
-    void mirrorLeftRight(int nbr, std::string extension, std::function<void()> reload, bool action = true);
-    void mirrorUpDown(int nbr, std::string extension, std::function<void()> reload, bool action = true);
+        void mirrorLeftRight(int nbr, std::string extension, std::function<void()> reload, bool action = true);
+        void mirrorUpDown(int nbr, std::string extension, std::function<void()> reload, bool action = true);
 
-    void realRotate(int nbr, int rotation, std::function<void()> reload);
-    void exifRotate(int nbr, int rotation, std::function<void()> reload);
+        void realRotate(int nbr, int rotation, std::function<void()> reload);
+        void exifRotate(int nbr, int rotation, std::function<void()> reload);
 
-    void exifMirror(int nbr, bool UpDown, std::function<void()> reload);
-    void realMirror(int nbr, bool UpDown, std::function<void()> reload);
+        void exifMirror(int nbr, bool UpDown, std::function<void()> reload);
+        void realMirror(int nbr, bool UpDown, std::function<void()> reload);
 
-    void clearActions();
-    QImage rotateQImage(QImage image, ImageData* imageData);
+        void clearActions();
+        QImage rotateQImage(QImage image, ImageData * imageData);
 
-    Folders* getRootFolders();
-    Folders* getCurrentFolders();
+        Folders* getRootFolders();
+        Folders* getCurrentFolders();
 
-    ImagesData* getImagesData();
-    Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
-    void removeImageFromFolders(ImageData& imageData);
-    std::string getFolderPath(Folders* folder);
-    Folders* findFolderByPath(Folders& root, const std::string& path);
+        ImagesData* getImagesData();
+        Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
+        void removeImageFromFolders(ImageData & imageData);
+        std::string getFolderPath(Folders * folder);
+        Folders* findFolderByPath(Folders & root, const std::string& path);
 
-   private:
-    std::vector<Actions> lastActions = {};
-    std::vector<Actions> lastActionsDone = {};
+       private:
+        std::vector<Actions> lastActions = {};
+        std::vector<Actions> lastActionsDone = {};
 
-    void createFolders(Folders* currentFolders, std::string path);
-    void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
-};
+        void createFolders(Folders * currentFolders, std::string path);
+        void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
+    };
 
 class LoadImageTask : public QRunnable {
    public:

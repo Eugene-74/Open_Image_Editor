@@ -5,10 +5,14 @@
 class DataTest : public ::testing::Test {
    protected:
     std::vector<std::string> imagePaths = {
-        "test/resources/images/jpeg.jpeg",
-        "test/resources/images/png.png",
-        "test/resources/images/bmp.bmp",
-        "test/resources/images/gif.gif"};
+        TESTS_PATH.toStdString() + "/ressources/images/bmp.bmp",
+        TESTS_PATH.toStdString() + "/ressources/images/heic.heic",
+        TESTS_PATH.toStdString() + "/ressources/images/heif.heif",
+        TESTS_PATH.toStdString() + "/ressources/images/jpeg.jpeg",
+        TESTS_PATH.toStdString() + "/ressources/images/jpg.jpg",
+        TESTS_PATH.toStdString() + "/ressources/images/png.png",
+        TESTS_PATH.toStdString() + "/ressources/images/tiff.tiff",
+        TESTS_PATH.toStdString() + "/ressources/images/webp.webp"};
     std::vector<int> thumbnailSizes = {16, 128, 256, 512};
     Data data;
 };
@@ -16,7 +20,10 @@ class DataTest : public ::testing::Test {
 TEST_F(DataTest, CreateThumbnail) {
     for (const auto& imagePath : imagePaths) {
         for (const auto& size : thumbnailSizes) {
-            data.createThumbnail(imagePath, size);
+            EXPECT_TRUE(data.createThumbnail(imagePath, size));
+            EXPECT_TRUE(data.hasThumbnail(imagePath, size));
+            EXPECT_TRUE(data.deleteThumbnail(imagePath, size));
+            EXPECT_FALSE(data.hasThumbnail(imagePath, size));
         }
     }
 }
