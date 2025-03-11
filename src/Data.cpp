@@ -474,24 +474,31 @@ QImage Data::rotateQImage(QImage image, ImageData* imageData) {
 
         switch (orientation) {
             case Const::Orientation::FLIP_HORIZONTAL:
+                // 2
                 image = image.mirrored(true, false);
                 break;
             case Const::Orientation::ROTATE_180:
+                // 3
                 image = image.transformed(QTransform().rotate(Const::Rotation::UP_SIDE_DOWN));
                 break;
             case Const::Orientation::FLIP_VERTICAL:
+                // 4
                 image = image.mirrored(false, true);
                 break;
             case Const::Orientation::TRANSPOSE:
-                image = image.mirrored(true, false).transformed(QTransform().rotate(Const::Rotation::LEFT));
+                // 5
+                image = image.mirrored(true, false).transformed(QTransform().rotate(Const::Rotation::RIGHT));
                 break;
             case Const::Orientation::ROTATE_90:
+                // 6
                 image = image.transformed(QTransform().rotate(Const::Rotation::LEFT));
                 break;
             case Const::Orientation::TRANSVERSE:
-                image = image.mirrored(true, false).transformed(QTransform().rotate(Const::Rotation::RIGHT));
+                // 7
+                image = image.mirrored(true, false).transformed(QTransform().rotate(Const::Rotation::LEFT));
                 break;
             case Const::Orientation::ROTATE_270:
+                // 8
                 image = image.transformed(QTransform().rotate(Const::Rotation::RIGHT));
                 break;
             default:
@@ -739,7 +746,7 @@ void LoadImageTask::run() {
     }
 }
 
-void Data::rotateLeft(int nbr, std::string extension, std::function<void()> reload, bool action) {
+void Data::rotateRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
     if (isExif(extension)) {
         exifRotate(nbr, Const::Rotation::LEFT, reload);
         if (action) {
@@ -797,7 +804,7 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
     }
 }
 
-void Data::rotateRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
+void Data::rotateLeft(int nbr, std::string extension, std::function<void()> reload, bool action) {
     if (isExif(extension)) {
         exifRotate(nbr, Const::Rotation::RIGHT, reload);
 

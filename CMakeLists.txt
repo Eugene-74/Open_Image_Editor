@@ -101,16 +101,16 @@ if(WIN32)
     add_library(OpenImageEditorLib ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
     
     target_link_libraries(OpenImageEditorLib 
-    PRIVATE
-    Qt6::Core
-    Qt6::Gui
-    Qt6::Widgets
-    CURL::libcurl 
-    jsoncpp_lib
-    dlib::dlib
-    ${OpenCV_LIBS}
-    ${EXIV2_LIBRARIES}
-    ${HEIF_LIBRARIES}
+        PRIVATE
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Widgets
+        CURL::libcurl 
+        jsoncpp_lib
+        dlib::dlib
+        ${OpenCV_LIBS}
+        ${EXIV2_LIBRARIES}
+        ${HEIF_LIBRARIES}
     )
     if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Build")
         add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
