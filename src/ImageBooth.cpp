@@ -786,7 +786,7 @@ ClickableLabel* ImageBooth::createImageExport() {
         return nullptr;
     }
 
-    ClickableLabel* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, TOOL_TIP_IMAGE_BOOTH_EXPORT, this, actionSize);
+    auto* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, TOOL_TIP_IMAGE_BOOTH_EXPORT, this, actionSize);
     imageExportNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
@@ -802,7 +802,7 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_TIP_IMAGE_BOOTH_ROTATE_RIGHT, this, actionSize);
+    auto* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_TIP_IMAGE_BOOTH_ROTATE_RIGHT, this, actionSize);
     imageRotateRightNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() {
@@ -851,7 +851,7 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, TOOL_TIP_IMAGE_BOOTH_ROTATE_LEFT, this, actionSize);
+    auto* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, TOOL_TIP_IMAGE_BOOTH_ROTATE_LEFT, this, actionSize);
     imageRotateLeftNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() {
@@ -900,7 +900,7 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, TOOL_TIP_IMAGE_BOOTH_MIRROR_UP_DOWN, this, actionSize);
+    auto* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, TOOL_TIP_IMAGE_BOOTH_MIRROR_UP_DOWN, this, actionSize);
     imageMirrorUpDownNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageMirrorUpDownNew, &ClickableLabel::clicked, [this]() {
@@ -950,7 +950,7 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, TOOL_TIP_IMAGE_BOOTH_MIRROR_LEFT_RIGHT, this, actionSize);
+    auto* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, TOOL_TIP_IMAGE_BOOTH_MIRROR_LEFT_RIGHT, this, actionSize);
     imageMirrorLeftRightNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageMirrorLeftRightNew, &ClickableLabel::clicked, [this]() {
@@ -999,7 +999,7 @@ ClickableLabel* ImageBooth::createImageEditExif() {
         return nullptr;
     }
 
-    ClickableLabel* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, TOOL_TIP_IMAGE_BOOTH_EDIT_EXIF, this, actionSize);
+    auto* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, TOOL_TIP_IMAGE_BOOTH_EDIT_EXIF, this, actionSize);
     imageEditExifNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
@@ -1015,7 +1015,7 @@ ClickableLabel* ImageBooth::createImageConversion() {
         return nullptr;
     }
 
-    ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, TOOL_TIP_IMAGE_BOOTH_CONVERSION, this, actionSize);
+    auto* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, TOOL_TIP_IMAGE_BOOTH_CONVERSION, this, actionSize);
     imageConversionNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {

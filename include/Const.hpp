@@ -153,8 +153,8 @@ class Const {
     };
     class Rotation {
        public:
-        static const int LEFT = 90;
-        static const int RIGHT = -90;
+        static const int LEFT = -90;
+        static const int RIGHT = 90;
         static const int UP_SIDE_DOWN = 180;
     };
 };
