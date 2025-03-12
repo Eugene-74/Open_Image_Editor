@@ -1,4 +1,6 @@
-For all other informations go to [wiki](https://github.com/Eugene-74/Open_Image_Editor/wiki) :
+For all other informations go to [wiki](https://github.com/Eugene-74/Open_Image_Editor/wiki)
+
+For docs go to [docs](https://eugene-74.github.io/Open_Image_Editor/index.html)
 
 # Instalation
 
