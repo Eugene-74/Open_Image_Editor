@@ -4,11 +4,9 @@
 xcopy "%USERPROFILE%\Downloads\docs" docs /E /I /Y
 
 
-@REM cd docs
-@REM git add .
-@REM git commit -m "Update documentation"
-@REM git push origin gh-pages
-@REM cd ..
+git add .
+git commit -m "Update documentation"
+git push origin gh-pages
 
 
 @REM git checkout main

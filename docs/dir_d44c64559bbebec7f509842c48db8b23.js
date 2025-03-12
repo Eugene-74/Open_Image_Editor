@@ -21,6 +21,5 @@ var dir_d44c64559bbebec7f509842c48db8b23 =
     [ "MetaData.hpp", "_meta_data_8hpp_source.html", null ],
     [ "Sizes.hpp", "_sizes_8hpp_source.html", null ],
     [ "Vector.hpp", "_vector_8hpp_source.html", null ],
-    [ "Verification.hpp", "_verification_8hpp_source.html", null ],
-    [ "Version.hpp", "_version_8hpp_source.html", null ]
+    [ "Verification.hpp", "_verification_8hpp_source.html", null ]
 ];
