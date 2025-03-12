@@ -305,23 +305,25 @@ void startLog() {
         QString formattedMsg = QString("[%1] %2").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"), msg);
         switch (type) {
             case QtDebugMsg:
-                logStream << "[DEBUG   ] " << formattedMsg << Qt::endl;
+                formattedMsg = "[DEBUG   ] " + formattedMsg;
                 break;
             case QtInfoMsg:
-                logStream << "[INFO    ] " << formattedMsg << Qt::endl;
+                formattedMsg = "[INFO    ] " + formattedMsg;
                 break;
             case QtWarningMsg:
-                logStream << "[WARNING ] " << formattedMsg << Qt::endl;
+                formattedMsg = "[WARNING ] " + formattedMsg;
                 break;
             case QtCriticalMsg:
-                logStream << "[CRITICAL] " << formattedMsg << Qt::endl;
+                formattedMsg = "[CRITICAL] " + formattedMsg;
                 break;
             case QtFatalMsg:
-                logStream << "[FATAL   ] " << formattedMsg << Qt::endl;
+                formattedMsg = "[FATAL   ] " + formattedMsg;
                 abort();
         }
+        logStream << formattedMsg << Qt::endl;
+
         logStream.flush();
-        std::cerr << msg.toStdString() << std::endl;
+        std::cerr << formattedMsg.toStdString() << std::endl;
     });
 }
 

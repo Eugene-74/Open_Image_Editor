@@ -14,15 +14,14 @@ class ThumbnailTask : public QObject, public QRunnable {
     Q_OBJECT
 
    public:
-    ThumbnailTask(Data* data, ImagesData* imagesData, int start, int end)
-        : data(data), imagesData(imagesData), start(start), end(end) {
+    ThumbnailTask(Data* data, int start, int end)
+        : data(data), start(start), end(end) {
     }
 
     void run() override;
 
    private:
     Data* data;
-    ImagesData* imagesData;
     int start;
     int end;
 };
@@ -34,7 +33,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog);
 bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog);
 bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog);
-bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& progressDialog);
+bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog);
 
 std::map<std::string, std::string> openJsonFile(std::string filePath);
 std::string readFile(const std::string& filePath);

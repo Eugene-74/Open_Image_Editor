@@ -2,7 +2,7 @@
 
 void ThumbnailTask::run() {
     for (int i = start; i < end; ++i) {
-        ImageData* imageData = imagesData->getImageData(i);
+        ImageData* imageData = data->getImagesData()->getImageData(i);
 
         data->createThumbnailIfNotExists(imageData->getImagePath(), 16);
         data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
@@ -22,13 +22,16 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
     progressDialog.hide();
 
     if (!addSelectedFilesToFolders(data, parent, progressDialog)) {
+        qCritical() << "Loading canceled";
+
         return;
     }
     if (data->imagesData.get()->size() <= 0) {
+        qCritical() << "No images found in the selected folder";
         return;
     }
 
-    auto images = data->getImagesData()->get();
+    // auto images = data->getImagesData()->get();
 
     // ensure that it's well loaded
     data->saveData();
@@ -95,21 +98,21 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     data->imagesData = *imagesData;
 
     progressDialog.setValue(0);
-    progressDialog.setMaximum(imagesData->get()->size());
+    progressDialog.setMaximum(data->getImagesData()->get()->size());
     progressDialog.setLabelText("Loading images thumbnail ...");
     progressDialog.show();
     QApplication::processEvents();
 
-    if (!loadImagesThumbnail(data, imagesData, progressDialog)) {
+    if (!loadImagesThumbnail(data, progressDialog)) {
         return false;
     }
     return true;
 }
 
-bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& progressDialog) {
+bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
     qDebug() << "Loading images thumbnail ...";
     try {
-        int totalImages = imagesData->get()->size();
+        int totalImages = data->getImagesData()->get()->size();
         int numThreads = QThreadPool::globalInstance()->maxThreadCount();
         int imagesPerThread = 10;
 
@@ -134,7 +137,7 @@ bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& pr
                         if (start >= totalImages) break;
                         int end = std::min(start + imagesPerThread, totalImages);
 
-                        ThumbnailTask* task = new ThumbnailTask(data, imagesData, start, end);
+                        ThumbnailTask* task = new ThumbnailTask(data, start, end);
                         QThreadPool::globalInstance()->start(task);
                     }
                 };
@@ -144,7 +147,7 @@ bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& pr
                 }
 
             } catch (const std::exception& e) {
-                qCritical() << e.what();
+                qCritical() << "loadImagesThumbnail" << e.what();
             }
         });
 
@@ -156,9 +159,8 @@ bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& pr
                 return false;
             }
             qDebug() << "starting count" << imageIndices.size();
-            // QThread::msleep(100);
             for (int index : imageIndices) {
-                ImageData* imageData = imagesData->getImageData(index);
+                ImageData* imageData = data->getImagesData()->getImageData(index);
                 if (data->hasThumbnail(imageData->getImagePath(), 128) &&
                     data->hasThumbnail(imageData->getImagePath(), 256) &&
                     data->hasThumbnail(imageData->getImagePath(), 512)) {
@@ -173,15 +175,16 @@ bool loadImagesThumbnail(Data* data, ImagesData* imagesData, QProgressDialog& pr
         }
         return true;
     } catch (const std::exception& e) {
-        qCritical() << e.what();
+        qCritical() << "loadImagesThumbnail" << e.what();
         return false;
     }
+    qDebug() << "images thumbnail loaded";
 }
 
 std::string readFile(const std::string& filePath) {
     std::ifstream file(filePath);
     if (!file.is_open()) {
-        throw std::runtime_error("Could not open file: " + filePath);
+        qCritical() << "Could not open file: " << QString::fromStdString(filePath);
     }
 
     std::stringstream buffer;
