@@ -8,7 +8,6 @@
 #include "ImageData.hpp"
 
 class ImagesData {
-    // TODO netoyer
    private:
     int imageNumber = 0;
     std::unordered_map<std::string, ImageData*> imageMap;

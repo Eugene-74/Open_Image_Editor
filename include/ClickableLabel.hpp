@@ -1,12 +1,11 @@
 #pragma once
 
-#include <QFileDialog>
+#include <QColor>
 #include <QLabel>
-#include <QMouseEvent>
-#include <QPainter>
-#include <opencv2/opencv.hpp>
+#include <QSize>
+#include <QString>
+#include <string>
 
-#include "Const.hpp"
 #include "Data.hpp"
 
 class ClickableLabel : public QLabel {

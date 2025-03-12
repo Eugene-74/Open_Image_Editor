@@ -1,18 +1,11 @@
 #pragma once
 
-#include <QApplication>
-#include <QCalendarWidget>
 #include <QDateTime>
 #include <QDateTimeEdit>
-#include <QFileDialog>
 #include <QKeyEvent>
-#include <QLabel>
 #include <QLineEdit>
-#include <QListWidget>
 #include <QMainWindow>
-#include <QPixmap>
 #include <QPushButton>
-#include <QScreen>
 #include <QSize>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -24,7 +17,7 @@
 #include "Const.hpp"
 #include "Data.hpp"
 #include "ImagesData.hpp"
-#include "InitialWindow.hpp"
+// #include "InitialWindow.hpp"
 #include "LoadImage.hpp"
 #include "MainImage.hpp"
 

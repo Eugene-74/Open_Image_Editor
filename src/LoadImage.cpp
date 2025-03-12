@@ -1,5 +1,25 @@
 #include "LoadImage.hpp"
 
+#include <QApplication>
+#include <QDebug>
+#include <QFileDialog>
+#include <QProgressDialog>
+#include <algorithm>
+#include <filesystem>
+#include <fstream>
+#include <map>
+#include <mutex>
+#include <numeric>
+#include <queue>
+#include <sstream>
+#include <string>
+#include <thread>
+#include <vector>
+namespace fs = std::filesystem;
+#include <QFutureWatcher>
+#include <QThreadPool>
+#include <QTimer>
+
 void ThumbnailTask::run() {
     for (int i = start; i < end; ++i) {
         // TODO pas utiliser at
@@ -140,33 +160,35 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
             taskQueue.push(new ThumbnailTask(data, start, end));
         }
 
-        QFuture<void> future = QtConcurrent::run([&]() {
-            try {
-                auto processImages = [&]() {
-                    while (true) {
-                        ThumbnailTask* task = nullptr;
-                        {
-                            std::lock_guard<std::mutex> lock(queueMutex);
-                            if (taskQueue.empty()) break;
-                            task = taskQueue.front();
-                            taskQueue.pop();
-                        }
-                        if (task) {
-                            QThreadPool::globalInstance()->start(task);
-                        }
-                    }
-                };
-
-                for (int i = 0; i < numThreads; ++i) {
-                    processImages();
+        // Create a lambda function to process the tasks
+        auto processImages = [&]() {
+            while (true) {
+                ThumbnailTask* task = nullptr;
+                {
+                    std::lock_guard<std::mutex> lock(queueMutex);
+                    if (taskQueue.empty()) break;
+                    task = taskQueue.front();
+                    taskQueue.pop();
                 }
-
-            } catch (const std::exception& e) {
-                qCritical() << "loadImagesThumbnail" << e.what();
+                if (task) {
+                    task->run();
+                    delete task;
+                }
             }
-        });
-        // TODO ne se lance pas si y'avais rien avant
-        watcher.setFuture(future);
+        };
+
+        // Start the threads
+        std::vector<std::thread> threads;
+        for (int i = 0; i < numThreads; ++i) {
+            threads.emplace_back(processImages);
+        }
+
+        // Wait for all threads to finish
+        for (auto& thread : threads) {
+            if (thread.joinable()) {
+                thread.join();
+            }
+        }
 
         QTimer timer;
         timer.start(1000);

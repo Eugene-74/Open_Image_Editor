@@ -1,6 +1,13 @@
 #include "Conversion.hpp"
 
-#include <qbuffer.h>
+#include <heif.h>
+
+#include <QFileInfo>
+#include <QImage>
+#include <exiv2/exiv2.hpp>
+#include <filesystem>
+#include <iostream>
+#include <string>
 
 namespace fs = std::filesystem;
 

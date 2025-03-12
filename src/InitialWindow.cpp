@@ -1,5 +1,9 @@
 #include "InitialWindow.hpp"
 
+#include <QDesktopServices>
+#include <QProcess>
+#include <QTranslator>
+
 InitialWindow::InitialWindow() {
     startLog();
 

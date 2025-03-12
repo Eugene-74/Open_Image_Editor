@@ -1,12 +1,6 @@
 #pragma once
 
-#include <dlib/cuda/cuda_dlib.h>
-#include <dlib/dnn.h>
-#include <dlib/image_processing/frontal_face_detector.h>
-#include <dlib/opencv.h>
-
-#include <QDebug>
-#include <QFile>
+// #include <dlib/opencv.h>
 #include <QImage>
 #include <opencv2/opencv.hpp>
 

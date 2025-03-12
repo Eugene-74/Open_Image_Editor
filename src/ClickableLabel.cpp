@@ -1,5 +1,14 @@
 #include "ClickableLabel.hpp"
 
+#include <QFileDialog>
+#include <QLabel>
+#include <QMouseEvent>
+#include <QPainter>
+#include <opencv2/opencv.hpp>
+
+#include "Const.hpp"
+#include "Data.hpp"
+
 ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QString toolTip, QWidget* parent, QSize* sizePtr, bool setSize, int thumbnail, bool square, bool force)
     : QLabel(parent), sizePtr(sizePtr) {
     initial_border_color = border_color;

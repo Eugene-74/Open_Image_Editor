@@ -1,5 +1,7 @@
 #include "MainWindow.hpp"
 
+#include "LoadImage.hpp"
+
 MainWindow::MainWindow(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     qDebug() << "MainWindow started";

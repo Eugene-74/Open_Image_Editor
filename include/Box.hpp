@@ -1,17 +1,9 @@
 #pragma once
 
-#include <QCheckBox>
-#include <QDialog>
-#include <QFileDialog>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QLineEdit>
 #include <QMessageBox>
-#include <QPushButton>
-#include <QVBoxLayout>
 #include <QWidget>
-#include <map>
 #include <string>
+
 struct Option {
     std::string type;
     std::string value;
@@ -21,7 +13,7 @@ struct Option {
         : type(type), value(value) {
     }
 };
-void showModalDialog(QWidget* parent, QMessageBox::Icon icon, std::string text, std::string title, int posX, int posY, bool async);
+void showModalDialog(QWidget* parent, QMessageBox::Icon icon, const std::string& text, const std::string& title, int posX, int posY, bool async);
 
 void showInformationMessage(QWidget* parent, const std::string& text, const std::string& title = "information", int posX = -1, int posY = -1, bool async = false);
 void showWarningMessage(QWidget* parent, const std::string& text, const std::string& title = "warning", int posX = -1, int posY = -1, bool async = false);

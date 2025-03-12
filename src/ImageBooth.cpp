@@ -1,5 +1,11 @@
 #include "ImageBooth.hpp"
 
+#include <QKeyEvent>
+#include <QPointer>
+#include <QScrollBar>
+
+#include "Conversion.hpp"
+
 ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     qDebug() << "ImageBooth::ImageBooth";

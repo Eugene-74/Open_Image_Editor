@@ -2,11 +2,7 @@
 #include <curl/curl.h>
 #include <json/json.h>
 
-#include <QApplication>
-#include <QDebug>
-#include <QDesktopServices>
 #include <QMainWindow>
-#include <QScreen>
 #include <QVBoxLayout>
 
 #include "AppConfig.hpp"
@@ -19,9 +15,9 @@
 #include "ImagesData.hpp"
 #include "MainWindow.hpp"
 
-class ImageEditor;
-class ImageBooth;
-class MainWindow;
+// class ImageEditor;
+// class ImageBooth;
+// class MainWindow;
 
 class InitialWindow : public QMainWindow {
     Q_OBJECT

@@ -1,6 +1,17 @@
 #include "Data.hpp"
 
+#include <QApplication>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QPainter>
+#include <QResource>
+#include <QThreadPool>
+#include <QTimer>
+#include <QWidget>
 #include <regex>
+
+#include "Conversion.hpp"
+#include "Data.hpp"
 
 namespace fs = std::filesystem;
 

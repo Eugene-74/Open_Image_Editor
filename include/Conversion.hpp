@@ -1,22 +1,12 @@
 #pragma once
-
-#include <heif.h>
-
-#include <QApplication>
 #include <QComboBox>
 #include <QDialog>
-#include <QFileInfo>
-#include <QImage>
 #include <QPushButton>
 #include <QStringList>
 #include <QVBoxLayout>
-#include <exiv2/exiv2.hpp>
-#include <filesystem>
-#include <iostream>
-#include <string>
 
 #include "Verification.hpp"
-
+class QVBoxLayout;
 class ConversionDialog : public QDialog {
     Q_OBJECT
 

@@ -1,19 +1,15 @@
 #pragma once
 
-#include <QApplication>
 #include <QLabel>
 #include <QMainWindow>
 #include <QScrollArea>
-#include <QScrollBar>
 #include <QTimer>
 #include <QVBoxLayout>
-#include <cmath>
 #include <vector>
 
 #include "Box.hpp"
 #include "ClickableLabel.hpp"
 #include "Data.hpp"
-#include "InitialWindow.hpp"
 
 class ImageBooth : public QMainWindow {
     Q_OBJECT

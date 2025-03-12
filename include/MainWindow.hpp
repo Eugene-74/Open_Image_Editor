@@ -5,7 +5,7 @@
 
 #include "ClickableLabel.hpp"
 #include "Data.hpp"
-#include "InitialWindow.hpp"
+// #include "InitialWindow.hpp"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT

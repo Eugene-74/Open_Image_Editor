@@ -1,5 +1,8 @@
 #include "ImageEditor.hpp"
 
+#include <QCalendarWidget>
+
+#include "Conversion.hpp"
 #include "FaceRecognition.hpp"
 
 ImageEditor::ImageEditor(Data* dat, QWidget* parent)
