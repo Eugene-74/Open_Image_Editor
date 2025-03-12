@@ -376,6 +376,10 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
             int imageShiftSelectedInCurrent = data->getImagesData()->getImageNumberInCurrent(imageShiftSelected);
 
+            qDebug() << "imageShiftSelectedInCurrent : " << imageShiftSelectedInCurrent;
+            qDebug() << "imageShiftSelected" << imageShiftSelected;
+            qDebug() << "nbr : " << nbr;
+
             int start = std::min(imageShiftSelectedInCurrent, nbr);
             int end = std::max(imageShiftSelectedInCurrent, nbr);
             // TODO probleme ne garde pas la premiere
@@ -521,7 +525,7 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
 // Update all visible images
 void ImageBooth::updateImages() {
     try {
-        // TODO les imagesSelected s'affiche pas jutse pres un changement de dossier
+        // TODO les imagesSelected s'affiche pas jutse apres un changement de dossier
         qDebug() << "updateImages";
         int spacerHeight = scrollArea->verticalScrollBar()->value();
         int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();

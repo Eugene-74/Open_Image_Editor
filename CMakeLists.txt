@@ -49,6 +49,9 @@ if(WIN32)
     include_directories(${OpenCV_INCLUDE_DIRS})
     include_directories(${EXIV2_INCLUDE_DIRS})
     include_directories(${HEIF_INCLUDE_DIRS})
+    include_directories(${Qt6Core_INCLUDE_DIRS})
+    include_directories(${Qt6Gui_INCLUDE_DIRS})
+    include_directories(${Qt6Widgets_INCLUDE_DIRS})
 
     configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/include/AppConfig.hpp.in
@@ -205,22 +208,19 @@ endif()
 # endif()
 
 # -------------------CREATE TESTS------------------------
+if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Test")
+    enable_testing()
 
-enable_testing()
+    find_package(GTest REQUIRED)
+    include_directories(${GTEST_INCLUDE_DIRS})
 
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
+    include_directories(${CMAKE_SOURCE_DIR}/src)
 
-include_directories(${CMAKE_SOURCE_DIR}/src)
+    file(GLOB TEST_SOURCES "tests/*.cpp")
 
-include_directories(${Qt6Core_INCLUDE_DIRS})
-include_directories(${Qt6Gui_INCLUDE_DIRS})
-include_directories(${Qt6Widgets_INCLUDE_DIRS})
+    add_executable(runTests ${TEST_SOURCES})
 
-file(GLOB TEST_SOURCES "tests/*.cpp")
+    target_link_libraries(runTests ${GTEST_LIBRARIES} pthread OpenImageEditorLib)
 
-add_executable(runTests ${TEST_SOURCES})
-
-target_link_libraries(runTests ${GTEST_LIBRARIES} pthread OpenImageEditorLib)
-
-add_test(NAME runTests COMMAND runTests)
+    add_test(NAME runTests COMMAND runTests)
+endif()

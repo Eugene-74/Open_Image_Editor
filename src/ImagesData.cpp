@@ -43,7 +43,7 @@ int ImagesData::getImageNumberInCurrent(int imageNbrInTotal) {
         }
         imageNbrInCurrent++;
     }
-    return imageNbrInCurrent;
+    return imageNbrInCurrent - 1;
 }
 
 void ImagesData::print() const {
