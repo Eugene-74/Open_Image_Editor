@@ -41,7 +41,6 @@ PROJECT_NAME = OpenImageEditor
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 PROJECT_NUMBER = 1.0.6
-PROJECT_NUMBER = 1.0.6
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewers a
 # quick idea about the purpose of the project. Keep the description short.
@@ -59,7 +58,7 @@ PROJECT_ICON           = ./src/ressources/icons/icon.ico
 # into which the generated documentation will be written. If a relative path is
 # entered, it will be relative to the location where Doxygen was started. If
 # left blank the current directory will be used.
-OUTPUT_DIRECTORY       = ./docs
+OUTPUT_DIRECTORY       = .
 # If the CREATE_SUBDIRS tag is set to YES then Doxygen will create up to 4096
 # sub-directories (in 2 levels) under the output directory of each output format
 # and will distribute the generated files over these directories. Enabling this
@@ -1062,7 +1061,7 @@ GENERATE_HTML          = YES
 # it.
 # The default directory is: html.
 # This tag requires that the tag GENERATE_HTML is set to YES.
-HTML_OUTPUT            = html
+HTML_OUTPUT            = docs
 # The HTML_FILE_EXTENSION tag can be used to specify the file extension for each
 # generated HTML page (for example: .htm, .php, .asp).
 # The default value is: .html.
