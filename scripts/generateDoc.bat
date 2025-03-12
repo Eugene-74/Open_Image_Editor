@@ -20,4 +20,13 @@ set "APP_VERSION=%APP_VERSION%"
 move /Y Doxyfile.tmp Doxyfile
 
 doxygen Doxyfile
+
+xcopy docs "%USERPROFILE%\Downloads\docs" /E /I /Y
+
+git stash push -m "Sauvegarde avant déploiement des docs"
+
+
+REM Deploy docs to gh-pages
+git checkout gh-pages
+
 endlocal
