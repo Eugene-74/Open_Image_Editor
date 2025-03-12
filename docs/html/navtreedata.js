@@ -24,7 +24,7 @@
 */
 var NAVTREE =
 [
-  [ "Open Image Editor", "index.html", [
+  [ "OpenImageEditor", "index.html", [
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],

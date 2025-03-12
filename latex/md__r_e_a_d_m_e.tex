@@ -1,0 +1,38 @@
+\chapter{README}
+\hypertarget{md__r_e_a_d_m_e}{}\label{md__r_e_a_d_m_e}\index{README@{README}}
+For all other informations go to \href{https://github.com/Eugene-74/Open_Image_Editor/wiki}{\texttt{ wiki}} \+:\hypertarget{md__r_e_a_d_m_e_autotoc_md0}{}\doxysection{\texorpdfstring{Instalation}{Instalation}}\label{md__r_e_a_d_m_e_autotoc_md0}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md1}{}\doxysubsection{\texorpdfstring{Simple instalation}{Simple instalation}}\label{md__r_e_a_d_m_e_autotoc_md1}
+Just start the .exe in the last release and follow the instruction (there is no microsoft license for now so you must accept to start the .exe even if windows show a warning).\hypertarget{md__r_e_a_d_m_e_autotoc_md2}{}\doxysubsection{\texorpdfstring{Compilation}{Compilation}}\label{md__r_e_a_d_m_e_autotoc_md2}
+I you want to lose time you can build the project your self. For that you must \+:\hypertarget{md__r_e_a_d_m_e_autotoc_md3}{}\doxysubsubsection{\texorpdfstring{Install all dependencies}{Install all dependencies}}\label{md__r_e_a_d_m_e_autotoc_md3}
+I am using Msys2 with Min\+GW64 so you need to install Msys2. Then you need to install all the dependencies \+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{pacman\ -\/Syu}
+\DoxyCodeLine{}
+\DoxyCodeLine{pacman\ -\/S\ base-\/devel\ mingw-\/w64-\/x86\_64-\/toolchain}
+\DoxyCodeLine{}
+\DoxyCodeLine{pacman\ -\/S\ mingw-\/w64-\/x86\_64-\/cmake}
+\DoxyCodeLine{}
+\DoxyCodeLine{pacman\ -\/S\ mingw-\/w64-\/x86\_64-\/opencv}
+\DoxyCodeLine{}
+\DoxyCodeLine{pacman\ -\/S\ mingw-\/w64-\/x86\_64-\/qt6}
+\DoxyCodeLine{}
+\DoxyCodeLine{pacman\ -\/S\ mingw-\/w64-\/x86\_64-\/exiv2}
+\DoxyCodeLine{}
+\DoxyCodeLine{pacman\ -\/S\ mingw-\/w64-\/x86\_64-\/libheif}
+\DoxyCodeLine{}
+\DoxyCodeLine{pacman\ -\/S\ mingw-\/w64-\/x86\_64-\/curl}
+\DoxyCodeLine{}
+\DoxyCodeLine{pacman\ -\/S\ mingw-\/w64-\/x86\_64-\/jsoncpp}
+\DoxyCodeLine{}
+\DoxyCodeLine{pacman\ -\/S\ mingw-\/w64-\/x86\_64-\/dlib}
+\DoxyCodeLine{}
+\DoxyCodeLine{pacman\ -\/S\ mingw-\/w64-\/x86\_64-\/gtest}
+\DoxyCodeLine{}
+\DoxyCodeLine{pacman\ -\/S\ mingw-\/w64-\/x86\_64-\/ccache}
+
+\end{DoxyCode}
+
+
+When all in well installed just launch scripts\textbackslash{}compile.\+bat 
