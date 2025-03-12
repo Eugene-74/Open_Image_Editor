@@ -112,8 +112,6 @@ ImageData* ImagesData::getImageData(std::string imagePath) {
         ImageData* imageData = foundImageData->second;
         return imageData;
     }
-    qDebug() << "not foundImageData : " << imagePath.c_str();
-
     return nullptr;
 }
 
@@ -179,4 +177,12 @@ void ImagesData::setImageMapValue(std::string imagePath, ImageData* imageData) {
 
 void ImagesData::setImageMapIntValue(int index, ImageData* imageData) {
     imageMapInt[index] = imageData;
+}
+
+void ImagesData::clear() {
+    imagesData.clear();
+    imageMap.clear();
+    imageMapInt.clear();
+    currentImagesData.clear();
+    imageNumber = 0;
 }

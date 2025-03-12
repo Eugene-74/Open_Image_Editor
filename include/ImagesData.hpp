@@ -31,6 +31,8 @@ class ImagesData {
 
     ImagesData& operator=(const ImagesData& other);
 
+    void clear();
+
     void setImageNumber(int nbr);
     int getImageNumber() const;
 

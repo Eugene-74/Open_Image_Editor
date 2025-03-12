@@ -102,6 +102,7 @@ class Data {
 
         void saveData();
         void loadData();
+        void clear();
 
         bool isDeleted(int imageNbr);
 

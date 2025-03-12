@@ -340,8 +340,12 @@ void InitialWindow::closeEvent(QCloseEvent* event) {
     event->accept();
 }
 
+/**
+ * @brief
+ * @param data
+ */
 void InitialWindow::createImageEditor(Data* data) {
-    imageEditor = new ImageEditor(data, this);
+    imageEditor = new ImageEditor(this->data, this);
 
     layout->addWidget(imageEditor);
 

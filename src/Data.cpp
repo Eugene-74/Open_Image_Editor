@@ -4,6 +4,10 @@
 
 namespace fs = std::filesystem;
 
+/**
+ * @brief
+ * @param imageNbr
+ */
 void Data::preDeleteImage(int imageNbr) {
     ImageData* imageData;
     imageData = this->imagesData.getImageData(imageNbr);
@@ -13,6 +17,10 @@ void Data::preDeleteImage(int imageNbr) {
     this->deletedImagesData.print();
 }
 
+/**
+ * @brief
+ * @param imageNbr
+ */
 void Data::unPreDeleteImage(int imageNbr) {
     const ImageData imageData = *imagesData.getImageData(imageNbr);
 
@@ -470,35 +478,27 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
 QImage Data::rotateQImage(QImage image, ImageData* imageData) {
     if (imageData != nullptr) {
         int orientation = imageData->getOrientation();
-        qDebug() << "rotateQImage : " << orientation << " : " << imageData->getImagePath();
 
         switch (orientation) {
             case Const::Orientation::FLIP_HORIZONTAL:
-                // 2
                 image = image.mirrored(true, false);
                 break;
             case Const::Orientation::ROTATE_180:
-                // 3
                 image = image.transformed(QTransform().rotate(Const::Rotation::UP_SIDE_DOWN));
                 break;
             case Const::Orientation::FLIP_VERTICAL:
-                // 4
                 image = image.mirrored(false, true);
                 break;
             case Const::Orientation::TRANSPOSE:
-                // 5
                 image = image.mirrored(true, false).transformed(QTransform().rotate(-90));
                 break;
             case Const::Orientation::ROTATE_90:
-                // 6
                 image = image.transformed(QTransform().rotate(90));
                 break;
             case Const::Orientation::TRANSVERSE:
-                // 7
                 image = image.mirrored(true, false).transformed(QTransform().rotate(90));
                 break;
             case Const::Orientation::ROTATE_270:
-                // 8
                 image = image.transformed(QTransform().rotate(-90));
                 break;
             default:
@@ -1271,4 +1271,15 @@ Folders* Data::findFolderByPath(Folders& root, const std::string& path) {
         }
     }
     return current;
+}
+
+void Data::clear() {
+    imagesData.clear();
+    rootFolders.clear();
+    currentFolder = nullptr;
+    options.clear();
+    lastActions.clear();
+    lastActionsDone.clear();
+    imageCache->clear();
+    saved = true;
 }

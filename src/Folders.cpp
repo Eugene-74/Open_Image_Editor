@@ -127,6 +127,19 @@ void Folders::setParent(Folders* parent) {
     this->parent = parent;
 }
 
+void Folders::clear() {
+    name.clear();
+    files.clear();
+    folders.clear();
+}
+
+void Folders::clearRecursively() {
+    for (auto& folder : folders) {
+        folder.clearRecursively();
+    }
+    clear();
+}
+
 // Verifie si un dossier existe dans un Folders
 bool getIfExist(Folders* currentFolder, const std::string& path) {
     auto folder = std::find_if(currentFolder->getFolders()->begin(), currentFolder->getFolders()->end(), [&path](const Folders& folder) { return folder.getName() == path; });

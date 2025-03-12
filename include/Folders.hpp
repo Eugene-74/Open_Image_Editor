@@ -37,6 +37,10 @@ class Folders {
     void save(std::ofstream& out) const;
     void load(std::ifstream& in);
 
+    void clear();
+    void clearRecursively();
+
+
     void addFolder(std::string name);
     void addFile(std::string name);
 
