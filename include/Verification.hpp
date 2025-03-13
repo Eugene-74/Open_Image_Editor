@@ -1,11 +1,5 @@
 #pragma once
-
-#include <QApplication>
-#include <filesystem>
-#include <iostream>
-#include <vector>
-
-#include "Const.hpp"
+#include <string>
 
 bool isImage(const std::string& cheminFichier);
 bool isTurnable(const std::string& cheminFichier);

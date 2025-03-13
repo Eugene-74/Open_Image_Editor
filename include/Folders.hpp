@@ -1,13 +1,8 @@
 #pragma once
 
-#include <QProgressDialog>
-#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <vector>
-
-#include "Vector.hpp"
-#include "Verification.hpp"
 
 class Folders {
    private:

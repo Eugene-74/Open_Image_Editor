@@ -1,15 +1,12 @@
 #pragma once
 
-#include <filesystem>
 #include <iostream>
-#include <opencv2/opencv.hpp>
 #include <vector>
 
-#include "FaceRecognition.hpp"
+#include "Const.hpp"
+#include "Facerecognition.hpp"
 #include "Folders.hpp"
 #include "MetaData.hpp"
-
-namespace fs = std::filesystem;
 
 class ImageData {
    private:

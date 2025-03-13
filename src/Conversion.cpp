@@ -2,14 +2,48 @@
 
 #include <heif.h>
 
+// #include <ConversionDialog>
+#include <QComboBox>
+#include <QDialog>
 #include <QFileInfo>
 #include <QImage>
+#include <QLayout>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QWidget>
 #include <exiv2/exiv2.hpp>
 #include <filesystem>
 #include <iostream>
 #include <string>
 
+#include "Const.hpp"
+#include "Verification.hpp"
+
 namespace fs = std::filesystem;
+
+ConversionDialog::ConversionDialog(QWidget* parent)
+    : QDialog(parent) {
+    setWindowTitle("Choose Output File Type");
+
+    QVBoxLayout* layout = new QVBoxLayout(this);
+
+    // Liste des formats de sortie possibles
+    QStringList formats;
+    for (const auto& format : IMAGE_CONVERTION) {
+        formats.append(QString::fromStdString(format));
+    }
+
+    // ComboBox pour choisir le format de sortie
+    comboBox = new QComboBox(this);
+    comboBox->addItems(formats);
+    layout->addWidget(comboBox);
+
+    // Bouton pour valider le choix
+    QPushButton* okButton = new QPushButton("OK", this);
+    layout->addWidget(okButton);
+
+    connect(okButton, &QPushButton::clicked, this, &ConversionDialog::accept);
+}
 
 bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath) {
     try {
@@ -230,4 +264,8 @@ void convertion(const QString& inputImagePath, const QString& selectedFormat) {
 
 QImage readRaw(const std::string& filename) {
     return QImage();
+}
+
+QString ConversionDialog::getSelectedFormat() const {
+    return comboBox->currentText();
 }

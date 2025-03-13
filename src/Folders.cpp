@@ -1,5 +1,9 @@
 #include "Folders.hpp"
 
+#include <QDebug>
+#include <filesystem>
+
+#include "Verification.hpp"
 namespace fs = std::filesystem;
 
 Folders& Folders::operator=(const Folders& other) {

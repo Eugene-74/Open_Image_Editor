@@ -1,9 +1,11 @@
 #pragma once
 
 // #include <dlib/opencv.h>
-#include <QImage>
+// #include <QImage>
 #include <opencv2/opencv.hpp>
 
+// Forward declarations
+class QImage;
 class Person {
    private:
     std::string name;

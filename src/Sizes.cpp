@@ -1,5 +1,8 @@
 #include "Sizes.hpp"
 
+#include <QApplication>
+#include <QMainWindow>
+
 void Sizes::update() {
     QWidget* activeWindow = QApplication::activeWindow();
 

@@ -1,7 +1,12 @@
 #include "MainImage.hpp"
 
-MainImage::MainImage(Data* data, const QString& imagePath, ImageEditor* parent, QSize size, bool setSize, int thumbnail, bool square, bool force)
-    : parent(parent), data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), thumbnail(thumbnail), square(square), force(force) {
+#include <QApplication>
+#include <QPainter>
+
+#include "Box.hpp"
+
+MainImage::MainImage(Data* data, const QString& imagePath, QSize size, bool setSize, int thumbnail, bool square, bool force)
+    : data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), thumbnail(thumbnail), square(square), force(force) {
     qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, true, force);
 
     if (!qImage.isNull()) {

@@ -5,6 +5,7 @@
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QMainWindow>
+#include <QObject>
 #include <QPushButton>
 #include <QSize>
 #include <QTimer>
@@ -12,16 +13,9 @@
 #include <QWidget>
 #include <iostream>
 
-#include "Box.hpp"
 #include "ClickableLabel.hpp"
-#include "Const.hpp"
 #include "Data.hpp"
-#include "ImagesData.hpp"
-// #include "InitialWindow.hpp"
-#include "LoadImage.hpp"
 #include "MainImage.hpp"
-
-class MainImage;
 
 class ImageEditor : public QMainWindow {
     Q_OBJECT

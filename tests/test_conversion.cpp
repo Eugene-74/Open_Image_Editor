@@ -1,8 +1,11 @@
 #include <gtest/gtest.h>
 
+#include <QDir>
 #include <filesystem>
 
+#include "Const.hpp"
 #include "Conversion.hpp"
+#include "Verification.hpp"
 
 namespace fs = std::filesystem;
 

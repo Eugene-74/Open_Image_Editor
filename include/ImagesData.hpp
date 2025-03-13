@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Const.hpp"
 #include "ImageData.hpp"
 
 class ImagesData {

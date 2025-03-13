@@ -1,10 +1,15 @@
 #pragma once
 
 #include <QMessageBox>
-#include <QWidget>
+#include <map>
 #include <string>
 
-struct Option {
+// Forward declarations
+class QWidget;
+
+class Option {
+    // TODO refactor
+   public:
     std::string type;
     std::string value;
 

@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
 
+#include <QDir>
 #include <fstream>
 
+// TODO change to testConst
+#include "Const.hpp"
 #include "Folders.hpp"
 
 TEST(FoldersTest, AddFolder) {

@@ -1,12 +1,8 @@
 #pragma once
 
-#include <QDateTime>
-#include <QDebug>
-#include <codecvt>
-#include <ctime>
 #include <exiv2/exiv2.hpp>
-#include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 
 class MetaData {

@@ -1,13 +1,10 @@
 #pragma once
 #include <QProgressDialog>
-#include <QStringList>
 #include <QWidget>
 #include <string>
 #include <vector>
 
-#include "Box.hpp"
 #include "Data.hpp"
-#include "FileSelector.hpp"
 #include "ImagesData.hpp"
 
 class ThumbnailTask : public QObject, public QRunnable {

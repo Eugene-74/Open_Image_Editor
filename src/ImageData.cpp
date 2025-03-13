@@ -1,5 +1,10 @@
 #include "ImageData.hpp"
 
+#include <QDebug>
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
 ImageData& ImageData::operator=(const ImageData& other) {
     if (this != &other) {
         folders.getName() = other.folders.getName();

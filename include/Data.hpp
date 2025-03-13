@@ -1,17 +1,20 @@
 #pragma once
-#include <QApplication>
-#include <QImage>
 #include <QRunnable>
 #include <QSize>
-#include <filesystem>
-#include <functional>
 #include <map>
 #include <string>
 #include <vector>
 
-#include "Folders.hpp"
+// #include "Folders.hpp"
 #include "ImagesData.hpp"
 #include "Sizes.hpp"
+
+// Forward declarations
+// class ImagesData;
+class ImageData;
+class QApplication;
+class QImage;
+class Folders;
 
 class QImageAndPath {
    public:
@@ -35,9 +38,9 @@ class Data {
     ImagesData deletedImagesData;
 
 #ifdef _WIN32
-    Folders rootFolders = Folders("");
+    Folders rootFolders;
 #else
-    Folders rootFolders = Folders("/");
+    Folders rootFolders;
 #endif
     Folders* currentFolder = &rootFolders;
 

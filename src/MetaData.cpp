@@ -1,5 +1,10 @@
 #include "MetaData.hpp"
 
+#include <QDateTime>
+#include <QDebug>
+#include <codecvt>
+#include <locale>
+
 MetaData& MetaData::operator=(const MetaData& other) {
     if (this != &other) {
         exifMetaData = other.exifMetaData;

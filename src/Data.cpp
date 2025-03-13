@@ -4,14 +4,17 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QPainter>
+#include <QProgressDialog>
 #include <QResource>
 #include <QThreadPool>
 #include <QTimer>
 #include <QWidget>
 #include <regex>
 
+#include "Const.hpp"
 #include "Conversion.hpp"
 #include "Data.hpp"
+#include "Verification.hpp"
 
 namespace fs = std::filesystem;
 

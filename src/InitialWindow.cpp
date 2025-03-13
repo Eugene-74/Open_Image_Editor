@@ -1,8 +1,27 @@
 #include "InitialWindow.hpp"
 
+#include <curl/curl.h>
+#include <json/json.h>
+
+#include <QApplication>
 #include <QDesktopServices>
+#include <QDir>
+#include <QFile>
 #include <QProcess>
+#include <QProgressDialog>
+#include <QTimer>
 #include <QTranslator>
+
+#include "AppConfig.hpp"
+#include "Box.hpp"
+#include "ClickableLabel.hpp"
+#include "Const.hpp"
+#include "Data.hpp"
+#include "ImageBooth.hpp"
+#include "ImageEditor.hpp"
+#include "MainWindow.hpp"
+
+namespace fs = std::filesystem;
 
 InitialWindow::InitialWindow() {
     startLog();

@@ -1,9 +1,15 @@
 #include "ImageBooth.hpp"
 
+#include <QHBoxLayout>
 #include <QKeyEvent>
 #include <QPointer>
+#include <QScrollArea>
 #include <QScrollBar>
+#include <QSpacerItem>
+#include <QTimer>
 
+#include "ClickableLabel.hpp"
+#include "Const.hpp"
 #include "Conversion.hpp"
 
 ImageBooth::ImageBooth(Data* dat, QWidget* parent)

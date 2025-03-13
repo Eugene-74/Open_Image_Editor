@@ -1,43 +1,17 @@
 #pragma once
-#include <QComboBox>
 #include <QDialog>
-#include <QPushButton>
-#include <QStringList>
-#include <QVBoxLayout>
 
-#include "Verification.hpp"
-class QVBoxLayout;
+// Forward declarations
+class QComboBox;
+
 class ConversionDialog : public QDialog {
     Q_OBJECT
 
    public:
-    ConversionDialog(QWidget* parent = nullptr)
-        : QDialog(parent) {
-        setWindowTitle("Choose Output File Type");
+    ConversionDialog(QWidget* parent = nullptr);
+    // : QDialog(parent);
 
-        QVBoxLayout* layout = new QVBoxLayout(this);
-
-        // Liste des formats de sortie possibles
-        QStringList formats;
-        for (const auto& format : IMAGE_CONVERTION) {
-            formats.append(QString::fromStdString(format));
-        }
-
-        // ComboBox pour choisir le format de sortie
-        comboBox = new QComboBox(this);
-        comboBox->addItems(formats);
-        layout->addWidget(comboBox);
-
-        // Bouton pour valider le choix
-        QPushButton* okButton = new QPushButton("OK", this);
-        layout->addWidget(okButton);
-
-        connect(okButton, &QPushButton::clicked, this, &ConversionDialog::accept);
-    }
-
-    QString getSelectedFormat() const {
-        return comboBox->currentText();
-    }
+    QString getSelectedFormat() const;
 
     QComboBox* comboBox;
 

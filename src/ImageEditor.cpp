@@ -1,9 +1,12 @@
 #include "ImageEditor.hpp"
 
 #include <QCalendarWidget>
+#include <QPointer>
 
 #include "Conversion.hpp"
 #include "FaceRecognition.hpp"
+#include "LoadImage.hpp"
+#include "Verification.hpp"
 
 ImageEditor::ImageEditor(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
@@ -104,7 +107,7 @@ void ImageEditor::previousImage(int nbr) {
 
 void ImageEditor::reload() {
     if (bigImage) {
-        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes->imagesEditorSizes->bigImage), false, 0, false, true);
+        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imagesEditorSizes->bigImage), false, 0, false, true);
 
         bigImageLabelNew->setFixedSize(data->sizes->imagesEditorSizes->bigImage);
         bool oldExifEditor = exifEditor;
@@ -696,7 +699,7 @@ MainImage* ImageEditor::createImageLabel() {
         return nullptr;
     }
 
-    MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, *mainImageSize, false);
+    MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), *mainImageSize, false);
     imageLabelNew->personsEditor = personsEditor;
 
     // startDlib();
@@ -1199,7 +1202,7 @@ void ImageEditor::openBigImageLabel() {
     bigImage = true;
     hide();
 
-    bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), this, (data->sizes->imagesEditorSizes->bigImage), false, 0, false, true);
+    bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imagesEditorSizes->bigImage), false, 0, false, true);
     bigImageLabel->setFixedSize(data->sizes->imagesEditorSizes->bigImage);
 
     mainLayout->addWidget(bigImageLabel);

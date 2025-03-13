@@ -1,5 +1,13 @@
 #include "Main.hpp"
 
+#include <QApplication>
+#include <QDebug>
+#include <QGuiApplication>
+#include <QIcon>
+#include <QScreen>
+
+#include "InitialWindow.hpp"
+
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 

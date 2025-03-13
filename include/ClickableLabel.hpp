@@ -6,7 +6,8 @@
 #include <QString>
 #include <string>
 
-#include "Data.hpp"
+// Forward declarations
+class Data;
 
 class ClickableLabel : public QLabel {
     Q_OBJECT

@@ -1,23 +1,21 @@
 #pragma once
+
 #include <curl/curl.h>
-#include <json/json.h>
 
 #include <QMainWindow>
-#include <QVBoxLayout>
 
-#include "AppConfig.hpp"
-#include "Box.hpp"
-#include "Const.hpp"
-#include "Data.hpp"
-#include "FaceRecognition.hpp"
-#include "ImageBooth.hpp"
-#include "ImageEditor.hpp"
-#include "ImagesData.hpp"
-#include "MainWindow.hpp"
-
-// class ImageEditor;
-// class ImageBooth;
-// class MainWindow;
+// Forward declarations
+class Data;
+class QProgressDialog;
+class QVBoxLayout;
+class ClickableLabel;
+class ImageBooth;
+class ImageEditor;
+class MainWindow;
+class QTimer;
+class QHBoxLayout;
+class QVBoxLayout;
+class QSize;
 
 class InitialWindow : public QMainWindow {
     Q_OBJECT

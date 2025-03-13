@@ -3,7 +3,10 @@
 #include <QApplication>
 #include <QDebug>
 #include <QFileDialog>
+#include <QFutureWatcher>
 #include <QProgressDialog>
+#include <QThreadPool>
+#include <QTimer>
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
@@ -15,10 +18,11 @@
 #include <string>
 #include <thread>
 #include <vector>
+
+#include "FileSelector.hpp"
+#include "Verification.hpp"
+
 namespace fs = std::filesystem;
-#include <QFutureWatcher>
-#include <QThreadPool>
-#include <QTimer>
 
 void ThumbnailTask::run() {
     for (int i = start; i < end; ++i) {

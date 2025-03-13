@@ -1,13 +1,8 @@
 #pragma once
 
-#include <QApplication>
-#include <QMainWindow>
 #include <QRect>
 #include <QScreen>
 #include <QSize>
-#include <QWidget>
-
-// #include "Data.hpp"
 
 class Sizes {
    public:

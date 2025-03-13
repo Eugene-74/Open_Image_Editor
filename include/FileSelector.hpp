@@ -1,9 +1,7 @@
 #pragma once
 
-
+// class QStringList;
 #include <QStringList>
-#include <QFileDialog>
-
 
 class fileSelector {
 public:

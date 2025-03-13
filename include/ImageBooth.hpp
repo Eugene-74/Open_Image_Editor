@@ -1,15 +1,18 @@
 #pragma once
 
-#include <QLabel>
 #include <QMainWindow>
-#include <QScrollArea>
-#include <QTimer>
-#include <QVBoxLayout>
 #include <vector>
 
-#include "Box.hpp"
-#include "ClickableLabel.hpp"
 #include "Data.hpp"
+
+// Forward declaration
+class QScrollArea;
+class QTimer;
+class QVBoxLayout;
+class ClickableLabel;
+class QLabel;
+class QSpacerItem;
+class QHBoxLayout;
 
 class ImageBooth : public QMainWindow {
     Q_OBJECT

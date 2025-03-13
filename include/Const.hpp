@@ -2,6 +2,7 @@
 
 #include <QStandardPaths>
 #include <QString>
+#include <map>
 #include <string>
 
 #include "Box.hpp"
@@ -50,10 +51,7 @@ const std::string THUMBNAIL_PATH = SAVE_PATH + "/thumbnails";
 const std::string IMAGESDATA_SAVE_DATA_PATH = SAVE_PATH + "/save." + APP_NAME;
 
 const std::map<std::string, Option> DEFAULT_OPTIONS = {
-    {"Sizes::imageBooth::ImagesPerLine", Option("text", "10")}
-
-    // {THUMBNAIL_PATH_OPTION, Option("directory", SAVE_PATH + "/thumbnails")},
-};
+    {"Sizes::imageBooth::ImagesPerLine", Option("text", "10")}};
 const std::vector<std::string> IMAGE_CONVERTION = {"jpg", "jpeg", "png", "webp", "tiff", "bmp", "heic", "heif"};
 
 const std::vector<std::string> IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".svg", ".tiff", ".bmp"};

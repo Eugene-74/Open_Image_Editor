@@ -1,5 +1,12 @@
 #include "Verification.hpp"
 
+#include <algorithm>
+#include <filesystem>
+// #include <string>
+#include <vector>
+
+#include "Const.hpp"
+
 namespace fs = std::filesystem;
 
 bool isImage(const std::string& path) {
