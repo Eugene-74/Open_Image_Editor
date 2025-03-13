@@ -1,21 +1,26 @@
 #pragma once
 
-#include <QDateTime>
-#include <QDateTimeEdit>
-#include <QKeyEvent>
-#include <QLineEdit>
 #include <QMainWindow>
-#include <QObject>
-#include <QPushButton>
-#include <QSize>
-#include <QTimer>
-#include <QVBoxLayout>
-#include <QWidget>
 #include <iostream>
 
-#include "ClickableLabel.hpp"
 #include "Data.hpp"
-#include "MainImage.hpp"
+
+// Forward declaration
+class ClickableLabel;
+class MainImage;
+class QDateTime;
+class QDateTimeEdit;
+class QKeyEvent;
+class QLineEdit;
+class QObject;
+class QPushButton;
+class QSize;
+class QTimer;
+class QVBoxLayout;
+class QWidget;
+class QFrame;
+class QHBoxLayout;
+class QLayout;
 
 class ImageEditor : public QMainWindow {
     Q_OBJECT
@@ -138,7 +143,7 @@ class ImageEditor : public QMainWindow {
     ClickableLabel* imageEditExif;
     ClickableLabel* imagePersons;
 
-    QTimer* imageOpenTimer = new QTimer(this);
+    QTimer* imageOpenTimer;
 
     bool bigImage = false;
    signals:

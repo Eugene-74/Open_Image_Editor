@@ -3,10 +3,17 @@
 #include <iostream>
 #include <vector>
 
-#include "Const.hpp"
-#include "Facerecognition.hpp"
+#include "FaceRecognition.hpp"
 #include "Folders.hpp"
 #include "MetaData.hpp"
+// TODO to remove
+#include "Const.hpp"
+
+// Forward declaration
+// class Person;
+class QPoint;
+
+// class MetaData;
 
 class ImageData {
    private:

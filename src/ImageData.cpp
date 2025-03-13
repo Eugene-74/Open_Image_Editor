@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <filesystem>
 
+#include "Const.hpp"
+
 namespace fs = std::filesystem;
 
 ImageData& ImageData::operator=(const ImageData& other) {

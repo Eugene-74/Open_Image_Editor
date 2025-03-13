@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QLabel>
-#include <QMouseEvent>
 #include <QSize>
 
-#include "Data.hpp"
+// Forward declaration
+class QMouseEvent;
+class Data;
 
 class MainImage : public QLabel {
     Q_OBJECT

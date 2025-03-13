@@ -5,6 +5,7 @@
 
 #include "Const.hpp"
 #include "Conversion.hpp"
+#include "TestConst.hpp"
 #include "Verification.hpp"
 
 namespace fs = std::filesystem;

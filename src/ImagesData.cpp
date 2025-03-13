@@ -1,5 +1,7 @@
 #include "ImagesData.hpp"
 
+#include "Const.hpp"
+
 ImagesData& ImagesData::operator=(const ImagesData& other) {
     if (this != &other) {
         imagesData = other.imagesData;

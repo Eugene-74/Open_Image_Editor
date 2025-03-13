@@ -19,7 +19,10 @@
 #include <thread>
 #include <vector>
 
+#include "Data.hpp"
 #include "FileSelector.hpp"
+#include "Folders.hpp"
+#include "ImagesData.hpp"
 #include "Verification.hpp"
 
 namespace fs = std::filesystem;

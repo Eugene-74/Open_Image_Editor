@@ -2,6 +2,8 @@
 #include <gtest/gtest.h>
 
 #include "Data.hpp"
+#include "TestConst.hpp"
+
 class DataTest : public ::testing::Test {
    protected:
     std::vector<std::string> imagePaths = {

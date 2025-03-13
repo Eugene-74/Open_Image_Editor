@@ -5,6 +5,9 @@
 
 #include "Data.hpp"
 
+// Forward declaration
+class QHBoxLayout;
+
 class MainWindow : public QMainWindow {
     Q_OBJECT
 

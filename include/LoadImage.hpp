@@ -1,11 +1,14 @@
 #pragma once
-#include <QProgressDialog>
-#include <QWidget>
+#include <QObject>
+#include <QRunnable>
 #include <string>
 #include <vector>
-
-#include "Data.hpp"
-#include "ImagesData.hpp"
+// Forward
+class QProgressDialog;
+class QWidget;
+class Data;
+class ImagesData;
+class Folders;
 
 class ThumbnailTask : public QObject, public QRunnable {
     Q_OBJECT

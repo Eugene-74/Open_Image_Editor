@@ -4,6 +4,7 @@
 #include <json/json.h>
 
 #include <QApplication>
+#include <QCloseEvent>
 #include <QDesktopServices>
 #include <QDir>
 #include <QFile>

@@ -1,11 +1,28 @@
 #include "ImageEditor.hpp"
 
 #include <QCalendarWidget>
+#include <QDateTime>
+#include <QDateTimeEdit>
+#include <QFrame>
+#include <QHBoxLayout>
+#include <QKeyEvent>
+#include <QLayout>
+#include <QLineEdit>
+#include <QMainWindow>
+#include <QObject>
 #include <QPointer>
+#include <QPushButton>
+#include <QSize>
+#include <QTimer>
+#include <QVBoxLayout>
+#include <QWidget>
 
+#include "ClickableLabel.hpp"
+#include "Const.hpp"
 #include "Conversion.hpp"
 #include "FaceRecognition.hpp"
 #include "LoadImage.hpp"
+#include "MainImage.hpp"
 #include "Verification.hpp"
 
 ImageEditor::ImageEditor(Data* dat, QWidget* parent)

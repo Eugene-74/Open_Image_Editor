@@ -1,9 +1,12 @@
 #include "MainImage.hpp"
 
 #include <QApplication>
+#include <QMouseEvent>
 #include <QPainter>
 
 #include "Box.hpp"
+#include "Const.hpp"
+#include "Data.hpp"
 
 MainImage::MainImage(Data* data, const QString& imagePath, QSize size, bool setSize, int thumbnail, bool square, bool force)
     : data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), thumbnail(thumbnail), square(square), force(force) {
