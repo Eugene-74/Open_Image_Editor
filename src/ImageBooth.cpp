@@ -22,7 +22,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     data->getImagesData()->getCurrent()->clear();
 
     if (data->getCurrentFolders()->getName() == "*") {
-        Folders* firstFolder = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders());
+        Folders* firstFolder = data->findFirstFolderWithAllImages();
         Folders* allImagesFolder = new Folders("*");
 
         allImagesFolder->setParent(firstFolder);
@@ -125,7 +125,7 @@ void ImageBooth::openFolder(int index) {
         }
     } else {
         auto* allImagesFolder = new Folders("*");
-        allImagesFolder->setParent(data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders()));
+        allImagesFolder->setParent(data->findFirstFolderWithAllImages());
 
         auto* images = data->getImagesData()->get();
         for (auto it = images->begin(); it != images->end(); ++it) {
@@ -558,7 +558,7 @@ void ImageBooth::updateImages() {
 
                 if (folderNbr < getCurrentFoldersSize()) {
                     if (folderNbr == 0) {
-                        std::string firstFolderName = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders())->getName();
+                        std::string firstFolderName = data->findFirstFolderWithAllImages()->getName();
 
                         ClickableLabel* folderButton;
                         if (data->getCurrentFolders()->getName() == firstFolderName) {
@@ -573,7 +573,7 @@ void ImageBooth::updateImages() {
                         }
 
                         connect(folderButton, &ClickableLabel::leftClicked, [this]() {
-                            std::string firstFolderName = data->findFirstFolderWithAllImages(data->imagesData, *data->getRootFolders())->getName();
+                            std::string firstFolderName = data->findFirstFolderWithAllImages()->getName();
 
                             if (data->getCurrentFolders()->getName() == firstFolderName) {
                                 openFolder(-1);
@@ -643,7 +643,7 @@ void ImageBooth::updateImages() {
 void ImageBooth::keyReleaseEvent(QKeyEvent* event) {
     switch (event->key()) {
         case Qt::Key_Escape: {
-            std::string firstFolderName = data->findFirstFolderWithAllImages(*data->getImagesData(), *data->getRootFolders())->getName();
+            std::string firstFolderName = data->findFirstFolderWithAllImages()->getName();
             if (firstFolderName == data->getCurrentFolders()->getName()) {
                 switchToMainWindow();
             } else {

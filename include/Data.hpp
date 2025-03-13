@@ -129,7 +129,7 @@ class Data {
     Folders* getCurrentFolders();
 
     ImagesData* getImagesData();
-    Folders* findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const;
+    Folders* findFirstFolderWithAllImages() const;
     void removeImageFromFolders(ImageData& imageData);
     std::string getFolderPath(Folders* folder);
     Folders* findFolderByPath(Folders& root, const std::string& path);

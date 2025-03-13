@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <QPoint>
+
 #include "ImageData.hpp"
 
 class ImageDataTest : public ::testing::Test {

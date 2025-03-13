@@ -624,18 +624,11 @@ void Data::loadData() {
     for (size_t i = 0; i < imagesDataSize; ++i) {
         ImageData* imageData = new ImageData();
         imageData->load(inFile);
-        if (imageData->getpersons().size() > 0) {
-            qDebug() << "load person 1 : " << imageData->getImagePath();
-        }
         imagesData.get()->push_back(imageData);
     }
 
-    // Update imageMap with pointers to ImageData in imagesData
     int index = 0;
     for (auto* imageData : *imagesData.get()) {
-        if (imageData->getpersons().size() > 0) {
-            qDebug() << "load person 2 : " << imageData->getImagePath();
-        }
         imagesData.setImageMapValue(imageData->getImagePath(), imageData);
         imagesData.setImageMapIntValue(index, imageData);
         index++;
@@ -671,7 +664,6 @@ void Data::loadData() {
     }
     rootFolders.load(inFile);
 
-    // Load the path of currentFolder
     size_t pathSize;
     inFile.read(reinterpret_cast<char*>(&pathSize), sizeof(pathSize));
     std::string currentFolderPath(pathSize, '\0');
@@ -680,10 +672,6 @@ void Data::loadData() {
     qDebug() << "currentFolder : " << currentFolderPath;
 
     inFile.close();
-    // todo mettre autre part
-    // if (!currentFolder) {
-    //     currentFolder = findFirstFolderWithAllImages();
-    // }
 }
 
 void Data::addAction(std::function<void()> unDo, std::function<void()> reDo) {
