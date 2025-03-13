@@ -11,12 +11,18 @@
 #include <QWidget>
 #include <regex>
 
+#include "Box.hpp"
 #include "Const.hpp"
 #include "Conversion.hpp"
 #include "Data.hpp"
 #include "Verification.hpp"
 
 namespace fs = std::filesystem;
+
+Data::Data()
+    : imageCache(new std::map<std::string, QImageAndPath>()) {
+    options = DEFAULT_OPTIONS;
+}
 
 /**
  * @brief
@@ -400,7 +406,7 @@ void Data::exportImages(std::string exportPath, bool dateInName) {
 
     rootFolders.print();
 
-    firstFolder = findFirstFolderWithAllImages(imagesData, rootFolders);
+    firstFolder = findFirstFolderWithAllImages();
 
     exportPath += "/" + firstFolder->getName();
 
@@ -409,18 +415,23 @@ void Data::exportImages(std::string exportPath, bool dateInName) {
     copyTo(rootFolders, exportPath, dateInName);
 }
 
-Folders* Data::findFirstFolderWithAllImages(const ImagesData& imagesData, const Folders& currentFolder) const {
-    if (currentFolder.folders.size() > 1) {
-        return const_cast<Folders*>(&currentFolder);
+Folders* Data::findFirstFolderWithAllImages() const {
+    Folders currentF = rootFolders;
+    return findFirstFolderWithAllImagesSub(currentF);
+}
+
+Folders* Data::findFirstFolderWithAllImagesSub(const Folders& currentF) const {
+    if (currentF.folders.size() > 1) {
+        return const_cast<Folders*>(&currentF);
     }
-    for (const auto& folder : currentFolder.folders) {
+    for (const auto& folder : currentF.folders) {
         if (folder.getFilesConst().size() > 0) {
             return const_cast<Folders*>(&folder);
         }
-        return findFirstFolderWithAllImages(imagesData, folder);
+        return findFirstFolderWithAllImagesSub(folder);
     }
 
-    return const_cast<Folders*>(&currentFolder);
+    return const_cast<Folders*>(&currentF);
 }
 
 void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInName) {
@@ -669,6 +680,10 @@ void Data::loadData() {
     qDebug() << "currentFolder : " << currentFolderPath;
 
     inFile.close();
+    // todo mettre autre part
+    // if (!currentFolder) {
+    //     currentFolder = findFirstFolderWithAllImages();
+    // }
 }
 
 void Data::addAction(std::function<void()> unDo, std::function<void()> reDo) {
@@ -1191,9 +1206,9 @@ Folders* Data::getRootFolders() {
 }
 Folders* Data::getCurrentFolders() {
     if (currentFolder == nullptr || currentFolder->getName() == "") {
-        qDebug() << "currentFolder is null 0 ";
-        currentFolder = findFirstFolderWithAllImages(imagesData, rootFolders);
-        qWarning() << "currentFolder is null 1";
+        // qDebug() << "currentFolder is null 0 ";
+        currentFolder = findFirstFolderWithAllImages();
+        // qWarning() << "currentFolder is null 1";
     }
     return currentFolder;
 }

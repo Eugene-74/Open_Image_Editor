@@ -6,11 +6,8 @@
 #include "FaceRecognition.hpp"
 #include "Folders.hpp"
 #include "MetaData.hpp"
-// TODO to remove
-#include "Const.hpp"
 
 // Forward declaration
-// class Person;
 class QPoint;
 
 // class MetaData;
@@ -30,21 +27,16 @@ class ImageData {
     PersonStatus personStatus = PersonStatus::NotLoaded;
 
     std::vector<std::vector<QPoint>> cropSizes;
-    int orientation = Const::Orientation::UNDEFINED;
+    int orientation;
     long date = 0;
 
    public:
-    ImageData()
-        : folders(Folders()), cropSizes(), orientation(), date() {}
+    ImageData();
+    ImageData(const Folders folders);
 
-    ImageData(const Folders folders)
-        : folders(folders) {}
+    ImageData(std::string imagePath);
 
-    ImageData(std::string imagePath)
-        : folders(Folders(imagePath)) {}
-
-    ImageData(const ImageData& other)
-        : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), persons(other.persons), personStatus(other.personStatus) {}
+    ImageData(const ImageData& other);
 
     ImageData& operator=(const ImageData& other);
     bool operator==(const ImageData& other) const;

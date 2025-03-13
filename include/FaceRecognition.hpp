@@ -1,7 +1,6 @@
 #pragma once
 
 // #include <dlib/opencv.h>
-// #include <QImage>
 #include <opencv2/opencv.hpp>
 
 // Forward declarations

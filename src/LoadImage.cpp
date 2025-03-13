@@ -30,7 +30,6 @@ namespace fs = std::filesystem;
 void ThumbnailTask::run() {
     for (int i = start; i < end; ++i) {
         // TODO pas utiliser at
-        qDebug() << data->getImagesData()->get()->size();
         ImageData* imageData = data->getImagesData()->get()->at(i);
 
         data->createThumbnailIfNotExists(imageData->getImagePath(), 16);
@@ -63,9 +62,11 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
     // auto images = data->getImagesData()->get();
 
     // ensure that it's well loaded
+    qInfo() << "saving data after loading";
     data->saveData();
     data->clear();
     data->loadData();
+    qInfo() << "All loading done";
 }
 
 // Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
@@ -144,7 +145,10 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
     try {
         int totalImages = data->getImagesData()->get()->size();
         int numThreads = std::max(QThreadPool::globalInstance()->maxThreadCount() - 2, 1);
-        int imagesPerThread = 20;
+        int imagesPerThread = 50;
+
+        QThreadPool* threadPool = QThreadPool::globalInstance();
+        threadPool->setMaxThreadCount(numThreads);
 
         int thumbnailsCreated = 0;
 
@@ -167,38 +171,12 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
             taskQueue.push(new ThumbnailTask(data, start, end));
         }
 
-        // Create a lambda function to process the tasks
-        auto processImages = [&]() {
-            while (true) {
-                ThumbnailTask* task = nullptr;
-                {
-                    std::lock_guard<std::mutex> lock(queueMutex);
-                    if (taskQueue.empty()) break;
-                    task = taskQueue.front();
-                    taskQueue.pop();
-                }
-                if (task) {
-                    task->run();
-                    delete task;
-                }
-            }
-        };
-
-        // Start the threads
-        std::vector<std::thread> threads;
         for (int i = 0; i < numThreads; ++i) {
-            threads.emplace_back(processImages);
-        }
-
-        // Wait for all threads to finish
-        for (auto& thread : threads) {
-            if (thread.joinable()) {
-                thread.join();
-            }
+            threadPool->start(taskQueue.front());
+            taskQueue.pop();
         }
 
         QTimer timer;
-        timer.start(1000);
         QObject::connect(&timer, &QTimer::timeout, [&]() {
             qDebug() << "starting count" << imageIndices.size();
             for (int index : imageIndices) {
@@ -217,14 +195,22 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
                 timer.start(1000);
             }
         });
-
-        while (QThreadPool::globalInstance()->activeThreadCount() > 0 && imageIndices.size() > 0) {
+        timer.start(1000);
+        while (taskQueue.size() > 0 || QThreadPool::globalInstance()->activeThreadCount() > 0) {
+            for (int i = 0; i < numThreads - QThreadPool::globalInstance()->activeThreadCount(); ++i) {
+                if (taskQueue.size() > 0) {
+                    qInfo() << "starting a new task";
+                    threadPool->start(taskQueue.front());
+                    taskQueue.pop();
+                }
+            }
             QCoreApplication::processEvents();
             if (progressDialog.wasCanceled()) {
                 QThreadPool::globalInstance()->clear();
                 return false;
             }
         }
+
         return true;
     } catch (const std::exception& e) {
         qCritical() << "loadImagesThumbnail" << e.what();

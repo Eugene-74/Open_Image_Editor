@@ -6,6 +6,8 @@
 #include <vector>
 
 // #include "Folders.hpp"
+#include <QImage>
+
 #include "ImagesData.hpp"
 #include "Sizes.hpp"
 
@@ -13,8 +15,8 @@
 // class ImagesData;
 class ImageData;
 class QApplication;
-class QImage;
 class Folders;
+class Option;
 
 class QImageAndPath {
    public:
@@ -44,7 +46,7 @@ class Data {
 #endif
     Folders* currentFolder = &rootFolders;
 
-    std::map<std::string, Option> options = DEFAULT_OPTIONS;
+    std::map<std::string, Option> options;
     Sizes* sizes = new Sizes();
     std::map<std::string, QImageAndPath>* imageCache = nullptr;
     bool saved = true;
@@ -54,8 +56,7 @@ class Data {
 
     bool darkMode = true;
 
-    Data()
-        : imageCache(new std::map<std::string, QImageAndPath>()) {}
+    Data();
 
     void clearCache();
 
@@ -77,7 +78,7 @@ class Data {
 
     bool isInCache(std::string imagePath);
     bool getLoadedImage(std::string imagePath, QImage& image);
-    
+
     bool createThumbnail(const std::string& imagePath, const int maxDim);
     bool deleteThumbnail(const std::string& imagePath, const int maxDim);
 
@@ -134,6 +135,7 @@ class Data {
     Folders* findFolderByPath(Folders& root, const std::string& path);
 
    private:
+    Folders* findFirstFolderWithAllImagesSub(const Folders& currentFolder) const;
     std::vector<Actions> lastActions = {};
     std::vector<Actions> lastActionsDone = {};
 

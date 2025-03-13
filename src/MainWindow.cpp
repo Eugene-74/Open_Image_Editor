@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 
 #include "ClickableLabel.hpp"
+#include "Const.hpp"
 #include "LoadImage.hpp"
 
 MainWindow::MainWindow(Data* dat, QWidget* parent)
