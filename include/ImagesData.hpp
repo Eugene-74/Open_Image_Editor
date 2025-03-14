@@ -37,7 +37,7 @@ class ImagesData {
     void print() const;
 
     // Permet d'ajouter une ImageData à imagesData
-    void addImage(ImageData& imageD);
+    void addImage(ImageData* imageData);
 
     // Permet d'enlever une ImageData à imagesData
     void removeImage(const ImageData& image);

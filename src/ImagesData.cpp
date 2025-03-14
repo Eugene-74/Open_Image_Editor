@@ -55,27 +55,14 @@ void ImagesData::print() const {
     // }
 }
 
-void ImagesData::addImage(ImageData& imageD) {
-    // auto it = std::find_if(imagesData.begin(), imagesData.end(),
-    //                        [&imageD](const ImageData& imgD) {
-    //                            return imgD == imageD;
-    //                        });
+void ImagesData::addImage(ImageData* imageData) {
+    std::string imagePath = imageData->getImagePath();
+    // if (getImageData(imagePath) != nullptr) {
 
-    // if (it != imagesData.end()) {
-    // ImageData lastImageD = *it;
-    // imagesData.erase(it);
-    // imageD.addFolders(lastImageD.getFolders());
-    // imageD.setCropSizes(lastImageD.getCropSizes());
-
-    imagesData.push_back(&imageD);
-    // } else {
-    //     imagesData.push_back(imageD);
-    //     for (const auto& crop : imageD.getCropSizes()) {
-    //         for (const auto& point : crop) {
-    //             qDebug() << point;
-    //         }
-    //     }
+    //     return;
     // }
+    this->get()->push_back(imageData);
+    this->setImageMapValue(imagePath, imageData);
 }
 
 void ImagesData::removeImage(const ImageData& image) {

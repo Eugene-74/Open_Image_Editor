@@ -5,7 +5,6 @@ for /f "tokens=1,2 delims==" %%a in (%~dp0..\AppConfig.txt) do (
     set %%a=%%b
 )
 
-REM Update Doxyfile with APP_VERSION
 set "APP_VERSION=%APP_VERSION%"
 (for /f "delims=" %%i in (Doxyfile) do (
     set "line=%%i"
@@ -25,8 +24,6 @@ xcopy docs "%USERPROFILE%\Downloads\docs" /E /I /Y
 
 git stash push -m "Sauvegarde avant déploiement des docs"
 
-
-REM Deploy docs to gh-pages
 git checkout gh-pages
 
 endlocal

@@ -8,14 +8,16 @@
 // #include "Folders.hpp"
 #include <QImage>
 
+#include "Folders.hpp"
 #include "ImagesData.hpp"
 #include "Sizes.hpp"
+#include "ThreadManager.hpp"
 
 // Forward declarations
 // class ImagesData;
 class ImageData;
 class QApplication;
-class Folders;
+// class Folders;
 class Option;
 
 class QImageAndPath {
@@ -40,9 +42,9 @@ class Data {
     ImagesData deletedImagesData;
 
 #ifdef _WIN32
-    Folders rootFolders;
+    Folders rootFolders = Folders("");
 #else
-    Folders rootFolders;
+    Folders rootFolders = Folders("/");
 #endif
     Folders* currentFolder = &rootFolders;
 
@@ -129,13 +131,18 @@ class Data {
     Folders* getCurrentFolders();
 
     ImagesData* getImagesData();
-    Folders* findFirstFolderWithAllImages() const;
+    Folders* findFirstFolderWithAllImages();
     void removeImageFromFolders(ImageData& imageData);
     std::string getFolderPath(Folders* folder);
     Folders* findFolderByPath(Folders& root, const std::string& path);
 
+    void addThread(std::function<void()> job, std::function<void()> callback);
+    void stopAllThreads();
+
    private:
-    Folders* findFirstFolderWithAllImagesSub(const Folders& currentFolder) const;
+    ThreadManager manager;
+
+    Folders* findFirstFolderWithAllImagesSub(Folders* currentFolder);
     std::vector<Actions> lastActions = {};
     std::vector<Actions> lastActionsDone = {};
 

@@ -25,21 +25,21 @@ Data::Data()
 }
 
 /**
- * @brief
- * @param imageNbr
+ * @brief Move an image to the delete images
+ * @param imageNbr nbr of the images in the total
  */
 void Data::preDeleteImage(int imageNbr) {
     ImageData* imageData;
     imageData = this->imagesData.getImageData(imageNbr);
 
-    this->deletedImagesData.addImage(*imageData);
+    this->deletedImagesData.addImage(imageData);
     qInfo() << "image deleted : " << imageNbr;
     this->deletedImagesData.print();
 }
 
 /**
- * @brief
- * @param imageNbr
+ * @brief Recover an image from the deleted images
+ * @param imageNbr nbr of the images in the total
  */
 void Data::unPreDeleteImage(int imageNbr) {
     const ImageData imageData = *imagesData.getImageData(imageNbr);
@@ -48,16 +48,16 @@ void Data::unPreDeleteImage(int imageNbr) {
 }
 
 void Data::revocerDeletedImage(ImageData& imageData) {
-    imagesData.addImage(imageData);
+    imagesData.addImage(&imageData);
     deletedImagesData.removeImage(imageData);
 }
 
 void Data::revocerDeletedImage(int imageNbr) {
-    ImageData imageData = *deletedImagesData.getImageData(imageNbr);
-    revocerDeletedImage(imageData);
+    ImageData* imageData = deletedImagesData.getImageData(imageNbr);
+    revocerDeletedImage(*imageData);
 
     imagesData.addImage(imageData);
-    deletedImagesData.removeImage(imageData);
+    deletedImagesData.removeImage(*imageData);
 }
 
 // Delete in imagesData images that are also in deletedImagesData
@@ -401,6 +401,11 @@ bool Data::unloadFromCache(std::string imagePath) {
     return false;
 }
 
+/**
+ * @brief Export all images with the folder arborecence
+ * @param exportPath Path for the export
+ * @param dateInName Parameter for the image Name to use the date in the name
+ */
 void Data::exportImages(std::string exportPath, bool dateInName) {
     Folders* firstFolder;
 
@@ -415,23 +420,26 @@ void Data::exportImages(std::string exportPath, bool dateInName) {
     copyTo(rootFolders, exportPath, dateInName);
 }
 
-Folders* Data::findFirstFolderWithAllImages() const {
-    Folders currentF = rootFolders;
-    return findFirstFolderWithAllImagesSub(currentF);
+/**
+ * @brief Find the fist folder that contain all images starting with rootFolders
+ * @return First Folder with aller images
+ */
+Folders* Data::findFirstFolderWithAllImages() {
+    qDebug() << "findFirstFolderWithAllImages";
+    Folders* firstFolder = &rootFolders;
+    firstFolder = findFirstFolderWithAllImagesSub(&rootFolders);
+    return firstFolder;
 }
 
-Folders* Data::findFirstFolderWithAllImagesSub(const Folders& currentF) const {
-    if (currentF.folders.size() > 1) {
-        return const_cast<Folders*>(&currentF);
+/**
+ * @brief Find the fist folder that contain all images
+ * @param currentF Dossier where we are looking for the first folder with all images
+ */
+Folders* Data::findFirstFolderWithAllImagesSub(Folders* currentF) {
+    if (currentF->getFoldersConst().size() == 1 && currentF->getFilesConst().size() == 0) {
+        return findFirstFolderWithAllImagesSub(currentF->getFolder(0));
     }
-    for (const auto& folder : currentF.folders) {
-        if (folder.getFilesConst().size() > 0) {
-            return const_cast<Folders*>(&folder);
-        }
-        return findFirstFolderWithAllImagesSub(folder);
-    }
-
-    return const_cast<Folders*>(&currentF);
+    return currentF;
 }
 
 void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInName) {
@@ -1192,15 +1200,34 @@ void Data::clearActions() {
 Folders* Data::getRootFolders() {
     return &rootFolders;
 }
+/**
+ * @brief Give you the current folder and correct it if it's not initialized
+ * @return The current Folder
+ */
 Folders* Data::getCurrentFolders() {
-    if (currentFolder == nullptr || currentFolder->getName() == "") {
-        // qDebug() << "currentFolder is null 0 ";
+    // qDebug() << "getCurrentFolders ";
+
+    if (currentFolder == nullptr) {
+        qWarning() << "currentFolder is null";
         currentFolder = findFirstFolderWithAllImages();
-        // qWarning() << "currentFolder is null 1";
+        qInfo() << "currentFolder is now : " << currentFolder->getName();
     }
+    // qDebug() << "getCurrentFolders 1";
+
+    if (currentFolder->getName() == "") {
+        qWarning() << "currentFolder is empty";
+        currentFolder = findFirstFolderWithAllImages();
+        qInfo() << "currentFolder is now : " << currentFolder->getName();
+    }
+    // qDebug() << "currentFolder not null : " << currentFolder->getName();
+
     return currentFolder;
 }
 
+/**
+ * @brief Give you imagesData
+ * @return Ptr to ImagesData
+ */
 ImagesData* Data::getImagesData() {
     return &imagesData;
 }
@@ -1291,6 +1318,7 @@ Folders* Data::findFolderByPath(Folders& root, const std::string& path) {
 }
 
 void Data::clear() {
+    manager.removeAllThreads();
     imagesData.clear();
     rootFolders.clear();
     currentFolder = nullptr;
@@ -1299,4 +1327,12 @@ void Data::clear() {
     lastActionsDone.clear();
     imageCache->clear();
     saved = true;
+}
+
+void Data::addThread(std::function<void()> job, std::function<void()> callback) {
+    manager.addThread(job, callback);
+}
+
+void Data::stopAllThreads() {
+    manager.removeAllThreads();
 }

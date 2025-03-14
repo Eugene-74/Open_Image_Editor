@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QProcess>
 #include <QProgressDialog>
+#include <QThreadPool>
 #include <QTimer>
 #include <QTranslator>
 
@@ -26,6 +27,9 @@ namespace fs = std::filesystem;
 
 InitialWindow::InitialWindow() {
     startLog();
+
+    QThreadPool* threadPool = QThreadPool::globalInstance();
+    threadPool->setMaxThreadCount(std::max(threadPool->maxThreadCount() - 1, 1));
 
     resizeTimer = new QTimer(this);
     resizeTimer->setInterval(TIME_BEFORE_REZISE);
@@ -52,6 +56,7 @@ InitialWindow::InitialWindow() {
     QTimer::singleShot(1, this, [this]() {
         qDebug() << "Application started";
         data = new Data();
+
 
         QTranslator translator;
         QString locale = QLocale::system().name();
@@ -327,27 +332,32 @@ void startLog() {
     static QTextStream logStream(&logFile);
     qInstallMessageHandler([](QtMsgType type, const QMessageLogContext& context, const QString& msg) {
         QString formattedMsg = QString("[%1] %2").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"), msg);
+        QString colorCode;
         switch (type) {
             case QtDebugMsg:
+                colorCode = "\033[34m";  // Blue
                 formattedMsg = "[DEBUG   ] " + formattedMsg;
                 break;
             case QtInfoMsg:
+                colorCode = "\033[32m";  // Green
                 formattedMsg = "[INFO    ] " + formattedMsg;
                 break;
             case QtWarningMsg:
+                colorCode = "\033[33m";  // Yellow
                 formattedMsg = "[WARNING ] " + formattedMsg;
                 break;
             case QtCriticalMsg:
+                colorCode = "\033[31m";  // Red
                 formattedMsg = "[CRITICAL] " + formattedMsg;
                 break;
             case QtFatalMsg:
+                colorCode = "\033[41m";  // Red background
                 formattedMsg = "[FATAL   ] " + formattedMsg;
                 abort();
         }
         logStream << formattedMsg << Qt::endl;
-
         logStream.flush();
-        std::cerr << formattedMsg.toStdString() << std::endl;
+        std::cerr << colorCode.toStdString() << formattedMsg.toStdString() << "\033[0m" << std::endl;  // Reset color
     });
 }
 

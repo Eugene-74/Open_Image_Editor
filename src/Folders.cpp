@@ -91,7 +91,12 @@ void Folders::print() const {
     }
 }
 
+/**
+ * @brief Give you the name of the Folder
+ * @return Folder name
+ */
 std::string Folders::getName() const {
+    // qDebug() << "Folder name : " << name;
     return name;
 }
 
@@ -148,9 +153,6 @@ void Folders::clearRecursively() {
 bool getIfExist(Folders* currentFolder, const std::string& path) {
     auto folder = std::find_if(currentFolder->getFolders()->begin(), currentFolder->getFolders()->end(), [&path](const Folders& folder) { return folder.getName() == path; });
 
-    // if (it != currentFolder->getFolders()->end()) {
-    //     return true;
-    // }
     return folder != currentFolder->getFolders()->end();
 }
 

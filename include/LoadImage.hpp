@@ -3,12 +3,13 @@
 #include <QRunnable>
 #include <string>
 #include <vector>
+
+#include "Folders.hpp"
 // Forward
 class QProgressDialog;
 class QWidget;
 class Data;
 class ImagesData;
-class Folders;
 
 class ThumbnailTask : public QObject, public QRunnable {
     Q_OBJECT

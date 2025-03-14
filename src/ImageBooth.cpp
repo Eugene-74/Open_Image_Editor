@@ -1,5 +1,6 @@
 #include "ImageBooth.hpp"
 
+#include <QDebug>
 #include <QHBoxLayout>
 #include <QKeyEvent>
 #include <QPointer>
@@ -14,14 +15,15 @@
 
 ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
-    qDebug() << "ImageBooth::ImageBooth";
+    // qDebug() << "ImageBooth::ImageBooth";
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
 
-    qDebug() << "ImageBooth name  : " << data->getCurrentFolders()->getName();
+    // qDebug() << "ImageBooth folder name  : " << data->getCurrentFolders()->getName();
 
     data->getImagesData()->getCurrent()->clear();
 
     if (data->getCurrentFolders()->getName() == "*") {
+        qInfo() << "Opening all images folder";
         Folders* firstFolder = data->findFirstFolderWithAllImages();
         Folders* allImagesFolder = new Folders("*");
 
@@ -34,20 +36,19 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
         }
         data->currentFolder = allImagesFolder;
     } else {
+        qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
+
         for (auto it = data->getCurrentFolders()->getFilesPtr()->begin(); it != data->getCurrentFolders()->getFilesPtr()->end(); ++it) {
             std::string imagePath = *it;
             ImageData* imageData = data->imagesData.getImageData(imagePath);
-            // qDebug() << "test 1 : " << imageData->getpersons().size();
 
             if (imageData == nullptr) {
-                qDebug() << "imageData is null";
+                qCritical() << "imageData is null";
             } else {
                 data->getImagesData()->getCurrent()->push_back(imageData);
-                // qDebug() << "test 2 : " << data->getImagesData()->getCurrent()->back()->getpersons().size();
             }
         }
     }
-
     data->sortCurrentImagesData();
 
     data->clearCache();
@@ -78,8 +79,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     scrollArea->setWidget(scrollWidget);
 
     int minTotalImagesHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesData()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
-
-    int minTotalFoldersHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
+    int minTotalFoldersHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->imagesPerLine + 1);
 
     int minHeight = minTotalImagesHeight + minTotalFoldersHeight;
     scrollWidget->setMinimumHeight(minHeight);
@@ -94,6 +94,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
 
     spacer = new QSpacerItem(0, 0);
     linesLayout->insertSpacerItem(0, spacer);
+
     createFirstImages();
 
     connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, this, &ImageBooth::onScroll);
@@ -103,6 +104,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     // TODO marche pas bien
 
     QTimer::singleShot(100, this, [this]() {
+        qInfo() << "go to image";
         gotToImage(data->imagesData.getImageNumber(), true);
     });
 }
@@ -1117,7 +1119,21 @@ void ImageBooth::enterEvent(QEnterEvent* event) {
     QMainWindow::enterEvent(event);
 }
 
+/**
+ * @brief Give you the size of the currentFodler
+ * @return the size of the current folders
+ */
 int ImageBooth::getCurrentFoldersSize() {
-    // +1 for return button
-    return data->getCurrentFolders()->getFolders()->size() + 1;
+    // qDebug() << "getCurrentFoldersSize";
+    if (data->getCurrentFolders()) {
+        // qDebug() << "getCurrentFoldersSize 0 : " << data->getCurrentFolders()->getName();
+
+        if (data->getCurrentFolders()->getFolders()) {
+            // qDebug() << "getCurrentFoldersSize 1 : " << data->getCurrentFolders()->getFolders()->size() + 1;
+
+            return data->getCurrentFolders()->getFolders()->size() + 1;
+        }
+    }
+    qCritical() << "getCurrentFoldersSize : Folder doesn't work";
+    return 1;
 }

@@ -3,7 +3,6 @@
 #include <QApplication>
 #include <QDebug>
 #include <QFileDialog>
-#include <QFutureWatcher>
 #include <QProgressDialog>
 #include <QThreadPool>
 #include <QTimer>
@@ -62,11 +61,13 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
     // auto images = data->getImagesData()->get();
 
     // ensure that it's well loaded
+    qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
     qInfo() << "saving data after loading";
     data->saveData();
     data->clear();
     data->loadData();
     qInfo() << "All loading done";
+    qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
 }
 
 // Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
@@ -117,9 +118,9 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     progressDialog.show();
     QApplication::processEvents();
 
-    // TODO cancel marche pas (le faire marcher)
-    ImagesData* imagesData = new ImagesData(std::vector<ImageData*>{});
-    if (!addFilesToTree(&data->rootFolders, imagesData, imagePaths, nbrImage, progressDialog)) {
+    ImagesData* imagesData = data->getImagesData();
+    Folders* rootFolder = data->getRootFolders();
+    if (!addFilesToTree(rootFolder, imagesData, imagePaths, nbrImage, progressDialog)) {
         return false;
     }
 
@@ -145,7 +146,7 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
     try {
         int totalImages = data->getImagesData()->get()->size();
         int numThreads = std::max(QThreadPool::globalInstance()->maxThreadCount() - 2, 1);
-        int imagesPerThread = 50;
+        int imagesPerThread = 20;
 
         QThreadPool* threadPool = QThreadPool::globalInstance();
         threadPool->setMaxThreadCount(numThreads);
@@ -155,11 +156,6 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
         // List with number from 0 to totalImages
         std::vector<int> imageIndices(totalImages);
         std::iota(imageIndices.begin(), imageIndices.end(), 0);
-
-        QFutureWatcher<void> watcher;
-
-        QObject::connect(&watcher, &QFutureWatcher<void>::progressValueChanged, &progressDialog, &QProgressDialog::setValue);
-        QObject::connect(&watcher, &QFutureWatcher<void>::finished, &progressDialog, &QProgressDialog::reset);
 
         // Create a queue to hold the tasks
         std::queue<ThumbnailTask*> taskQueue;
@@ -299,6 +295,7 @@ bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::s
             currentFolder = &currentFolder->getFolders()->back();
         }
     }
+    qDebug() << "Current folder: " << currentFolder->getName();
     if (progressDialog.wasCanceled()) {
         return false;
     }
@@ -331,7 +328,7 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
                 imageData->loadData();
                 imageData->clearMetaData();
 
-                imagesData->get()->push_back(imageData);
+                imagesData->addImage(imageData);
 
                 nbrImage += 1;
                 progressDialog.setLabelText(QString("Scaning for images : %1").arg(nbrImage));
