@@ -3,8 +3,10 @@
 // #include <dlib/opencv.h>
 #include <opencv2/opencv.hpp>
 
-// Forward declarations
+// Forward declaration
 class QImage;
+class Data;
+
 class Person {
    private:
     std::string name;
@@ -31,4 +33,4 @@ bool startDlib();
 bool isCudaAvailable();
 std::vector<Person> detectFacesCUDA(std::string imagePath, QImage image);
 std::vector<Person> detectFacesCPU(std::string imagePath, QImage image);
-void detectFacesAsync(std::string imagePath, QImage image, std::function<void(std::vector<Person>)> callback);
+void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::function<void(std::vector<Person>)> callback);

@@ -241,12 +241,22 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 }
 
 void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
-    LoadImageTask* task = new LoadImageTask(this, imagePath, setSize, size, force, callback);
-    try {
-        QThreadPool::globalInstance()->start(task);
-    } catch (const std::exception& e) {
-        qCritical() << "loadInCacheAsync" << e.what();
-    }
+    // LoadImageTask* task = new LoadImageTask(this, imagePath, setSize, size, force, callback);
+    // try {
+    //     QThreadPool::globalInstance()->start(task);
+    // } catch (const std::exception& e) {
+    //     qCritical() << "loadInCacheAsync" << e.what();
+    // }
+    addThread([this, callback, imagePath, setSize, size, force]() {
+        loadInCache(imagePath, setSize, size, force);
+        // if (callback) {
+        //     callback();
+        // }
+        if (callback) {
+            QMetaObject::invokeMethod(QApplication::instance(), callback,
+                                      Qt::QueuedConnection);
+        }
+    });
 }
 
 bool Data::loadInCache(const std::string imagePath, bool setSize,
@@ -1329,8 +1339,12 @@ void Data::clear() {
     saved = true;
 }
 
-void Data::addThread(std::function<void()> job, std::function<void()> callback) {
-    manager.addThread(job, callback);
+void Data::addThread(std::function<void()> job) {
+    manager.addThread(job);
+}
+
+void Data::addHeavyThread(std::function<void()> job) {
+    manager.addHeavyThread(job);
 }
 
 void Data::stopAllThreads() {

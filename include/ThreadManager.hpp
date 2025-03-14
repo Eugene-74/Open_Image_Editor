@@ -1,46 +1,38 @@
 #pragma once
 
 #include <QObject>
-#include <QThread>
-#include <QVector>
+#include <QRunnable>
+#include <QThreadPool>
+#include <deque>
 #include <functional>
 #include <queue>
-class Worker : public QObject {
-    Q_OBJECT
 
+class Worker : public QRunnable {
    public:
-    using Task = std::function<void()>;
-    using Callback = std::function<void()>;
-
-    Worker(Task job, Callback callback = nullptr);
-
-   public slots:
-    void process();
-
-   signals:
-    void finished();
+    Worker(std::function<void()> job);
+    void run() override;
 
    private:
-    Task job;
-    Callback callback;
+    std::function<void()> job;
 };
 
 class ThreadManager : public QObject {
     Q_OBJECT
 
    public:
-    explicit ThreadManager(QObject *parent = nullptr, int maxThreads = 1);
+    ThreadManager(QObject* parent = nullptr, int maxThreads = std::max(QThreadPool::globalInstance()->maxThreadCount() - 2, 1));
     ~ThreadManager();
 
-    void addThread(std::function<void()> job, std::function<void()> callback = nullptr);
-    void removeThread(int index);
+    void addThread(std::function<void()> job);
+    void addHeavyThread(std::function<void()> job);
+    void addThreadToFront(std::function<void()> job);
     void removeAllThreads();
     int getThreadCount() const;
 
    private:
-    void startNextThread();
-
-    QVector<QThread *> threads;
     int maxThreads;
-    std::queue<std::pair<std::function<void()>, std::function<void()>>> taskQueue;
+    std::deque<std::function<void()>> taskQueue;
+    std::deque<std::function<void()>> heavyTaskQueue;
+
+    void processQueue();
 };

@@ -136,7 +136,8 @@ class Data {
     std::string getFolderPath(Folders* folder);
     Folders* findFolderByPath(Folders& root, const std::string& path);
 
-    void addThread(std::function<void()> job, std::function<void()> callback);
+    void addThread(std::function<void()> job);
+    void addHeavyThread(std::function<void()> job);
     void stopAllThreads();
 
    private:

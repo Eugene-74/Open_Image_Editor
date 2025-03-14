@@ -10,6 +10,8 @@
 #include <QImage>
 #include <opencv2/opencv.hpp>
 
+#include "Data.hpp"
+
 using namespace dlib;
 using namespace std;
 
@@ -163,8 +165,8 @@ std::vector<Person> detectFacesCUDA(std::string imagePath, QImage image) {
     return {};
 }
 
-void detectFacesAsync(std::string imagePath, QImage image, std::function<void(std::vector<Person>)> callback) {
-    std::thread([=]() {
+void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::function<void(std::vector<Person>)> callback) {
+    data->addHeavyThread([=]() {
         std::vector<Person> persons;
         if (isCudaAvailable()) {
             qDebug() << "launch CUDA";
@@ -178,8 +180,23 @@ void detectFacesAsync(std::string imagePath, QImage image, std::function<void(st
             callback(persons);
         } catch (const std::exception& e) {
             qCritical() << e.what();
-        }
-    }).detach();
+        } });
+    // std::thread([=]() {
+    //     std::vector<Person> persons;
+    //     if (isCudaAvailable()) {
+    //         qDebug() << "launch CUDA";
+    //         persons = detectFacesCUDA(imagePath, image);
+    //     } else {
+    //         qDebug() << "launch CPU";
+
+    //         persons = detectFacesCPU(imagePath, image);
+    //     }
+    //     try {
+    //         callback(persons);
+    //     } catch (const std::exception& e) {
+    //         qCritical() << e.what();
+    //     }
+    // }).detach();
 }
 
 std::string Person::getName() const {

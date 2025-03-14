@@ -1,84 +1,73 @@
 #include "ThreadManager.hpp"
 
 #include <QDebug>
+#include <QThreadPool>
+#include <queue>
+
+#include "Const.hpp"
 
 // ----- Worker implementation -----
-Worker::Worker(Task job, Callback callback)
-    : job(std::move(job)), callback(std::move(callback)) {}
+Worker::Worker(std::function<void()> job)
+    : job(std::move(job)) {}
 
-void Worker::process() {
+void Worker::run() {
     if (job) job();
-    if (callback) callback();
-    emit finished();
 }
 
 // ----- ThreadManager implementation -----
 ThreadManager::ThreadManager(QObject* parent, int maxThreads)
-    : QObject(parent), maxThreads(maxThreads) {}
+    : QObject(parent), maxThreads(maxThreads) {
+    QThreadPool::globalInstance()->setMaxThreadCount(maxThreads);
+}
 
 ThreadManager::~ThreadManager() {
-    for (QThread* thread : threads) {
-        thread->quit();
-        thread->wait();
-        delete thread;
+    QThreadPool::globalInstance()->waitForDone();
+}
+
+void ThreadManager::addHeavyThread(std::function<void()> job) {
+    heavyTaskQueue.push_back(std::move(job));
+    qInfo() << "Job added to heavy task queue. Queue size: " << heavyTaskQueue.size();
+}
+void ThreadManager::addThread(std::function<void()> job) {
+    if (QThreadPool::globalInstance()->activeThreadCount() < maxThreads) {
+        Worker* worker = new Worker(std::move(job));
+        QThreadPool::globalInstance()->start(worker);
+        qInfo() << "Thread pool active thread count: " << QThreadPool::globalInstance()->activeThreadCount();
+        qInfo() << "Thread pool max thread count: " << QThreadPool::globalInstance()->maxThreadCount();
+    } else {
+        taskQueue.push_back(std::move(job));
+        qInfo() << "Job added to queue. Queue size: " << taskQueue.size();
     }
 }
 
-void ThreadManager::addThread(std::function<void()> job, std::function<void()> callback) {
-    taskQueue.push({std::move(job), std::move(callback)});
-    startNextThread();
-}
-
-void ThreadManager::startNextThread() {
-    if (threads.size() >= maxThreads || taskQueue.empty()) {
-        return;
-    }
-
-    auto [job, callback] = taskQueue.front();
-    taskQueue.pop();
-
-    QThread* thread = new QThread;
-    Worker* worker = new Worker(std::move(job), std::move(callback));
-
-    worker->moveToThread(thread);
-
-    // Connexions du thread au worker
-    connect(thread, &QThread::started, worker, &Worker::process);
-    connect(worker, &Worker::finished, thread, &QThread::quit);
-    connect(worker, &Worker::finished, worker, &Worker::deleteLater);
-    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-
-    // Connexion pour supprimer le thread de la liste lorsqu'il est terminé
-    connect(thread, &QThread::finished, this, [this, thread]() {
-        threads.removeOne(thread);
-        startNextThread();
-    });
-
-    threads.append(thread);
-    thread->start();
-}
-
-void ThreadManager::removeThread(int index) {
-    if (index >= 0 && index < threads.size()) {
-        QThread* thread = threads.at(index);
-        qDebug() << "Arrêt du thread" << index;
-        thread->quit();
-        thread->wait();
-        threads.removeAt(index);
-    }
+void ThreadManager::addThreadToFront(std::function<void()> job) {
+    taskQueue.push_front(std::move(job));
+    qInfo() << "Job added to front of queue. Queue size: " << taskQueue.size();
 }
 
 void ThreadManager::removeAllThreads() {
-    for (QThread* thread : threads) {
-        thread->quit();
-        thread->wait();
-    }
-    while (!taskQueue.empty()) {
-        taskQueue.pop();
-    }
-    threads.clear();
+    QThreadPool::globalInstance()->clear();
+    taskQueue.clear();
+    heavyTaskQueue.clear();
 }
 
 int ThreadManager::getThreadCount() const {
-    return threads.size();
+    return QThreadPool::globalInstance()->activeThreadCount();
+}
+
+void ThreadManager::processQueue() {
+    while (!taskQueue.empty() || !heavyTaskQueue.empty()) {
+        if (QThreadPool::globalInstance()->activeThreadCount() >= maxThreads) {
+            return;
+        }
+        if (!taskQueue.empty()) {
+            std::function<void()> job = std::move(taskQueue.front());
+            taskQueue.pop_front();
+            addThread(std::move(job));
+        } else if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
+            std::function<void()> job = std::move(heavyTaskQueue.front());
+            heavyTaskQueue.pop_front();
+            addThread(std::move(job));
+        }
+    }
 }

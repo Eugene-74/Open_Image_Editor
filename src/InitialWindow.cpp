@@ -473,6 +473,7 @@ void InitialWindow::createMainWindow(Data* data) {
     });
 }
 void InitialWindow::clearImageEditor() {
+    data->stopAllThreads();
     layout->removeWidget(imageEditor);
     imageEditor->clear();
     imageEditor->deleteLater();
@@ -480,12 +481,14 @@ void InitialWindow::clearImageEditor() {
 }
 
 void InitialWindow::clearImageBooth() {
+    data->stopAllThreads();
     layout->removeWidget(imageBooth);
     imageBooth->deleteLater();
     imageBooth = nullptr;
 }
 
 void InitialWindow::clearMainWindow() {
+    data->stopAllThreads();
     layout->removeWidget(mainWindow);
     mainWindow->deleteLater();
     mainWindow = nullptr;

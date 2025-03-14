@@ -743,7 +743,7 @@ MainImage* ImageEditor::createImageLabel() {
 
         QPointer<ImageEditor> self = this;
 
-        detectFacesAsync(currentImagePath, image, [self, imageNbr, currentImagePath](std::vector<Person> persons) {
+        detectFacesAsync(data, currentImagePath, image, [self, imageNbr, currentImagePath](std::vector<Person> persons) {
             if (!self.isNull()) {
                 ImageData* imageData = self->data->getImagesData()->getImageData(currentImagePath);
 

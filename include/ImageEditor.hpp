@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
+#include <QTimer>
 #include <iostream>
 
 #include "Data.hpp"
@@ -15,7 +16,6 @@ class QLineEdit;
 class QObject;
 class QPushButton;
 class QSize;
-class QTimer;
 class QVBoxLayout;
 class QWidget;
 class QFrame;
@@ -143,7 +143,7 @@ class ImageEditor : public QMainWindow {
     ClickableLabel* imageEditExif;
     ClickableLabel* imagePersons;
 
-    QTimer* imageOpenTimer;
+    QTimer* imageOpenTimer = new QTimer(this);
 
     bool bigImage = false;
    signals:
