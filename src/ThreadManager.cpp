@@ -113,18 +113,16 @@ int ThreadManager::getThreadCount() const {
  * @brief Manage the thread queue when it's not empty
  */
 void ThreadManager::processQueue() {
-    while (QThreadPool::globalInstance()->activeThreadCount() < maxThreads && (!taskQueue.empty() || !heavyTaskQueue.empty())) {
-        if (!taskQueue.empty()) {
-            std::function<void()> job = std::move(taskQueue.front());
-            taskQueue.pop_front();
-            startJob(std::move(job));
+    if (!taskQueue.empty() && QThreadPool::globalInstance()->activeThreadCount() <= maxThreads) {
+        std::function<void()> job = std::move(taskQueue.front());
+        taskQueue.pop_front();
+        startJob(std::move(job));
 
-        } else if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
-            // qDebug() << "Process heavy task queue : " << heavyTaskQueue.size();
-            std::function<void()> job = std::move(heavyTaskQueue.front());
-            heavyTaskQueue.pop_front();
-            startJob(std::move(job));
-        }
+    } else if (!heavyTaskQueue.empty() && QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
+        // qDebug() << "Process heavy task queue : " << heavyTaskQueue.size();
+        std::function<void()> job = std::move(heavyTaskQueue.front());
+        heavyTaskQueue.pop_front();
+        startJob(std::move(job));
     }
 }
 

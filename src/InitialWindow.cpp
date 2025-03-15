@@ -347,13 +347,13 @@ void startLog() {
             case QtCriticalMsg:
                 colorCode = "\033[31m";  // Red
                 formattedMsg = "[CRITICAL] " + formattedMsg;
-                showErrorInfo(nullptr, formattedMsg, 5000);
+                // showErrorInfo(nullptr, formattedMsg, 5000);
 
                 break;
             case QtFatalMsg:
                 colorCode = "\033[41m";  // Red background
                 formattedMsg = "[FATAL   ] " + formattedMsg;
-                showErrorInfo(nullptr, formattedMsg, 5000);
+                // showErrorInfo(nullptr, formattedMsg, 5000);
                 abort();
         }
         logStream << formattedMsg << Qt::endl;

@@ -160,7 +160,7 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
     for (int start = 0; start < totalImages; start += imagesPerThread) {
         int end = std::min(start + imagesPerThread, totalImages);
         // qDebug() << "Creating thumbnails for images " << start << " to " << end;
-        data->addHeavyThread([start, end, data]() {
+        data->addThread([start, end, data]() {
             for (int i = start; i < end; ++i) {
                 ImageData* imageData = data->getImagesData()->get()->at(i);
                 data->createThumbnailIfNotExists(imageData->getImagePath(), 16);

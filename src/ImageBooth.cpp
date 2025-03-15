@@ -29,11 +29,6 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
         imageQuality = 128;
     }
 
-    connect(updateTimer, &QTimer::timeout, this, [this]() {
-        updateImages();
-        updateTimer->stop();
-    });
-
     if (data->getCurrentFolders()->getName() == "*") {
         qInfo() << "Opening all images folder";
         Folders* firstFolder = data->findFirstFolderWithAllImages();
@@ -256,13 +251,17 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
         // Image has a poor quality thumbnail
     } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)) {
-        imageButton = new ClickableLabel(data, QString::fromStdString(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)),
-                                         "", this, imageSize, false, 0, true);
-
-        QPointer<ImageBooth> self = this;
-
-        QTimer::singleShot(TIME_BEFORE_FULL_QUALITY, self, [self, imagePath, nbr]() {
-            if (!self.isNull()) {
+        imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
+                                         "", this, imageSize, false, IMAGE_BOOTH_IMAGE_POOR_QUALITY, true);
+        if (!data->isInCache(data->getThumbnailPath(imagePath, imageQuality))) {
+            QPointer<ImageBooth> self = this;
+            QTimer::singleShot(TIME_BEFORE_FULL_QUALITY, self, [self, imagePath, nbr]() {
+                if (!self.isNull()) {
+                    return;
+                }
+                if (!self.data()) {
+                    return;
+                }
                 self->data->loadInCacheAsync(self->data->getThumbnailPath(imagePath, self->imageQuality), [self, imagePath, nbr]() {
                     if (!self.isNull()) {
                         QHBoxLayout* lineLayout = nullptr;
@@ -278,8 +277,8 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                         }
                     }
                 });
+            });
             }
-        });
     } else {
         qDebug() << "no thumbnail found : " << imagePath;
         imageButton = new ClickableLabel(data, IMAGE_PATH_ERROR,

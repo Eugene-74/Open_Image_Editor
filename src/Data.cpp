@@ -165,6 +165,11 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         if (it != imageCache->end()) {
             return it->second.image;
         }
+
+        it = imageCache->find(getThumbnailPath(imagePath, 16));
+        if (it != imageCache->end()) {
+            return it->second.image;
+        }
     }
 
     std::string imagePathbis = imagePath;
@@ -178,10 +183,20 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         }
 
     } else {
-        if (thumbnail == 128) {
+        if (thumbnail == 16) {
+            if (hasThumbnail(imagePath, 16)) {
+                imagePathbis = getThumbnailPath(imagePath, 16);
+            } else {
+                createThumbnail(imagePath, 16);
+                createThumbnailIfNotExists(imagePath, 128);
+                createThumbnailIfNotExists(imagePath, 256);
+                createThumbnailIfNotExists(imagePath, 512);
+            }
+        } else if (thumbnail == 128) {
             if (hasThumbnail(imagePath, 128)) {
                 imagePathbis = getThumbnailPath(imagePath, 128);
             } else {
+                createThumbnailIfNotExists(imagePath, 16);
                 createThumbnail(imagePath, 128);
                 createThumbnailIfNotExists(imagePath, 256);
                 createThumbnailIfNotExists(imagePath, 512);
@@ -190,6 +205,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
             if (hasThumbnail(imagePath, 256)) {
                 imagePathbis = getThumbnailPath(imagePath, 256);
             } else {
+                createThumbnailIfNotExists(imagePath, 16);
                 createThumbnailIfNotExists(imagePath, 128);
                 createThumbnail(imagePath, 256);
                 createThumbnailIfNotExists(imagePath, 512);
@@ -198,6 +214,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
             if (hasThumbnail(imagePath, 512)) {
                 imagePathbis = getThumbnailPath(imagePath, 512);
             } else {
+                createThumbnailIfNotExists(imagePath, 16);
                 createThumbnailIfNotExists(imagePath, 128);
                 createThumbnailIfNotExists(imagePath, 256);
                 createThumbnail(imagePath, 512);
