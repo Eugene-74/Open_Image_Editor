@@ -181,22 +181,6 @@ void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::func
         } catch (const std::exception& e) {
             qCritical() << e.what();
         } });
-    // std::thread([=]() {
-    //     std::vector<Person> persons;
-    //     if (isCudaAvailable()) {
-    //         qDebug() << "launch CUDA";
-    //         persons = detectFacesCUDA(imagePath, image);
-    //     } else {
-    //         qDebug() << "launch CPU";
-
-    //         persons = detectFacesCPU(imagePath, image);
-    //     }
-    //     try {
-    //         callback(persons);
-    //     } catch (const std::exception& e) {
-    //         qCritical() << e.what();
-    //     }
-    // }).detach();
 }
 
 std::string Person::getName() const {

@@ -1364,5 +1364,7 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
      * @brief Stop all active thread and delete thread queue
      */
     void Data::stopAllThreads() {
+        qInfo() << "stop all threads";
+
         manager.removeAllThreads();
     }

@@ -1163,22 +1163,23 @@ int ImageBooth::getCurrentFoldersSize() {
  * @brief Pre load images so it's more fluid
  */
 void ImageBooth::preLoadImages() {
-    qDebug() << "preLoadImages";
-    data->stopAllThreads();
-    auto currentImages = data->getImagesData()->getCurrent();
-    qDebug() << "currentImages size : " << currentImages->size();
-    const int packetSize = data->sizes->imagesBoothSizes->imagesPerLine * 2;
-    for (size_t i = 0; i < currentImages->size(); i += packetSize) {
-        auto packetEnd = std::min(currentImages->size(), i + packetSize);
-        qInfo() << "creating packet for pre loading : " << packetEnd;
-        data->addHeavyThread([this, i, packetEnd]() {
-            qInfo() << "loading packet for pre loading : " << packetEnd;
-            for (size_t j = i; j < packetEnd; j++) {
-                ImageData* imageData = data->getImagesData()->getCurrent()->at(j);
-                data->loadInCache(data->getThumbnailPath(imageData->getImagePath(), imageQuality), true, data->sizes->imagesBoothSizes->realImageSize);
-            }
-        });
-    }
+    // TODO make imageEditor bug
+    // qDebug() << "preLoadImages";
+    // data->stopAllThreads();
+    // auto currentImages = data->getImagesData()->getCurrent();
+    // qDebug() << "currentImages size : " << currentImages->size();
+    // const int packetSize = data->sizes->imagesBoothSizes->imagesPerLine * 2;
+    // for (size_t i = 0; i < currentImages->size(); i += packetSize) {
+    //     auto packetEnd = std::min(currentImages->size(), i + packetSize);
+    //     qInfo() << "creating packet for pre loading : " << packetEnd;
+    //     data->addHeavyThread([this, i, packetEnd]() {
+    //         qInfo() << "loading packet for pre loading : " << packetEnd;
+    //         for (size_t j = i; j < packetEnd; j++) {
+    //             ImageData* imageData = data->getImagesData()->getCurrent()->at(j);
+    //             data->loadInCache(data->getThumbnailPath(imageData->getImagePath(), imageQuality), true, data->sizes->imagesBoothSizes->realImageSize);
+    //         }
+    //     });
+    // }
 }
 
 // void ImageBooth::checkThumbnailAndCorrect() {

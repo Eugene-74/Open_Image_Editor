@@ -58,13 +58,13 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
     // auto images = data->getImagesData()->get();
 
     // ensure that it's well loaded
-    // qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
-    // qInfo() << "saving data after loading";
-    // data->saveData();
-    // data->clear();
-    // data->loadData();
-    // qInfo() << "All loading done";
-    // qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
+    qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
+    qInfo() << "saving data after loading";
+    data->saveData();
+    data->clear();
+    data->loadData();
+    qInfo() << "All loading done";
+    qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
 }
 
 // Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
@@ -137,13 +137,13 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
         return false;
     }
 
-    qInfo() << "Opening folder 1, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
-    qInfo() << "saving data after loading";
-    data->saveData();
-    data->clear();
-    data->loadData();
-    qInfo() << "All loading done";
-    qInfo() << "Opening folder 2, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
+    // qInfo() << "Opening folder 1, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
+    // qInfo() << "saving data after loading";
+    // data->saveData();
+    // data->clear();
+    // data->loadData();
+    // qInfo() << "All loading done";
+    // qInfo() << "Opening folder 2, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
 
     if (!loadImagesThumbnail(data, progressDialog)) {
         return false;

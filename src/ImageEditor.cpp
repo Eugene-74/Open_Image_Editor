@@ -725,8 +725,8 @@ MainImage* ImageEditor::createImageLabel() {
 
     ImageData* imageData = data->imagesData.getCurrentImageData();
     qDebug() << "currentImagePath : " << currentImagePath.c_str();
-    qDebug() << "person actual size" << imageData->getpersons().size();
-    qDebug() << "person actual status" << static_cast<int>(imageData->getPersonStatus());
+    // qDebug() << "person actual size" << imageData->getpersons().size();
+    // qDebug() << "person actual status" << static_cast<int>(imageData->getPersonStatus());
 
     auto it = data->imageCache->find(currentImagePath);
     if (it == data->imageCache->end()) {
@@ -1130,12 +1130,8 @@ void ImageEditor::startImageOpen() {
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
         QPointer<ImageEditor> self = this;
         data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [self]() {
-            try {
-                if (!self.isNull()) {
-                    self->reloadImageLabel();
-                }
-            } catch (const std::exception& e) {
-                qCritical() << e.what();
+            if (!self.isNull()) {
+                self->reloadImageLabel();
             }
         });
         imageOpenTimer->stop();
