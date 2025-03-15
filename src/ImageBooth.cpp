@@ -18,9 +18,21 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     // qDebug() << "ImageBooth::ImageBooth";
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
 
-    // qDebug() << "ImageBooth folder name  : " << data->getCurrentFolders()->getName();
-
     data->getImagesData()->getCurrent()->clear();
+
+    imageQuality = 16;
+    if (imageSize->height() + imageSize->width() >= 256) {
+        imageQuality = 512;
+    } else if (imageSize->height() + imageSize->width() >= 128) {
+        imageQuality = 256;
+    } else if (imageSize->height() + imageSize->width() >= 16) {
+        imageQuality = 128;
+    }
+
+    connect(updateTimer, &QTimer::timeout, this, [this]() {
+        updateImages();
+        updateTimer->stop();
+    });
 
     if (data->getCurrentFolders()->getName() == "*") {
         qInfo() << "Opening all images folder";
@@ -49,6 +61,9 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
             }
         }
     }
+    // checkThumbnailAndCorrect();
+    preLoadImages();
+
     data->sortCurrentImagesData();
 
     data->clearCache();
@@ -148,6 +163,7 @@ void ImageBooth::openFolder(int index) {
     data->getImagesData()->setImageNumber(0);
     data->clearCache();
 
+    preLoadImages();
     data->sortCurrentImagesData();
 
     reload();
@@ -177,6 +193,7 @@ void ImageBooth::updateVisibleImages(bool force) {
         return;
     }
     spacer->changeSize(0, spacerHeight);
+
     updateImages();
     linesLayout->invalidate();
     lastLineNbr = lineNbr;
@@ -231,67 +248,65 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     ClickableLabel* imageButton;
 
     // image are croped so we take imageSize->height() + imageSize->width() to avoir bad quality image
-    int imageQuality = 16;
-    if (imageSize->height() + imageSize->width() >= 256) {
-        imageQuality = 512;
-    } else if (imageSize->height() + imageSize->width() >= 128) {
-        imageQuality = 256;
-    } else if (imageSize->height() + imageSize->width() >= 16) {
-        imageQuality = 128;
-    }
 
+    // Image already loaded
     if (data->isInCache(data->getThumbnailPath(imagePath, imageQuality)) || imagePath.rfind(":", 0) == 0) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, imageQuality, true);
+
+        // Image has a poor quality thumbnail
     } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)) {
         imageButton = new ClickableLabel(data, QString::fromStdString(data->getThumbnailPath(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)),
                                          "", this, imageSize, false, 0, true);
 
         QPointer<ImageBooth> self = this;
-        data->loadInCacheAsync(data->getThumbnailPath(imagePath, imageQuality), [self, imagePath, nbr]() {
-            QTimer::singleShot(TIME_BEFORE_FULL_QUALITY, self, [self, imagePath, nbr]() {
-                if (!self.isNull()) {
-                    QHBoxLayout* lineLayout = nullptr;
-                    ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
-                    if (lastImageButton != nullptr) {
-                        ClickableLabel* newImageButton = self->createImage(imagePath, nbr);
-                        if (lineLayout != nullptr) {
-                            lineLayout->replaceWidget(lastImageButton, newImageButton);
-                            lastImageButton->deleteLater();
-                        } else {
-                            newImageButton->deleteLater();
+
+        QTimer::singleShot(TIME_BEFORE_FULL_QUALITY, self, [self, imagePath, nbr]() {
+            if (!self.isNull()) {
+                self->data->loadInCacheAsync(self->data->getThumbnailPath(imagePath, self->imageQuality), [self, imagePath, nbr]() {
+                    if (!self.isNull()) {
+                        QHBoxLayout* lineLayout = nullptr;
+                        ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
+                        if (lastImageButton != nullptr) {
+                            ClickableLabel* newImageButton = self->createImage(imagePath, nbr);
+                            if (lineLayout != nullptr) {
+                                lineLayout->replaceWidget(lastImageButton, newImageButton);
+                                lastImageButton->deleteLater();
+                            } else {
+                                newImageButton->deleteLater();
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         });
     } else {
         qDebug() << "no thumbnail found : " << imagePath;
-        imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING,
+        imageButton = new ClickableLabel(data, IMAGE_PATH_ERROR,
                                          "", this, imageSize, false, 0, true);
 
-        QPointer<ImageBooth> self = this;
-        Data* dataPtr = data;
+        // QPointer<ImageBooth> self = this;
+        // Data* dataPtr = data;
 
-        data->loadInCacheAsync(imagePath, [self, dataPtr, imagePath, nbr]() {
-            dataPtr->createAllThumbnailIfNotExists(imagePath, 512);
+        // data->loadInCacheAsync(imagePath, [self, dataPtr, imagePath, nbr]() {
+        //     dataPtr->createAllThumbnailIfNotExists(imagePath, 512);
 
-            dataPtr->unloadFromCache(imagePath);
+        //     dataPtr->unloadFromCache(imagePath);
 
-            if (!self.isNull()) {
-                QHBoxLayout* lineLayout = nullptr;
-                ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
-                if (lastImageButton != nullptr) {
-                    ClickableLabel* newImageButton = self->createImage(imagePath, nbr);
-                    if (lineLayout != nullptr) {
-                        lineLayout->replaceWidget(lastImageButton, newImageButton);
-                        lastImageButton->deleteLater();
-                    } else {
-                        newImageButton->deleteLater();
-                    }
-                }
-            }
-        });
+        //     if (!self.isNull()) {
+        //         QHBoxLayout* lineLayout = nullptr;
+        //         ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
+        //         if (lastImageButton != nullptr) {
+        //             ClickableLabel* newImageButton = self->createImage(imagePath, nbr);
+        //             if (lineLayout != nullptr) {
+        //                 lineLayout->replaceWidget(lastImageButton, newImageButton);
+        //                 lastImageButton->deleteLater();
+        //             } else {
+        //                 newImageButton->deleteLater();
+        //             }
+        //         }
+        //     }
+        // });
     }
     imageButton->setInitialBorder("transparent", "#b3b3b3");
 
@@ -539,8 +554,7 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
 // Update all visible images
 void ImageBooth::updateImages() {
     try {
-        // TODO les imagesSelected s'affiche pas jutse apres un changement de dossier
-        qDebug() << "updateImages";
+        // qDebug() << "updateImages";
         int spacerHeight = scrollArea->verticalScrollBar()->value();
         int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
         spacerHeight = (spacerHeight / imageHeight) * imageHeight;
@@ -1111,9 +1125,17 @@ ClickableLabel* ImageBooth::createImageConversion() {
 //     return imageLessNew;
 // }
 
+/**
+ * @brief reload the images of the scroll area of imageBooth window
+ */
 void ImageBooth::reload() {
     updateImages();
 }
+
+/**
+ * @brief Set the focus to imageBooth when entering the window
+ * @param event QEnterEvent
+ */
 void ImageBooth::enterEvent(QEnterEvent* event) {
     this->setFocus();
     QMainWindow::enterEvent(event);
@@ -1137,3 +1159,40 @@ int ImageBooth::getCurrentFoldersSize() {
     qCritical() << "getCurrentFoldersSize : Folder doesn't work";
     return 1;
 }
+
+/**
+ * @brief Pre load images so it's more fluid
+ */
+void ImageBooth::preLoadImages() {
+    qDebug() << "preLoadImages";
+    data->stopAllThreads();
+    auto currentImages = data->getImagesData()->getCurrent();
+    qDebug() << "currentImages size : " << currentImages->size();
+    const int packetSize = data->sizes->imagesBoothSizes->imagesPerLine * 2;
+    for (size_t i = 0; i < currentImages->size(); i += packetSize) {
+        auto packetEnd = std::min(currentImages->size(), i + packetSize);
+        qInfo() << "creating packet for pre loading : " << packetEnd;
+        data->addHeavyThread([this, i, packetEnd]() {
+            qInfo() << "loading packet for pre loading : " << packetEnd;
+            for (size_t j = i; j < packetEnd; j++) {
+                ImageData* imageData = data->getImagesData()->getCurrent()->at(j);
+                data->loadInCache(data->getThumbnailPath(imageData->getImagePath(), imageQuality), true, data->sizes->imagesBoothSizes->realImageSize);
+            }
+        });
+    }
+}
+
+// void ImageBooth::checkThumbnailAndCorrect() {
+//     auto currentImages = data->getImagesData()->getCurrent();
+//     for (auto& imageData : *currentImages) {
+//         std::string imagePath = imageData->getImagePath();
+//         for (int size : THUMBNAIL_SIZES) {
+//             if (!data->hasThumbnail(imagePath, size)) {
+//                 qCritical() << "Thumbnail not found for image : " << imagePath << " size : " << size;
+//                 data->showErrorMessage(this, QString("Thumbnail not found for image: %1 size: %2").arg(QString::fromStdString(imagePath)).arg(size));
+//                 data->createThumbnailAsync(imagePath, size);
+//             }
+//         }
+//         data->unloadFromCache(imagePath);
+//     }
+// }

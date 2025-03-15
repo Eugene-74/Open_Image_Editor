@@ -62,7 +62,7 @@ void ImagesData::addImage(ImageData* imageData) {
     //     return;
     // }
     this->get()->push_back(imageData);
-    this->setImageMapValue(imagePath, imageData);
+    this->setImageMapValue(imagePath, this->get()->back());
 }
 
 void ImagesData::removeImage(const ImageData& image) {
@@ -76,15 +76,24 @@ void ImagesData::removeImage(const ImageData& image) {
     }
 }
 
+/**
+ * @brief Give you the ImageData of the image at the index id
+ * @param id The id of the image
+ * @return The imageData if the id is valid, nullptr otherwise
+ */
 ImageData* ImagesData::getImageData(int id) {
-    if (id < 0 || id >= imageMapInt.size()) {
-        throw std::out_of_range("getImageData :: Index hors limites" + std::to_string(id));
+    // if (id < 0 || id >= imageMapInt.size()) {
+    //     throw std::out_of_range("getImageData :: Index hors limites" + std::to_string(id));
+    // }
+    // auto foundImageData = imageMapInt.find(id);
+    // if (foundImageData != imageMapInt.end()) {
+    //     return foundImageData->second;
+    // }
+    ImageData* imageData = getImageData(imagesData.at(id)->getImagePath());
+    if (imageData == nullptr) {
+        qWarning() << "getImageData :: Index hors limites" + std::to_string(id);
     }
-    auto foundImageData = imageMapInt.find(id);
-    if (foundImageData != imageMapInt.end()) {
-        return foundImageData->second;
-    }
-    return nullptr;
+    return imageData;
 }
 
 ImageData* ImagesData::getImageDataInCurrent(int id) {

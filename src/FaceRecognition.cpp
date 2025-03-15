@@ -210,6 +210,7 @@ cv::Rect Person::getFace() const {
 void Person::setName(std::string name) {
     this->name = name;
 }
+
 void Person::setFace(cv::Rect face) {
     this->face = face;
 }

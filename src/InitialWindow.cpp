@@ -57,7 +57,6 @@ InitialWindow::InitialWindow() {
         qDebug() << "Application started";
         data = new Data();
 
-
         QTranslator translator;
         QString locale = QLocale::system().name();
         QString language = locale.section('_', 0, 0);
@@ -69,7 +68,6 @@ InitialWindow::InitialWindow() {
 
         ImagesData imagesData(std::vector<ImageData*>{});
         ImagesData deletedImagesData(std::vector<ImageData*>{});
-        data->imageCache = new std::map<std::string, QImageAndPath>();
 
         data->imagesData = imagesData;
         data->deletedImagesData = deletedImagesData;
@@ -349,10 +347,13 @@ void startLog() {
             case QtCriticalMsg:
                 colorCode = "\033[31m";  // Red
                 formattedMsg = "[CRITICAL] " + formattedMsg;
+                showErrorInfo(nullptr, formattedMsg, 5000);
+
                 break;
             case QtFatalMsg:
                 colorCode = "\033[41m";  // Red background
                 formattedMsg = "[FATAL   ] " + formattedMsg;
+                showErrorInfo(nullptr, formattedMsg, 5000);
                 abort();
         }
         logStream << formattedMsg << Qt::endl;

@@ -115,7 +115,7 @@ if(WIN32)
         ${EXIV2_LIBRARIES}
         ${HEIF_LIBRARIES}
     )
-    if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Build")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Debug")
         add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
         target_link_libraries(${PROJECT_NAME} PRIVATE OpenImageEditorLib)
         

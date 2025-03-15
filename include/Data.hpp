@@ -50,7 +50,7 @@ class Data {
 
     std::map<std::string, Option> options;
     Sizes* sizes = new Sizes();
-    std::map<std::string, QImageAndPath>* imageCache = nullptr;
+    std::unordered_map<std::string, QImageAndPath>* imageCache = nullptr;
     bool saved = true;
 
     std::vector<int> imagesSelected;
@@ -80,6 +80,8 @@ class Data {
 
     bool isInCache(std::string imagePath);
     bool getLoadedImage(std::string imagePath, QImage& image);
+
+    void createThumbnailAsync(const std::string& imagePath, const int maxDim);
 
     bool createThumbnail(const std::string& imagePath, const int maxDim);
     bool deleteThumbnail(const std::string& imagePath, const int maxDim);
@@ -149,21 +151,4 @@ class Data {
 
     void createFolders(Folders* currentFolders, std::string path);
     void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
-};
-
-class LoadImageTask : public QRunnable {
-   public:
-    LoadImageTask(Data* data, const std::string& imagePath, bool setSize, QSize size, bool force, std::function<void()> callback)
-        : data(data), imagePath(imagePath), setSize(setSize), size(size), force(force), callback(callback) {
-    }
-
-    void run() override;
-
-   private:
-    Data* data;
-    std::string imagePath;
-    bool setSize;
-    QSize size;
-    bool force;
-    std::function<void()> callback;
 };

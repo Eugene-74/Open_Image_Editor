@@ -18,6 +18,7 @@
 #include <thread>
 #include <vector>
 
+#include "Const.hpp"
 #include "Data.hpp"
 #include "FileSelector.hpp"
 #include "Folders.hpp"
@@ -53,21 +54,17 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
 
         return;
     }
-    if (data->imagesData.get()->size() <= 0) {
-        qCritical() << "No images found in the selected folder";
-        return;
-    }
 
     // auto images = data->getImagesData()->get();
 
     // ensure that it's well loaded
-    qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
-    qInfo() << "saving data after loading";
-    data->saveData();
-    data->clear();
-    data->loadData();
-    qInfo() << "All loading done";
-    qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
+    // qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
+    // qInfo() << "saving data after loading";
+    // data->saveData();
+    // data->clear();
+    // data->loadData();
+    // qInfo() << "All loading done";
+    // qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
 }
 
 // Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
@@ -135,85 +132,187 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     progressDialog.show();
     QApplication::processEvents();
 
+    if (data->imagesData.get()->size() <= 0) {
+        qCritical() << "No images found in the selected folder";
+        return false;
+    }
+
+    qInfo() << "Opening folder 1, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
+    qInfo() << "saving data after loading";
+    data->saveData();
+    data->clear();
+    data->loadData();
+    qInfo() << "All loading done";
+    qInfo() << "Opening folder 2, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
+
     if (!loadImagesThumbnail(data, progressDialog)) {
         return false;
     }
     return true;
 }
-
 bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
-    qDebug() << "Loading images thumbnail ...";
-    try {
-        int totalImages = data->getImagesData()->get()->size();
-        int numThreads = std::max(QThreadPool::globalInstance()->maxThreadCount() - 2, 1);
-        int imagesPerThread = 20;
+    int totalImages = data->getImagesData()->get()->size();
+    int imagesPerThread = 20;
+    int thumbnailsCreated = 0;
 
-        QThreadPool* threadPool = QThreadPool::globalInstance();
-        threadPool->setMaxThreadCount(numThreads);
+    std::mutex cacheMutex;
 
-        int thumbnailsCreated = 0;
+    for (int start = 0; start < totalImages; start += imagesPerThread) {
+        int end = std::min(start + imagesPerThread, totalImages);
+        // qDebug() << "Creating thumbnails for images " << start << " to " << end;
+        data->addHeavyThread([start, end, data]() {
+            for (int i = start; i < end; ++i) {
+                ImageData* imageData = data->getImagesData()->get()->at(i);
+                data->createThumbnailIfNotExists(imageData->getImagePath(), 16);
+                data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
+                data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
+                data->createThumbnailIfNotExists(imageData->getImagePath(), 512);
+                try {
+                    data->unloadFromCache(imageData->getImagePath());
+                } catch (const std::exception& e) {
+                    qCritical() << "Exception during unloadFromCache: " << e.what();
+                }
+            }
+        });
+        // qDebug() << "thread created thumbnails for images " << start << " to " << end;
+    }
 
-        // List with number from 0 to totalImages
-        std::vector<int> imageIndices(totalImages);
-        std::iota(imageIndices.begin(), imageIndices.end(), 0);
+    std::vector<int> imageIndices(totalImages);
+    std::iota(imageIndices.begin(), imageIndices.end(), 0);
 
-        // Create a queue to hold the tasks
-        std::queue<ThumbnailTask*> taskQueue;
-        std::mutex queueMutex;
-
-        // Populate the queue with tasks
-        for (int start = 0; start < totalImages; start += imagesPerThread) {
-            int end = std::min(start + imagesPerThread, totalImages);
-            taskQueue.push(new ThumbnailTask(data, start, end));
-        }
-
-        for (int i = 0; i < numThreads; ++i) {
-            threadPool->start(taskQueue.front());
-            taskQueue.pop();
-        }
-
-        QTimer timer;
-        QObject::connect(&timer, &QTimer::timeout, [&]() {
-            qDebug() << "starting count" << imageIndices.size();
+    QTimer timer;
+    QObject::connect(&timer, &QTimer::timeout, [&]() {
+        qDebug() << "starting count" << imageIndices.size();
+        try {
             for (int index : imageIndices) {
+
                 ImageData* imageData = data->getImagesData()->getImageData(index);
+                data->hasThumbnail(imageData->getImagePath(), 128);
+
                 if (data->hasThumbnail(imageData->getImagePath(), 128) &&
                     data->hasThumbnail(imageData->getImagePath(), 256) &&
                     data->hasThumbnail(imageData->getImagePath(), 512)) {
+
                     ++thumbnailsCreated;
+
                     imageIndices.erase(std::remove(imageIndices.begin(), imageIndices.end(), index), imageIndices.end());
                 }
             }
-            progressDialog.setValue(thumbnailsCreated);
-            qDebug() << "Number of thumbnails created: " << thumbnailsCreated << "/" << totalImages;
-            qDebug() << "Number of active thread: " << QThreadPool::globalInstance()->activeThreadCount();
-            if (QThreadPool::globalInstance()->activeThreadCount() > 0 && imageIndices.size() > 0) {
-                timer.start(1000);
-            }
-        });
-        timer.start(1000);
-        while (taskQueue.size() > 0 || QThreadPool::globalInstance()->activeThreadCount() > 0) {
-            for (int i = 0; i < numThreads - QThreadPool::globalInstance()->activeThreadCount(); ++i) {
-                if (taskQueue.size() > 0) {
-                    qInfo() << "starting a new task";
-                    threadPool->start(taskQueue.front());
-                    taskQueue.pop();
-                }
-            }
-            QCoreApplication::processEvents();
-            if (progressDialog.wasCanceled()) {
-                QThreadPool::globalInstance()->clear();
-                return false;
-            }
+        } catch (const std::exception& e) {
+            qCritical() << e.what();
         }
+        qDebug() << "ending count" << imageIndices.size();
 
-        return true;
-    } catch (const std::exception& e) {
-        qCritical() << "loadImagesThumbnail" << e.what();
-        return false;
+        progressDialog.setValue(thumbnailsCreated);
+        qDebug() << "Number of thumbnails created: " << thumbnailsCreated << "/" << totalImages;
+        qDebug() << "Number of active thread: " << QThreadPool::globalInstance()->activeThreadCount();
+        if (QThreadPool::globalInstance()->activeThreadCount() > 0 && imageIndices.size() > 0) {
+            timer.start(1000);
+        }
+    });
+    timer.start(1000);
+    while (QThreadPool::globalInstance()->activeThreadCount() > 0) {
+        QCoreApplication::processEvents();
+        if (progressDialog.wasCanceled()) {
+            QThreadPool::globalInstance()->clear();
+            return false;
+        }
     }
-    qDebug() << "images thumbnail loaded";
+    qDebug() << "Number of thumbnails created: ";
+    return true;
 }
+// bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
+//     qDebug() << "Loading images thumbnail ...";
+//     try {
+//         int totalImages = data->getImagesData()->get()->size();
+//         int numThreads = std::max(QThreadPool::globalInstance()->maxThreadCount() - 2, 1);
+//         int imagesPerThread = 20;
+
+//         QThreadPool* threadPool = QThreadPool::globalInstance();
+//         threadPool->setMaxThreadCount(numThreads);
+
+//         int thumbnailsCreated = 0;
+
+//         // List with number from 0 to totalImages
+//         std::vector<int> imageIndices(totalImages);
+//         std::iota(imageIndices.begin(), imageIndices.end(), 0);
+
+//         // Create a queue to hold the tasks
+//         std::queue<ThumbnailTask*> taskQueue;
+
+//         // Populate the queue with tasks
+//         for (int start = 0; start < totalImages; start += imagesPerThread) {
+//             int end = std::min(start + imagesPerThread, totalImages);
+//             taskQueue.push(new ThumbnailTask(data, start, end));
+//         }
+
+//         for (int i = 0; i < numThreads; ++i) {
+//             threadPool->start(taskQueue.front());
+//             taskQueue.pop();
+//         }
+
+//         QTimer timer;
+//         QObject::connect(&timer, &QTimer::timeout, [&]() {
+//             qDebug() << "starting count" << imageIndices.size();
+//             try {
+//                 qDebug() << "1";
+
+//                 for (int index : imageIndices) {
+//                     qDebug() << "2";
+
+//                     ImageData* imageData = data->getImagesData()->getImageData(index);
+//                     qDebug() << "3 : " << imageData->getImagePath();
+//                     data->hasThumbnail(imageData->getImagePath(), 128);
+//                     qDebug() << "3.5";
+
+//                     if (data->hasThumbnail(imageData->getImagePath(), 128) &&
+//                         data->hasThumbnail(imageData->getImagePath(), 256) &&
+//                         data->hasThumbnail(imageData->getImagePath(), 512)) {
+//                         qDebug() << "4";
+
+//                         ++thumbnailsCreated;
+//                         qDebug() << "5";
+
+//                         imageIndices.erase(std::remove(imageIndices.begin(), imageIndices.end(), index), imageIndices.end());
+//                         qDebug() << "6";
+//                     }
+//                     qDebug() << "7";
+//                 }
+//             } catch (const std::exception& e) {
+//                 qCritical() << e.what();
+//             }
+//             qDebug() << "ending count" << imageIndices.size();
+
+//             progressDialog.setValue(thumbnailsCreated);
+//             qDebug() << "Number of thumbnails created: " << thumbnailsCreated << "/" << totalImages;
+//             qDebug() << "Number of active thread: " << QThreadPool::globalInstance()->activeThreadCount();
+//             if (QThreadPool::globalInstance()->activeThreadCount() > 0 && imageIndices.size() > 0) {
+//                 timer.start(1000);
+//             }
+//         });
+//         timer.start(1000);
+//         while (taskQueue.size() > 0 || QThreadPool::globalInstance()->activeThreadCount() > 0) {
+//             for (int i = 0; i < numThreads - QThreadPool::globalInstance()->activeThreadCount(); ++i) {
+//                 if (taskQueue.size() > 0) {
+//                     qInfo() << "starting a new task";
+//                     threadPool->start(taskQueue.front());
+//                     taskQueue.pop();
+//                 }
+//             }
+//             QCoreApplication::processEvents();
+//             if (progressDialog.wasCanceled()) {
+//                 QThreadPool::globalInstance()->clear();
+//                 return false;
+//             }
+//         }
+
+//         return true;
+//     } catch (const std::exception& e) {
+//         qCritical() << "loadImagesThumbnail" << e.what();
+//         return false;
+//     }
+//     qDebug() << "images thumbnail loaded";
+// }
 
 std::string readFile(const std::string& filePath) {
     std::ifstream file(filePath);

@@ -1,13 +1,13 @@
 #pragma once
 
 #include <QMainWindow>
+#include <QTimer>
 #include <vector>
 
 #include "Data.hpp"
 
 // Forward declaration
 class QScrollArea;
-class QTimer;
 class QVBoxLayout;
 class ClickableLabel;
 class QLabel;
@@ -27,15 +27,15 @@ class ImageBooth : public QMainWindow {
     void enterEvent(QEnterEvent* event) override;
 
    private:
+    QTimer* updateTimer = new QTimer(this);
     int getCurrentFoldersSize();
-    QTimer* updateTimer;
+    // QTimer* updateTimer;
     int imageShiftSelected = -1;
     bool imageShiftSelectedSelect;
-
     Data* data;
 
     int lastLineNbr = 0;
-
+    int imageQuality = 16;
     int maxVisibleLines = data->sizes->imagesBoothSizes->heightImageNumber + 2;
     std::vector<QLabel*> imageWidgets;
 
@@ -73,6 +73,8 @@ class ImageBooth : public QMainWindow {
 
     void updateImages();
 
+    void preLoadImages();
+
     ClickableLabel* getClickableLabelIfExist(int imageNbr);
     ClickableLabel* getClickableLabelIfExist(int imageNbr, QHBoxLayout*& lineLayout);
 
@@ -100,7 +102,7 @@ class ImageBooth : public QMainWindow {
     void createFirstImages();
     ClickableLabel* createImage(std::string imagePath, int nbr);
     void updateVisibleImages(bool force = false);
-
+    // void checkThumbnailAndCorrect();
    signals:
     void switchToImageEditor();
     void switchToImageBooth();

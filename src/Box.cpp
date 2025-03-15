@@ -2,15 +2,19 @@
 
 #include <QCheckBox>
 #include <QFileDialog>
+#include <QGraphicsOpacityEffect>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QPropertyAnimation>
 #include <QPushButton>
+#include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <cstdlib>
+#include <ctime>
 #include <string>
-
 /**
  * @brief
  * @param parent
@@ -201,4 +205,77 @@ std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std:
     }
 
     return results;
+}
+
+/**
+ * @brief Open a label pop up to show an error message
+ * @param parent Parent of the label
+ * @param message Error message to display
+ * @param timeout Time before removing the label
+ */
+void showErrorInfo(QWidget* parent, const QString& message, int timeout) {
+    if (timeout < 1000) {
+        timeout == 1000;
+    }
+    QLabel* errorLabel = new QLabel(message, parent);
+    errorLabel->setStyleSheet(
+        "QLabel { "
+        "background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, "
+        "stop: 0 red, stop: 1 darkred); "
+        "color : white; "
+        "padding: 10px; "
+        "border-radius: 10px; "
+        "border: 2px solid transparent; "
+        "}");
+    errorLabel->setAlignment(Qt::AlignCenter);
+    errorLabel->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    errorLabel->setAttribute(Qt::WA_DeleteOnClose);
+
+    errorLabel->setGeometry(parent->width() - errorLabel->sizeHint().width() - 10,
+                            10,
+                            errorLabel->sizeHint().width(),
+                            errorLabel->sizeHint().height());
+
+    QGraphicsOpacityEffect* opacityEffect = new QGraphicsOpacityEffect(errorLabel);
+    errorLabel->setGraphicsEffect(opacityEffect);
+
+    QPropertyAnimation* fadeInAnimation = new QPropertyAnimation(opacityEffect, "opacity");
+    fadeInAnimation->setDuration(500);  // 500 ms for fade-in
+    fadeInAnimation->setStartValue(0.0);
+    fadeInAnimation->setEndValue(1.0);
+
+    QPropertyAnimation* fadeOutAnimation = new QPropertyAnimation(opacityEffect, "opacity");
+    fadeOutAnimation->setDuration(500);  // 500 ms for fade-out
+    fadeOutAnimation->setStartValue(1.0);
+    fadeOutAnimation->setEndValue(0.0);
+
+    fadeInAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+
+    QTimer* gradientTimer = new QTimer(errorLabel);
+
+    QObject::connect(gradientTimer, &QTimer::timeout, [errorLabel]() {
+        static int step = 0;
+        static bool forward = true;
+        double position = (step % 100) / 100.0;
+        errorLabel->setStyleSheet(
+            QString("QLabel { "
+                    "background: qlineargradient(x1: %1, y1: 0, x2: %2, y2: 0, "
+                    "stop: 0 red, stop: 1 darkred); "
+                    "color : white; "
+                    "padding: 10px; "
+                    "border-radius: 10px; "
+                    "border: 2px solid transparent; "
+                    "}")
+                .arg(position)
+                .arg(position + 1.0));
+        step++;
+    });
+    gradientTimer->start((timeout - 1000) / 100);
+
+    QTimer::singleShot(timeout - 500, [fadeOutAnimation]() {
+        fadeOutAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+    });
+    QObject::connect(fadeOutAnimation, &QPropertyAnimation::finished, errorLabel, &QLabel::close);
+
+    errorLabel->show();
 }

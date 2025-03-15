@@ -2,7 +2,9 @@
 
 #include <QApplication>
 #include <QFileDialog>
+#include <QLabel>
 #include <QMessageBox>
+#include <QObject>
 #include <QPainter>
 #include <QProgressDialog>
 #include <QResource>
@@ -20,7 +22,7 @@
 namespace fs = std::filesystem;
 
 Data::Data()
-    : imageCache(new std::map<std::string, QImageAndPath>()) {
+    : imageCache(new std::unordered_map<std::string, QImageAndPath>()) {
     options = DEFAULT_OPTIONS;
 }
 
@@ -241,17 +243,8 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 }
 
 void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
-    // LoadImageTask* task = new LoadImageTask(this, imagePath, setSize, size, force, callback);
-    // try {
-    //     QThreadPool::globalInstance()->start(task);
-    // } catch (const std::exception& e) {
-    //     qCritical() << "loadInCacheAsync" << e.what();
-    // }
     addThread([this, callback, imagePath, setSize, size, force]() {
         loadInCache(imagePath, setSize, size, force);
-        // if (callback) {
-        //     callback();
-        // }
         if (callback) {
             QMetaObject::invokeMethod(QApplication::instance(), callback,
                                       Qt::QueuedConnection);
@@ -259,6 +252,14 @@ void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callbac
     });
 }
 
+/**
+ * @brief Load an image and put it in the cache
+ * @param imagePath The path to the image
+ * @param setSize Set if the image should be resized
+ * @param size size of the image if it should be resized
+ * @param force Force the image to be loaded
+ * @return if the image is well loaded
+ */
 bool Data::loadInCache(const std::string imagePath, bool setSize,
                        const QSize size, bool force) {
     QImage image;
@@ -267,10 +268,6 @@ bool Data::loadInCache(const std::string imagePath, bool setSize,
     }
 
     loadImageNormal(nullptr, imagePath, size, setSize, 0, true);
-
-    createThumbnailIfNotExists(imagePath, 128);
-    createThumbnailIfNotExists(imagePath, 256);
-    createThumbnailIfNotExists(imagePath, 512);
 
     return true;
 }
@@ -295,30 +292,30 @@ void Data::createThumbnails(const std::vector<std::string>& imagePaths,
     }
 }
 
+void Data::createThumbnailAsync(const std::string& imagePath, const int maxDim) {
+    addThread([this, imagePath, maxDim]() {
+        createThumbnail(imagePath, maxDim);
+    });
+}
 bool Data::createThumbnail(const std::string& imagePath, const int maxDim) {
     try {
-        // qDebug() << "createThumbnail : " << imagePath << " : " << maxDim;
         QImage image = loadImageNormal(nullptr, imagePath, QSize(maxDim, maxDim), false, 0);
-        // qDebug() << "createThumbnail : imageLoaded";
         double scale = std::min(static_cast<double>(maxDim) / image.width(),
                                 static_cast<double>(maxDim) / image.height());
 
         QImage thumbnail = image.scaled(image.width() * scale, image.height() * scale,
                                         Qt::KeepAspectRatio);
-        // qDebug() << "createThumbnail : scaled";
 
         std::string outputImage = getThumbnailPath(imagePath, maxDim);
 
         if (!fs::exists(fs::path(outputImage).parent_path())) {
             fs::create_directories(fs::path(outputImage).parent_path());
         }
-        // qDebug() << "createThumbnail : folder created if not exist";
 
         if (!thumbnail.save(QString::fromStdString(outputImage))) {
             qCritical() << "Error: Could not save thumbnail: " << outputImage;
             return false;
         }
-        // qDebug() << "createThumbnail : saved";
 
     } catch (const std::exception& e) {
         qCritical() << "createThumbnail : " << e.what();
@@ -351,7 +348,6 @@ void Data::createThumbnailIfNotExists(const std::string& imagePath,
 }
 bool Data::hasThumbnail(const std::string& imagePath, const int maxDim) {
     std::string thumbnailPath = getThumbnailPath(imagePath, maxDim);
-
     return fs::exists(thumbnailPath);
 }
 
@@ -773,14 +769,6 @@ void Data::clearCache() {
     imageCache->clear();
 }
 
-void LoadImageTask::run() {
-    data->loadInCache(imagePath, setSize, size, force);
-    if (callback) {
-        QMetaObject::invokeMethod(QApplication::instance(), callback,
-                                  Qt::QueuedConnection);
-    }
-}
-
 void Data::rotateLeft(int nbr, std::string extension, std::function<void()> reload, bool action) {
     if (isExif(extension)) {
         exifRotate(nbr, Const::Rotation::LEFT, reload);
@@ -898,455 +886,466 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
     }
 }
 
-void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
-    QString outputPath = QString::fromStdString(imagesData.getImageData(nbr)->getImagePath());
-    QImage image = loadImage(nullptr, imagesData.getImageData(nbr)->getImagePath(), QSize(0, 0), false);
-    image = image.transformed(QTransform().rotate(-rotation));
-    if (!image.save(outputPath)) {
-        qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
-    }
-    unloadFromCache(imagesData.getImageData(nbr)->getImagePath());
-    loadInCache(imagesData.getImageData(nbr)->getImagePath());
-    createAllThumbnail(imagesData.getImageData(nbr)->getImagePath(), 512);
-    reload();
-}
-
-void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
-    // qDebug() << "Exif rotate :" << nbr;
-    ImageData* imageData = imagesData.getImageData(nbr);
-    // TODO faire sans mais ça marche pas ...
-    imageData = getImagesData()->getImageData(imageData->getImagePath());
-
-    if (!isTurnable(imageData->getImagePath())) {
-        qWarning() << "Image not turnable : " << imageData->getImagePath();
-        return;
-    }
-    int orientation = imageData->getOrientation();
-    if (rotation == Const::Rotation::RIGHT) {
-        switch (orientation) {
-            case Const::Orientation::NORMAL:
-                orientation = Const::Orientation::ROTATE_270;
-                break;
-            case Const::Orientation::FLIP_HORIZONTAL:
-                orientation = Const::Orientation::TRANSVERSE;
-                break;
-            case Const::Orientation::ROTATE_180:
-                orientation = Const::Orientation::ROTATE_90;
-                break;
-            case Const::Orientation::FLIP_VERTICAL:
-                orientation = Const::Orientation::TRANSPOSE;
-                break;
-            case Const::Orientation::TRANSPOSE:
-                orientation = Const::Orientation::FLIP_HORIZONTAL;
-                break;
-            case Const::Orientation::ROTATE_90:
-                orientation = Const::Orientation::NORMAL;
-                break;
-            case Const::Orientation::TRANSVERSE:
-                orientation = Const::Orientation::FLIP_VERTICAL;
-                break;
-            case Const::Orientation::ROTATE_270:
-                orientation = Const::Orientation::ROTATE_180;
-                break;
-            default:
-                orientation = Const::Orientation::NORMAL;
-                break;
+    void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
+        QString outputPath = QString::fromStdString(imagesData.getImageData(nbr)->getImagePath());
+        QImage image = loadImage(nullptr, imagesData.getImageData(nbr)->getImagePath(), QSize(0, 0), false);
+        image = image.transformed(QTransform().rotate(-rotation));
+        if (!image.save(outputPath)) {
+            qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
         }
+        unloadFromCache(imagesData.getImageData(nbr)->getImagePath());
+        loadInCache(imagesData.getImageData(nbr)->getImagePath());
+        createAllThumbnail(imagesData.getImageData(nbr)->getImagePath(), 512);
+        reload();
     }
-    if (rotation == Const::Rotation::LEFT) {
-        switch (orientation) {
-            case Const::Orientation::NORMAL:
-                orientation = Const::Orientation::ROTATE_90;
-                break;
-            case Const::Orientation::FLIP_HORIZONTAL:
-                orientation = Const::Orientation::TRANSPOSE;
-                break;
-            case Const::Orientation::ROTATE_180:
-                orientation = Const::Orientation::ROTATE_270;
-                break;
-            case Const::Orientation::FLIP_VERTICAL:
-                orientation = Const::Orientation::TRANSVERSE;
-                break;
-            case Const::Orientation::TRANSPOSE:
-                orientation = Const::Orientation::FLIP_VERTICAL;
-                break;
-            case Const::Orientation::ROTATE_90:
-                orientation = Const::Orientation::ROTATE_180;
-                break;
-            case Const::Orientation::TRANSVERSE:
-                orientation = Const::Orientation::FLIP_HORIZONTAL;
-                break;
-            case Const::Orientation::ROTATE_270:
-                orientation = Const::Orientation::NORMAL;
-                break;
-            default:
-                orientation = Const::Orientation::NORMAL;
-                break;
+
+    void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
+        // qDebug() << "Exif rotate :" << nbr;
+        ImageData* imageData = imagesData.getImageData(nbr);
+        // TODO faire sans mais ça marche pas ...
+        imageData = getImagesData()->getImageData(imageData->getImagePath());
+
+        if (!isTurnable(imageData->getImagePath())) {
+            qWarning() << "Image not turnable : " << imageData->getImagePath();
+            return;
         }
-    }
-    // qDebug() << "Exif rotate orientation :" << orientation;
-    imageData->turnImage(orientation);
-
-    imageData->saveMetaData();
-
-    reload();
-}
-
-void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> reload, bool action) {
-    if (isExif(extension)) {
-        exifMirror(nbr, true, reload);
-
-        if (action) {
-            addAction(
-                [this, nbr, reload]() {
-                    int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
-                        imagesData.setImageNumber(nbr);
-                        reload();
-                        time = TIME_UNDO_VISUALISATION;
-                    }
-                    QTimer::singleShot(time, [this, nbr, reload]() {
-                        exifMirror(nbr, true, reload);
-                    });
-                },
-                [this, nbr, reload]() {
-                    int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
-                        imagesData.setImageNumber(nbr);
-                        reload();
-                        time = TIME_UNDO_VISUALISATION;
-                    }
-                    QTimer::singleShot(time, [this, nbr, reload]() {
-                        exifMirror(nbr, true, reload);
-                    });
-                });
-        }
-    } else if (isReal(extension)) {
-        realMirror(nbr, true, reload);
-
-        if (action) {
-            addAction(
-                [this, nbr, reload]() {
-                    int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
-                        imagesData.setImageNumber(nbr);
-                        reload();
-                        time = TIME_UNDO_VISUALISATION;
-                    }
-                    QTimer::singleShot(time, [this, nbr, reload]() {
-                        realMirror(nbr, true, reload);
-                    });
-                },
-                [this, nbr, reload]() {
-                    int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
-                        imagesData.setImageNumber(nbr);
-                        reload();
-                        time = TIME_UNDO_VISUALISATION;
-                    }
-                    QTimer::singleShot(time, [this, nbr, reload]() {
-                        realMirror(nbr, true, reload);
-                    });
-                });
-        }
-    }
-    saved = false;
-}
-
-void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
-    if (isExif(extension)) {
-        exifMirror(nbr, false, reload);
-
-        if (action) {
-            addAction(
-                [this, nbr, reload]() {
-                    int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
-                        imagesData.setImageNumber(nbr);
-                        reload();
-                        time = TIME_UNDO_VISUALISATION;
-                    }
-                    QTimer::singleShot(time, [this, nbr, reload]() {
-                        exifMirror(nbr, false, reload);
-                    });
-                },
-                [this, nbr, reload]() {
-                    int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
-                        imagesData.setImageNumber(nbr);
-                        reload();
-                        time = TIME_UNDO_VISUALISATION;
-                    }
-                    QTimer::singleShot(time, [this, nbr, reload]() {
-                        exifMirror(nbr, false, reload);
-                    });
-                });
-        }
-    } else if (isReal(extension)) {
-        realMirror(nbr, false, reload);
-        if (action) {
-            addAction(
-                [this, nbr, reload]() {
-                    int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
-                        imagesData.setImageNumber(nbr);
-                        reload();
-                        time = TIME_UNDO_VISUALISATION;
-                    }
-                    QTimer::singleShot(time, [this, nbr, reload]() {
-                        realMirror(nbr, false, reload);
-                    });
-                },
-                [this, nbr, reload]() {
-                    int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
-                        imagesData.setImageNumber(nbr);
-                        reload();
-                        time = TIME_UNDO_VISUALISATION;
-                    }
-                    QTimer::singleShot(time, [this, nbr, reload]() {
-                        realMirror(nbr, false, reload);
-                    });
-                });
-        }
-    }
-    saved = false;
-}
-
-void Data::exifMirror(int nbr, bool UpDown, std::function<void()> reload) {
-    ImageData* imageData = imagesData.getImageData(nbr);
-
-    if (!isTurnable(imageData->getImagePath())) {
-        return;
-    }
-    int orientation = imageData->getOrientation();
-    if (UpDown) {
-        switch (orientation) {
-            case Const::Orientation::NORMAL:
-                orientation = Const::Orientation::FLIP_VERTICAL;
-                break;
-            case Const::Orientation::ROTATE_180:
-                orientation = Const::Orientation::FLIP_HORIZONTAL;
-                break;
-            case Const::Orientation::ROTATE_90:
-                orientation = Const::Orientation::TRANSVERSE;
-                break;
-            case Const::Orientation::ROTATE_270:
-                orientation = Const::Orientation::TRANSPOSE;
-                break;
-            case Const::Orientation::FLIP_HORIZONTAL:
-                orientation = Const::Orientation::ROTATE_180;
-                break;
-            case Const::Orientation::FLIP_VERTICAL:
-                orientation = Const::Orientation::NORMAL;
-                break;
-            case Const::Orientation::TRANSPOSE:
-                orientation = Const::Orientation::ROTATE_270;
-                break;
-            case Const::Orientation::TRANSVERSE:
-                orientation = Const::Orientation::ROTATE_90;
-                break;
-            default:
-                break;
-        }
-    } else {
-        switch (orientation) {
-            case Const::Orientation::NORMAL:
-                orientation = Const::Orientation::FLIP_HORIZONTAL;
-                break;
-            case Const::Orientation::ROTATE_180:
-                orientation = Const::Orientation::FLIP_VERTICAL;
-                break;
-            case Const::Orientation::ROTATE_90:
-                orientation = Const::Orientation::TRANSPOSE;
-                break;
-            case Const::Orientation::ROTATE_270:
-                orientation = Const::Orientation::TRANSVERSE;
-                break;
-            case Const::Orientation::FLIP_HORIZONTAL:
-                orientation = Const::Orientation::NORMAL;
-                break;
-            case Const::Orientation::FLIP_VERTICAL:
-                orientation = Const::Orientation::ROTATE_180;
-                break;
-            case Const::Orientation::TRANSPOSE:
-                orientation = Const::Orientation::ROTATE_90;
-                break;
-            case Const::Orientation::TRANSVERSE:
-                orientation = Const::Orientation::ROTATE_270;
-                break;
-            default:
-                break;
-        }
-    }
-
-    imageData->turnImage(orientation);
-    imageData->saveMetaData();
-    reload();
-}
-
-void Data::realMirror(int nbr, bool UpDown, std::function<void()> reload) {
-    QString outputPath = QString::fromStdString(imagesData.getCurrentImageData()->getImagePathConst());
-    QImage image = loadImage(nullptr, imagesData.getCurrentImageData()->getImagePathConst(), QSize(0, 0), false);
-    if (UpDown) {
-        image = image.mirrored(false, true);
-    } else {
-        image = image.mirrored(true, false);
-    }
-    if (!image.save(outputPath)) {
-        qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
-    }
-    unloadFromCache(imagesData.getCurrentImageData()->getImagePathConst());
-    loadInCache(imagesData.getCurrentImageData()->getImagePathConst());
-    createAllThumbnail(imagesData.getCurrentImageData()->getImagePathConst(), 512);
-    reload();
-}
-
-void Data::clearActions() {
-    lastActions.clear();
-    lastActionsDone.clear();
-}
-
-Folders* Data::getRootFolders() {
-    return &rootFolders;
-}
-/**
- * @brief Give you the current folder and correct it if it's not initialized
- * @return The current Folder
- */
-Folders* Data::getCurrentFolders() {
-    // qDebug() << "getCurrentFolders ";
-
-    if (currentFolder == nullptr) {
-        qWarning() << "currentFolder is null";
-        currentFolder = findFirstFolderWithAllImages();
-        qInfo() << "currentFolder is now : " << currentFolder->getName();
-    }
-    // qDebug() << "getCurrentFolders 1";
-
-    if (currentFolder->getName() == "") {
-        qWarning() << "currentFolder is empty";
-        currentFolder = findFirstFolderWithAllImages();
-        qInfo() << "currentFolder is now : " << currentFolder->getName();
-    }
-    // qDebug() << "currentFolder not null : " << currentFolder->getName();
-
-    return currentFolder;
-}
-
-/**
- * @brief Give you imagesData
- * @return Ptr to ImagesData
- */
-ImagesData* Data::getImagesData() {
-    return &imagesData;
-}
-
-void Data::removeImageFromFolders(ImageData& imageData) {
-    Folders* rootFolders = getRootFolders();
-    for (auto& folder : imageData.getFolders()) {
-        std::string folderPath = folder.getName();
-        Folders* currentFolderBis = rootFolders;
-        std::string folderPathBis = std::regex_replace(folderPath, std::regex("\\\\"), "/");
-        std::istringstream iss(folderPathBis);
-        std::string token;
-        bool run = true;
-        qDebug() << "Remove image from folder :  1" << folderPath;
-        while (run && std::getline(iss, token, '/')) {
-            auto it = std::find_if(currentFolderBis->folders.begin(), currentFolderBis->folders.end(),
-                                   [&token](const Folders& f) { return f.getName() == token; });
-            if (it != currentFolderBis->folders.end()) {
-                currentFolderBis = &(*it);
-            } else {
-                currentFolderBis = nullptr;
-                run = false;
+        int orientation = imageData->getOrientation();
+        if (rotation == Const::Rotation::RIGHT) {
+            switch (orientation) {
+                case Const::Orientation::NORMAL:
+                    orientation = Const::Orientation::ROTATE_270;
+                    break;
+                case Const::Orientation::FLIP_HORIZONTAL:
+                    orientation = Const::Orientation::TRANSVERSE;
+                    break;
+                case Const::Orientation::ROTATE_180:
+                    orientation = Const::Orientation::ROTATE_90;
+                    break;
+                case Const::Orientation::FLIP_VERTICAL:
+                    orientation = Const::Orientation::TRANSPOSE;
+                    break;
+                case Const::Orientation::TRANSPOSE:
+                    orientation = Const::Orientation::FLIP_HORIZONTAL;
+                    break;
+                case Const::Orientation::ROTATE_90:
+                    orientation = Const::Orientation::NORMAL;
+                    break;
+                case Const::Orientation::TRANSVERSE:
+                    orientation = Const::Orientation::FLIP_VERTICAL;
+                    break;
+                case Const::Orientation::ROTATE_270:
+                    orientation = Const::Orientation::ROTATE_180;
+                    break;
+                default:
+                    orientation = Const::Orientation::NORMAL;
+                    break;
             }
         }
-        if (currentFolderBis) {
-            try {
-                // qDebug() << "Remove image from folder :  2" << folderPath;
-                // qDebug() << "Current folder files:";
-                // for (const auto& file : currentFolderBis->files) {
-                //     qDebug() << QString::fromStdString(file);
-                // }
-                qDebug() << "Image to find: " << QString::fromStdString(imageData.getImagePath());
-                auto it = std::find(currentFolderBis->getFilesPtr()->begin(), currentFolderBis->getFilesPtr()->end(), imageData.getImagePath());
-                if (it != currentFolderBis->getFilesPtr()->end()) {
-                    qDebug() << "find to remove";
-                    // currentFolderBis->files.erase(it);
-                    currentFolder->getFilesPtr()->erase(it);
+        if (rotation == Const::Rotation::LEFT) {
+            switch (orientation) {
+                case Const::Orientation::NORMAL:
+                    orientation = Const::Orientation::ROTATE_90;
+                    break;
+                case Const::Orientation::FLIP_HORIZONTAL:
+                    orientation = Const::Orientation::TRANSPOSE;
+                    break;
+                case Const::Orientation::ROTATE_180:
+                    orientation = Const::Orientation::ROTATE_270;
+                    break;
+                case Const::Orientation::FLIP_VERTICAL:
+                    orientation = Const::Orientation::TRANSVERSE;
+                    break;
+                case Const::Orientation::TRANSPOSE:
+                    orientation = Const::Orientation::FLIP_VERTICAL;
+                    break;
+                case Const::Orientation::ROTATE_90:
+                    orientation = Const::Orientation::ROTATE_180;
+                    break;
+                case Const::Orientation::TRANSVERSE:
+                    orientation = Const::Orientation::FLIP_HORIZONTAL;
+                    break;
+                case Const::Orientation::ROTATE_270:
+                    orientation = Const::Orientation::NORMAL;
+                    break;
+                default:
+                    orientation = Const::Orientation::NORMAL;
+                    break;
+            }
+        }
+        // qDebug() << "Exif rotate orientation :" << orientation;
+        imageData->turnImage(orientation);
+
+        imageData->saveMetaData();
+
+        reload();
+    }
+
+    void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> reload, bool action) {
+        if (isExif(extension)) {
+            exifMirror(nbr, true, reload);
+
+            if (action) {
+                addAction(
+                    [this, nbr, reload]() {
+                        int time = 0;
+                        if (imagesData.getImageNumber() != nbr) {
+                            imagesData.setImageNumber(nbr);
+                            reload();
+                            time = TIME_UNDO_VISUALISATION;
+                        }
+                        QTimer::singleShot(time, [this, nbr, reload]() {
+                            exifMirror(nbr, true, reload);
+                        });
+                    },
+                    [this, nbr, reload]() {
+                        int time = 0;
+                        if (imagesData.getImageNumber() != nbr) {
+                            imagesData.setImageNumber(nbr);
+                            reload();
+                            time = TIME_UNDO_VISUALISATION;
+                        }
+                        QTimer::singleShot(time, [this, nbr, reload]() {
+                            exifMirror(nbr, true, reload);
+                        });
+                    });
+            }
+        } else if (isReal(extension)) {
+            realMirror(nbr, true, reload);
+
+            if (action) {
+                addAction(
+                    [this, nbr, reload]() {
+                        int time = 0;
+                        if (imagesData.getImageNumber() != nbr) {
+                            imagesData.setImageNumber(nbr);
+                            reload();
+                            time = TIME_UNDO_VISUALISATION;
+                        }
+                        QTimer::singleShot(time, [this, nbr, reload]() {
+                            realMirror(nbr, true, reload);
+                        });
+                    },
+                    [this, nbr, reload]() {
+                        int time = 0;
+                        if (imagesData.getImageNumber() != nbr) {
+                            imagesData.setImageNumber(nbr);
+                            reload();
+                            time = TIME_UNDO_VISUALISATION;
+                        }
+                        QTimer::singleShot(time, [this, nbr, reload]() {
+                            realMirror(nbr, true, reload);
+                        });
+                    });
+            }
+        }
+        saved = false;
+    }
+
+    void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
+        if (isExif(extension)) {
+            exifMirror(nbr, false, reload);
+
+            if (action) {
+                addAction(
+                    [this, nbr, reload]() {
+                        int time = 0;
+                        if (imagesData.getImageNumber() != nbr) {
+                            imagesData.setImageNumber(nbr);
+                            reload();
+                            time = TIME_UNDO_VISUALISATION;
+                        }
+                        QTimer::singleShot(time, [this, nbr, reload]() {
+                            exifMirror(nbr, false, reload);
+                        });
+                    },
+                    [this, nbr, reload]() {
+                        int time = 0;
+                        if (imagesData.getImageNumber() != nbr) {
+                            imagesData.setImageNumber(nbr);
+                            reload();
+                            time = TIME_UNDO_VISUALISATION;
+                        }
+                        QTimer::singleShot(time, [this, nbr, reload]() {
+                            exifMirror(nbr, false, reload);
+                        });
+                    });
+            }
+        } else if (isReal(extension)) {
+            realMirror(nbr, false, reload);
+            if (action) {
+                addAction(
+                    [this, nbr, reload]() {
+                        int time = 0;
+                        if (imagesData.getImageNumber() != nbr) {
+                            imagesData.setImageNumber(nbr);
+                            reload();
+                            time = TIME_UNDO_VISUALISATION;
+                        }
+                        QTimer::singleShot(time, [this, nbr, reload]() {
+                            realMirror(nbr, false, reload);
+                        });
+                    },
+                    [this, nbr, reload]() {
+                        int time = 0;
+                        if (imagesData.getImageNumber() != nbr) {
+                            imagesData.setImageNumber(nbr);
+                            reload();
+                            time = TIME_UNDO_VISUALISATION;
+                        }
+                        QTimer::singleShot(time, [this, nbr, reload]() {
+                            realMirror(nbr, false, reload);
+                        });
+                    });
+            }
+        }
+        saved = false;
+    }
+
+    void Data::exifMirror(int nbr, bool UpDown, std::function<void()> reload) {
+        ImageData* imageData = imagesData.getImageData(nbr);
+
+        if (!isTurnable(imageData->getImagePath())) {
+            return;
+        }
+        int orientation = imageData->getOrientation();
+        if (UpDown) {
+            switch (orientation) {
+                case Const::Orientation::NORMAL:
+                    orientation = Const::Orientation::FLIP_VERTICAL;
+                    break;
+                case Const::Orientation::ROTATE_180:
+                    orientation = Const::Orientation::FLIP_HORIZONTAL;
+                    break;
+                case Const::Orientation::ROTATE_90:
+                    orientation = Const::Orientation::TRANSVERSE;
+                    break;
+                case Const::Orientation::ROTATE_270:
+                    orientation = Const::Orientation::TRANSPOSE;
+                    break;
+                case Const::Orientation::FLIP_HORIZONTAL:
+                    orientation = Const::Orientation::ROTATE_180;
+                    break;
+                case Const::Orientation::FLIP_VERTICAL:
+                    orientation = Const::Orientation::NORMAL;
+                    break;
+                case Const::Orientation::TRANSPOSE:
+                    orientation = Const::Orientation::ROTATE_270;
+                    break;
+                case Const::Orientation::TRANSVERSE:
+                    orientation = Const::Orientation::ROTATE_90;
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            switch (orientation) {
+                case Const::Orientation::NORMAL:
+                    orientation = Const::Orientation::FLIP_HORIZONTAL;
+                    break;
+                case Const::Orientation::ROTATE_180:
+                    orientation = Const::Orientation::FLIP_VERTICAL;
+                    break;
+                case Const::Orientation::ROTATE_90:
+                    orientation = Const::Orientation::TRANSPOSE;
+                    break;
+                case Const::Orientation::ROTATE_270:
+                    orientation = Const::Orientation::TRANSVERSE;
+                    break;
+                case Const::Orientation::FLIP_HORIZONTAL:
+                    orientation = Const::Orientation::NORMAL;
+                    break;
+                case Const::Orientation::FLIP_VERTICAL:
+                    orientation = Const::Orientation::ROTATE_180;
+                    break;
+                case Const::Orientation::TRANSPOSE:
+                    orientation = Const::Orientation::ROTATE_90;
+                    break;
+                case Const::Orientation::TRANSVERSE:
+                    orientation = Const::Orientation::ROTATE_270;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        imageData->turnImage(orientation);
+        imageData->saveMetaData();
+        reload();
+    }
+
+    void Data::realMirror(int nbr, bool UpDown, std::function<void()> reload) {
+        QString outputPath = QString::fromStdString(imagesData.getCurrentImageData()->getImagePathConst());
+        QImage image = loadImage(nullptr, imagesData.getCurrentImageData()->getImagePathConst(), QSize(0, 0), false);
+        if (UpDown) {
+            image = image.mirrored(false, true);
+        } else {
+            image = image.mirrored(true, false);
+        }
+        if (!image.save(outputPath)) {
+            qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
+        }
+        unloadFromCache(imagesData.getCurrentImageData()->getImagePathConst());
+        loadInCache(imagesData.getCurrentImageData()->getImagePathConst());
+        createAllThumbnail(imagesData.getCurrentImageData()->getImagePathConst(), 512);
+        reload();
+    }
+
+    void Data::clearActions() {
+        lastActions.clear();
+        lastActionsDone.clear();
+    }
+
+    Folders* Data::getRootFolders() {
+        return &rootFolders;
+    }
+    /**
+     * @brief Give you the current folder and correct it if it's not initialized
+     * @return The current Folder
+     */
+    Folders* Data::getCurrentFolders() {
+        // qDebug() << "getCurrentFolders ";
+
+        if (currentFolder == nullptr) {
+            qWarning() << "currentFolder is null";
+            currentFolder = findFirstFolderWithAllImages();
+            qInfo() << "currentFolder is now : " << currentFolder->getName();
+        }
+        // qDebug() << "getCurrentFolders 1";
+
+        if (currentFolder->getName() == "") {
+            qWarning() << "currentFolder is empty";
+            currentFolder = findFirstFolderWithAllImages();
+            qInfo() << "currentFolder is now : " << currentFolder->getName();
+        }
+        // qDebug() << "currentFolder not null : " << currentFolder->getName();
+
+        return currentFolder;
+    }
+
+    /**
+     * @brief Give you imagesData
+     * @return Ptr to ImagesData
+     */
+    ImagesData* Data::getImagesData() {
+        return &imagesData;
+    }
+
+    void Data::removeImageFromFolders(ImageData& imageData) {
+        Folders* rootFolders = getRootFolders();
+        for (auto& folder : imageData.getFolders()) {
+            std::string folderPath = folder.getName();
+            Folders* currentFolderBis = rootFolders;
+            std::string folderPathBis = std::regex_replace(folderPath, std::regex("\\\\"), "/");
+            std::istringstream iss(folderPathBis);
+            std::string token;
+            bool run = true;
+            qDebug() << "Remove image from folder :  1" << folderPath;
+            while (run && std::getline(iss, token, '/')) {
+                auto it = std::find_if(currentFolderBis->folders.begin(), currentFolderBis->folders.end(),
+                                       [&token](const Folders& f) { return f.getName() == token; });
+                if (it != currentFolderBis->folders.end()) {
+                    currentFolderBis = &(*it);
+                } else {
+                    currentFolderBis = nullptr;
+                    run = false;
                 }
-            } catch (const std::exception& e) {
-                qCritical() << "removeImageFromFolders" << e.what();
             }
+            if (currentFolderBis) {
+                try {
+                    // qDebug() << "Remove image from folder :  2" << folderPath;
+                    // qDebug() << "Current folder files:";
+                    // for (const auto& file : currentFolderBis->files) {
+                    //     qDebug() << QString::fromStdString(file);
+                    // }
+                    qDebug() << "Image to find: " << QString::fromStdString(imageData.getImagePath());
+                    auto it = std::find(currentFolderBis->getFilesPtr()->begin(), currentFolderBis->getFilesPtr()->end(), imageData.getImagePath());
+                    if (it != currentFolderBis->getFilesPtr()->end()) {
+                        qDebug() << "find to remove";
+                        // currentFolderBis->files.erase(it);
+                        currentFolder->getFilesPtr()->erase(it);
+                    }
+                } catch (const std::exception& e) {
+                    qCritical() << "removeImageFromFolders" << e.what();
+                }
+            }
+
+            qDebug() << "Remove image from folder : " << currentFolder->getName();
         }
-
-        qDebug() << "Remove image from folder : " << currentFolder->getName();
-    }
-}
-
-std::string Data::getFolderPath(Folders* folder) {
-    if (folder == &rootFolders) {
-        return "/";
     }
 
-    std::string path;
-    while (folder != &rootFolders) {
-        path = "/" + folder->getName() + path;
-
-        Folders* parent = folder->getParent();
-        if (parent == nullptr) {
-            qCritical() << "getFolderPath folder has no parent";
+    std::string Data::getFolderPath(Folders* folder) {
+        if (folder == &rootFolders) {
             return "/";
         }
-        folder = parent;
-    }
-    return path;
-}
 
-Folders* Data::findFolderByPath(Folders& root, const std::string& path) {
-    if (path == "/") {
-        return &root;
-    }
+        std::string path;
+        while (folder != &rootFolders) {
+            path = "/" + folder->getName() + path;
 
-    Folders* current = &root;
-    std::istringstream iss(path);
-    std::string token;
-    while (std::getline(iss, token, '/')) {
-        if (token.empty()) {
-            continue;
+            Folders* parent = folder->getParent();
+            if (parent == nullptr) {
+                qCritical() << "getFolderPath folder has no parent";
+                return "/";
+            }
+            folder = parent;
         }
-        auto it = std::find_if(current->folders.begin(), current->folders.end(),
-                               [&token](const Folders& f) { return f.getName() == token; });
-        if (it != current->folders.end()) {
-            current = &(*it);
-        } else {
-            return nullptr;
-        }
+        return path;
     }
-    return current;
-}
 
-void Data::clear() {
-    manager.removeAllThreads();
-    imagesData.clear();
-    rootFolders.clear();
-    currentFolder = nullptr;
-    options.clear();
-    lastActions.clear();
-    lastActionsDone.clear();
-    imageCache->clear();
-    saved = true;
-}
+    Folders* Data::findFolderByPath(Folders& root, const std::string& path) {
+        if (path == "/") {
+            return &root;
+        }
 
-void Data::addThread(std::function<void()> job) {
-    manager.addThread(job);
-}
+        Folders* current = &root;
+        std::istringstream iss(path);
+        std::string token;
+        while (std::getline(iss, token, '/')) {
+            if (token.empty()) {
+                continue;
+            }
+            auto it = std::find_if(current->folders.begin(), current->folders.end(),
+                                   [&token](const Folders& f) { return f.getName() == token; });
+            if (it != current->folders.end()) {
+                current = &(*it);
+            } else {
+                return nullptr;
+            }
+        }
+        return current;
+    }
 
-void Data::addHeavyThread(std::function<void()> job) {
-    manager.addHeavyThread(job);
-}
+    void Data::clear() {
+        manager.removeAllThreads();
+        imagesData.clear();
+        rootFolders.clear();
+        currentFolder = nullptr;
+        options.clear();
+        lastActions.clear();
+        lastActionsDone.clear();
+        imageCache->clear();
+        saved = true;
+    }
 
-void Data::stopAllThreads() {
-    manager.removeAllThreads();
-}
+    /**
+     * @brief Add a thread to thread queue, a thread that should no be heavy to execute
+     * @param job The function to execute
+     */
+    void Data::addThread(std::function<void()> job) {
+        manager.addThread(job);
+    }
+
+    /**
+     * @brief Add an heavy thread to thread queue, a thread that can be heavy to execute
+     * @param job The function to execute
+     */
+    void Data::addHeavyThread(std::function<void()> job) {
+        manager.addHeavyThread(job);
+    }
+
+    /**
+     * @brief Stop all active thread and delete thread queue
+     */
+    void Data::stopAllThreads() {
+        manager.removeAllThreads();
+    }
