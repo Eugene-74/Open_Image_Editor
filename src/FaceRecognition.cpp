@@ -1,7 +1,6 @@
 #include "FaceRecognition.hpp"
 
 #include <dlib/cuda/cuda_dlib.h>
-#include <dlib/dnn.h>
 #include <dlib/image_processing/frontal_face_detector.h>
 #include <dlib/opencv.h>
 
@@ -15,6 +14,24 @@
 using namespace dlib;
 using namespace std;
 
+double averageDistance(const std::vector<cv::Point2f>& landmarks1, const std::vector<cv::Point2f>& landmarks2) {
+    if (landmarks1.size() != landmarks2.size()) {
+        throw std::runtime_error("Les ensembles de points caractéristiques doivent avoir la même taille.");
+    }
+
+    double sommeDistances = 0.0;
+    for (size_t i = 0; i < landmarks1.size(); ++i) {
+        double distance = cv::norm(landmarks1[i] - landmarks2[i]);
+        sommeDistances += distance;
+    }
+    return sommeDistances / landmarks1.size();
+}
+
+bool isSamePerson(const std::vector<cv::Point2f>& landmarks1, const std::vector<cv::Point2f>& landmarks2, double seuil) {
+    double distanceMoyenne = averageDistance(landmarks1, landmarks2);
+    return distanceMoyenne < seuil;
+}
+
 void Person::save(std::ofstream& out) const {
     size_t nameSize = name.size();
     out.write(reinterpret_cast<const char*>(&nameSize), sizeof(nameSize));
@@ -23,6 +40,13 @@ void Person::save(std::ofstream& out) const {
     out.write(reinterpret_cast<const char*>(&face.y), sizeof(face.y));
     out.write(reinterpret_cast<const char*>(&face.width), sizeof(face.width));
     out.write(reinterpret_cast<const char*>(&face.height), sizeof(face.height));
+
+    size_t landmarksSize = landmarks.size();
+    out.write(reinterpret_cast<const char*>(&landmarksSize), sizeof(landmarksSize));
+    for (const auto& landmark : landmarks) {
+        out.write(reinterpret_cast<const char*>(&landmark.x), sizeof(landmark.x));
+        out.write(reinterpret_cast<const char*>(&landmark.y), sizeof(landmark.y));
+    }
 }
 
 void Person::load(std::ifstream& in) {
@@ -34,6 +58,14 @@ void Person::load(std::ifstream& in) {
     in.read(reinterpret_cast<char*>(&face.y), sizeof(face.y));
     in.read(reinterpret_cast<char*>(&face.width), sizeof(face.width));
     in.read(reinterpret_cast<char*>(&face.height), sizeof(face.height));
+
+    size_t landmarksSize;
+    in.read(reinterpret_cast<char*>(&landmarksSize), sizeof(landmarksSize));
+    landmarks.resize(landmarksSize);
+    for (auto& landmark : landmarks) {
+        in.read(reinterpret_cast<char*>(&landmark.x), sizeof(landmark.x));
+        in.read(reinterpret_cast<char*>(&landmark.y), sizeof(landmark.y));
+    }
 }
 
 bool is_slow_cpu() {
@@ -54,10 +86,6 @@ bool isCudaAvailable() {
     } catch (dlib::cuda_error& e) {
         return false;
     }
-}
-
-bool startDlib() {
-    return true;
 }
 
 cv::Mat QImageToCvMat(const QImage& inImage) {
@@ -82,100 +110,145 @@ cv::Mat QImageToCvMat(const QImage& inImage) {
 
 std::vector<Person> detectFacesCPU(std::string imagePath, QImage image) {
     try {
-        array2d<unsigned char> img;
+        // Conversion de QImage en cv::Mat
         cv::Mat mat = QImageToCvMat(image);
 
-        int newSize = std::max(1, std::min(mat.cols, mat.rows) / 1000);
-        float invNewSize = 1.0f / newSize;
-
-        cv::Mat resizedMat;
-        cv::resize(mat, resizedMat, cv::Size(), invNewSize, invNewSize);
-
+        // Conversion de l'image en niveaux de gris
         cv::Mat gray;
-        cv::cvtColor(resizedMat, gray, cv::COLOR_BGR2GRAY);
+        cv::cvtColor(mat, gray, cv::COLOR_BGR2GRAY);
 
-        dlib::cv_image<unsigned char> dlibImage(gray);
-
-        frontal_face_detector detector = get_frontal_face_detector();
-
-        std::vector<rectangle> dets = detector(dlibImage);
-
-        qDebug() << "Number of faces detected: " << dets.size();
-
-        std::vector<Person> persons;
-
-        for (const auto& d : dets) {
-            Person person;
-            cv::Rect face;
-            face.x = d.left() * newSize;
-            face.y = d.top() * newSize;
-            face.width = d.width() * newSize;
-            face.height = d.height() * newSize;
-            person.setFace(face);
-            person.setName("Unknown");
-            persons.push_back(person);
+        // Chargement du classificateur en cascade pour la détection des visages
+        cv::CascadeClassifier face_cascade;
+        if (!face_cascade.load(":/models/haarcascade_frontalface_default.xml")) {
+            qDebug() << "Erreur lors du chargement du classificateur en cascade";
+            return {};
         }
+
+        // Chargement du modèle de détection des points de repère faciaux
+        // cv::Ptr<cv::face::Facemark> facemark = cv::face::FacemarkLBF::create();
+        // facemark->loadModel(":/models/lbfmodel.yaml");
+        // if (facemark->empty()) {
+        //     qDebug() << "Erreur lors du chargement du modèle de points de repère faciaux";
+        //     return {};
+        // }
+
+        // Détection des visages
+        std::vector<cv::Rect> faces;
+        face_cascade.detectMultiScale(gray, faces, 1.3, 5, cv::CASCADE_SCALE_IMAGE, cv::Size(image.width() / 20, image.height() / 20));
+
+        qDebug() << "Nombre de visages détectés : " << faces.size();
+
+        // Détection des points de repère faciaux
+        std::vector<std::vector<cv::Point2f>> landmarks;
+        // bool success = facemark->fit(mat, faces, landmarks);
+
+        // qDebug() << "Facial landmark detection success: " << success;
+
+        // Création de la liste des personnes détectées
+        std::vector<Person> persons;
+        // if (success) {
+        for (size_t i = 0; i < faces.size(); ++i) {
+            Person person;
+            for (size_t j = 0; j < i; ++j) {
+                if (isSamePerson(landmarks[i], persons[j].getLandmarks(), 0.6)) {
+                    person.setName(persons[j].getName());
+                    qDebug() << "Personne " << j << " reconnue comme la même personne que la personne " << i;
+                    break;
+                }
+            }
+            person.setFace(faces[i]);
+            person.setName("Inconnu");
+            // person.setLandmarks(landmarks[i]);
+            persons.push_back(person);
+            qDebug() << "Visage " << i << " : " << faces[i].x << ", " << faces[i].y << ", " << faces[i].width << ", " << faces[i].height;
+            // qDebug() << "Landmarks " << i << " : " << landmarks[i].size();
+        }
+        // } else {
+        //     qDebug() << "La détection des points de repère faciaux a échoué";
+        // }
+
         return persons;
-    } catch (std::exception& e) {
-        qDebug() << "Exception: " << e.what();
+    } catch (const std::exception& e) {
+        qDebug() << "Exception : " << e.what();
+        return {};
     }
-    return {};
 }
 
 std::vector<Person> detectFacesCUDA(std::string imagePath, QImage image) {
     qDebug() << "not working";
-    try {
-        array2d<unsigned char> img;
-        cv::Mat mat = QImageToCvMat(image);
 
-        int newSize = std::max(1, std::min(mat.cols, mat.rows) / 1000);
-        float invNewSize = 1.0f / newSize;
+    cv::Mat mat = QImageToCvMat(image);
 
-        cv::Mat resizedMat;
-        cv::resize(mat, resizedMat, cv::Size(), invNewSize, invNewSize);
+    int newSize = std::max(1, std::min(mat.cols, mat.rows) / 1000);
+    float invNewSize = 1.0f / newSize;
 
-        cv::Mat gray;
-        cv::cvtColor(resizedMat, gray, cv::COLOR_BGR2GRAY);
+    cv::Mat resizedMat;
+    cv::resize(mat, resizedMat, cv::Size(), invNewSize, invNewSize);
 
-        dlib::cv_image<unsigned char> dlibImage(gray);
+    cv::Mat gray;
+    cv::cvtColor(resizedMat, gray, cv::COLOR_BGR2GRAY);
 
-        // Use CUDA for face detection
-        frontal_face_detector detector = get_frontal_face_detector();
-        std::vector<rectangle> dets = detector(dlibImage);
+    dlib::cv_image<unsigned char> dlibImage(gray);
 
-        qDebug() << "Number of faces detected: " << dets.size();
+    // Use CUDA for face detection
+    frontal_face_detector detector = get_frontal_face_detector();
+    std::vector<rectangle> dets = detector(dlibImage);
 
-        std::vector<Person> persons;
+    qDebug() << "Number of faces detected: " << dets.size();
 
-        for (const auto& d : dets) {
-            Person person;
-            cv::Rect face;
-            face.x = d.left() * newSize;
-            face.y = d.top() * newSize;
-            face.width = d.width() * newSize;
-            face.height = d.height() * newSize;
-            person.setFace(face);
-            person.setName("Unknown");
-            persons.push_back(person);
-        }
-        return persons;
-    } catch (std::exception& e) {
-        qDebug() << "Exception: " << e.what();
+    std::vector<cv::Rect> faces;
+    for (const auto& d : dets) {
+        faces.push_back(cv::Rect(cv::Point(d.left(), d.top()), cv::Point(d.right(), d.bottom())));
     }
-    return {};
+
+    qDebug() << "Nombre de visages détectés : " << faces.size();
+
+    // cv::Ptr<cv::face::Facemark> facemark = cv::face::FacemarkLBF::create();
+    // facemark->loadModel(":/models/lbfmodel.yaml");
+    // if (facemark->empty()) {
+    //     qDebug() << "Erreur lors du chargement du modèle de points de repère faciaux";
+    //     return {};
+    // }
+    for (auto& face : faces) {
+        face.x *= newSize;
+        face.y *= newSize;
+        face.width *= newSize;
+        face.height *= newSize;
+    }
+    // Détection des points de repère faciaux
+    std::vector<std::vector<cv::Point2f>> landmarks;
+    // bool success = facemark->fit(mat, faces, landmarks);
+
+    std::vector<Person> persons;
+    // if (success) {
+    for (size_t i = 0; i < faces.size(); ++i) {
+        Person person;
+        person.setFace(faces[i]);
+        person.setName("Inconnu");
+        // person.setLandmarks(landmarks[i]);
+        persons.push_back(person);
+        qDebug() << "Visage " << i << " : " << faces[i].x << ", " << faces[i].y << ", " << faces[i].width << ", " << faces[i].height;
+        // qDebug() << "Landmarks " << i << " : " << landmarks[i].size();
+        // }
+    }
+    // else {
+    //     qDebug() << "La détection des points de repère faciaux a échoué";
+    // }
+
+    return persons;
 }
 
 void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::function<void(std::vector<Person>)> callback) {
     data->addHeavyThread([=]() {
         std::vector<Person> persons;
-        if (isCudaAvailable()) {
-            qDebug() << "launch CUDA";
-            persons = detectFacesCUDA(imagePath, image);
-        } else {
-            qDebug() << "launch CPU";
+        // if (isCudaAvailable()) {
+        //     qDebug() << "launch CUDA";
+        persons = detectFacesCUDA(imagePath, image);
+        // } else {
+        // qDebug() << "launch CPU";
 
-            persons = detectFacesCPU(imagePath, image);
-        }
+        // persons = detectFacesCPU(imagePath, image);
+        // }
         try {
             callback(persons);
         } catch (const std::exception& e) {
@@ -191,10 +264,46 @@ cv::Rect Person::getFace() const {
     return face;
 }
 
+std::vector<cv::Point2f> Person::getLandmarks() const {
+    return this->landmarks;
+}
+
 void Person::setName(std::string name) {
     this->name = name;
 }
 
 void Person::setFace(cv::Rect face) {
     this->face = face;
+}
+
+void Person::setLandmarks(std::vector<cv::Point2f> landmarks) {
+    this->landmarks = landmarks;
+}
+
+// void load_images(std::vector<cv::Mat>& images, std::vector<int>& labels, std::vector<std::string>& file_names, const std::string& path) {
+//         std::vector<cv::String> file_paths;
+//         cv::glob(path, file_paths);  // Get all the file paths from the directory
+
+//         for (size_t i = 0; i < file_paths.size(); ++i) {
+//             cv::Mat img = cv::imread(file_paths[i], cv::IMREAD_GRAYSCALE);  // Read image as grayscale
+//             if (!img.empty()) {
+//                 images.push_back(img);
+//                 labels.push_back(i);                  // You can use the index as the label or create custom labels
+//                 file_names.push_back(file_paths[i]);  // Store the file name
+//             }
+//         }
+//     }
+
+// TODO forward
+int recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const cv::Mat& test_image) {
+    int predicted_label = -1;
+    double confidence = 0.0;
+
+    // Recognize the face from the test image
+    model->predict(test_image, predicted_label, confidence);
+
+    std::cout << "Predicted Label: " << predicted_label << std::endl;
+    std::cout << "Confidence: " << confidence << std::endl;
+
+    return predicted_label;
 }

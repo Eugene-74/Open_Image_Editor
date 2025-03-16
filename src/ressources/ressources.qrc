@@ -110,4 +110,8 @@
         <file>255-255-255-255/images/loading.png</file>
 
     </qresource>
+    <qresource prefix="">
+        <file>models/haarcascade_frontalface_default.xml</file>
+
+    </qresource>
 </RCC>

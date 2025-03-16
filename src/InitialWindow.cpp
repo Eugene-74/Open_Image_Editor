@@ -28,8 +28,8 @@ namespace fs = std::filesystem;
 InitialWindow::InitialWindow() {
     startLog();
 
-    QThreadPool* threadPool = QThreadPool::globalInstance();
-    threadPool->setMaxThreadCount(std::max(threadPool->maxThreadCount() - 1, 1));
+    // QThreadPool* threadPool = QThreadPool::globalInstance();
+    // threadPool->setMaxThreadCount(std::max(threadPool->maxThreadCount() - 1, 1));
 
     resizeTimer = new QTimer(this);
     resizeTimer->setInterval(TIME_BEFORE_REZISE);

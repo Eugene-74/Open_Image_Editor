@@ -270,6 +270,14 @@ void MainImage::paintEvent(QPaintEvent* event) {
 
             QString name = QString::fromStdString(person.getName());
             painter.drawText(x, y + height + 15, name);
+            // Draw landmarks
+            painter.setPen(QPen(Qt::red, 2));
+            for (const auto& landmark : person.getLandmarks()) {
+                int lx = static_cast<int>(landmark.x * xScale) + xOffset;
+                int ly = static_cast<int>(landmark.y * yScale) + yOffset;
+                painter.drawPoint(lx, ly);
+            }
+            painter.setPen(QPen(Qt::blue, 2));
         }
     }
 }

@@ -1,7 +1,9 @@
 #pragma once
+
 #include <QRunnable>
 #include <QSize>
 #include <map>
+#include <opencv2/face.hpp>
 #include <string>
 #include <vector>
 
@@ -19,6 +21,7 @@ class ImageData;
 class QApplication;
 // class Folders;
 class Option;
+class Option;
 
 class QImageAndPath {
    public:
@@ -35,6 +38,8 @@ class Actions {
 
 class Data {
    public:
+    cv::Ptr<cv::face::LBPHFaceRecognizer> model = cv::face::LBPHFaceRecognizer::create();
+
     QApplication* app;
     ImagesData imagesData;
 
@@ -60,6 +65,8 @@ class Data {
 
     Data();
 
+    void save_model(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const std::string& model_path);
+    cv::Ptr<cv::face::LBPHFaceRecognizer> load_model(const std::string& model_path);
     void clearCache();
 
     void preDeleteImage(int imageNbr);
@@ -151,21 +158,4 @@ class Data {
 
     void createFolders(Folders* currentFolders, std::string path);
     void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
-};
-
-class LoadImageTask : public QRunnable {
-   public:
-    LoadImageTask(Data* data, const std::string& imagePath, bool setSize, QSize size, bool force, std::function<void()> callback)
-        : data(data), imagePath(imagePath), setSize(setSize), size(size), force(force), callback(callback) {
-    }
-
-    void run() override;
-
-   private:
-    Data* data;
-    std::string imagePath;
-    bool setSize;
-    QSize size;
-    bool force;
-    std::function<void()> callback;
 };

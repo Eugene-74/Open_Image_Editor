@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.10)
 
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/AppConfig.txt" app_config)
 foreach(config_line IN LISTS app_config)
@@ -7,6 +7,11 @@ foreach(config_line IN LISTS app_config)
 endforeach()
 
 project(${APP_NAME}-${APP_VERSION} VERSION ${APP_VERSION})
+
+
+if(NOT CMAKE_GENERATOR)
+    set(CMAKE_GENERATOR "Ninja")
+endif()
 
 if(WIN32)
     message(STATUS "Configuring for Windows")
@@ -22,7 +27,7 @@ if(WIN32)
     include_directories("C:/msys64/mingw64/include")
     link_directories("C:/msys64/mingw64/lib")
 
-    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD 17)
     set(CMAKE_CXX_STANDARD_REQUIRED True)
     set(CMAKE_AUTOMOC ON)
     set(CMAKE_AUTORCC ON)
@@ -78,6 +83,7 @@ if(WIN32)
     
     set(RESOURCE_FILES src/ressources/ressources.qrc)
 
+
     qt6_add_resources(QRC_SOURCES ${RESOURCE_FILES})
 
     qt6_wrap_cpp(MOC_SOURCES ${INCLUDE_HEADERS})
@@ -114,7 +120,9 @@ if(WIN32)
         ${OpenCV_LIBS}
         ${EXIV2_LIBRARIES}
         ${HEIF_LIBRARIES}
+        stdc++fs
     )
+
     if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Debug")
         add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
         target_link_libraries(${PROJECT_NAME} PRIVATE OpenImageEditorLib)
