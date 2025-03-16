@@ -250,35 +250,35 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                                          "", this, imageSize, false, imageQuality, true);
 
         // Image has a poor quality thumbnail
-    } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)) {
+    } else if (data->hasThumbnail(imagePath, imageQuality)) {
+        // } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
-                                         "", this, imageSize, false, IMAGE_BOOTH_IMAGE_POOR_QUALITY, true);
-        if (!data->isInCache(data->getThumbnailPath(imagePath, imageQuality))) {
-            QPointer<ImageBooth> self = this;
-            QTimer::singleShot(TIME_BEFORE_FULL_QUALITY, self, [self, imagePath, nbr]() {
-                if (!self.isNull()) {
-                    return;
-                }
-                if (!self.data()) {
-                    return;
-                }
-                self->data->loadInCacheAsync(self->data->getThumbnailPath(imagePath, self->imageQuality), [self, imagePath, nbr]() {
-                    if (!self.isNull()) {
-                        QHBoxLayout* lineLayout = nullptr;
-                        ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
-                        if (lastImageButton != nullptr) {
-                            ClickableLabel* newImageButton = self->createImage(imagePath, nbr);
-                            if (lineLayout != nullptr) {
-                                lineLayout->replaceWidget(lastImageButton, newImageButton);
-                                lastImageButton->deleteLater();
-                            } else {
-                                newImageButton->deleteLater();
-                            }
-                        }
-                    }
-                });
-            });
-            }
+                                         "", this, imageSize, false, imageQuality, true);
+        // imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
+        //                                  "", this, imageSize, false, IMAGE_BOOTH_IMAGE_POOR_QUALITY, true);
+        // TODO not working
+        // QPointer<ImageBooth> self = this;
+        // QTimer::singleShot(TIME_BEFORE_FULL_QUALITY, self, [self, imagePath, nbr, this]() {
+        //     if (self.isNull()) {
+        //         return;
+        //     }
+        //     self->data->loadInCacheAsync(self->data->getThumbnailPath(imagePath, self->imageQuality), [self, imagePath, nbr]() {
+        //         if (!self.isNull()) {
+        //             QHBoxLayout* lineLayout = nullptr;
+        //             ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
+        //             if (lastImageButton) {
+        //                 ClickableLabel* newImageButton = self->createImage(imagePath, nbr);
+        //                 if (lineLayout) {
+        //                     lineLayout->replaceWidget(lastImageButton, newImageButton);
+
+        //                     lastImageButton->deleteLater();
+        //                 } else {
+        //                     newImageButton->deleteLater();
+        //                 }
+        //             }
+        //         }
+        //     });
+        // });
     } else {
         qDebug() << "no thumbnail found : " << imagePath;
         imageButton = new ClickableLabel(data, IMAGE_PATH_ERROR,
@@ -1164,22 +1164,18 @@ int ImageBooth::getCurrentFoldersSize() {
  */
 void ImageBooth::preLoadImages() {
     // TODO make imageEditor bug
-    // qDebug() << "preLoadImages";
-    // data->stopAllThreads();
-    // auto currentImages = data->getImagesData()->getCurrent();
-    // qDebug() << "currentImages size : " << currentImages->size();
-    // const int packetSize = data->sizes->imagesBoothSizes->imagesPerLine * 2;
-    // for (size_t i = 0; i < currentImages->size(); i += packetSize) {
-    //     auto packetEnd = std::min(currentImages->size(), i + packetSize);
-    //     qInfo() << "creating packet for pre loading : " << packetEnd;
-    //     data->addHeavyThread([this, i, packetEnd]() {
-    //         qInfo() << "loading packet for pre loading : " << packetEnd;
-    //         for (size_t j = i; j < packetEnd; j++) {
-    //             ImageData* imageData = data->getImagesData()->getCurrent()->at(j);
-    //             data->loadInCache(data->getThumbnailPath(imageData->getImagePath(), imageQuality), true, data->sizes->imagesBoothSizes->realImageSize);
-    //         }
-    //     });
-    // }
+    qDebug() << "preLoadImages";
+    data->stopAllThreads();
+    auto currentImages = data->getImagesData()->getCurrent();
+    qDebug() << "currentImages size : " << currentImages->size();
+    const int packetSize = data->sizes->imagesBoothSizes->imagesPerLine * 2;
+    for (size_t i = 0; i < currentImages->size(); i += packetSize) {
+        auto packetEnd = std::min(currentImages->size(), i + packetSize);
+        qInfo() << "creating packet for pre loading : " << packetEnd;
+        for (size_t j = i; j < packetEnd; j++) {
+            // data->loadInCacheAsync(data->getThumbnailPath(currentImages->at(j)->getImagePath(), imageQuality), []() {});
+        }
+    }
 }
 
 // void ImageBooth::checkThumbnailAndCorrect() {

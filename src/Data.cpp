@@ -138,6 +138,12 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
 
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                              bool setSize, int thumbnail, bool force) {
+    // Vérifiez si le chemin de l'image est vide ou contient des caractères invalides
+    if (imagePath.empty() || imagePath.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.:/\\") != std::string::npos) {
+        qWarning() << "Broken filename passed to function: " << QString::fromStdString(imagePath);
+        return QImage();
+    }
+
     if (imagePath.at(0) == ':') {
         if (darkMode) {
             imagePath.insert(imagePath.find_first_of(':') + 1, "/255-255-255-255");
@@ -259,6 +265,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     return image;
 }
 
+// TODO this function make the app crash
 void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
     addThread([this, callback, imagePath, setSize, size, force]() {
         loadInCache(imagePath, setSize, size, force);
@@ -268,6 +275,15 @@ void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callbac
         }
     });
 }
+// void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
+//     LoadImageTask* task = new LoadImageTask(this, imagePath, setSize, size, force, callback);
+//     try {
+//         QThreadPool::globalInstance()->start(task);
+
+//     } catch (const std::exception& e) {
+//         qCritical() << "loadInCacheAsync" << e.what();
+//     }
+// }
 
 /**
  * @brief Load an image and put it in the cache
@@ -283,8 +299,11 @@ bool Data::loadInCache(const std::string imagePath, bool setSize,
     if (!force && isInCache(imagePath)) {
         return true;
     }
-
-    loadImageNormal(nullptr, imagePath, size, setSize, 0, true);
+    try {
+        loadImageNormal(nullptr, imagePath, size, setSize, 0, true);
+    } catch (const std::exception& e) {
+        qCritical() << "loadInCache : " << e.what();
+    }
 
     return true;
 }
@@ -1367,4 +1386,12 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
         qInfo() << "stop all threads";
 
         manager.removeAllThreads();
+    }
+
+    void LoadImageTask::run() {
+        data->loadInCache(imagePath, setSize, size, force);
+        if (callback) {
+            QMetaObject::invokeMethod(QApplication::instance(), callback,
+                                      Qt::QueuedConnection);
+        }
     }

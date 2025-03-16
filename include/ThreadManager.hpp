@@ -14,7 +14,6 @@ class Worker : public QRunnable {
     Worker(std::function<void()> job, std::function<void()> process);
     void run() override;
 
-   private:
     std::function<void()> job;
     std::function<void()> process;
 };
@@ -38,8 +37,8 @@ class ThreadManager : public QObject {
    private:
     void startJob(std::function<void()> job);
     int maxThreads;
-    std::deque<std::function<void()>> taskQueue;
-    std::deque<std::function<void()>> heavyTaskQueue;
+    std::queue<std::function<void()>> taskQueue;
+    std::queue<std::function<void()>> heavyTaskQueue;
 
     void processQueue();
 };

@@ -152,3 +152,20 @@ class Data {
     void createFolders(Folders* currentFolders, std::string path);
     void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
 };
+
+class LoadImageTask : public QRunnable {
+   public:
+    LoadImageTask(Data* data, const std::string& imagePath, bool setSize, QSize size, bool force, std::function<void()> callback)
+        : data(data), imagePath(imagePath), setSize(setSize), size(size), force(force), callback(callback) {
+    }
+
+    void run() override;
+
+   private:
+    Data* data;
+    std::string imagePath;
+    bool setSize;
+    QSize size;
+    bool force;
+    std::function<void()> callback;
+};
