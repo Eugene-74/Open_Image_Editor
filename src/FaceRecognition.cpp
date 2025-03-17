@@ -239,7 +239,7 @@ std::vector<Person> detectFacesCUDA(std::string imagePath, QImage image) {
 }
 
 // TODO forward
-int recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const cv::Mat& test_image) {
+std::pair<int, double> recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const cv::Mat& test_image) {
     int predicted_label = -1;
     double confidence = 0.0;
 
@@ -249,7 +249,7 @@ int recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const cv::Mat& t
     std::cout << "Predicted Label: " << predicted_label << std::endl;
     std::cout << "Confidence: " << confidence << std::endl;
 
-    return predicted_label;
+    return std::make_pair(predicted_label, confidence);
 }
 
 void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::function<void(std::vector<Person>)> callback) {
@@ -267,7 +267,7 @@ void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::func
         cv::Ptr<cv::face::LBPHFaceRecognizer> model = data->model;
         // qDebug() << self->data->getImagesData()->getImageData(self->data->getImagesData()->getImageNumberInTotal(recognize_face(self->data->model, matImage)))->getImagePath();
 
-        for (const auto& person : persons) {
+        for (auto& person : persons) {
             std::vector<cv::Mat> images;
             std::vector<int> labels;
             cv::Rect faceRect = person.getFace();
@@ -277,17 +277,25 @@ void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::func
             if (model->empty()) {
                 qDebug() << "Le modèle n'a pas encore été entraîné. Entraînement en cours...";
                 qDebug() << "start train";
-                labels.push_back(0);
+                labels.push_back(1);
                 model->train(images, labels);
                 qDebug() << "stop train";
-                qDebug() << "Entraînement terminé.";
-            } else {
-                int personNumber = recognize_face(model, face);
-                // TODO if confident < 30 : alors ajouter la personne
-                labels.push_back(personNumber);
 
-                qDebug() << "person number" << personNumber;
+                person.setName("Person_" + std::to_string(labels.back()));
+                qDebug()
+                    << "Entraînement terminé.";
+            } else {
+                std::pair<int, double> personValue = recognize_face(model, face);
+                // TODO if confident < 30 : alors ajouter la personne
+                if (personValue.second < 30) {
+                    labels.push_back(personValue.first);
+                } else {
+                    labels.push_back(model->getLabels().rows + 1);
+                }
+                person.setName("Person_" + std::to_string(labels.back()));
                 model->update(images, labels);
+
+                qDebug() << "person number" << personValue.first;
 
                 qDebug() << "Le modèle a déjà été entraîné.";
             }
@@ -304,7 +312,8 @@ void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::func
             callback(persons);
         } catch (const std::exception& e) {
             qCritical() << e.what();
-        } });
+        }
+    });
 }
 
 std::string Person::getName() const {

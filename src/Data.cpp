@@ -140,10 +140,10 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                              bool setSize, int thumbnail, bool force) {
     // Vérifiez si le chemin de l'image est vide ou contient des caractères invalides
-    if (imagePath.empty() || imagePath.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.:/\\") != std::string::npos) {
-        qWarning() << "Broken filename passed to function: " << QString::fromStdString(imagePath);
-        return QImage();
-    }
+    // if (imagePath.empty() || imagePath.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.:/\\ ") != std::string::npos) {
+    //     qWarning() << "Broken filename passed to function: " << QString::fromStdString(imagePath);
+    //     return QImage();
+    // }
 
     if (imagePath.at(0) == ':') {
         if (darkMode) {

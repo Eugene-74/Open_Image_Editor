@@ -37,4 +37,4 @@ bool isCudaAvailable();
 std::vector<Person> detectFacesCUDA(std::string imagePath, QImage image);
 std::vector<Person> detectFacesCPU(std::string imagePath, QImage image);
 void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::function<void(std::vector<Person>)> callback);
-int recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const cv::Mat& test_image);
+std::pair<int, double> recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const cv::Mat& test_image);
