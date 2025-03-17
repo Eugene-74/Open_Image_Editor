@@ -6,12 +6,14 @@
 
 #include <QDebug>
 #include <QFile>
+#include <QInputDialog>
+
 #include <QImage>
 #include <opencv2/opencv.hpp>
 
 #include "Data.hpp"
 
-using namespace dlib;
+    using namespace dlib;
 using namespace std;
 
 double averageDistance(const std::vector<cv::Point2f>& landmarks1, const std::vector<cv::Point2f>& landmarks2) {
@@ -210,40 +212,44 @@ std::vector<Person> detectFacesCUDA(std::string imagePath, QImage image) {
     //     return {};
     // }
     for (auto& face : faces) {
+        int newWidth = static_cast<int>(face.width * 1.1);
+        int newHeight = static_cast<int>(face.height * 1.2);
+        int newX = face.x - (newWidth - face.width) / 2;
+        int newY = face.y - (newHeight - face.height) / 2;
+
+        // Ensure the new dimensions do not go out of bounds
+        if (newX >= 0 && newX + newWidth <= resizedMat.cols) {
+            face.x = newX;
+            face.width = newWidth;
+        }
+        if (newY >= 0 && newY + newHeight <= resizedMat.rows) {
+            face.y = newY;
+            face.height = newHeight;
+        }
+
         face.x *= newSize;
         face.y *= newSize;
         face.width *= newSize;
         face.height *= newSize;
     }
-    // Détection des points de repère faciaux
-    std::vector<std::vector<cv::Point2f>> landmarks;
-    // bool success = facemark->fit(mat, faces, landmarks);
 
     std::vector<Person> persons;
-    // if (success) {
+
     for (size_t i = 0; i < faces.size(); ++i) {
         Person person;
         person.setFace(faces[i]);
         person.setName("Inconnu");
-        // person.setLandmarks(landmarks[i]);
         persons.push_back(person);
         qDebug() << "Visage " << i << " : " << faces[i].x << ", " << faces[i].y << ", " << faces[i].width << ", " << faces[i].height;
-        // qDebug() << "Landmarks " << i << " : " << landmarks[i].size();
-        // }
     }
-    // else {
-    //     qDebug() << "La détection des points de repère faciaux a échoué";
-    // }
 
     return persons;
 }
 
-// TODO forward
 std::pair<int, double> recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const cv::Mat& test_image) {
     int predicted_label = -1;
     double confidence = 0.0;
 
-    // Recognize the face from the test image
     model->predict(test_image, predicted_label, confidence);
 
     std::cout << "Predicted Label: " << predicted_label << std::endl;
@@ -259,55 +265,6 @@ void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::func
         //     qDebug() << "launch CUDA";
         persons = detectFacesCUDA(imagePath, image);
 
-        QImage image = data->imageCache->at(imagePath).image;
-
-        // TODO convertie
-        cv::Mat matImage = cv::imread(imagePath, cv::IMREAD_GRAYSCALE);
-
-        cv::Ptr<cv::face::LBPHFaceRecognizer> model = data->model;
-        // qDebug() << self->data->getImagesData()->getImageData(self->data->getImagesData()->getImageNumberInTotal(recognize_face(self->data->model, matImage)))->getImagePath();
-
-        for (auto& person : persons) {
-            std::vector<cv::Mat> images;
-            std::vector<int> labels;
-            cv::Rect faceRect = person.getFace();
-            cv::Mat matImage = cv::imread(imagePath, cv::IMREAD_GRAYSCALE);
-            cv::Mat face = matImage(faceRect).clone();
-            images.push_back(face);
-            if (model->empty()) {
-                qDebug() << "Le modèle n'a pas encore été entraîné. Entraînement en cours...";
-                qDebug() << "start train";
-                labels.push_back(1);
-                model->train(images, labels);
-                qDebug() << "stop train";
-
-                person.setName("Person_" + std::to_string(labels.back()));
-                qDebug()
-                    << "Entraînement terminé.";
-            } else {
-                std::pair<int, double> personValue = recognize_face(model, face);
-                // TODO if confident < 30 : alors ajouter la personne
-                if (personValue.second < 30) {
-                    labels.push_back(personValue.first);
-                } else {
-                    labels.push_back(model->getLabels().rows + 1);
-                }
-                person.setName("Person_" + std::to_string(labels.back()));
-                model->update(images, labels);
-
-                qDebug() << "person number" << personValue.first;
-
-                qDebug() << "Le modèle a déjà été entraîné.";
-            }
-        }
-        // model->train(images, labels);
-
-        data->save_model(model, APPDATA_PATH.toStdString() + "/lbph_face_recognizer.yml");
-        // } else {
-        // qDebug() << "launch CPU";
-
-        // persons = detectFacesCPU(imagePath, image);
-        // }
         try {
             callback(persons);
         } catch (const std::exception& e) {
@@ -353,3 +310,79 @@ void Person::setLandmarks(std::vector<cv::Point2f> landmarks) {
 //             }
 //         }
 //     }
+
+void computeFaces(Data* data, std::string imagePath) {
+    QImage image = data->imageCache->at(imagePath).image;
+
+    // TODO convertie
+    cv::Mat matImage = cv::imread(imagePath, cv::IMREAD_GRAYSCALE);
+
+    cv::Ptr<cv::face::LBPHFaceRecognizer> model = data->model;
+    // qDebug() << self->data->getImagesData()->getImageData(self->data->getImagesData()->getImageNumberInTotal(recognize_face(self->data->model, matImage)))->getImagePath();
+    std::vector<Person> persons = data->getImagesData()->getImageData(imagePath)->getpersons();
+    for (auto& person : persons) {
+        std::vector<cv::Mat> images;
+        std::vector<int> labels;
+        cv::Rect faceRect = person.getFace();
+        cv::Mat matImage = cv::imread(imagePath, cv::IMREAD_GRAYSCALE);
+        cv::Mat face = matImage(faceRect).clone();
+        images.push_back(face);
+        if (model->empty()) {
+            qDebug() << "Le modèle n'a pas encore été entraîné. Entraînement en cours...";
+            qDebug() << "start train";
+            labels.push_back(1);
+            model->train(images, labels);
+            qDebug() << "stop train";
+
+            person.setName("Person_" + std::to_string(labels.back()));
+            qDebug()
+                << "Entraînement terminé.";
+        } else {
+            std::pair<int, double> personValue = recognize_face(model, face);
+            // TODO if confident < 30 : alors ajouter la personne
+            if (personValue.second < 30) {
+                labels.push_back(personValue.first);
+            } else if (personValue.second < 80) {
+                // Create a list of existing person names
+                QStringList personNames;
+                for (const auto& existingPerson : persons) {
+                    personNames << QString::fromStdString(existingPerson.getName());
+                }
+
+                // Show a popup to choose among existing persons
+                bool ok;
+                QString selectedPerson = QInputDialog::getItem(nullptr, "Select Person", "Choose the person:", personNames, 0, false, &ok);
+
+                if (ok && !selectedPerson.isEmpty()) {
+                    // Find the selected person and use their label
+                    auto it = std::find_if(persons.begin(), persons.end(), [&](const Person& p) {
+                        return p.getName() == selectedPerson.toStdString();
+                    });
+                    if (it != persons.end()) {
+                        labels.push_back(std::distance(persons.begin(), it));
+                    }
+                } else {
+                    labels.push_back(model->getLabels().rows + 1);
+                }
+                qDebug() << "may be";
+            } else {
+                labels.push_back(model->getLabels().rows + 1);
+            }
+            person.setName("Person_" + std::to_string(labels.back()));
+            model->update(images, labels);
+
+            qDebug() << "person number" << personValue.first;
+
+            qDebug() << "Le modèle a déjà été entraîné.";
+        }
+    }
+    data->getImagesData()->getImageData(imagePath)->setpersons(persons);
+    // model->train(images, labels);
+
+    data->save_model(model, APPDATA_PATH.toStdString() + "/lbph_face_recognizer.yml");
+    // } else {
+    // qDebug() << "launch CPU";
+
+    // persons = detectFacesCPU(imagePath, image);
+    // }
+}

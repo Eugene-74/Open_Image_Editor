@@ -732,9 +732,13 @@ MainImage* ImageEditor::createImageLabel() {
     std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
 
     ImageData* imageData = data->imagesData.getCurrentImageData();
-    qDebug() << "currentImagePath : " << currentImagePath.c_str();
-    // qDebug() << "person actual size" << imageData->getpersons().size();
-    // qDebug() << "person actual status" << static_cast<int>(imageData->getPersonStatus());
+
+    if (imageData->getpersons().size() > 0 && personsEditor) {
+        computeFaces(data, currentImagePath);
+    }
+
+    qDebug()
+        << "currentImagePath : " << currentImagePath.c_str();
 
     auto it = data->imageCache->find(currentImagePath);
     if (it == data->imageCache->end()) {
