@@ -753,29 +753,6 @@ MainImage* ImageEditor::createImageLabel() {
 
         detectFacesAsync(data, currentImagePath, image, [self, imageNbr, currentImagePath](std::vector<Person> persons) {
             if (!self.isNull()) {
-                QImage image = self->data->imageCache->at(currentImagePath).image;
-
-                // TODO convertie
-                cv::Mat matImage = cv::imread(currentImagePath, cv::IMREAD_GRAYSCALE);
-
-                // qDebug() << self->data->getImagesData()->getImageData(self->data->getImagesData()->getImageNumberInTotal(recognize_face(self->data->model, matImage)))->getImagePath();
-                std::vector<cv::Mat> images;
-                std::vector<int> labels;
-
-                for (const auto& person : persons) {
-                    cv::Rect faceRect = person.getFace();
-                    cv::Mat matImage = cv::imread(currentImagePath, cv::IMREAD_GRAYSCALE);
-                    cv::Mat face = matImage(faceRect).clone();
-                    images.push_back(face);
-                    labels.push_back(imageNbr);
-                }
-                cv::Ptr<cv::face::LBPHFaceRecognizer> model = self->data->model;
-                qDebug() << "start train";
-                model->train(images, labels);
-                qDebug() << "stop train";
-
-                self->data->save_model(model, APPDATA_PATH.toStdString() + "/lbph_face_recognizer.yml");
-
                 ImageData* imageData = self->data->getImagesData()->getImageData(currentImagePath);
 
                 if (imageData) {

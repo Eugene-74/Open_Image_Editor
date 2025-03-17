@@ -238,12 +238,63 @@ std::vector<Person> detectFacesCUDA(std::string imagePath, QImage image) {
     return persons;
 }
 
+// TODO forward
+int recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const cv::Mat& test_image) {
+    int predicted_label = -1;
+    double confidence = 0.0;
+
+    // Recognize the face from the test image
+    model->predict(test_image, predicted_label, confidence);
+
+    std::cout << "Predicted Label: " << predicted_label << std::endl;
+    std::cout << "Confidence: " << confidence << std::endl;
+
+    return predicted_label;
+}
+
 void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::function<void(std::vector<Person>)> callback) {
     data->addHeavyThread([=]() {
         std::vector<Person> persons;
         // if (isCudaAvailable()) {
         //     qDebug() << "launch CUDA";
         persons = detectFacesCUDA(imagePath, image);
+
+        QImage image = data->imageCache->at(imagePath).image;
+
+        // TODO convertie
+        cv::Mat matImage = cv::imread(imagePath, cv::IMREAD_GRAYSCALE);
+
+        cv::Ptr<cv::face::LBPHFaceRecognizer> model = data->model;
+        // qDebug() << self->data->getImagesData()->getImageData(self->data->getImagesData()->getImageNumberInTotal(recognize_face(self->data->model, matImage)))->getImagePath();
+
+        for (const auto& person : persons) {
+            std::vector<cv::Mat> images;
+            std::vector<int> labels;
+            cv::Rect faceRect = person.getFace();
+            cv::Mat matImage = cv::imread(imagePath, cv::IMREAD_GRAYSCALE);
+            cv::Mat face = matImage(faceRect).clone();
+            images.push_back(face);
+            if (model->empty()) {
+                qDebug() << "Le modèle n'a pas encore été entraîné. Entraînement en cours...";
+                qDebug() << "start train";
+                labels.push_back(0);
+                model->train(images, labels);
+                qDebug() << "stop train";
+                qDebug() << "Entraînement terminé.";
+            } else {
+                int personNumber = recognize_face(model, face);
+                // TODO if confident < 30 : alors ajouter la personne
+                labels.push_back(personNumber);
+
+                qDebug() << "person number" << personNumber;
+                model->update(images, labels);
+
+                qDebug() << "Le modèle a déjà été entraîné.";
+            }
+        }
+        // model->train(images, labels);
+
+        data->save_model(model, APPDATA_PATH.toStdString() + "/lbph_face_recognizer.yml");
         // } else {
         // qDebug() << "launch CPU";
 
@@ -293,17 +344,3 @@ void Person::setLandmarks(std::vector<cv::Point2f> landmarks) {
 //             }
 //         }
 //     }
-
-// TODO forward
-int recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const cv::Mat& test_image) {
-    int predicted_label = -1;
-    double confidence = 0.0;
-
-    // Recognize the face from the test image
-    model->predict(test_image, predicted_label, confidence);
-
-    std::cout << "Predicted Label: " << predicted_label << std::endl;
-    std::cout << "Confidence: " << confidence << std::endl;
-
-    return predicted_label;
-}
