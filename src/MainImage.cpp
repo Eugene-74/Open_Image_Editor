@@ -246,38 +246,38 @@ void MainImage::paintEvent(QPaintEvent* event) {
         painter.setPen(Qt::DashLine);
         painter.drawRect(QRect(cropStart, cropEnd));
     }
-    if (personsEditor && !data->imagesData.getCurrentImageData()->getpersons().empty()) {
-        painter.setPen(QPen(Qt::blue, 2));
+    if (personsEditor && !data->imagesData.getCurrentImageData()->getDetectedObjects().empty()) {
+        std::map<std::string, std::vector<cv::Rect>> detectedObjects = data->imagesData.getCurrentImageData()->getDetectedObjects();
 
-        QSize scaledSize = qImage.size();
-        scaledSize.scale(this->size(), Qt::KeepAspectRatio);
+        // Calculate the scale factors
+        QSize scaledPixmapSize = qImage.size();
+        scaledPixmapSize.scale(this->size(), Qt::KeepAspectRatio);
+        double xScale = static_cast<double>(scaledPixmapSize.width()) / qImage.width();
+        double yScale = static_cast<double>(scaledPixmapSize.height()) / qImage.height();
 
-        double xScale = static_cast<double>(scaledSize.width()) / qImage.width();
-        double yScale = static_cast<double>(scaledSize.height()) / qImage.height();
+        // Calculate the offsets
+        int xOffset = (this->width() - scaledPixmapSize.width()) / 2;
+        int yOffset = (this->height() - scaledPixmapSize.height()) / 2;
 
-        int xOffset = (this->width() - scaledSize.width()) / 2;
-        int yOffset = (this->height() - scaledSize.height()) / 2;
-        // TODO utilise getPersons mais ça marche pas
-        for (const auto& person : data->imagesData.getCurrentImageData()->getpersons()) {
-            cv::Rect face = person.getFace();
-            int x = static_cast<int>(face.x * xScale) + xOffset;
-            int y = static_cast<int>(face.y * yScale) + yOffset;
-            int width = static_cast<int>(face.width * xScale);
-            int height = static_cast<int>(face.height * yScale);
+        for (const auto& [key, value] : detectedObjects) {
+            for (const cv::Rect& rect : value) {
+                // Adjust the rectangle coordinates
+                int adjustedX = static_cast<int>(rect.x * xScale) + xOffset;
+                int adjustedY = static_cast<int>(rect.y * yScale) + yOffset;
+                int adjustedWidth = static_cast<int>(rect.width * xScale);
+                int adjustedHeight = static_cast<int>(rect.height * yScale);
 
-            QRect rect(x, y, width, height);
-            painter.drawRect(rect);
+                QRect qRect(adjustedX, adjustedY, adjustedWidth, adjustedHeight);
 
-            QString name = QString::fromStdString(person.getName());
-            painter.drawText(x, y + height + 15, name);
-            // Draw landmarks
-            painter.setPen(QPen(Qt::red, 2));
-            for (const auto& landmark : person.getLandmarks()) {
-                int lx = static_cast<int>(landmark.x * xScale) + xOffset;
-                int ly = static_cast<int>(landmark.y * yScale) + yOffset;
-                painter.drawPoint(lx, ly);
+                if (key == "person") {
+                    painter.setPen(Qt::blue);
+                } else {
+                    painter.setPen(Qt::red);
+                }
+
+                painter.drawRect(qRect);
+                painter.drawText(qRect.topLeft(), QString::fromStdString(key));
             }
-            painter.setPen(QPen(Qt::blue, 2));
         }
     }
 }

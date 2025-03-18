@@ -15,6 +15,8 @@ const QString PICTURES_PATH = QStandardPaths::writableLocation(QStandardPaths::P
 const QString HOME_PATH = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 const QString CACHE_PATH = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 const QString APPDATA_PATH = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+const QString APP_FILES = APPDATA_PATH + "/" + QString::fromStdString(APP_NAME);
+
 const QString DOWNLOAD_PATH = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
 
 const int PREVIEW_NBR = 3;

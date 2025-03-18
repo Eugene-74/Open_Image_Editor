@@ -8,34 +8,20 @@
 class QImage;
 class Data;
 
-class Person {
+class DetectedObjects {
    private:
-    std::string name;
-    cv::Rect face;
-    std::vector<cv::Point2f> landmarks;
+    std::map<std::string, std::vector<cv::Rect>> detectedObjects;
 
    public:
-    bool operator==(const Person& other) const {
-        return this->face == other.face &&
-               this->name == other.name;
-    }
-
     void save(std::ofstream& out) const;
     void load(std::ifstream& in);
-
-    std::string getName() const;
-    cv::Rect getFace() const;
-    std::vector<cv::Point2f> getLandmarks() const;
-
-    void setName(std::string name);
-    void setFace(cv::Rect face);
-    void setLandmarks(std::vector<cv::Point2f> landmarks);
+    void clear();
+    std::map<std::string, std::vector<cv::Rect>> getDetectedObjects();
+    void setDetectedObjects(const std::map<std::string, std::vector<cv::Rect>>& detectedObjects);
 };
 
 bool is_slow_cpu();
 bool isCudaAvailable();
-std::vector<Person> detectFacesCUDA(std::string imagePath, QImage image);
-std::vector<Person> detectFacesCPU(std::string imagePath, QImage image);
-void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::function<void(std::vector<Person>)> callback);
+void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback);
 std::pair<int, double> recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const cv::Mat& test_image);
 void computeFaces(Data* data, std::string imagePath);

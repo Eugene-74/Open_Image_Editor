@@ -14,17 +14,16 @@ class QPoint;
 
 class ImageData {
    private:
-    enum class PersonStatus {
+    enum class DetectionStatus {
         NotLoaded,
         Loading,
         Loaded
     };
 
     MetaData metaData;
-
+    DetectedObjects detectedObjects;
     Folders folders;
-    std::vector<Person> persons;
-    PersonStatus personStatus = PersonStatus::NotLoaded;
+    DetectionStatus detectionStatus = DetectionStatus::NotLoaded;
 
     std::vector<std::vector<QPoint>> cropSizes;
     int orientation;
@@ -44,24 +43,25 @@ class ImageData {
     void print() const;
     
     std::string get() const;
-    
+
+    std::map<std::string, std::vector<cv::Rect>> getDetectedObjects();
+    void setDetectedObjects(const std::map<std::string, std::vector<cv::Rect>>& detectedObjects);
+    void clearDetectedObjects();
+
     void setDate(long date);
     long getDate() const;
     
     void setOrientation(int orientation);
     int getOrientation() const;
 
-    std::vector<Person> getpersons() const;
-    void setpersons(const std::vector<Person>& persons);
-    
-    PersonStatus getPersonStatus() const;
-    void setPersonStatus(PersonStatus personStatus);
-    void setPersonStatusLoading();
-    void setPersonStatusNotLoaded();
-    void setPersonStatusLoaded();
-    bool isPersonStatusLoading();
-    bool isPersonStatusNotLoaded();
-    bool isPersonStatusLoaded();
+    // DetectionStatus getDetectionStatus() const;
+    void setDetectionStatus(DetectionStatus detectionStatus);
+    void setDetectionStatusLoading();
+    void setDetectionStatusNotLoaded();
+    void setDetectionStatusLoaded();
+    bool isDetectionStatusLoading();
+    bool isDetectionStatusNotLoaded();
+    bool isDetectionStatusLoaded();
 
     MetaData* getMetaDataPtr();
     MetaData getMetaData() const;

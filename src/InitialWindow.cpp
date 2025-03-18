@@ -318,7 +318,7 @@ void startLog() {
     }
     auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::tm* now_tm = std::localtime(&now);
-    QString logFileName = QString(APPDATA_PATH.toUtf8() + "/" + QString::fromUtf8(APP_NAME) + "/logs/%1-%2-%3.log")
+    QString logFileName = QString(APP_FILES.toUtf8() + "/logs/%1-%2-%3.log")
                               .arg(now_tm->tm_mday, 2, 10, QChar('0'))
                               .arg(now_tm->tm_mon + 1, 2, 10, QChar('0'))
                               .arg(now_tm->tm_year + 1900);

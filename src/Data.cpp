@@ -24,7 +24,7 @@ namespace fs = std::filesystem;
 Data::Data()
     : imageCache(new std::unordered_map<std::string, QImageAndPath>()) {
     options = DEFAULT_OPTIONS;
-    model = load_model(APPDATA_PATH.toStdString() + "/lbph_face_recognizer.yml");
+    model = load_model(APP_FILES.toStdString() + "/lbph_face_recognizer.yml");
 }
 
 /**
@@ -974,7 +974,6 @@ void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
 }
 
 void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
-    // qDebug() << "Exif rotate :" << nbr;
     ImageData* imageData = imagesData.getImageData(nbr);
     // TODO faire sans mais ça marche pas ...
     imageData = getImagesData()->getImageData(imageData->getImagePath());
@@ -984,7 +983,7 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
         return;
     }
     int orientation = imageData->getOrientation();
-    if (rotation == Const::Rotation::RIGHT) {
+    if (rotation == Const::Rotation::LEFT) {
         switch (orientation) {
             case Const::Orientation::NORMAL:
                 orientation = Const::Orientation::ROTATE_270;
@@ -1015,7 +1014,7 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
                 break;
         }
     }
-    if (rotation == Const::Rotation::LEFT) {
+    if (rotation == Const::Rotation::RIGHT) {
         switch (orientation) {
             case Const::Orientation::NORMAL:
                 orientation = Const::Orientation::ROTATE_90;

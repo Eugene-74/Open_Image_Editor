@@ -116,11 +116,9 @@ if(WIN32)
         Qt6::Widgets
         CURL::libcurl 
         jsoncpp_lib
-        dlib::dlib
         ${OpenCV_LIBS}
         ${EXIV2_LIBRARIES}
         ${HEIF_LIBRARIES}
-        stdc++fs
     )
 
     if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Debug")

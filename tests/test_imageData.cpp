@@ -25,7 +25,7 @@ TEST_F(ImageDataTest, AssignmentOperator) {
     // other.setCropSizes({QPoint(0, 0), QPoint(1, 1)});
     // other.setMetaData(MetaData());
     // other.setpersons();
-    other.setPersonStatusLoading();
+    other.setDetectionStatusLoading();
     imageData = other;
     EXPECT_EQ(imageData.getDate(), 123456789);
     // EXPECT_EQ(imageData.getFolders()[0].getName(), "folder");
@@ -33,7 +33,7 @@ TEST_F(ImageDataTest, AssignmentOperator) {
     // EXPECT_EQ(imageData.getCropSizes(), 5);
     // EXPECT_EQ(imageData.getMetaData(), 5);
     // EXPECT_EQ(imageData.getpersons(), 5);
-    EXPECT_TRUE(imageData.isPersonStatusLoading());
+    EXPECT_TRUE(imageData.isDetectionStatusLoading());
 }
 
 TEST_F(ImageDataTest, AddFolder) {
@@ -122,15 +122,15 @@ TEST_F(ImageDataTest, CropSizes) {
     EXPECT_EQ(resultCropSizes[1].size(), 2);
 }
 
-TEST_F(ImageDataTest, PersonStatus) {
-    imageData.setPersonStatusLoading();
-    EXPECT_TRUE(imageData.isPersonStatusLoading());
+TEST_F(ImageDataTest, DetectionStatus) {
+    imageData.setDetectionStatusLoading();
+    EXPECT_TRUE(imageData.isDetectionStatusLoading());
 
-    imageData.setPersonStatusNotLoaded();
-    EXPECT_TRUE(imageData.isPersonStatusNotLoaded());
+    imageData.setDetectionStatusNotLoaded();
+    EXPECT_TRUE(imageData.isDetectionStatusNotLoaded());
 
-    imageData.setPersonStatusLoaded();
-    EXPECT_TRUE(imageData.isPersonStatusLoaded());
+    imageData.setDetectionStatusLoaded();
+    EXPECT_TRUE(imageData.isDetectionStatusLoaded());
 }
 
 TEST_F(ImageDataTest, MetaData) {

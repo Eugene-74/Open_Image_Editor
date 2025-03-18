@@ -71,9 +71,8 @@ void Sizes::ImagesBoothSizes::update() {
 
     realImageSize = imageSize + QSize(linesLayoutSpacing, linesLayoutSpacing);
 
-    // TODO calcul pas parfait +10 anormal probablement la barre pour faire défiler (sans +10 l'appli crash X( ))
-    scrollAreaSize = QSize(parentSizes->screenGeometry.width() * 5 / 6 + linesLayoutMargins[0] + linesLayoutMargins[2]  // marge gauche et droite
-                               - (parentSizes->screenGeometry.width() * 5 / 6) % realImageSize.width() + linesLayoutSpacing + 10,
+    scrollAreaSize = QSize(parentSizes->screenGeometry.width() * 5 / 6 + linesLayoutMargins[0] + linesLayoutMargins[2]             // marge gauche et droite
+                               - (parentSizes->screenGeometry.width() * 5 / 6) % realImageSize.width() + linesLayoutSpacing + 10,  // +10 for the scroll bar
 
                            parentSizes->screenGeometry.height() * 9 / 12 + linesLayoutMargins[1] + linesLayoutMargins[3]  // marge haut et bas
                                - (parentSizes->screenGeometry.height() * 9 / 12) % realImageSize.height() + linesLayoutSpacing);

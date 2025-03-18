@@ -29,8 +29,7 @@ namespace fs = std::filesystem;
 
 void ThumbnailTask::run() {
     for (int i = start; i < end; ++i) {
-        // TODO pas utiliser at
-        ImageData* imageData = data->getImagesData()->get()->at(i);
+        ImageData* imageData = data->getImagesData()->getImageData(i);
 
         data->createThumbnailIfNotExists(imageData->getImagePath(), 16);
         data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
@@ -372,11 +371,6 @@ std::map<std::string, std::string> openJsonFile(std::string filePath) {
 //     }
 //     return true;
 // }
-
-bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog) {
-    // TODO laod persons
-    return true;
-}
 
 bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog) {
     fs::path fsPath(path);

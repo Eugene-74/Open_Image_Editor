@@ -31,7 +31,6 @@ bool addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& pro
 std::string getDirectoryFromUser(QWidget* parent);
 
 bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string imagePaths, QProgressDialog& progressDialog);
-bool loadImagesMetaDataOfGoogle(ImagesData* imagesData, QProgressDialog& progressDialog);
 bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog);
 bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog);
 bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog);

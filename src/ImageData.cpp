@@ -23,7 +23,10 @@ ImageData::ImageData(std::string imagePath)
 }
 
 ImageData::ImageData(const ImageData& other)
-    : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), persons(other.persons), personStatus(other.personStatus) {}
+    : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date)
+      // , persons(other.persons)
+      ,
+      detectionStatus(other.detectionStatus) {}
 
 ImageData& ImageData::operator=(const ImageData& other) {
     if (this != &other) {
@@ -31,8 +34,8 @@ ImageData& ImageData::operator=(const ImageData& other) {
         metaData = other.metaData;
         cropSizes = other.cropSizes;
         orientation = other.orientation;
-        persons = other.persons;
-        personStatus = other.personStatus;
+        // persons = other.persons;
+        detectionStatus = other.detectionStatus;
         date = other.date;
     }
     return *this;
@@ -151,6 +154,19 @@ void ImageData::setOrCreateExifData() {
     metaData.setOrCreateExifData(getImagePath());
 }
 
+std::map<std::string, std::vector<cv::Rect>> ImageData::getDetectedObjects() {
+    return detectedObjects.getDetectedObjects();
+}
+
+void ImageData::setDetectedObjects(const std::map<std::string, std::vector<cv::Rect>>& detectedObjects) {
+    this->detectedObjects.setDetectedObjects(detectedObjects);
+    qDebug() << "Detected objects set : " << detectedObjects.size();
+}
+void ImageData::clearDetectedObjects() {
+    detectedObjects.clear();
+    setDetectionStatusNotLoaded();
+}
+
 void ImageData::save(std::ofstream& out) const {
     out.write(reinterpret_cast<const char*>(&orientation), sizeof(orientation));
     out.write(reinterpret_cast<const char*>(&date), sizeof(date));
@@ -165,14 +181,10 @@ void ImageData::save(std::ofstream& out) const {
         out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
     }
 
-    out.write(reinterpret_cast<const char*>(&personStatus), sizeof(personStatus));
+    // TODO save doesn't work
+    // out.write(reinterpret_cast<const char*>(&detectionStatus), sizeof(detectionStatus));
 
-    size_t personsSize = persons.size();
-    out.write(reinterpret_cast<const char*>(&personsSize), sizeof(personsSize));
-    for (const auto& person : persons) {
-        // qDebug() << "save person : " << folders.getName();
-        person.save(out);
-    }
+    detectedObjects.save(out);
 }
 
 void ImageData::load(std::ifstream& in) {
@@ -192,23 +204,14 @@ void ImageData::load(std::ifstream& in) {
             in.read(reinterpret_cast<char*>(cropSizes[i].data()), innerSize * sizeof(QPoint));
         }
     }
-    in.read(reinterpret_cast<char*>(&personStatus), sizeof(personStatus));
-    // TODO mettre autre part
-    if (isPersonStatusLoading()) {
-        setPersonStatusNotLoaded();
-    }
+    // TODO save doesn't work
+    // in.read(reinterpret_cast<char*>(&detectionStatus), sizeof(detectionStatus));
+    // // TODO mettre autre part
+    // if (isDetectionStatusLoading()) {
+    //     setDetectionStatusNotLoaded();
+    // }
 
-    size_t personsSize;
-    in.read(reinterpret_cast<char*>(&personsSize), sizeof(personsSize));
-    persons.resize(personsSize);
-    for (auto& person : persons) {
-        qDebug() << "load person" << folders.getName();
-        person.load(in);
-    }
-    if (persons.size() > 0) {
-        // setPersonStatusLoaded();
-        qDebug() << "load person done" << persons.size();
-    }
+    detectedObjects.load(in);
 }
 
 std::vector<std::vector<QPoint>> ImageData::getCropSizes() const {
@@ -224,48 +227,40 @@ void ImageData::clearMetaData() {
     metaData.dataLoaded = false;
 }
 
-ImageData::PersonStatus ImageData::getPersonStatus() const {
-    return personStatus;
+// DetectionStatus ImageData::getDetectionStatus() const {
+//     return detectionStatus;
+// }
+
+void ImageData::setDetectionStatus(DetectionStatus detectionStatus) {
+    this->detectionStatus = detectionStatus;
 }
 
-void ImageData::setPersonStatus(PersonStatus personStatus) {
-    this->personStatus = personStatus;
+void ImageData::setDetectionStatusLoading() {
+    setDetectionStatus(DetectionStatus::Loading);
 }
 
-void ImageData::setPersonStatusLoading() {
-    setPersonStatus(PersonStatus::Loading);
+void ImageData::setDetectionStatusNotLoaded() {
+    setDetectionStatus(DetectionStatus::NotLoaded);
 }
 
-void ImageData::setPersonStatusNotLoaded() {
-    setPersonStatus(PersonStatus::NotLoaded);
+void ImageData::setDetectionStatusLoaded() {
+    setDetectionStatus(DetectionStatus::Loaded);
 }
 
-void ImageData::setPersonStatusLoaded() {
-    setPersonStatus(PersonStatus::Loaded);
+bool ImageData::isDetectionStatusLoading() {
+    return detectionStatus == DetectionStatus::Loading;
 }
 
-bool ImageData::isPersonStatusLoading() {
-    return personStatus == PersonStatus::Loading;
+bool ImageData::isDetectionStatusNotLoaded() {
+    return detectionStatus == ImageData::DetectionStatus::NotLoaded;
 }
 
-bool ImageData::isPersonStatusNotLoaded() {
-    return personStatus == ImageData::PersonStatus::NotLoaded;
-}
-
-bool ImageData::isPersonStatusLoaded() {
-    return personStatus == ImageData::PersonStatus::Loaded;
+bool ImageData::isDetectionStatusLoaded() {
+    return detectionStatus == ImageData::DetectionStatus::Loaded;
 }
 
 void ImageData::setMetaData(const MetaData& metaData) {
     this->metaData = metaData;
-}
-
-std::vector<Person> ImageData::getpersons() const {
-    return persons;
-}
-
-void ImageData::setpersons(const std::vector<Person>& persons) {
-    this->persons = persons;
 }
 
 void ImageData::setDate(long date) {

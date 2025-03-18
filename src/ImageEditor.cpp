@@ -347,12 +347,9 @@ void ImageEditor::updateButtons() {
     }
 
     if (imagePersons) {
-        if (data->imagesData.getCurrentImageData()->isPersonStatusLoaded()) {
-            qDebug() << "setLogoNumber";
-            imagePersons->setLogoNumber(data->imagesData.getCurrentImageData()->getpersons().size());
+        if (data->imagesData.getCurrentImageData()->isDetectionStatusLoaded()) {
+            // imagePersons->setLogoNumber(data->imagesData.getCurrentImageData()->getpersons().size());
         } else {
-            qDebug() << "not setLogoNumber";
-
             imagePersons->setLogoNumber(-1);
         }
     }
@@ -633,10 +630,10 @@ ClickableLabel* ImageEditor::createImagePersons() {
     imagePersonsNew->setInitialBackground("transparent", "#b3b3b3");
     imagePersonsNew->addLogo("#700c13", "#ffffff");
 
-    qDebug() << "status : " << static_cast<int>(data->imagesData.getCurrentImageData()->getPersonStatus());
+    qDebug() << "status : " << static_cast<int>(data->imagesData.getCurrentImageData()->isDetectionStatusLoaded());
 
-    if (data->imagesData.getCurrentImageData()->isPersonStatusLoaded()) {
-        imagePersonsNew->setLogoNumber(data->imagesData.getCurrentImageData()->getpersons().size());
+    if (data->imagesData.getCurrentImageData()->isDetectionStatusLoaded()) {
+        // imagePersonsNew->setLogoNumber(data->imagesData.getCurrentImageData()->getpersons().size());
     } else {
         imagePersonsNew->setLogoNumber(-1);
     }
@@ -733,9 +730,9 @@ MainImage* ImageEditor::createImageLabel() {
 
     ImageData* imageData = data->imagesData.getCurrentImageData();
 
-    if (imageData->getpersons().size() > 0 && personsEditor) {
-        computeFaces(data, currentImagePath);
-    }
+    // if (imageData->getpersons().size() > 0 && personsEditor) {
+    //     computeFaces(data, currentImagePath);
+    // }
 
     qDebug()
         << "currentImagePath : " << currentImagePath.c_str();
@@ -746,8 +743,10 @@ MainImage* ImageEditor::createImageLabel() {
     }
 
     int imageNbr = data->imagesData.getImageNumber();
-    if (imageData->isPersonStatusNotLoaded() && imageData->getpersons().empty()) {
-        imageData->setPersonStatusLoading();
+    if (imageData->isDetectionStatusNotLoaded()
+        // && imageData->getpersons().empty()
+    ) {
+        imageData->setDetectionStatusLoading();
         qDebug() << "starting face recognition";
         QImage image = data->imageCache->at(currentImagePath).image;
 
@@ -755,18 +754,19 @@ MainImage* ImageEditor::createImageLabel() {
 
         QPointer<ImageEditor> self = this;
 
-        detectFacesAsync(data, currentImagePath, image, [self, imageNbr, currentImagePath](std::vector<Person> persons) {
+        detectFacesAsync(data, currentImagePath, image, [self, imageNbr, currentImagePath](DetectedObjects detectedObject) {
             if (!self.isNull()) {
                 ImageData* imageData = self->data->getImagesData()->getImageData(currentImagePath);
 
                 if (imageData) {
                     qDebug() << "face recognition done";
-                    imageData->setpersons(persons);
-                    imageData->setPersonStatusLoaded();
+                    // imageData->setpersons(persons);
+                    imageData->setDetectedObjects(detectedObject.getDetectedObjects());
+                    imageData->setDetectionStatusLoaded();
                 }
                 if (self->data->imagesData.getImageNumber() == imageNbr) {
                     if (self->imagePersons) {
-                        self->imagePersons->setLogoNumber(persons.size());
+                        // self->imagePersons->setLogoNumber(persons.size());
 
                         self->imagePersons->update();
 
@@ -777,9 +777,6 @@ MainImage* ImageEditor::createImageLabel() {
                 }
             }
         });
-    } else {
-        // qDebug() << static_cast<int>(imageData->getPersonStatus());
-        // qDebug() << "l'image a deja ete charger : " << imageData->getpersons().size();
     }
 
     connect(imageLabelNew, &MainImage::leftClicked, [this]() {
@@ -1194,13 +1191,19 @@ void ImageEditor::checkCache() {
 }
 
 void ImageEditor::rotateLeft() {
-    std::string extension = data->getImagesData()->getCurrentImageData()->getImageExtension();
+    ImageData* imageData = data->getImagesData()->getCurrentImageData();
+    imageData->clearDetectedObjects();
+
+    std::string extension = imageData->getImageExtension();
     int nbr = data->getImagesData()->getImageNumber();
     int imageInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
     data->rotateLeft(imageInTotal, extension, [this]() { reload(); });
 }
 void ImageEditor::rotateRight() {
-    std::string extension = data->getImagesData()->getCurrentImageData()->getImageExtension();
+    ImageData* imageData = data->getImagesData()->getCurrentImageData();
+    imageData->clearDetectedObjects();
+
+    std::string extension = imageData->getImageExtension();
     int nbr = data->getImagesData()->getImageNumber();
     int imageInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
 
@@ -1208,7 +1211,10 @@ void ImageEditor::rotateRight() {
 }
 
 void ImageEditor::mirrorUpDown() {
-    std::string extension = data->getImagesData()->getCurrentImageData()->getImageExtension();
+    ImageData* imageData = data->getImagesData()->getCurrentImageData();
+    imageData->clearDetectedObjects();
+
+    std::string extension = imageData->getImageExtension();
     int nbr = data->getImagesData()->getImageNumber();
     int imageInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
 
@@ -1216,7 +1222,9 @@ void ImageEditor::mirrorUpDown() {
 }
 
 void ImageEditor::mirrorLeftRight() {
-    std::string extension = data->getImagesData()->getCurrentImageData()->getImageExtension();
+    ImageData* imageData = data->getImagesData()->getCurrentImageData();
+    imageData->clearDetectedObjects();
+    std::string extension = imageData->getImageExtension();
     int nbr = data->getImagesData()->getImageNumber();
     int imageInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
 
