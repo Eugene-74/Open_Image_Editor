@@ -58,5 +58,5 @@ Section "Uninstall"
 
     Delete "$DESKTOP\${LNK_APP_NAME}.lnk"
 
-    RMDir /r "$APPDATA\${APP_NAME}"
+    RMDir /r "$LOCALAPPDATA\${APP_NAME}"
 SectionEnd
