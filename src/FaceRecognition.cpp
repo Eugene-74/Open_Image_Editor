@@ -98,11 +98,11 @@ DetectedObjects detect(std::string imagePath, QImage image) {
 
         // Load YOLO model
         // TODO download the model if it doesn't exist
-        std::string modelConfiguration = APP_FILES.toStdString() + "/" + "yolov3.cfg";
-        std::string modelWeights = APP_FILES.toStdString() + "/" + "yolov3.weights";
+        // std::string modelConfiguration = APP_FILES.toStdString() + "/" + "yolov3.cfg";
+        // std::string modelWeights = APP_FILES.toStdString() + "/" + "yolov3.weights";
         std::string classNamesFile = APP_FILES.toStdString() + "/" + "coco.names";
-        cv::dnn::Net net = cv::dnn::readNetFromDarknet(modelConfiguration, modelWeights);
-
+        // cv::dnn::Net net = cv::dnn::readNetFromDarknet(modelConfiguration, modelWeights);
+        cv::dnn::Net net = cv::dnn::readNet(APP_FILES.toStdString() + "/" + "yolov5s.onnx");
         // Load class names
         std::vector<std::string> classNames = loadClassNames(classNamesFile);
 
