@@ -1126,19 +1126,21 @@ void ImageEditor::startImageOpen() {
 
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
         QPointer<ImageEditor> self = this;
-        data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [self]() {
-            if (!self.isNull()) {
-                self->reloadImageLabel();
-            }
-        });
-        imageOpenTimer->stop();
-        for (int i = 0; i < PRE_LOAD_RADIUS; i++) {
-            if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() - (i + 1) >= 0) {
-                data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr);
-            }
+        if (data != nullptr) {
+            data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [self]() {
+                if (!self.isNull()) {
+                    self->reloadImageLabel();
+                }
+            });
+            imageOpenTimer->stop();
+            for (int i = 0; i < PRE_LOAD_RADIUS; i++) {
+                if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() - (i + 1) >= 0) {
+                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr);
+                }
 
-            if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() + (i + 1) >= 0) {
-                data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr);
+                if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() + (i + 1) >= 0) {
+                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr);
+                }
             }
         }
     });
