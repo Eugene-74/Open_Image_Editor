@@ -321,7 +321,6 @@ void ImageEditor::updateButtons() {
         }
     }
     if (imageDelete) {
-        qDebug() << "updateButtons";
         if (data->isDeleted(data->imagesData.getImageNumberInTotal())) {
             imageDelete->setBackground("#700c13", "#F00c13");
         } else {
@@ -357,7 +356,6 @@ void ImageEditor::updateButtons() {
 }
 
 void ImageEditor::clear() {
-    qDebug() << "clear";
     stopImageOpen();
 }
 
@@ -631,8 +629,6 @@ ClickableLabel* ImageEditor::createImagePersons() {
     imagePersonsNew->setInitialBackground("transparent", "#b3b3b3");
     imagePersonsNew->addLogo("#700c13", "#ffffff");
 
-    qDebug() << "status : " << static_cast<int>(data->imagesData.getCurrentImageData()->isDetectionStatusLoaded());
-
     if (data->imagesData.getCurrentImageData()->isDetectionStatusLoaded()) {
         imagePersonsNew->setLogoNumber(data->imagesData.getCurrentImageData()->getDetectedObjects()["person"].size());
     } else {
@@ -735,20 +731,15 @@ MainImage* ImageEditor::createImageLabel() {
     //     computeFaces(data, currentImagePath);
     // }
 
-    qDebug()
-        << "currentImagePath : " << currentImagePath.c_str();
-
     auto it = data->imageCache->find(currentImagePath);
     if (it == data->imageCache->end()) {
         return imageLabelNew;
     }
 
     int imageNbr = data->imagesData.getImageNumber();
-    if (imageData->isDetectionStatusNotLoaded()
-        // && imageData->getpersons().empty()
-    ) {
+    if (imageData->isDetectionStatusNotLoaded()) {
         imageData->setDetectionStatusLoading();
-        qDebug() << "starting face recognition";
+        qInfo() << "starting face recognition";
         QImage image = data->imageCache->at(currentImagePath).image;
 
         image = data->rotateQImage(image, imageData);
@@ -760,8 +751,7 @@ MainImage* ImageEditor::createImageLabel() {
                 ImageData* imageData = self->data->getImagesData()->getImageData(currentImagePath);
 
                 if (imageData) {
-                    qDebug() << "face recognition done";
-                    // imageData->setpersons(persons);
+                    qInfo() << "face recognition done";
                     imageData->setDetectedObjects(detectedObject.getDetectedObjects());
                     imageData->setDetectionStatusLoaded();
                 }
@@ -807,7 +797,6 @@ void ImageEditor::reloadImageLabel() {
 }
 
 void ImageEditor::keyPressEvent(QKeyEvent* event) {
-    qDebug() << "keyPressEvent called with key:" << event->key();
     if (exifEditor) {
         return;
     }
@@ -1005,7 +994,6 @@ void ImageEditor::exportImage() {
     bool dateInName = (result["Date in image Name"] == "true");
 
     if (exportPath == "") {
-        qDebug() << "No export path selected";
         return;
     }
 
@@ -1013,7 +1001,6 @@ void ImageEditor::exportImage() {
 }
 
 void ImageEditor::deleteImage() {
-    qDebug() << "deleteImage";
     int nbr = data->imagesData.getImageNumber();
     int nbrInTotal = data->getImagesData()->getImageDataId(data->getImagesData()->getImageDataInCurrent(nbr)->getImagePathConst());
     bool saved = data->saved;

@@ -55,7 +55,7 @@ InitialWindow::InitialWindow() {
     });
 
     QTimer::singleShot(1, this, [this]() {
-        qDebug() << "Application started";
+        qInfo() << "Application started";
         data = new Data();
 
         QTranslator translator;
@@ -64,7 +64,7 @@ InitialWindow::InitialWindow() {
         if (translator.load(":/translations/open_image_editor_" + language + ".qm")) {
             // app.installTranslator(&translator);
         } else {
-            qDebug() << "Translation file not found for language:" << language;
+            qWarning() << "Translation file not found for language:" << language;
         }
 
         ImagesData imagesData(std::vector<ImageData*>{});
@@ -77,7 +77,7 @@ InitialWindow::InitialWindow() {
         try {
             data->loadData();
         } catch (const std::exception& e) {
-            qDebug() << "Error loading data: " << e.what();
+            qWarning() << "Error loading data: " << e.what();
             showErrorMessage(nullptr, "Error loading data: data corrupted");
         }
         if (!data->currentFolder) {
@@ -188,12 +188,12 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
         res = curl_easy_perform(curl);
         if (res == CURLE_OPERATION_TIMEDOUT) {
             showWarningMessage(nullptr, "Could not check for update (low connexion)", "Checking for updates");
-            qDebug() << "Error : Could not check for update (low connexion) : " << curl_easy_strerror(res);
+            qWarning() << "Error : Could not check for update (low connexion) : " << curl_easy_strerror(res);
             curl_easy_cleanup(curl);
             return "";
         }
         if (res != CURLE_OK) {
-            qDebug() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
+            qWarning() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
             curl_easy_cleanup(curl);
             return "";
         }
@@ -215,7 +215,7 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
             }
         }
     } else {
-        qDebug() << "Failed to parse JSON: " << errs;
+        qWarning() << "Failed to parse JSON: " << errs;
     }
 
     return "";
@@ -242,7 +242,7 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
 
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
-            qDebug() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
+            qWarning() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
         }
         curl_easy_cleanup(curl);
     }
@@ -302,8 +302,8 @@ bool checkForUpdate(QProgressDialog* progressDialog) {
         return true;
     }
 
-    qDebug() << "Latest GitHub Tag Version: " << latestMajor << "." << latestMinor << "." << latestPatch;
-    qDebug() << "Current App Version: " << currentMajor << "." << currentMinor << "." << currentPatch;
+    qInfo() << "Latest GitHub Tag Version: " << latestMajor << "." << latestMinor << "." << latestPatch;
+    qInfo() << "Current App Version: " << currentMajor << "." << currentMinor << "." << currentPatch;
 
     return false;
 }
@@ -409,7 +409,7 @@ void InitialWindow::createImageEditor(Data* data) {
 }
 
 void InitialWindow::createImageBooth(Data* data) {
-    qDebug() << "createImageBooth";
+    qInfo() << "createImageBooth";
     data->sizes->imagesBoothSizes->imagesPerLine = std::stoi(data->options.at("Sizes::imageBooth::ImagesPerLine").value);
     data->sizes->update();
 
@@ -498,7 +498,7 @@ void InitialWindow::clearMainWindow() {
 }
 
 void InitialWindow::showImageEditor() {
-    qDebug() << "showImageEditor";
+    qInfo() << "showImageEditor";
     if (imageBooth != nullptr) {
         clearImageBooth();
     }
@@ -509,7 +509,7 @@ void InitialWindow::showImageEditor() {
 }
 
 void InitialWindow::showImageBooth() {
-    qDebug() << "showImageBooth";
+    qInfo() << "showImageBooth";
     if (imageBooth != nullptr) {
         clearImageBooth();
     }
@@ -524,7 +524,7 @@ void InitialWindow::showImageBooth() {
 }
 
 void InitialWindow::showMainWindow() {
-    qDebug() << "showMainWindow";
+    qInfo() << "showMainWindow";
     if (imageEditor != nullptr) {
         clearImageEditor();
     }

@@ -46,7 +46,7 @@ bool ImageData::operator==(const ImageData& other) const {
 }
 
 void ImageData::print() const {
-    qDebug() << get();
+    qInfo() << get();
 }
 
 std::string ImageData::get() const {
@@ -105,7 +105,7 @@ void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
         metaData.setExifData(toAddMetaData);
         saveMetaData();
     } catch (const Exiv2::Error& e) {
-        qDebug() << "Exiv2 error: " << e.what();
+        qWarning() << "Exiv2 error: " << e.what();
     }
 }
 
@@ -119,8 +119,8 @@ void ImageData::loadData() {
             metaData.dataLoaded = true;
         }
     } catch (const Exiv2::Error& e) {
-        qDebug() << "Error loading metadata for image: " << getImagePath();
-        qDebug() << "Exiv2 error: " << e.what();
+        qWarning() << "Error loading metadata for image: " << getImagePath();
+        qWarning() << "Exiv2 error: " << e.what();
     }
 }
 
@@ -128,7 +128,7 @@ void ImageData::saveMetaData() {
     try {
         metaData.saveMetaData(getImagePath());
     } catch (const Exiv2::Error& e) {
-        qDebug() << "Exiv2 error: " << e.what();
+        qWarning() << "saveMetaData : " << e.what();
     }
 }
 
@@ -143,7 +143,6 @@ int ImageData::getImageOrientation() {
 }
 
 void ImageData::turnImage(int rotation) {
-    // qDebug() << "Turn image from  : " << orientation << " to " << rotation;
     this->orientation = rotation;
     metaData.modifyExifValue("Exif.Image.Orientation", std::to_string(rotation));
     // metaData.modifyExifValue("Exif.Thumbnail.Orientation", std::to_string(rotation));
@@ -160,7 +159,6 @@ std::map<std::string, std::vector<std::pair<cv::Rect, float>>> ImageData::getDet
 
 void ImageData::setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects) {
     this->detectedObjects.setDetectedObjects(detectedObjects);
-    qDebug() << "Detected objects set : " << detectedObjects.size();
 }
 void ImageData::clearDetectedObjects() {
     detectedObjects.clear();

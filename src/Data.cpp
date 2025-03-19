@@ -37,7 +37,6 @@ void Data::preDeleteImage(int imageNbr) {
 
     this->deletedImagesData.addImage(imageData);
     qInfo() << "image deleted : " << imageNbr;
-    this->deletedImagesData.print();
 }
 
 /**
@@ -506,7 +505,6 @@ void Data::exportImages(std::string exportPath, bool dateInName) {
  * @return First Folder with aller images
  */
 Folders* Data::findFirstFolderWithAllImages() {
-    qDebug() << "findFirstFolderWithAllImages";
     Folders* firstFolder = &rootFolders;
     firstFolder = findFirstFolderWithAllImagesSub(&rootFolders);
     return firstFolder;
@@ -638,7 +636,7 @@ void Data::createFolders(Folders* currentFolders, std::string folderPath) {
 }
 
 void Data::saveData() {
-    qDebug() << "Saving data";
+    qInfo() << "Saving data";
 
     std::string filePath = IMAGESDATA_SAVE_DATA_PATH;
     std::ofstream outFile(filePath, std::ios::binary);
@@ -660,15 +658,12 @@ void Data::saveData() {
     size_t imagesDataSize = imagesData.get()->size();
     outFile.write(reinterpret_cast<const char*>(&imagesDataSize), sizeof(imagesDataSize));
     for (auto* imageData : *imagesData.get()) {
-        // if (imageData->getpersons().size() > 0) {
-        //     qDebug() << "save person 1 : " << imageData->getImagePath();
-        // }
         imageData->save(outFile);
     }
 
     // size_t deletedImagesDataSize = deletedImagesData.get()->size();
     // outFile.write(reinterpret_cast<const char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
-    // for (const auto* imageData : *deletedImagesData.get()) {
+    // for (auto* imageData : *deletedImagesData.get()) {
     //     imageData->save(outFile);
     // }
 
@@ -697,7 +692,7 @@ void Data::saveData() {
     outFile.write(currentFolderPath.c_str(), pathSize);
 
     outFile.close();
-    qDebug() << "data saved";
+    qInfo() << "data saved";
 }
 
 void Data::loadData() {
@@ -758,7 +753,6 @@ void Data::loadData() {
     std::string currentFolderPath(pathSize, '\0');
     inFile.read(&currentFolderPath[0], pathSize);
     currentFolder = findFolderByPath(rootFolders, currentFolderPath);
-    qDebug() << "currentFolder : " << currentFolderPath;
 
     inFile.close();
 }
@@ -966,7 +960,7 @@ void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
     QImage image = loadImage(nullptr, imagesData.getImageData(nbr)->getImagePath(), QSize(0, 0), false);
     image = image.transformed(QTransform().rotate(-rotation));
     if (!image.save(outputPath)) {
-        qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
+        qWarning() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
     }
     unloadFromCache(imagesData.getImageData(nbr)->getImagePath());
     loadInCache(imagesData.getImageData(nbr)->getImagePath());
@@ -1046,9 +1040,8 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
                 break;
         }
     }
-    // qDebug() << "Exif rotate orientation :" << orientation;
-    imageData->turnImage(orientation);
 
+    imageData->turnImage(orientation);
     imageData->saveMetaData();
 
     reload();
@@ -1256,7 +1249,7 @@ void Data::realMirror(int nbr, bool UpDown, std::function<void()> reload) {
         image = image.mirrored(true, false);
     }
     if (!image.save(outputPath)) {
-        qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
+        qWarning() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
     }
     unloadFromCache(imagesData.getCurrentImageData()->getImagePathConst());
     loadInCache(imagesData.getCurrentImageData()->getImagePathConst());
@@ -1277,21 +1270,17 @@ Folders* Data::getRootFolders() {
  * @return The current Folder
  */
 Folders* Data::getCurrentFolders() {
-    // qDebug() << "getCurrentFolders ";
-
     if (currentFolder == nullptr) {
         qWarning() << "currentFolder is null";
         currentFolder = findFirstFolderWithAllImages();
         qInfo() << "currentFolder is now : " << currentFolder->getName();
     }
-    // qDebug() << "getCurrentFolders 1";
 
     if (currentFolder->getName() == "") {
         qWarning() << "currentFolder is empty";
         currentFolder = findFirstFolderWithAllImages();
         qInfo() << "currentFolder is now : " << currentFolder->getName();
     }
-    // qDebug() << "currentFolder not null : " << currentFolder->getName();
 
     return currentFolder;
 }
@@ -1313,7 +1302,6 @@ void Data::removeImageFromFolders(ImageData& imageData) {
         std::istringstream iss(folderPathBis);
         std::string token;
         bool run = true;
-        qDebug() << "Remove image from folder :  1" << folderPath;
         while (run && std::getline(iss, token, '/')) {
             auto it = std::find_if(currentFolderBis->folders.begin(), currentFolderBis->folders.end(),
                                    [&token](const Folders& f) { return f.getName() == token; });
@@ -1326,24 +1314,14 @@ void Data::removeImageFromFolders(ImageData& imageData) {
         }
         if (currentFolderBis) {
             try {
-                // qDebug() << "Remove image from folder :  2" << folderPath;
-                // qDebug() << "Current folder files:";
-                // for (const auto& file : currentFolderBis->files) {
-                //     qDebug() << QString::fromStdString(file);
-                // }
-                qDebug() << "Image to find: " << QString::fromStdString(imageData.getImagePath());
                 auto it = std::find(currentFolderBis->getFilesPtr()->begin(), currentFolderBis->getFilesPtr()->end(), imageData.getImagePath());
                 if (it != currentFolderBis->getFilesPtr()->end()) {
-                    qDebug() << "find to remove";
-                    // currentFolderBis->files.erase(it);
                     currentFolder->getFilesPtr()->erase(it);
                 }
             } catch (const std::exception& e) {
                 qCritical() << "removeImageFromFolders" << e.what();
             }
         }
-
-        qDebug() << "Remove image from folder : " << currentFolder->getName();
     }
 }
 

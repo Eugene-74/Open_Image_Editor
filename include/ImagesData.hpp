@@ -34,8 +34,6 @@ class ImagesData {
     void setImageNumber(int nbr);
     int getImageNumber() const;
 
-    void print() const;
-
     // Permet d'ajouter une ImageData à imagesData
     void addImage(ImageData* imageData);
 

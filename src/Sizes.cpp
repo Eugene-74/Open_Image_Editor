@@ -19,14 +19,13 @@ void Sizes::update() {
 
     if (mainWin) {
         screenR = mainWin->geometry();
-        qDebug() << "Utilisation de la géométrie de la fenêtre active:" << screenR;
     } else {
-        screen = QGuiApplication::primaryScreen();
+        // screen = QGuiApplication::primaryScreen();
+        screen = QGuiApplication::screenAt(QCursor::pos());
         if (screen) {
             screenR = screen->availableGeometry();
-            qDebug() << "Aucune fenêtre active, utilisation de la géométrie de l'écran:" << screenR;
         } else {
-            qDebug() << "Aucun écran disponible";
+            qFatal() << "Aucun écran disponible";
             screenR = QRect();
         }
     }

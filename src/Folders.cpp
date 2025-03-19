@@ -80,12 +80,12 @@ void Folders::addFile(std::string name) {
 }
 
 void Folders::print() const {
-    qDebug() << "Folder : {" << name << ",";
+    qInfo() << "Folder : {" << name << ",";
 
     for (const auto& folder : folders) {
-        qDebug() << "[" << folder.name << "]";
+        qInfo() << "[" << folder.name << "]";
     }
-    qDebug() << "}";
+    qInfo() << "}";
     for (const auto& folder : folders) {
         folder.print();
     }
@@ -96,7 +96,6 @@ void Folders::print() const {
  * @return Folder name
  */
 std::string Folders::getName() const {
-    // qDebug() << "Folder name : " << name;
     return name;
 }
 

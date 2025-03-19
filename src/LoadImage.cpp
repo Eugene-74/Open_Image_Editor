@@ -105,8 +105,6 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     data->imagesData = ImagesData(std::vector<ImageData*>{});
 
-    qDebug() << "adding to tree: " << data->getRootFolders()->getFolders()->size();
-
     progressDialog.setLabelText("Scaning for images : ");
     progressDialog.setCancelButtonText("Cancel");
     progressDialog.setRange(0, 0);
@@ -119,9 +117,6 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     if (!addFilesToTree(rootFolder, imagesData, imagePaths, nbrImage, progressDialog)) {
         return false;
     }
-
-    qDebug() << "Root folders: " << data->getRootFolders()->getFolders()->size();
-    qDebug() << "Number of images: " << nbrImage;
 
     data->imagesData = *imagesData;
 
@@ -150,7 +145,6 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
 
     for (int start = 0; start < totalImages; start += imagesPerThread) {
         int end = std::min(start + imagesPerThread, totalImages);
-        // qDebug() << "Creating thumbnails for images " << start << " to " << end;
         data->addThread([start, end, data]() {
             for (int i = start; i < end; ++i) {
                 ImageData* imageData = data->getImagesData()->get()->at(i);
@@ -165,7 +159,6 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
                 }
             }
         });
-        // qDebug() << "thread created thumbnails for images " << start << " to " << end;
     }
 
     std::vector<int> imageIndices(totalImages);
@@ -173,7 +166,7 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
 
     QTimer timer;
     QObject::connect(&timer, &QTimer::timeout, [&]() {
-        qDebug() << "starting count" << imageIndices.size();
+        qInfo() << "starting count" << imageIndices.size();
         try {
             for (int index : imageIndices) {
 
@@ -192,11 +185,11 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
         } catch (const std::exception& e) {
             qCritical() << e.what();
         }
-        qDebug() << "ending count" << imageIndices.size();
+        qInfo() << "ending count" << imageIndices.size();
 
         progressDialog.setValue(thumbnailsCreated);
-        qDebug() << "Number of thumbnails created: " << thumbnailsCreated << "/" << totalImages;
-        qDebug() << "Number of active thread: " << QThreadPool::globalInstance()->activeThreadCount();
+        qInfo() << "Number of thumbnails created: " << thumbnailsCreated << "/" << totalImages;
+        qInfo() << "Number of active thread: " << QThreadPool::globalInstance()->activeThreadCount();
         if (QThreadPool::globalInstance()->activeThreadCount() > 0 && imageIndices.size() > 0) {
             timer.start(1000);
         }
@@ -209,101 +202,8 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
             return false;
         }
     }
-    qDebug() << "Number of thumbnails created: ";
     return true;
 }
-// bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
-//     qDebug() << "Loading images thumbnail ...";
-//     try {
-//         int totalImages = data->getImagesData()->get()->size();
-//         int numThreads = std::max(QThreadPool::globalInstance()->maxThreadCount() - 2, 1);
-//         int imagesPerThread = 20;
-
-//         QThreadPool* threadPool = QThreadPool::globalInstance();
-//         threadPool->setMaxThreadCount(numThreads);
-
-//         int thumbnailsCreated = 0;
-
-//         // List with number from 0 to totalImages
-//         std::vector<int> imageIndices(totalImages);
-//         std::iota(imageIndices.begin(), imageIndices.end(), 0);
-
-//         // Create a queue to hold the tasks
-//         std::queue<ThumbnailTask*> taskQueue;
-
-//         // Populate the queue with tasks
-//         for (int start = 0; start < totalImages; start += imagesPerThread) {
-//             int end = std::min(start + imagesPerThread, totalImages);
-//             taskQueue.push(new ThumbnailTask(data, start, end));
-//         }
-
-//         for (int i = 0; i < numThreads; ++i) {
-//             threadPool->start(taskQueue.front());
-//             taskQueue.pop();
-//         }
-
-//         QTimer timer;
-//         QObject::connect(&timer, &QTimer::timeout, [&]() {
-//             qDebug() << "starting count" << imageIndices.size();
-//             try {
-//                 qDebug() << "1";
-
-//                 for (int index : imageIndices) {
-//                     qDebug() << "2";
-
-//                     ImageData* imageData = data->getImagesData()->getImageData(index);
-//                     qDebug() << "3 : " << imageData->getImagePath();
-//                     data->hasThumbnail(imageData->getImagePath(), 128);
-//                     qDebug() << "3.5";
-
-//                     if (data->hasThumbnail(imageData->getImagePath(), 128) &&
-//                         data->hasThumbnail(imageData->getImagePath(), 256) &&
-//                         data->hasThumbnail(imageData->getImagePath(), 512)) {
-//                         qDebug() << "4";
-
-//                         ++thumbnailsCreated;
-//                         qDebug() << "5";
-
-//                         imageIndices.erase(std::remove(imageIndices.begin(), imageIndices.end(), index), imageIndices.end());
-//                         qDebug() << "6";
-//                     }
-//                     qDebug() << "7";
-//                 }
-//             } catch (const std::exception& e) {
-//                 qCritical() << e.what();
-//             }
-//             qDebug() << "ending count" << imageIndices.size();
-
-//             progressDialog.setValue(thumbnailsCreated);
-//             qDebug() << "Number of thumbnails created: " << thumbnailsCreated << "/" << totalImages;
-//             qDebug() << "Number of active thread: " << QThreadPool::globalInstance()->activeThreadCount();
-//             if (QThreadPool::globalInstance()->activeThreadCount() > 0 && imageIndices.size() > 0) {
-//                 timer.start(1000);
-//             }
-//         });
-//         timer.start(1000);
-//         while (taskQueue.size() > 0 || QThreadPool::globalInstance()->activeThreadCount() > 0) {
-//             for (int i = 0; i < numThreads - QThreadPool::globalInstance()->activeThreadCount(); ++i) {
-//                 if (taskQueue.size() > 0) {
-//                     qInfo() << "starting a new task";
-//                     threadPool->start(taskQueue.front());
-//                     taskQueue.pop();
-//                 }
-//             }
-//             QCoreApplication::processEvents();
-//             if (progressDialog.wasCanceled()) {
-//                 QThreadPool::globalInstance()->clear();
-//                 return false;
-//             }
-//         }
-
-//         return true;
-//     } catch (const std::exception& e) {
-//         qCritical() << "loadImagesThumbnail" << e.what();
-//         return false;
-//     }
-//     qDebug() << "images thumbnail loaded";
-// }
 
 std::string readFile(const std::string& filePath) {
     std::ifstream file(filePath);
@@ -380,7 +280,6 @@ bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::s
             currentFolder = &currentFolder->getFolders()->back();
         }
     }
-    qDebug() << "Current folder: " << currentFolder->getName();
     if (progressDialog.wasCanceled()) {
         return false;
     }

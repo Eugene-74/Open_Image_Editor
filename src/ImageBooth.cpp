@@ -15,7 +15,6 @@
 
 ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
-    // qDebug() << "ImageBooth::ImageBooth";
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
 
     data->getImagesData()->getCurrent()->clear();
@@ -109,10 +108,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
 
     connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, this, &ImageBooth::onScroll);
 
-    // Make sure that the scrollArea is well initialized (doesn't work without)
-    // qDebug() << "imageNumber " << data->imagesData.getImageNumber();
     // TODO marche pas bien
-
     QTimer::singleShot(100, this, [this]() {
         qInfo() << "go to image";
         gotToImage(data->imagesData.getImageNumber(), true);
@@ -174,7 +170,6 @@ void ImageBooth::openFolder(int index) {
 }
 
 void ImageBooth::updateVisibleImages(bool force) {
-    qDebug() << "updateVisibleImages";
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
@@ -250,8 +245,8 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                                          "", this, imageSize, false, imageQuality, true);
 
         // Image has a poor quality thumbnail
-    } else if (data->hasThumbnail(imagePath, imageQuality)) {
-        // } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)) {
+        // } else if (data->hasThumbnail(imagePath, imageQuality)) {
+    } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, imageQuality, true);
         // imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
@@ -280,7 +275,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         //     });
         // });
     } else {
-        qDebug() << "no thumbnail found : " << imagePath;
+        qWarning() << "no thumbnail found : " << imagePath;
         imageButton = new ClickableLabel(data, IMAGE_PATH_ERROR,
                                          "", this, imageSize, false, 0, true);
 
@@ -404,14 +399,9 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
             int imageShiftSelectedInCurrent = data->getImagesData()->getImageNumberInCurrent(imageShiftSelected);
 
-            qDebug() << "imageShiftSelectedInCurrent : " << imageShiftSelectedInCurrent;
-            qDebug() << "imageShiftSelected" << imageShiftSelected;
-            qDebug() << "nbr : " << nbr;
-
             int start = std::min(imageShiftSelectedInCurrent, nbr);
             int end = std::max(imageShiftSelectedInCurrent, nbr);
             
-            qDebug() << start << " : " << end;
             for (int i = start; i <= end; ++i) {
                 int imageNumberInTotal = data->getImagesData()->getImageNumberInTotal(i);
                 auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNumberInTotal);
@@ -491,7 +481,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
 // Go to the line of the image nbr
 void ImageBooth::gotToImage(int imageNumberInCurrent, bool force) {
-    qDebug() << "gotToImage";
+    qInfo() << "gotToImage : " << imageNumberInCurrent;
     int imageLine = imageNumberInCurrent / data->sizes->imagesBoothSizes->widthImageNumber;
     int spacerHeight = imageLine * data->sizes->imagesBoothSizes->realImageSize.height();
 
@@ -553,7 +543,6 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
 // Update all visible images
 void ImageBooth::updateImages() {
     try {
-        // qDebug() << "updateImages";
         int spacerHeight = scrollArea->verticalScrollBar()->value();
         int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
         spacerHeight = (spacerHeight / imageHeight) * imageHeight;
@@ -1098,13 +1087,8 @@ void ImageBooth::enterEvent(QEnterEvent* event) {
  * @return the size of the current folders
  */
 int ImageBooth::getCurrentFoldersSize() {
-    // qDebug() << "getCurrentFoldersSize";
     if (data->getCurrentFolders()) {
-        // qDebug() << "getCurrentFoldersSize 0 : " << data->getCurrentFolders()->getName();
-
         if (data->getCurrentFolders()->getFolders()) {
-            // qDebug() << "getCurrentFoldersSize 1 : " << data->getCurrentFolders()->getFolders()->size() + 1;
-
             return data->getCurrentFolders()->getFolders()->size() + 1;
         }
     }

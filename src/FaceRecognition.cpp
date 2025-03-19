@@ -155,7 +155,7 @@ DetectedObjects detect(std::string imagePath, QImage image) {
         return detectedObjectsObj;
 
     } catch (const std::exception& e) {
-        qDebug() << "Exception : " << e.what();
+        qWarning() << "detect" << e.what();
         return {};
     }
 }
