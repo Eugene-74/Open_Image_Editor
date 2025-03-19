@@ -1126,7 +1126,7 @@ void ImageEditor::startImageOpen() {
 
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
         QPointer<ImageEditor> self = this;
-        if (data != nullptr) {
+        if (self && data != nullptr) {
             data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [self]() {
                 if (!self.isNull()) {
                     self->reloadImageLabel();
