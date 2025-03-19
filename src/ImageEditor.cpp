@@ -348,7 +348,7 @@ void ImageEditor::updateButtons() {
 
     if (imagePersons) {
         if (data->imagesData.getCurrentImageData()->isDetectionStatusLoaded()) {
-            // imagePersons->setLogoNumber(data->imagesData.getCurrentImageData()->getpersons().size());
+            imagePersons->setLogoNumber(data->imagesData.getCurrentImageData()->getDetectedObjects()["person"].size());
         } else {
             imagePersons->setLogoNumber(-1);
         }
@@ -633,7 +633,7 @@ ClickableLabel* ImageEditor::createImagePersons() {
     qDebug() << "status : " << static_cast<int>(data->imagesData.getCurrentImageData()->isDetectionStatusLoaded());
 
     if (data->imagesData.getCurrentImageData()->isDetectionStatusLoaded()) {
-        // imagePersonsNew->setLogoNumber(data->imagesData.getCurrentImageData()->getpersons().size());
+        imagePersonsNew->setLogoNumber(data->imagesData.getCurrentImageData()->getDetectedObjects()["person"].size());
     } else {
         imagePersonsNew->setLogoNumber(-1);
     }
@@ -766,7 +766,7 @@ MainImage* ImageEditor::createImageLabel() {
                 }
                 if (self->data->imagesData.getImageNumber() == imageNbr) {
                     if (self->imagePersons) {
-                        // self->imagePersons->setLogoNumber(persons.size());
+                        self->imagePersons->setLogoNumber(detectedObject.getDetectedObjects()["person"].size());
 
                         self->imagePersons->update();
 

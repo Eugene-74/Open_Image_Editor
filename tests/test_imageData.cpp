@@ -139,12 +139,12 @@ TEST_F(ImageDataTest, MetaData) {
     EXPECT_EQ(imageData.getMetaData(), metaData);
 }
 
-TEST_F(ImageDataTest, Persons) {
-    std::vector<Person> persons = {Person(), Person()};
-    imageData.setpersons(persons);
-    auto resultPersons = imageData.getpersons();
-    EXPECT_EQ(resultPersons.size(), 2);
-}
+// TEST_F(ImageDataTest, Persons) {
+//     std::vector<Person> persons = {Person(), Person()};
+//     imageData.setpersons(persons);
+//     auto resultPersons = imageData.getpersons();
+//     EXPECT_EQ(resultPersons.size(), 2);
+// }
 
 TEST_F(ImageDataTest, Date) {
     imageData.setDate(123456789);
