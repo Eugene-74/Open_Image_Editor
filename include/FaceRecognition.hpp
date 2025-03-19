@@ -10,14 +10,14 @@ class Data;
 
 class DetectedObjects {
    private:
-    std::map<std::string, std::vector<cv::Rect>> detectedObjects;
+    std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects;
 
    public:
     void save(std::ofstream& out) const;
     void load(std::ifstream& in);
     void clear();
-    std::map<std::string, std::vector<cv::Rect>> getDetectedObjects();
-    void setDetectedObjects(const std::map<std::string, std::vector<cv::Rect>>& detectedObjects);
+    std::map<std::string, std::vector<std::pair<cv::Rect, float>>> getDetectedObjects();
+    void setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects);
 };
 
 bool is_slow_cpu();

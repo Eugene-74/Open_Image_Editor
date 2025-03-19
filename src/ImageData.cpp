@@ -154,11 +154,11 @@ void ImageData::setOrCreateExifData() {
     metaData.setOrCreateExifData(getImagePath());
 }
 
-std::map<std::string, std::vector<cv::Rect>> ImageData::getDetectedObjects() {
+std::map<std::string, std::vector<std::pair<cv::Rect, float>>> ImageData::getDetectedObjects() {
     return detectedObjects.getDetectedObjects();
 }
 
-void ImageData::setDetectedObjects(const std::map<std::string, std::vector<cv::Rect>>& detectedObjects) {
+void ImageData::setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects) {
     this->detectedObjects.setDetectedObjects(detectedObjects);
     qDebug() << "Detected objects set : " << detectedObjects.size();
 }

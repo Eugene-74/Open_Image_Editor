@@ -247,7 +247,7 @@ void MainImage::paintEvent(QPaintEvent* event) {
         painter.drawRect(QRect(cropStart, cropEnd));
     }
     if (personsEditor && !data->imagesData.getCurrentImageData()->getDetectedObjects().empty()) {
-        std::map<std::string, std::vector<cv::Rect>> detectedObjects = data->imagesData.getCurrentImageData()->getDetectedObjects();
+        std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects = data->imagesData.getCurrentImageData()->getDetectedObjects();
 
         // Calculate the scale factors
         QSize scaledPixmapSize = qImage.size();
@@ -260,7 +260,7 @@ void MainImage::paintEvent(QPaintEvent* event) {
         int yOffset = (this->height() - scaledPixmapSize.height()) / 2;
 
         for (const auto& [key, value] : detectedObjects) {
-            for (const cv::Rect& rect : value) {
+            for (const auto& [rect, confidence] : value) {
                 // Adjust the rectangle coordinates
                 int adjustedX = static_cast<int>(rect.x * xScale) + xOffset;
                 int adjustedY = static_cast<int>(rect.y * yScale) + yOffset;
@@ -276,7 +276,7 @@ void MainImage::paintEvent(QPaintEvent* event) {
                 }
 
                 painter.drawRect(qRect);
-                painter.drawText(qRect.topLeft(), QString::fromStdString(key));
+                painter.drawText(qRect.topLeft(), QString::fromStdString(key) + " " + QString::number(confidence * 100, 'f', 2) + "%");
             }
         }
     }

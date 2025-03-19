@@ -44,8 +44,8 @@ class ImageData {
     
     std::string get() const;
 
-    std::map<std::string, std::vector<cv::Rect>> getDetectedObjects();
-    void setDetectedObjects(const std::map<std::string, std::vector<cv::Rect>>& detectedObjects);
+    std::map<std::string, std::vector<std::pair<cv::Rect, float>>> getDetectedObjects();
+    void setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects);
     void clearDetectedObjects();
 
     void setDate(long date);

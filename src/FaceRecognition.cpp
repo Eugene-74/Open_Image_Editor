@@ -11,15 +11,16 @@
 void DetectedObjects::save(std::ofstream& out) const {
     size_t mapSize = detectedObjects.size();
     out.write(reinterpret_cast<const char*>(&mapSize), sizeof(mapSize));
-    for (const auto& pair : detectedObjects) {
-        size_t keySize = pair.first.size();
+    for (const auto& [key, vec] : detectedObjects) {
+        size_t keySize = key.size();
         out.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
-        out.write(pair.first.data(), keySize);
+        out.write(key.data(), keySize);
 
-        size_t vectorSize = pair.second.size();
+        size_t vectorSize = vec.size();
         out.write(reinterpret_cast<const char*>(&vectorSize), sizeof(vectorSize));
-        for (const auto& rect : pair.second) {
+        for (const auto& [rect, confidence] : vec) {
             out.write(reinterpret_cast<const char*>(&rect), sizeof(rect));
+            out.write(reinterpret_cast<const char*>(&confidence), sizeof(confidence));
         }
     }
 }
@@ -35,11 +36,11 @@ void DetectedObjects::load(std::ifstream& in) {
 
         size_t vectorSize;
         in.read(reinterpret_cast<char*>(&vectorSize), sizeof(vectorSize));
-        std::vector<cv::Rect> rects(vectorSize);
+        std::vector<std::pair<cv::Rect, float>> vec(vectorSize);
         for (size_t j = 0; j < vectorSize; ++j) {
-            in.read(reinterpret_cast<char*>(&rects[j]), sizeof(rects[j]));
+            in.read(reinterpret_cast<char*>(&vec[j]), sizeof(vec[j]));
         }
-        detectedObjects[key] = rects;
+        detectedObjects[key] = vec;
     }
 }
 
@@ -91,31 +92,24 @@ DetectedObjects detect(std::string imagePath, QImage image) {
     try {
         cv::Mat mat = QImageToCvMat(image);
 
-        // Convert the image to 3 channels if it has 4 channels
         if (mat.channels() == 4) {
             cv::cvtColor(mat, mat, cv::COLOR_BGRA2BGR);
         }
 
-        // Load YOLO model
         // TODO download the model if it doesn't exist
-        // std::string modelConfiguration = APP_FILES.toStdString() + "/" + "yolov3.cfg";
-        // std::string modelWeights = APP_FILES.toStdString() + "/" + "yolov3.weights";
+        std::string modelConfiguration = APP_FILES.toStdString() + "/" + "yolov3.cfg";
+        std::string modelWeights = APP_FILES.toStdString() + "/" + "yolov3.weights";
+        cv::dnn::Net net = cv::dnn::readNetFromDarknet(modelConfiguration, modelWeights);
         std::string classNamesFile = APP_FILES.toStdString() + "/" + "coco.names";
-        // cv::dnn::Net net = cv::dnn::readNetFromDarknet(modelConfiguration, modelWeights);
-        cv::dnn::Net net = cv::dnn::readNet(APP_FILES.toStdString() + "/" + "yolov5s.onnx");
-        // Load class names
         std::vector<std::string> classNames = loadClassNames(classNamesFile);
 
-        // Prepare input blob
         cv::Mat blob;
         cv::dnn::blobFromImage(mat, blob, 1 / 255.0, cv::Size(416, 416), cv::Scalar(), true, false);
         net.setInput(blob);
 
-        // Run forward pass to get output of the output layers
         std::vector<cv::Mat> outs;
         net.forward(outs, net.getUnconnectedOutLayersNames());
 
-        // Process the detections
         std::vector<cv::Rect> boxes;
         std::vector<int> classIds;
         std::vector<float> confidences;
@@ -144,24 +138,17 @@ DetectedObjects detect(std::string imagePath, QImage image) {
             }
         }
 
-        // Perform non-maximum suppression to eliminate redundant overlapping boxes with lower confidences
         std::vector<int> indices;
         cv::dnn::NMSBoxes(boxes, confidences, confidenceThreshold, nmsThreshold, indices);
 
-        // Store detected objects in a map
-        std::map<std::string, std::vector<cv::Rect>> detectedObjects;
+        std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects;
         for (size_t i = 0; i < indices.size(); ++i) {
             int idx = indices[i];
             cv::Rect box = boxes[idx];
             std::string className = classNames[classIds[idx]];  // Use actual class names
-            detectedObjects[className].push_back(box);
+            detectedObjects[className].emplace_back(box, confidences[idx]);
         }
 
-        // Debug output
-        qDebug() << "Detected objects:" << detectedObjects.size();
-        for (const auto& obj : detectedObjects) {
-            qDebug() << "Detected " << QString::fromStdString(obj.first) << ": " << obj.second.size();
-        }
         DetectedObjects detectedObjectsObj;
         detectedObjectsObj.setDetectedObjects(detectedObjects);
 
@@ -197,10 +184,10 @@ void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::func
     });
 }
 
-std::map<std::string, std::vector<cv::Rect>> DetectedObjects::getDetectedObjects() {
+std::map<std::string, std::vector<std::pair<cv::Rect, float>>> DetectedObjects::getDetectedObjects() {
     return detectedObjects;
 }
-void DetectedObjects::setDetectedObjects(const std::map<std::string, std::vector<cv::Rect>>& detectedObjects) {
+void DetectedObjects::setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects) {
     this->detectedObjects = detectedObjects;
 }
 
