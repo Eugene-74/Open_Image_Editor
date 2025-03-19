@@ -139,12 +139,6 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
 
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                              bool setSize, int thumbnail, bool force) {
-    // Vérifiez si le chemin de l'image est vide ou contient des caractères invalides
-    // if (imagePath.empty() || imagePath.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.:/\\ ") != std::string::npos) {
-    //     qWarning() << "Broken filename passed to function: " << QString::fromStdString(imagePath);
-    //     return QImage();
-    // }
-
     if (imagePath.at(0) == ':') {
         if (darkMode) {
             imagePath.insert(imagePath.find_first_of(':') + 1, "/255-255-255-255");
@@ -251,8 +245,12 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
             image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         }
     }
-    (*imageCache)[imagePathbis].image = image;
-    (*imageCache)[imagePathbis].imagePath = imagePath;
+
+    {
+        std::lock_guard<std::mutex> lock(imageCacheMutex);
+        (*imageCache)[imagePathbis].image = image;
+        (*imageCache)[imagePathbis].imagePath = imagePath;
+    }
 
     size_t cacheSize = 0;
 
@@ -475,7 +473,10 @@ bool Data::unloadFromCache(std::string imagePath) {
     auto it = imageCache->find(imagePath);
 
     if (it != imageCache->end()) {
-        imageCache->erase(it);
+        {
+            std::lock_guard<std::mutex> lock(imageCacheMutex);
+            imageCache->erase(it);
+        }
         return true;
     }
     return false;

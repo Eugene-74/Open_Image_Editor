@@ -3,6 +3,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <codecvt>
+#include <ctime>
 #include <locale>
 
 MetaData& MetaData::operator=(const MetaData& other) {
@@ -164,7 +165,11 @@ bool MetaData::modifyIptcValue(const std::string& key, const std::string& newVal
 // Fonction pour mettre à jour ou créer les métadonnées EXIF si elles n'existent pas
 void MetaData::setOrCreateExifData(std::string imagePath) {
     time_t now = time(0);
-    struct tm* timeinfo = localtime(&now);
+    // struct tm* timeinfo = localtime(&now);
+    // std::tm* timeinfo;
+    // localtime_s(timeinfo, &now);
+    std::tm* timeinfo = std::localtime(&now);
+
     char dateTime[20];
     strftime(dateTime, sizeof(dateTime), "%Y:%m:%d %H:%M:%S", timeinfo);
 

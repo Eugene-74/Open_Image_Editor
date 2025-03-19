@@ -1,14 +1,13 @@
 #pragma once
 
+#include <QImage>
 #include <QRunnable>
 #include <QSize>
 #include <map>
+#include <mutex>
 #include <opencv2/face.hpp>
 #include <string>
 #include <vector>
-
-// #include "Folders.hpp"
-#include <QImage>
 
 #include "Folders.hpp"
 #include "ImagesData.hpp"
@@ -55,7 +54,9 @@ class Data {
 
     std::map<std::string, Option> options;
     Sizes* sizes = new Sizes();
+
     std::unordered_map<std::string, QImageAndPath>* imageCache = nullptr;
+
     bool saved = true;
 
     std::vector<int> imagesSelected;
@@ -80,6 +81,7 @@ class Data {
     QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool rotation = true, bool square = false, bool crop = true, bool force = false);
     QImage loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool force = false);
 
+    std::mutex imageCacheMutex;
     bool loadInCache(std::string imagePath, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
     void loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
 

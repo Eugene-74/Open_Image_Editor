@@ -720,7 +720,7 @@ ClickableLabel* ImageBooth::createImageDelete() {
             showInformationMessage(this, "No image selected", "You need to select an image to delete it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
+        std::vector<int> imagesSelectedBefore = data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             if (data->isDeleted(data->imagesSelected.at(i))) {
                 data->unPreDeleteImage(data->imagesSelected.at(i));
@@ -841,7 +841,7 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
             showInformationMessage(this, "No image selected", "You need to select an image to rotate it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
+        std::vector<int> imagesSelectedBefore = data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i))->getImageExtension();
             data->rotateRight(data->imagesSelected.at(i), extension, [this]() {}, false);
@@ -890,7 +890,7 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
             showInformationMessage(this, "No image selected", "You need to select an image to rotate it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
+        std::vector<int> imagesSelectedBefore = data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i))->getImageExtension();
             data->rotateLeft(data->imagesSelected.at(i), extension, [this]() {}, false);
@@ -939,7 +939,7 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
             showInformationMessage(this, "No image selected", "You need to select an image to mirror it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
+        std::vector<int> imagesSelectedBefore = data->imagesSelected;
 
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i))->getImageExtension();
@@ -989,7 +989,7 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
             showInformationMessage(this, "No image selected", "You need to select an image to mirror it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
+        std::vector<int> imagesSelectedBefore = data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i))->getImageExtension();
             data->mirrorLeftRight(data->imagesSelected.at(i), extension, [this]() {}, false);
@@ -1077,53 +1077,6 @@ ClickableLabel* ImageBooth::createImageConversion() {
     return imageConversionNew;
 }
 
-// ClickableLabel* ImageBooth::createImageMore() {
-//     ClickableLabel* imageMoreNew = new ClickableLabel(data, ICON_PATH_PLUS, TOOL_TIP_IMAGE_BOOTH_CONVERSION, this, actionSize);
-//     imageMoreNew->setInitialBackground("transparent", "#b3b3b3");
-
-//     connect(imageMoreNew, &ClickableLabel::clicked, [this]() {
-//         int lastimagesPerLine = data->sizes->imagesBoothSizes->imagesPerLine;
-//         data->sizes->imagesBoothSizes->changeimagesPerLine(1);
-
-//         emit switchToImageBooth();
-
-//         data->addAction(
-//             [this, lastimagesPerLine]() {
-//                 data->sizes->imagesBoothSizes->setimagesPerLine(lastimagesPerLine);
-//                 emit switchToImageBooth();
-//             },
-//             [this]() {
-//                 data->sizes->imagesBoothSizes->changeimagesPerLine(1);
-//                 emit switchToImageBooth();
-//             });
-//     });
-
-//     return imageMoreNew;
-// }
-
-// ClickableLabel* ImageBooth::createImageLess() {
-//     ClickableLabel* imageLessNew = new ClickableLabel(data, ICON_PATH_MINUS, TOOL_TIP_IMAGE_BOOTH_CONVERSION, this, actionSize);
-//     imageLessNew->setInitialBackground("transparent", "#b3b3b3");
-
-//     connect(imageLessNew, &ClickableLabel::clicked, [this]() {
-//         int lastimagesPerLine = data->sizes->imagesBoothSizes->imagesPerLine;
-//         data->sizes->imagesBoothSizes->changeimagesPerLine(-1);
-//         emit switchToImageBooth();
-
-//         data->addAction(
-//             [this, lastimagesPerLine]() {
-//                 data->sizes->imagesBoothSizes->setimagesPerLine(lastimagesPerLine);
-//                 emit switchToImageBooth();
-//             },
-//             [this]() {
-//                 data->sizes->imagesBoothSizes->changeimagesPerLine(-1);
-//                 emit switchToImageBooth();
-//             });
-//     });
-
-//     return imageLessNew;
-// }
-
 /**
  * @brief reload the images of the scroll area of imageBooth window
  */
@@ -1163,19 +1116,18 @@ int ImageBooth::getCurrentFoldersSize() {
  * @brief Pre load images so it's more fluid
  */
 void ImageBooth::preLoadImages() {
-    // TODO make imageEditor bug
-    qDebug() << "preLoadImages";
-    data->stopAllThreads();
-    auto currentImages = data->getImagesData()->getCurrent();
-    qDebug() << "currentImages size : " << currentImages->size();
-    const int packetSize = data->sizes->imagesBoothSizes->imagesPerLine * 2;
-    for (size_t i = 0; i < currentImages->size(); i += packetSize) {
-        auto packetEnd = std::min(currentImages->size(), i + packetSize);
-        qInfo() << "creating packet for pre loading : " << packetEnd;
-        for (size_t j = i; j < packetEnd; j++) {
-            // data->loadInCacheAsync(data->getThumbnailPath(currentImages->at(j)->getImagePath(), imageQuality), []() {});
-        }
-    }
+    // data->stopAllThreads();
+    // auto currentImages = data->getImagesData()->getCurrent();
+    // const int packetSize = currentImages->size() / 10;
+    // data->addHeavyThread([this, currentImages, packetSize]() {
+    //     for (size_t i = 0; i < currentImages->size(); i += packetSize) {
+    //         auto packetEnd = std::min(currentImages->size(), i + packetSize);
+    //         for (size_t j = i; j < packetEnd; j++) {
+    //             qDebug() << "preloading image : " << j;
+    //             // data->loadImageNormal(this, data->getImagesData()->getImageDataInCurrent(j)->getImagePath(), QSize(0, 0), false, imageQuality, true);
+    //         }
+    //     }
+    // });
 }
 
 // void ImageBooth::checkThumbnailAndCorrect() {

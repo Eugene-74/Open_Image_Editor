@@ -13,6 +13,7 @@
 #include <QThreadPool>
 #include <QTimer>
 #include <QTranslator>
+#include <ctime>
 
 #include "AppConfig.hpp"
 #include "Box.hpp"
@@ -308,7 +309,7 @@ bool checkForUpdate(QProgressDialog* progressDialog) {
 }
 
 void startLog() {
-    QString logPath = QString::fromUtf8(APPDATA_PATH.toUtf8()) + "/" + QString::fromUtf8(APP_NAME) + "/logs";
+    QString logPath = APP_FILES + "/logs";
     QDir logDir(logPath);
     if (!logDir.exists()) {
         if (!logDir.mkpath(".")) {
@@ -317,8 +318,11 @@ void startLog() {
         }
     }
     auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    // std::tm* now_tm;
+    // localtime_s(now_tm, &now);
     std::tm* now_tm = std::localtime(&now);
-    QString logFileName = QString(APP_FILES.toUtf8() + "/logs/%1-%2-%3.log")
+
+    QString logFileName = QString(APP_FILES + "/logs/%1-%2-%3.log")
                               .arg(now_tm->tm_mday, 2, 10, QChar('0'))
                               .arg(now_tm->tm_mon + 1, 2, 10, QChar('0'))
                               .arg(now_tm->tm_year + 1900);
@@ -347,13 +351,10 @@ void startLog() {
             case QtCriticalMsg:
                 colorCode = "\033[31m";  // Red
                 formattedMsg = "[CRITICAL] " + formattedMsg;
-                // showErrorInfo(nullptr, formattedMsg, 5000);
-
                 break;
             case QtFatalMsg:
                 colorCode = "\033[41m";  // Red background
                 formattedMsg = "[FATAL   ] " + formattedMsg;
-                // showErrorInfo(nullptr, formattedMsg, 5000);
                 abort();
         }
         logStream << formattedMsg << Qt::endl;
@@ -371,6 +372,7 @@ void InitialWindow::closeEvent(QCloseEvent* event) {
                                 }
                             });
     }
+    data->stopAllThreads();
     data->saveData();
     event->accept();
 }

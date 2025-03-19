@@ -16,6 +16,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <unordered_set>
 
 #include "ClickableLabel.hpp"
 #include "Const.hpp"
@@ -1167,19 +1168,25 @@ void ImageEditor::stopImageOpen() {
 }
 
 void ImageEditor::checkLoadedImage() {
+    std::unordered_set<std::string> loadedImages;
+    int currentImageNumber = data->getImagesData()->getImageNumber();
+    int lowerBound = currentImageNumber - PRE_LOAD_RADIUS;
+    int upperBound = currentImageNumber + PRE_LOAD_RADIUS;
+
+    for (int i = lowerBound; i <= upperBound; ++i) {
+        if (i >= 0 && i < data->imagesData.getCurrent()->size()) {
+            loadedImages.insert(data->imagesData.getImageDataInCurrent(i)->getImagePath());
+        }
+    }
+
     std::vector<std::string> toUnload;
     for (const auto& cache : *data->imageCache) {
         const std::string& imagePath = cache.second.imagePath;
-        const std::string& imagePathBis = cache.first;
-
-        // TODO Change to use -10 to 10 check path and not all images
-        int imageId = data->imagesData.getImageDataIdInCurrent(imagePath);
-        if (imageId != -1) {
-            if (std::abs(data->getImagesData()->getImageNumber() - imageId) > 2 * PRE_LOAD_RADIUS) {
-                toUnload.push_back(imagePathBis);
-            }
+        if (loadedImages.find(imagePath) == loadedImages.end()) {
+            toUnload.push_back(cache.first);
         }
     }
+
     for (const auto& imagePath : toUnload) {
         data->unloadFromCache(imagePath);
     }

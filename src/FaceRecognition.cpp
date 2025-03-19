@@ -122,7 +122,7 @@ DetectedObjects detect(std::string imagePath, QImage image) {
                 cv::Mat scores = outs[i].row(j).colRange(5, outs[i].cols);
                 cv::Point classIdPoint;
                 double confidence;
-                cv::minMaxLoc(scores, 0, &confidence, 0, &classIdPoint);
+                cv::minMaxLoc(scores, nullptr, &confidence, nullptr, &classIdPoint);
                 if (confidence > confidenceThreshold) {
                     int centerX = (int)(data[0] * mat.cols);
                     int centerY = (int)(data[1] * mat.rows);

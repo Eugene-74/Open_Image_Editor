@@ -136,14 +136,6 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
         return false;
     }
 
-    // qInfo() << "Opening folder 1, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
-    // qInfo() << "saving data after loading";
-    // data->saveData();
-    // data->clear();
-    // data->loadData();
-    // qInfo() << "All loading done";
-    // qInfo() << "Opening folder 2, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
-
     if (!loadImagesThumbnail(data, progressDialog)) {
         return false;
     }
