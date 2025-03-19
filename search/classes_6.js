@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['mainimage_0',['MainImage',['../class_main_image.html',1,'']]],
-  ['mainwindow_1',['MainWindow',['../class_main_window.html',1,'']]],
-  ['mainwindowsizes_2',['MainWindowSizes',['../class_sizes_1_1_main_window_sizes.html',1,'Sizes']]],
-  ['metadata_3',['MetaData',['../class_meta_data.html',1,'']]]
+  ['option_0',['Option',['../class_option.html',1,'']]],
+  ['orientation_1',['Orientation',['../class_const_1_1_orientation.html',1,'Const']]]
 ];

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['option_0',['Option',['../struct_option.html',1,'']]],
-  ['orientation_1',['Orientation',['../class_const_1_1_orientation.html',1,'Const']]]
+  ['qimageandpath_0',['QImageAndPath',['../class_q_image_and_path.html',1,'']]]
 ];
