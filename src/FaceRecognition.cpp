@@ -44,17 +44,6 @@ void DetectedObjects::load(std::ifstream& in) {
     }
 }
 
-bool is_slow_cpu() {
-    auto start = std::chrono::high_resolution_clock::now();
-    volatile double sum = 0;
-    for (int i = 0; i < 10000000; i++) {
-        sum += i * 0.00001;
-    }
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
-    return elapsed.count() > 1.0;
-}
-
 cv::Mat QImageToCvMat(const QImage& inImage) {
     switch (inImage.format()) {
         case QImage::Format_RGB32: {
