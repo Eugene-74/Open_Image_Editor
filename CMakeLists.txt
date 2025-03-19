@@ -213,6 +213,16 @@ endif()
 
 # endif()
 
+# Add coverage build type
+set(CMAKE_CXX_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
+set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "-lgcov")
+
+# if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_COVERAGE}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXE_LINKER_FLAGS_COVERAGE}")
+# endif()
+
+
 # -------------------CREATE TESTS------------------------
 if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Test")
     enable_testing()
