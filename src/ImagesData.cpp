@@ -14,12 +14,8 @@ void ImagesData::setImageNumber(int nbr) {
     if (currentImagesData.size() == 0) {
         nbr = 0;
     } else {
-        while (nbr < 0) {
-            nbr += 1;
-        }
-        while (nbr >= currentImagesData.size()) {
-            nbr -= 1;
-        }
+        nbr = std::max(0, nbr);
+        nbr = std::min(nbr, (int)currentImagesData.size() - 1);
     }
 
     imageNumber = nbr;
