@@ -3,7 +3,12 @@ For all other informations go to [wiki](https://github.com/Eugene-74/Open_Image_
 For docs go to [docs](https://eugene-74.github.io/Open_Image_Editor/index.html)
 
 For sonarCloud stats :
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Eugene-74_Open_Image_Editor&metric=alert_status)](https://sonarcloud.io/dashboard?id=Eugene-74_Open_Image_Editor)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Eugene-74_Open_Image_Editor&metric=coverage)](https://sonarcloud.io/dashboard?id=Eugene-74_Open_Image_Editor)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Eugene-74_Open_Image_Editor&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=Eugene-74_Open_Image_Editor)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Eugene-74_Open_Image_Editor&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=Eugene-74_Open_Image_Editor)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Eugene-74_Open_Image_Editor&metric=security_rating)](https://sonarcloud.io/dashboard?id=Eugene-74_Open_Image_Editor)
 
 # Instalation
 
