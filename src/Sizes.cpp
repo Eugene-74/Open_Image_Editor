@@ -17,12 +17,11 @@ void Sizes::update() {
         }
     }
 
-    if (mainWin) {
+    if (mainWin != nullptr) {
         screenR = mainWin->geometry();
     } else {
-        // screen = QGuiApplication::primaryScreen();
-        screen = QGuiApplication::screenAt(QCursor::pos());
-        if (screen) {
+        screen = QGuiApplication::primaryScreen();
+        if (screen != nullptr) {
             screenR = screen->availableGeometry();
         } else {
             qFatal() << "Aucun écran disponible";

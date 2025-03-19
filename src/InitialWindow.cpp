@@ -355,7 +355,7 @@ void startLog() {
             case QtFatalMsg:
                 colorCode = "\033[41m";  // Red background
                 formattedMsg = "[FATAL   ] " + formattedMsg;
-                abort();
+                break;
         }
         logStream << formattedMsg << Qt::endl;
         logStream.flush();

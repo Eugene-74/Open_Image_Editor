@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 
     InitialWindow window;
     window.showMaximized();
-    QScreen* screen = QGuiApplication::screenAt(QCursor::pos());
+    QScreen* screen = QGuiApplication::primaryScreen();
 
     QRect screenGeometry = screen->geometry();
     window.setGeometry(0, 0, screenGeometry.width(), screenGeometry.height());
