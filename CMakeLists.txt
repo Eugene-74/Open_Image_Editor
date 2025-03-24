@@ -40,7 +40,7 @@ if(WIN32)
 
     set(ENV{QTFRAMEWORK_BYPASS_LICENSE_CHECK} "1")
 
-    find_package(Qt6 COMPONENTS Core Gui Widgets LinguistTools REQUIRED)
+    find_package(Qt6 COMPONENTS Core Gui Widgets Multimedia LinguistTools REQUIRED)
     find_package(OpenCV REQUIRED)
     find_package(CURL REQUIRED)
     find_package(jsoncpp REQUIRED)
@@ -57,6 +57,8 @@ if(WIN32)
     include_directories(${Qt6Core_INCLUDE_DIRS})
     include_directories(${Qt6Gui_INCLUDE_DIRS})
     include_directories(${Qt6Widgets_INCLUDE_DIRS})
+    include_directories(${Qt6Multimedia_INCLUDE_DIRS})
+
 
     configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/include/AppConfig.hpp.in
@@ -114,6 +116,7 @@ if(WIN32)
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets
+        Qt6::Multimedia
         CURL::libcurl 
         jsoncpp_lib
         ${OpenCV_LIBS}
@@ -123,8 +126,11 @@ if(WIN32)
 
     if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Debug")
         add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
+        # target_compile_options(${PROJECT_NAME} PRIVATE -O0 -g -Wall)
+        target_compile_options(${PROJECT_NAME} PRIVATE -O0 -g -Wall)
+
         target_link_libraries(${PROJECT_NAME} PRIVATE OpenImageEditorLib)
-        
+
         if(CMAKE_BUILD_TYPE STREQUAL "Release")
             target_link_options(${PROJECT_NAME} PRIVATE -mwindows)
         endif()

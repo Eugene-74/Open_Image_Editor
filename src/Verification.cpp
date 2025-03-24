@@ -19,6 +19,16 @@ bool isImage(const std::string& path) {
     return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
 }
 
+bool isVideo(const std::string& path) {
+    if (fs::path(path).filename().string().front() == '.') {
+        return false;
+    }
+    std::vector<std::string> extensionsImages = VIDEO_EXTENSIONS;
+    std::string extension = fs::path(path).extension().string();
+    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+    return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
+}
+
 bool isTurnable(const std::string& path) {
     std::vector<std::string> extensionsImages = TURNABLE_IMAGE_EXTENSIONS;
     std::string extension = fs::path(path).extension().string();

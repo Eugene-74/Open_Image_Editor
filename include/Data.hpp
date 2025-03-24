@@ -1,8 +1,11 @@
 #pragma once
 
 #include <QImage>
+#include <QMediaPlayer>
+// #include <QMediaPlaylist>
 #include <QRunnable>
 #include <QSize>
+#include <QWidget>
 #include <map>
 #include <mutex>
 #include <opencv2/face.hpp>
@@ -79,6 +82,9 @@ class Data {
     void revocerDeletedImage(ImageData& imageData);
 
     void removeDeletedImages();
+
+    // QMediaPlayer* loadVideo();
+    QImage loadImageFromVideo(std::string videoPath, int frameNumber = 1);
 
     DetectedObjects detect(std::string imagePath, QImage image);
 

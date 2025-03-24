@@ -2,6 +2,8 @@
 #include <string>
 
 bool isImage(const std::string& cheminFichier);
+bool isVideo(const std::string& path);
+
 bool isTurnable(const std::string& cheminFichier);
 bool isMirrorable(const std::string& path);
 

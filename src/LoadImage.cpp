@@ -296,7 +296,7 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
                 addSubfolders(rootFolder.getFolders()->back(), imagesData, entry.path().string(), nbrImage, progressDialog);
             }
         } else {
-            if (isImage(entry.path().filename().string())) {
+            if (isImage(entry.path().filename().string()) || isVideo(entry.path().filename().string())) {
                 Folders folders = Folders(entry.path().string());
                 rootFolder.addFile(entry.path().string());
                 folders.addFolder(fs::absolute(entry.path()).parent_path().string());

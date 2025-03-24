@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QLabel>
+#include <QMediaPlayer>
 #include <QMessageBox>
 #include <QObject>
 #include <QPainter>
@@ -10,6 +11,7 @@
 #include <QResource>
 #include <QThreadPool>
 #include <QTimer>
+#include <QVideoWidget>
 #include <QWidget>
 #include <regex>
 
@@ -99,7 +101,8 @@ bool Data::isDeleted(int imageNbr) {
 
     return false;
 }
-
+QMediaPlayer Data::loadVideo() {
+}
 QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
                        bool setSize, int thumbnail, bool rotation,
                        bool square, bool crop, bool force) {
@@ -343,6 +346,10 @@ void Data::createThumbnailAsync(const std::string& imagePath, const int maxDim) 
  */
 bool Data::createThumbnail(const std::string& imagePath, const int maxDim) {
     try {
+        if (!isImage(imagePath)) {
+            return false;
+        }
+
         QImage image = loadImageNormal(nullptr, imagePath, QSize(maxDim, maxDim), false, 0);
         double scale = std::min(static_cast<double>(maxDim) / image.width(),
                                 static_cast<double>(maxDim) / image.height());
