@@ -27,3 +27,4 @@ std::pair<int, double> recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> mode
 void computeFaces(Data* data, std::string imagePath);
 std::vector<std::string> loadClassNames(const std::string& filename);
 cv::Mat QImageToCvMat(const QImage& inImage);
+QImage CvMatToQImage(const cv::Mat& inImage);

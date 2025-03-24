@@ -234,18 +234,12 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     if (data->imagesData.getCurrent()->size() <= 0) {
         return nullptr;
     }
-
     ClickableLabel* imageButton;
 
-    // image are croped so we take imageSize->height() + imageSize->width() to avoir bad quality image
-
-    // Image already loaded
     if (data->isInCache(data->getThumbnailPath(imagePath, imageQuality)) || imagePath.rfind(":", 0) == 0) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, imageQuality, true);
 
-        // Image has a poor quality thumbnail
-        // } else if (data->hasThumbnail(imagePath, imageQuality)) {
     } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, imageQuality, true);

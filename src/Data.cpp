@@ -11,8 +11,8 @@
 #include <QResource>
 #include <QThreadPool>
 #include <QTimer>
-#include <QVideoWidget>
 #include <QWidget>
+#include <opencv2/opencv.hpp>
 #include <regex>
 
 #include "Box.hpp"
@@ -101,8 +101,43 @@ bool Data::isDeleted(int imageNbr) {
 
     return false;
 }
-QMediaPlayer Data::loadVideo() {
+
+// QMediaPlayer* Data::loadVideo() {
+// QMediaPlayer* player = new QMediaPlayer;
+// QVideoWidget* videoWidget = new QVideoWidget;
+
+// player->setVideoOutput(videoWidget);
+// player->setSource(QUrl::fromLocalFile("path/to/your/video/file.mp4"));
+
+// videoWidget->show();
+// player->play();
+
+// return player;
+// }
+
+QImage Data::loadImageFromVideo(std::string videoPath, int frameNumber) {
+    cv::VideoCapture cap(videoPath);
+    if (!cap.isOpened()) {
+        qWarning("Impossible d'ouvrir la vidéo : %s", videoPath.c_str());
+        return QImage();
+    }
+
+    cap.set(cv::CAP_PROP_POS_FRAMES, frameNumber);
+
+    cv::Mat frame;
+    if (!cap.read(frame)) {
+        qWarning("Impossible de lire le frame %d", frameNumber);
+        return QImage();
+    }
+
+    QImage image = CvMatToQImage(frame);
+
+    // (*imageCache)[videoPath].image = image;
+    // (*imageCache)[videoPath].imagePath = videoPath;
+
+    return image;
 }
+
 QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
                        bool setSize, int thumbnail, bool rotation,
                        bool square, bool crop, bool force) {
@@ -346,11 +381,15 @@ void Data::createThumbnailAsync(const std::string& imagePath, const int maxDim) 
  */
 bool Data::createThumbnail(const std::string& imagePath, const int maxDim) {
     try {
-        if (!isImage(imagePath)) {
+        QImage image;
+        if (isImage(imagePath)) {
+            image = loadImageNormal(nullptr, imagePath, QSize(maxDim, maxDim), false, 0);
+        } else if (isVideo(imagePath)) {
+            image = loadImageFromVideo(imagePath);
+        } else {
             return false;
         }
 
-        QImage image = loadImageNormal(nullptr, imagePath, QSize(maxDim, maxDim), false, 0);
         double scale = std::min(static_cast<double>(maxDim) / image.width(),
                                 static_cast<double>(maxDim) / image.height());
 
@@ -1518,3 +1557,4 @@ DetectedObjects Data::detect(std::string imagePath, QImage image) {
         return {};
     }
 }
+

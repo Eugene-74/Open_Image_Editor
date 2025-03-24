@@ -55,9 +55,10 @@ if(WIN32)
     include_directories(${EXIV2_INCLUDE_DIRS})
     include_directories(${HEIF_INCLUDE_DIRS})
     include_directories(${Qt6Core_INCLUDE_DIRS})
+    include_directories(${Qt6Multimedia_INCLUDE_DIRS})
+    # include_directories(${Qt6MultimediaWidgets_INCLUDE_DIRS})
     include_directories(${Qt6Gui_INCLUDE_DIRS})
     include_directories(${Qt6Widgets_INCLUDE_DIRS})
-    include_directories(${Qt6Multimedia_INCLUDE_DIRS})
 
 
     configure_file(
@@ -113,10 +114,11 @@ if(WIN32)
     
     target_link_libraries(OpenImageEditorLib 
         PRIVATE
+        Qt6::Multimedia
+        # Qt6::MultimediaWidgets
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets
-        Qt6::Multimedia
         CURL::libcurl 
         jsoncpp_lib
         ${OpenCV_LIBS}

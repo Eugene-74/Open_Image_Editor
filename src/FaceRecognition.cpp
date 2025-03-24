@@ -64,6 +64,26 @@ cv::Mat QImageToCvMat(const QImage& inImage) {
     return cv::Mat();
 }
 
+QImage CvMatToQImage(const cv::Mat& inImage) {
+    switch (inImage.type()) {
+        case CV_8UC4: {
+            QImage image(inImage.data, inImage.cols, inImage.rows, inImage.step, QImage::Format_RGB32);
+            return image.rgbSwapped();
+        }
+        case CV_8UC3: {
+            QImage image(inImage.data, inImage.cols, inImage.rows, inImage.step, QImage::Format_RGB888);
+            return image.rgbSwapped();
+        }
+        case CV_8UC1: {
+            QImage image(inImage.data, inImage.cols, inImage.rows, inImage.step, QImage::Format_Indexed8);
+            return image;
+        }
+        default:
+            break;
+    }
+    return QImage();
+}
+
 std::vector<std::string> loadClassNames(const std::string& filename) {
     std::vector<std::string> classNames;
     std::ifstream file(filename);
