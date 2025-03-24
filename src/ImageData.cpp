@@ -34,7 +34,7 @@ ImageData& ImageData::operator=(const ImageData& other) {
         metaData = other.metaData;
         cropSizes = other.cropSizes;
         orientation = other.orientation;
-        // persons = other.persons;
+        detectedObjects = other.detectedObjects;
         detectionStatus = other.detectionStatus;
         date = other.date;
     }

@@ -27,18 +27,6 @@
 
 namespace fs = std::filesystem;
 
-void ThumbnailTask::run() {
-    for (int i = start; i < end; ++i) {
-        ImageData* imageData = data->getImagesData()->getImageData(i);
-
-        data->createThumbnailIfNotExists(imageData->getImagePath(), 16);
-        data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
-        data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
-        data->createThumbnailIfNotExists(imageData->getImagePath(), 512);
-        data->unloadFromCache(imageData->getImagePath());
-    }
-}
-
 void addImagesFromFolder(Data* data, QWidget* parent) {
     QProgressDialog progressDialog(parent);
     progressDialog.setWindowModality(Qt::ApplicationModal);
@@ -152,6 +140,10 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
                 data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
                 data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
                 data->createThumbnailIfNotExists(imageData->getImagePath(), 512);
+
+                // auto detectedObjects = data->detect(imageData->getImagePath(), data->imageCache->at(imageData->getImagePath()).image).getDetectedObjects();
+                // imageData->setDetectedObjects(detectedObjects);
+
                 try {
                     data->unloadFromCache(imageData->getImagePath());
                 } catch (const std::exception& e) {

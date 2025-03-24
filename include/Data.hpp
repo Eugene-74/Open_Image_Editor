@@ -37,6 +37,8 @@ class Actions {
 
 class Data {
    public:
+    cv::dnn::Net net;
+    std::vector<std::string> classNames;
     cv::Ptr<cv::face::LBPHFaceRecognizer> model = cv::face::LBPHFaceRecognizer::create();
 
     QApplication* app;
@@ -77,6 +79,8 @@ class Data {
     void revocerDeletedImage(ImageData& imageData);
 
     void removeDeletedImages();
+
+    DetectedObjects detect(std::string imagePath, QImage image);
 
     QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool rotation = true, bool square = false, bool crop = true, bool force = false);
     QImage loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool force = false);

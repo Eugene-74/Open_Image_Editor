@@ -17,6 +17,7 @@
 #include "Const.hpp"
 #include "Conversion.hpp"
 #include "Data.hpp"
+#include "FaceRecognition.hpp"
 #include "Verification.hpp"
 
 namespace fs = std::filesystem;
@@ -1428,4 +1429,85 @@ cv::Ptr<cv::face::LBPHFaceRecognizer> Data::load_model(const std::string& model_
         std::cout << "Model file does not exist. Creating a new model." << std::endl;
     }
     return model;
+}
+
+DetectedObjects Data::detect(std::string imagePath, QImage image) {
+    try {
+        cv::Mat mat = QImageToCvMat(image);
+
+        if (mat.channels() == 4) {
+            cv::cvtColor(mat, mat, cv::COLOR_BGRA2BGR);
+        }
+
+        // TODO download the model if it doesn't exist
+        auto netStart = std::chrono::high_resolution_clock::now();
+        std::string modelConfiguration = APP_FILES.toStdString() + "/" + "yolov3.cfg";
+        std::string modelWeights = APP_FILES.toStdString() + "/" + "yolov3.weights";
+        cv::dnn::Net net = cv::dnn::readNetFromDarknet(modelConfiguration, modelWeights);
+        auto netEnd = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> netDuration = netEnd - netStart;
+        qDebug() << "Net creation time:" << netDuration.count() << "seconds";
+
+        std::string classNamesFile = APP_FILES.toStdString() + "/" + "coco.names";
+        std::vector<std::string> classNames = loadClassNames(classNamesFile);
+
+        cv::Mat blob;
+        cv::dnn::blobFromImage(mat, blob, 1 / 255.0, cv::Size(416, 416), cv::Scalar(), true, false);
+        net.setInput(blob);
+
+        std::vector<cv::Mat> outs;
+        auto start = std::chrono::high_resolution_clock::now();
+        net.forward(outs, net.getUnconnectedOutLayersNames());
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> duration = end - start;
+        qDebug() << "Detection time:" << duration.count() << "seconds";
+
+        std::vector<cv::Rect> boxes;
+        std::vector<int> classIds;
+        std::vector<float> confidences;
+        float confidenceThreshold = 0.5;
+        float nmsThreshold = 0.4;
+
+        for (size_t i = 0; i < outs.size(); ++i) {
+            float* data = (float*)outs[i].data;
+            for (int j = 0; j < outs[i].rows; ++j, data += outs[i].cols) {
+                cv::Mat scores = outs[i].row(j).colRange(5, outs[i].cols);
+                cv::Point classIdPoint;
+                double confidence;
+                cv::minMaxLoc(scores, nullptr, &confidence, nullptr, &classIdPoint);
+                if (confidence > confidenceThreshold) {
+                    int centerX = (int)(data[0] * mat.cols);
+                    int centerY = (int)(data[1] * mat.rows);
+                    int width = (int)(data[2] * mat.cols);
+                    int height = (int)(data[3] * mat.rows);
+                    int left = centerX - width / 2;
+                    int top = centerY - height / 2;
+
+                    classIds.push_back(classIdPoint.x);
+                    confidences.push_back((float)confidence);
+                    boxes.push_back(cv::Rect(left, top, width, height));
+                }
+            }
+        }
+
+        std::vector<int> indices;
+        cv::dnn::NMSBoxes(boxes, confidences, confidenceThreshold, nmsThreshold, indices);
+
+        std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects;
+        for (size_t i = 0; i < indices.size(); ++i) {
+            int idx = indices[i];
+            cv::Rect box = boxes[idx];
+            std::string className = classNames[classIds[idx]];  // Use actual class names
+            detectedObjects[className].emplace_back(box, confidences[idx]);
+        }
+
+        DetectedObjects detectedObjectsObj;
+        detectedObjectsObj.setDetectedObjects(detectedObjects);
+
+        return detectedObjectsObj;
+
+    } catch (const std::exception& e) {
+        qWarning() << "detect" << e.what();
+        return {};
+    }
 }
