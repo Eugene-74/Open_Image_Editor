@@ -290,7 +290,7 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
             return false;
         }
         if (entry.is_directory()) {
-            if (containImage(entry.path().string())) {
+            if (containMedia(entry.path().string())) {
                 std::string folderName = entry.path().filename().string();
                 rootFolder.addFolder(folderName);
                 addSubfolders(rootFolder.getFolders()->back(), imagesData, entry.path().string(), nbrImage, progressDialog);

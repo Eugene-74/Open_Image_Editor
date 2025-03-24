@@ -29,6 +29,10 @@ bool isVideo(const std::string& path) {
     return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
 }
 
+bool isMedia(const std::string& path) {
+    return isImage(path) || isVideo(path);
+}
+
 bool isTurnable(const std::string& path) {
     std::vector<std::string> extensionsImages = TURNABLE_IMAGE_EXTENSIONS;
     std::string extension = fs::path(path).extension().string();
