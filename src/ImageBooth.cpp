@@ -599,7 +599,30 @@ void ImageBooth::updateImages() {
                         auto* folderButton = new ClickableLabel(data, ICON_PATH_FOLDER,
                                                                 QString::fromStdString(data->getCurrentFolders()->getFolder(folderNbr - 1)->getName()),
                                                                 this, imageSize, false, 0, true);
-                        folderButton->addLogo("#00FF00", "FFFFFF", data->getCurrentFolders()->getFolder(folderNbr - 1)->getFilesPtr()->size());
+
+                        int totalImages = 0;
+                        auto* currentFolder = data->getCurrentFolders()->getFolder(folderNbr - 1);
+                        if (currentFolder) {
+                            auto* files = currentFolder->getFilesPtr();
+                            for (const auto& file : *files) {
+                                ImageData* imageData = data->imagesData.getImageData(file);
+                                if (imageData && imageData->respectFilters(data->getImagesData()->getFilters())) {
+                                    totalImages++;
+                                }
+                            }
+
+                            auto subFolders = currentFolder->getFoldersConst();
+                            for (const auto& subFolder : subFolders) {
+                                auto subFiles = subFolder.getFilesConst();
+                                for (const auto& subFile : subFiles) {
+                                    ImageData* subImageData = data->imagesData.getImageData(subFile);
+                                    if (subImageData && subImageData->respectFilters(data->getImagesData()->getFilters())) {
+                                        totalImages++;
+                                    }
+                                }
+                            }
+                        }
+                        folderButton->addLogo("#00FF00", "FFFFFF", totalImages);
 
                         connect(folderButton, &ClickableLabel::leftClicked, [this, folderNbr]() {
                             openFolder(folderNbr - 1);
