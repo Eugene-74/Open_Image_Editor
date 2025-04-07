@@ -39,7 +39,7 @@ InitialWindow::InitialWindow() {
             progressDialog.setValue(0);
             progressDialog.show();
 
-            if (!downloadFile("https://github.com/Eugene-74/Open_Image_Editor/tree/gh-pages/" + file, filePath, &progressDialog)) {
+            if (!downloadFile("https://github.com/Eugene-74/Open_Image_Editor/tree/files/" + file, filePath, &progressDialog)) {
                 qDebug() << "Failed to download file:" << QString::fromStdString(file);
             }
         }
