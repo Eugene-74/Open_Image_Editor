@@ -15,6 +15,91 @@ class ImagesData {
     std::vector<ImageData*> currentImagesData;
     std::vector<ImageData*> imagesData;
 
+    std::map<std::string, bool> filters = {
+        {"image", true},
+        {"video", true},
+        {"person", true},
+        {"bicycle", true},
+        {"car", true},
+        {"motorbike", true},
+        {"aeroplane", true},
+        {"bus", true},
+        {"train", true},
+        {"truck", true},
+        {"boat", true},
+        {"traffic light", true},
+        {"fire hydrant", true},
+        {"stop sign", true},
+        {"parking meter", true},
+        {"bench", true},
+        {"bird", true},
+        {"cat", true},
+        {"dog", true},
+        {"horse", true},
+        {"sheep", true},
+        {"cow", true},
+        {"elephant", true},
+        {"bear", true},
+        {"zebra", true},
+        {"giraffe", true},
+        {"backpack", true},
+        {"umbrella", true},
+        {"handbag", true},
+        {"tie", true},
+        {"suitcase", true},
+        {"frisbee", true},
+        {"skis", true},
+        {"snowboard", true},
+        {"sports ball", true},
+        {"kite", true},
+        {"baseball bat", true},
+        {"baseball glove", true},
+        {"skateboard", true},
+        {"surfboard", true},
+        {"tennis racket", true},
+        {"bottle", true},
+        {"wine glass", true},
+        {"cup", true},
+        {"fork", true},
+        {"knife", true},
+        {"spoon", true},
+        {"bowl", true},
+        {"banana", true},
+        {"apple", true},
+        {"sandwich", true},
+        {"orange", true},
+        {"broccoli", true},
+        {"carrot", true},
+        {"hot dog", true},
+        {"pizza", true},
+        {"donut", true},
+        {"cake", true},
+        {"chair", true},
+        {"sofa", true},
+        {"pottedplant", true},
+        {"bed", true},
+        {"diningtable", true},
+        {"toilet", true},
+        {"tvmonitor", true},
+        {"laptop", true},
+        {"mouse", true},
+        {"remote", true},
+        {"keyboard", true},
+        {"cell phone", true},
+        {"microwave", true},
+        {"oven", true},
+        {"toaster", true},
+        {"sink", true},
+        {"refrigerator", true},
+        {"book", true},
+        {"clock", true},
+        {"vase", true},
+        {"scissors", true},
+        {"teddy bear", true},
+        {"hair drier", true},
+        {"toothbrush", true},
+    };
+
    public:
     ImagesData()
         : imageNumber(0) {}
@@ -33,6 +118,10 @@ class ImagesData {
 
     void setImageNumber(int nbr);
     int getImageNumber() const;
+
+    std::map<std::string, bool> getFilters();
+    bool setFilters(std::map<std::string, bool> filters);
+    bool setFiltersValue(std::string filterName, bool filterValue);
 
     // Permet d'ajouter une ImageData à imagesData
     void addImage(ImageData* imageData);

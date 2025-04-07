@@ -166,3 +166,17 @@ void ImagesData::clear() {
     currentImagesData.clear();
     imageNumber = 0;
 }
+
+std::map<std::string, bool> ImagesData::getFilters() {
+    return filters;
+}
+
+bool ImagesData::setFilters(std::map<std::string, bool> filters) {
+    this->filters = filters;
+    return true;
+}
+
+bool ImagesData::setFiltersValue(std::string filterName, bool filterValue) {
+    filters[filterName] = filterValue;
+    return true;
+}

@@ -1,9 +1,11 @@
 #include "ImageBooth.hpp"
 
+#include <QCheckBox>
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QKeyEvent>
 #include <QPointer>
+#include <QPushButton>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QSpacerItem>
@@ -679,6 +681,8 @@ void ImageBooth::createButtons() {
 
     imageConversion = createImageConversion();
 
+    editFilters = createEditFilters();
+
     actionButtonLayout->addWidget(imageRotateRight);
     actionButtonLayout->addWidget(imageRotateLeft);
     actionButtonLayout->addWidget(imageMirrorLeftRight);
@@ -688,6 +692,7 @@ void ImageBooth::createButtons() {
     actionButtonLayout->addWidget(imageExport);
     actionButtonLayout->addWidget(imageConversion);
     actionButtonLayout->addWidget(imageEditExif);
+    actionButtonLayout->addWidget(editFilters);
 }
 
 ClickableLabel* ImageBooth::createImageDelete() {
@@ -1058,6 +1063,123 @@ ClickableLabel* ImageBooth::createImageConversion() {
     });
 
     return imageConversionNew;
+}
+
+ClickableLabel* ImageBooth::createEditFilters() {
+    if (data->imagesData.get()->size() <= 0) {
+        return nullptr;
+    }
+
+    auto* editFiltersNew = new ClickableLabel(data, ICON_PATH_EDIT_FILTERS, TOOL_TIP_IMAGE_BOOTH_EDIT_FILTERS, this, actionSize);
+    editFiltersNew->setInitialBackground("transparent", "#b3b3b3");
+
+    connect(editFiltersNew, &ClickableLabel::clicked, [this]() {
+        openFiltersPopup();
+        // TODO update the window
+    });
+
+    return editFiltersNew;
+}
+
+/**
+ * @brief Opens a popup to edit filters with checkboxes
+ */
+void ImageBooth::openFiltersPopup() {
+    QDialog* dialog = new QDialog(this);
+    dialog->setWindowTitle("Edit Filters");
+    dialog->setModal(true);
+
+    QVBoxLayout* mainLayout = new QVBoxLayout(dialog);
+
+    // Separate layout for "image" and "video"
+    QHBoxLayout* imageVideoLayout = new QHBoxLayout();
+    QCheckBox* imageCheckbox = new QCheckBox("image", dialog);
+    QCheckBox* videoCheckbox = new QCheckBox("video", dialog);
+
+    // Retrieve current filters
+    std::map<std::string, bool> filters = data->getImagesData()->getFilters();
+    imageCheckbox->setChecked(filters["image"]);
+    videoCheckbox->setChecked(filters["video"]);
+
+    imageVideoLayout->addWidget(imageCheckbox);
+    imageVideoLayout->addWidget(videoCheckbox);
+    mainLayout->addLayout(imageVideoLayout);
+
+    // Grid layout for other checkboxes
+    QGridLayout* gridLayout = new QGridLayout();
+    mainLayout->addLayout(gridLayout);
+
+    QMap<QString, QCheckBox*> checkboxes;
+    int row = 0, col = 0;
+    const int maxColumns = 3;  // Number of columns for checkboxes
+
+    // Create a checkbox for each filter except "image" and "video"
+    for (auto it = filters.begin(); it != filters.end(); ++it) {
+        if (it->first == "image" || it->first == "video") {
+            continue;
+        }
+
+        QCheckBox* checkbox = new QCheckBox(QString::fromStdString(it->first), dialog);
+        checkbox->setChecked(it->second);
+        gridLayout->addWidget(checkbox, row, col);
+        checkboxes.insert(QString::fromStdString(it->first), checkbox);
+
+        col++;
+        if (col >= maxColumns) {
+            col = 0;
+            row++;
+        }
+    }
+
+    // Add "Select All" and "Deselect All" buttons on the same line
+    QHBoxLayout* selectButtonsLayout = new QHBoxLayout();
+    QPushButton* selectAllButton = new QPushButton("Select All", dialog);
+    QPushButton* deselectAllButton = new QPushButton("Deselect All", dialog);
+    selectButtonsLayout->addWidget(selectAllButton);
+    selectButtonsLayout->addWidget(deselectAllButton);
+    mainLayout->addLayout(selectButtonsLayout);
+
+    // Connect "Select All" button
+    connect(selectAllButton, &QPushButton::clicked, [checkboxes, imageCheckbox, videoCheckbox]() {
+        imageCheckbox->setChecked(true);
+        videoCheckbox->setChecked(true);
+        for (auto checkbox : checkboxes) {
+            checkbox->setChecked(true);
+        }
+    });
+
+    // Connect "Deselect All" button
+    connect(deselectAllButton, &QPushButton::clicked, [checkboxes, imageCheckbox, videoCheckbox]() {
+        imageCheckbox->setChecked(false);
+        videoCheckbox->setChecked(false);
+        for (auto checkbox : checkboxes) {
+            checkbox->setChecked(false);
+        }
+    });
+
+    // Add Validate button
+    QPushButton* validateButton = new QPushButton("Validate", dialog);
+    mainLayout->addWidget(validateButton);
+
+    // Connect Validate button to update filters and close dialog
+    connect(validateButton, &QPushButton::clicked, [this, dialog, checkboxes, imageCheckbox, videoCheckbox]() {
+        std::map<std::string, bool> updatedFilters;
+
+        // Update "image" and "video" filters
+        updatedFilters["image"] = imageCheckbox->isChecked();
+        updatedFilters["video"] = videoCheckbox->isChecked();
+
+        // Update other filters
+        for (auto it = checkboxes.begin(); it != checkboxes.end(); ++it) {
+            updatedFilters[it.key().toStdString()] = it.value()->isChecked();
+        }
+
+        data->getImagesData()->setFilters(updatedFilters);
+        dialog->accept();
+    });
+
+    dialog->setLayout(mainLayout);
+    dialog->exec();
 }
 
 /**

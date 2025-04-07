@@ -64,10 +64,12 @@ class ImageBooth : public QMainWindow {
     ClickableLabel* imageExport;
     ClickableLabel* imageEditExif;
     ClickableLabel* imageConversion;
-    ClickableLabel* imageMore;
-    ClickableLabel* imageLess;
+    ClickableLabel* editFilters;
+    // ClickableLabel* imageMore;
+    // ClickableLabel* imageLess;
 
-    std::vector<QHBoxLayout*> lineLayouts;
+    std::vector<QHBoxLayout*>
+        lineLayouts;
 
     void onScroll(int value);
 
@@ -95,8 +97,13 @@ class ImageBooth : public QMainWindow {
     ClickableLabel* createImageExport();
     ClickableLabel* createImageEditExif();
     ClickableLabel* createImageConversion();
-    ClickableLabel* createImageMore();
-    ClickableLabel* createImageLess();
+    ClickableLabel* createEditFilters();
+
+    // ClickableLabel* createImageMore();
+    // ClickableLabel* createImageLess();
+
+    void openFiltersPopup();
+
     void openFolder(int index);
 
     void createFirstImages();

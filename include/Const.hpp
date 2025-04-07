@@ -90,6 +90,7 @@ const QString ICON_PATH_MIRROR_LEFT_RIGHT = ":/icons/mirrorLeftRight.png";
 const QString ICON_PATH_CONVERSION = ":/icons/conversion.png";
 const QString ICON_PATH_EDIT_EXIF = ":/icons/editExif.png";
 const QString ICON_PATH_EDIT_PERSONS = ":/icons/editPersons.png";
+const QString ICON_PATH_EDIT_FILTERS = ":/icons/editFilters.png";
 
 const QString ICON_PATH_FOLDER = ":/icons/folder.png";
 const QString ICON_PATH_ALL_IMAGES = ":/icons/allImages.png";
@@ -125,6 +126,7 @@ const QString TOOL_TIP_IMAGE_BOOTH_CONVERSION = "Convert the selected images";
 
 const QString TOOL_TIP_IMAGE_BOOTH_EDIT_EXIF = "Edit exif data of selected images";
 const QString TOOL_TIP_IMAGE_BOOTH_EDIT_PERSONS = "Edit persons data of selected images";
+const QString TOOL_TIP_IMAGE_BOOTH_EDIT_FILTERS = "Edit filters";
 
 const QString TOOL_TIP_IMAGE_EDITOR_DELETE = "Delete the image";
 const QString TOOL_TIP_IMAGE_EDITOR_SAVE = "Save modification";
