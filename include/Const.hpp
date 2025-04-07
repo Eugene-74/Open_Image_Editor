@@ -19,6 +19,8 @@ const QString APP_FILES = APPDATA_PATH + "/" + QString::fromStdString(APP_NAME);
 
 const QString DOWNLOAD_PATH = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
 
+const std::vector<std::string> filesToDownload = {"coco.names", "yolov3.cfg", "yolov3.weights"};
+
 const int PREVIEW_NBR = 3;
 const int PRE_LOAD_RADIUS = 5;  // on en precharge 2 de plus comme ça l'utilisateut ne vois meme pas les images charger
 const int TIME_BEFORE_FULL_QUALITY = 200;

@@ -29,22 +29,6 @@ namespace fs = std::filesystem;
 InitialWindow::InitialWindow() {
     startLog();
 
-    std::vector<std::string> yolofiles = {"coco.names", "yolov3.cfg", "yolov3.weights"};
-    for (std::string file : yolofiles) {
-        std::string filePath = APP_FILES.toStdString() + "/" + file;
-        if (!fs::exists(filePath)) {
-            QProgressDialog progressDialog("Downloading " + QString::fromStdString(file), nullptr, 0, 100, this);
-            progressDialog.setWindowModality(Qt::ApplicationModal);
-            progressDialog.setCancelButton(nullptr);
-            progressDialog.setValue(0);
-            progressDialog.show();
-
-            if (!downloadFile("https://github.com/Eugene-74/Open_Image_Editor/tree/files/" + file, filePath, &progressDialog)) {
-                qDebug() << "Failed to download file:" << QString::fromStdString(file);
-            }
-        }
-    }
-
     // QThreadPool* threadPool = QThreadPool::globalInstance();
     // threadPool->setMaxThreadCount(std::max(threadPool->maxThreadCount() - 1, 1));
 
@@ -143,7 +127,43 @@ InitialWindow::InitialWindow() {
         QApplication::processEvents();
         checkForUpdate(&progressDialog);
         progressDialog.close();
+
+        for (std::string file : filesToDownload) {
+            std::string filePath = APP_FILES.toStdString() + "/" + file;
+            if (!fs::exists(filePath)) {
+                QProgressDialog progressDialog("Downloading " + QString::fromStdString(file), nullptr, 0, 100, this);
+                progressDialog.setWindowModality(Qt::ApplicationModal);
+                progressDialog.setCancelButton(nullptr);
+                progressDialog.setValue(0);
+                progressDialog.show();
+
+                if (!downloadFile("https://github.com/Eugene-74/Open_Image_Editor/raw/refs/heads/files/" + file, filePath, &progressDialog)) {
+                    qDebug() << "Failed to download file:" << QString::fromStdString(file);
+                }
+            }
+        }
     });
+}
+void checkForFilesToDownload() {
+    QProgressDialog progressDialog("Downloading ", nullptr, 0, 100, nullptr);
+    progressDialog.setWindowModality(Qt::ApplicationModal);
+    progressDialog.setCancelButton(nullptr);
+    progressDialog.setAutoClose(false);
+    for (std::string file : filesToDownload) {
+        std::string filePath = APP_FILES.toStdString() + "/" + file;
+        if (!fs::exists(filePath)) {
+            progressDialog.show();
+            QApplication::processEvents();
+
+            progressDialog.setObjectName("Downloading " + file);
+            progressDialog.setValue(0);
+
+            if (!downloadFile("https://github.com/Eugene-74/Open_Image_Editor/raw/refs/heads/files/" + file, filePath, &progressDialog)) {
+                qDebug() << "Failed to download file:" << QString::fromStdString(file);
+            }
+        }
+    }
+    progressDialog.close();
 }
 
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
@@ -160,10 +180,10 @@ size_t WriteCallbackAndSave(void* contents, size_t size, size_t nmemb, void* use
 }
 int progressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded) {
     QProgressDialog* progressDialog = static_cast<QProgressDialog*>(ptr);
+    QApplication::processEvents();
     if (totalToDownload > 0) {
         double progress = (nowDownloaded / (double)totalToDownload) * 100.0;
         progressDialog->setValue((int)progress);
-        QApplication::processEvents();
     }
     return 0;
 }
