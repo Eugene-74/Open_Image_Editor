@@ -28,6 +28,22 @@ namespace fs = std::filesystem;
 InitialWindow::InitialWindow() {
     startLog();
 
+    std::vector<std::string> yolofiles = {"coco.names", "yolov3.cfg", "yolov3.weights"};
+    for (std::string file : yolofiles) {
+        std::string filePath = APP_FILES.toStdString() + "/" + file;
+        if (!fs::exists(filePath)) {
+            QProgressDialog progressDialog("Downloading " + QString::fromStdString(file), nullptr, 0, 100, this);
+            progressDialog.setWindowModality(Qt::ApplicationModal);
+            progressDialog.setCancelButton(nullptr);
+            progressDialog.setValue(0);
+            progressDialog.show();
+
+            if (!downloadFile("https://github.com/Eugene-74/Open_Image_Editor/tree/gh-pages/" + file, filePath, &progressDialog)) {
+                qDebug() << "Failed to download file:" << QString::fromStdString(file);
+            }
+        }
+    }
+
     // QThreadPool* threadPool = QThreadPool::globalInstance();
     // threadPool->setMaxThreadCount(std::max(threadPool->maxThreadCount() - 1, 1));
 
@@ -624,3 +640,4 @@ void InitialWindow::resizeEvent(QResizeEvent* event) {
     }
     QMainWindow::resizeEvent(event);
 }
+
