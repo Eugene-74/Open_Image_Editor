@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include "Const.hpp"
+#include "Verification.hpp"
 
 namespace fs = std::filesystem;
 
@@ -47,6 +48,24 @@ bool ImageData::operator==(const ImageData& other) const {
 
 void ImageData::print() const {
     qInfo() << get();
+}
+
+bool ImageData::respectFilters(const std::map<std::string, bool>& filters) const {
+    if (std::all_of(filters.begin(), filters.end(), [](const auto& filter) {
+            return !filter.second || filter.first == "image" || filter.first == "video";
+        })) {
+        return true;
+    }
+    if (filters.at("image") && isImage(folders.getName())) {
+        for (const auto& filter : filters) {
+            if (filter.second && detectedObjects.getDetectedObjectsConst().count(filter.first)) {
+                return true;
+            }
+        }
+    } else if (filters.at("video") && isVideo(folders.getName())) {
+        return true;
+    }
+    return false;
 }
 
 std::string ImageData::get() const {

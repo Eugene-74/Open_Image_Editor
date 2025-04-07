@@ -124,6 +124,11 @@ void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::func
 std::map<std::string, std::vector<std::pair<cv::Rect, float>>> DetectedObjects::getDetectedObjects() {
     return detectedObjects;
 }
+
+std::map<std::string, std::vector<std::pair<cv::Rect, float>>> DetectedObjects::getDetectedObjectsConst() const {
+    return detectedObjects;
+}
+
 void DetectedObjects::setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects) {
     this->detectedObjects = detectedObjects;
 }

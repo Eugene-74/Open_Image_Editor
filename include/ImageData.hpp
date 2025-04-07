@@ -40,6 +40,8 @@ class ImageData {
     ImageData& operator=(const ImageData& other);
     bool operator==(const ImageData& other) const;
 
+    bool respectFilters(const std::map<std::string, bool>& filters) const;
+
     void print() const;
     
     std::string get() const;

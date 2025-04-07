@@ -14,6 +14,7 @@
 #include "ClickableLabel.hpp"
 #include "Const.hpp"
 #include "Conversion.hpp"
+#include "Verification.hpp"
 
 ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
@@ -40,7 +41,11 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
         auto images = data->getImagesData()->get();
         for (auto it = images->begin(); it != images->end(); ++it) {
             ImageData* imageData = *it;
-            data->getImagesData()->getCurrent()->push_back(imageData);
+            if (imageData->respectFilters(data->getImagesData()->getFilters())) {
+                data->getImagesData()->getCurrent()->push_back(imageData);
+            } else {
+                qInfo() << "Image " << imageData->getImagePath() << " does not respect filters";
+            }
         }
         data->currentFolder = allImagesFolder;
     } else {
@@ -53,7 +58,9 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
             if (imageData == nullptr) {
                 qCritical() << "imageData is null";
             } else {
-                data->getImagesData()->getCurrent()->push_back(imageData);
+                if (imageData->respectFilters(data->getImagesData()->getFilters())) {
+                    data->getImagesData()->getCurrent()->push_back(imageData);
+                }
             }
         }
     }
@@ -129,9 +136,12 @@ void ImageBooth::openFolder(int index) {
         } else {
             data->currentFolder = data->getCurrentFolders()->getFolder(index);
         }
-
-        for (int i = 0; i < data->currentFolder->getFilesPtr()->size(); i++) {
-            data->getImagesData()->getCurrent()->push_back(data->imagesData.getImageData(data->currentFolder->getFilesPtr()->at(i)));
+        for (auto it = data->getCurrentFolders()->getFilesPtr()->begin(); it != data->getCurrentFolders()->getFilesPtr()->end(); ++it) {
+            std::string imagePath = *it;
+            ImageData* imageData = data->imagesData.getImageData(imagePath);
+            if (imageData->respectFilters(data->getImagesData()->getFilters())) {
+                data->getImagesData()->getCurrent()->push_back(imageData);
+            }
         }
     } else {
         auto* allImagesFolder = new Folders("*");
@@ -140,7 +150,9 @@ void ImageBooth::openFolder(int index) {
         auto* images = data->getImagesData()->get();
         for (auto it = images->begin(); it != images->end(); ++it) {
             ImageData* imageData = *it;
-            data->getImagesData()->getCurrent()->push_back(imageData);
+            if (imageData->respectFilters(data->getImagesData()->getFilters())) {
+                data->getImagesData()->getCurrent()->push_back(imageData);
+            }
         }
 
         data->currentFolder = allImagesFolder;
@@ -1072,9 +1084,21 @@ ClickableLabel* ImageBooth::createEditFilters() {
 
     auto* editFiltersNew = new ClickableLabel(data, ICON_PATH_EDIT_FILTERS, TOOL_TIP_IMAGE_BOOTH_EDIT_FILTERS, this, actionSize);
     editFiltersNew->setInitialBackground("transparent", "#b3b3b3");
+    int activeFiltersCount = 0;
+    for (const auto& filter : data->getImagesData()->getFilters()) {
+        if (filter.first != "image" && filter.first != "video") {
+            if (filter.second) {
+                activeFiltersCount++;
+            }
+        }
+    }
+    if (activeFiltersCount > 0) {
+        editFiltersNew->addLogo("#FF0000", "FFFFFF", activeFiltersCount);
+    }
 
     connect(editFiltersNew, &ClickableLabel::clicked, [this]() {
         openFiltersPopup();
+        switchToImageBooth();
         // TODO update the window
     });
 
@@ -1091,12 +1115,10 @@ void ImageBooth::openFiltersPopup() {
 
     QVBoxLayout* mainLayout = new QVBoxLayout(dialog);
 
-    // Separate layout for "image" and "video"
     QHBoxLayout* imageVideoLayout = new QHBoxLayout();
     QCheckBox* imageCheckbox = new QCheckBox("image", dialog);
     QCheckBox* videoCheckbox = new QCheckBox("video", dialog);
 
-    // Retrieve current filters
     std::map<std::string, bool> filters = data->getImagesData()->getFilters();
     imageCheckbox->setChecked(filters["image"]);
     videoCheckbox->setChecked(filters["video"]);
@@ -1105,15 +1127,16 @@ void ImageBooth::openFiltersPopup() {
     imageVideoLayout->addWidget(videoCheckbox);
     mainLayout->addLayout(imageVideoLayout);
 
-    // Grid layout for other checkboxes
+    QPushButton* toggleAllFiltersButton = new QPushButton("Enable/Disable All Filters", dialog);
+    mainLayout->addWidget(toggleAllFiltersButton);
+
     QGridLayout* gridLayout = new QGridLayout();
     mainLayout->addLayout(gridLayout);
 
     QMap<QString, QCheckBox*> checkboxes;
     int row = 0, col = 0;
-    const int maxColumns = 3;  // Number of columns for checkboxes
+    const int maxColumns = 3;
 
-    // Create a checkbox for each filter except "image" and "video"
     for (auto it = filters.begin(); it != filters.end(); ++it) {
         if (it->first == "image" || it->first == "video") {
             continue;
@@ -1131,45 +1154,27 @@ void ImageBooth::openFiltersPopup() {
         }
     }
 
-    // Add "Select All" and "Deselect All" buttons on the same line
-    QHBoxLayout* selectButtonsLayout = new QHBoxLayout();
-    QPushButton* selectAllButton = new QPushButton("Select All", dialog);
-    QPushButton* deselectAllButton = new QPushButton("Deselect All", dialog);
-    selectButtonsLayout->addWidget(selectAllButton);
-    selectButtonsLayout->addWidget(deselectAllButton);
-    mainLayout->addLayout(selectButtonsLayout);
-
-    // Connect "Select All" button
-    connect(selectAllButton, &QPushButton::clicked, [checkboxes, imageCheckbox, videoCheckbox]() {
-        imageCheckbox->setChecked(true);
-        videoCheckbox->setChecked(true);
+    connect(toggleAllFiltersButton, &QPushButton::clicked, [checkboxes, imageCheckbox, videoCheckbox]() {
+        bool allChecked = imageCheckbox->isChecked() && videoCheckbox->isChecked();
         for (auto checkbox : checkboxes) {
-            checkbox->setChecked(true);
+            allChecked = allChecked && checkbox->isChecked();
+        }
+
+        bool newState = !allChecked;
+        for (auto checkbox : checkboxes) {
+            checkbox->setChecked(newState);
         }
     });
 
-    // Connect "Deselect All" button
-    connect(deselectAllButton, &QPushButton::clicked, [checkboxes, imageCheckbox, videoCheckbox]() {
-        imageCheckbox->setChecked(false);
-        videoCheckbox->setChecked(false);
-        for (auto checkbox : checkboxes) {
-            checkbox->setChecked(false);
-        }
-    });
-
-    // Add Validate button
     QPushButton* validateButton = new QPushButton("Validate", dialog);
     mainLayout->addWidget(validateButton);
 
-    // Connect Validate button to update filters and close dialog
     connect(validateButton, &QPushButton::clicked, [this, dialog, checkboxes, imageCheckbox, videoCheckbox]() {
         std::map<std::string, bool> updatedFilters;
 
-        // Update "image" and "video" filters
         updatedFilters["image"] = imageCheckbox->isChecked();
         updatedFilters["video"] = videoCheckbox->isChecked();
 
-        // Update other filters
         for (auto it = checkboxes.begin(); it != checkboxes.end(); ++it) {
             updatedFilters[it.key().toStdString()] = it.value()->isChecked();
         }

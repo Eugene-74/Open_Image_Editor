@@ -17,6 +17,8 @@ class DetectedObjects {
     void load(std::ifstream& in);
     void clear();
     std::map<std::string, std::vector<std::pair<cv::Rect, float>>> getDetectedObjects();
+    std::map<std::string, std::vector<std::pair<cv::Rect, float>>> getDetectedObjectsConst() const;
+
     void setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects);
 };
 
