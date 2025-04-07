@@ -3,6 +3,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <codecvt>
+#include <ctime>
 #include <locale>
 
 MetaData& MetaData::operator=(const MetaData& other) {
@@ -76,7 +77,7 @@ long MetaData::getTimestamp() {
             QDateTime epoch(QDate(1970, 1, 1), QTime(0, 0, 0));
             qint64 secs = epoch.secsTo(dateTime);
             if (secs < 0) {
-                qDebug() << "Erreur : dateTime est antérieur à l'époque Unix.";
+                qWarning() << "Erreur : dateTime est antérieur à l'époque Unix.";
                 return 0;
             }
             return secs;
@@ -96,7 +97,7 @@ bool MetaData::modifyExifValue(const std::string& key, const std::string& newVal
             pos->setValue(newValue);  // Assigner la nouvelle valeur
             return true;
         } catch (const Exiv2::Error& e) {
-            qDebug() << "Invalid value for key " << key.c_str() << ": " << e.what();
+            qWarning() << "Invalid value for key " << key.c_str() << ": " << e.what();
             return false;
         }
         return true;
@@ -109,7 +110,7 @@ bool MetaData::modifyExifValue(const std::string& key, const std::string& newVal
 
             return true;
         } catch (const Exiv2::Error& e) {
-            qDebug() << "Erreur lors de l'ajout de la clé : " << e.what();
+            qWarning() << "Erreur lors de l'ajout de la clé : " << e.what();
             return false;
         }
 }
@@ -132,7 +133,7 @@ bool MetaData::modifyXmpValue(const std::string& key, const std::string& newValu
 
             return true;
         } catch (const Exiv2::Error& e) {
-            qDebug() << "Erreur lors de l'ajout de la clé : " << e.what();
+            qWarning() << "Erreur lors de l'ajout de la clé : " << e.what();
             return false;
         }
     }
@@ -155,7 +156,7 @@ bool MetaData::modifyIptcValue(const std::string& key, const std::string& newVal
 
             return true;
         } catch (const Exiv2::Error& e) {
-            qDebug() << "Erreur lors de l'ajout de la clé : " << e.what();
+            qWarning() << "Erreur lors de l'ajout de la clé : " << e.what();
             return false;
         }
     }
@@ -164,7 +165,11 @@ bool MetaData::modifyIptcValue(const std::string& key, const std::string& newVal
 // Fonction pour mettre à jour ou créer les métadonnées EXIF si elles n'existent pas
 void MetaData::setOrCreateExifData(std::string imagePath) {
     time_t now = time(0);
-    struct tm* timeinfo = localtime(&now);
+    // struct tm* timeinfo = localtime(&now);
+    // std::tm* timeinfo;
+    // localtime_s(timeinfo, &now);
+    std::tm* timeinfo = std::localtime(&now);
+
     char dateTime[20];
     strftime(dateTime, sizeof(dateTime), "%Y:%m:%d %H:%M:%S", timeinfo);
 
@@ -199,13 +204,13 @@ void MetaData::loadData(const std::string& imagePath) {
 
             auto pos = exifMetaData.findKey(Exiv2::ExifKey("Exif.Image.DateTime"));
             if (pos == exifMetaData.end()) {
-                qDebug() << "Erreur : 'Exif.Image.DateTime' n'existe pas dans les métadonnées.";
+                qWarning() << "Erreur : 'Exif.Image.DateTime' n'existe pas dans les métadonnées.";
             }
         }
     } catch (const Exiv2::Error& e) {
-        qDebug() << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what();
+        qWarning() << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what();
     } catch (const std::exception& e) {
-        qDebug() << "Erreur : " << e.what();
+        qWarning() << "Erreur : " << e.what();
     }
 }
 
@@ -227,7 +232,7 @@ bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData)
 
         return true;
     } catch (const Exiv2::Error& e) {
-        qDebug() << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what();
+        qWarning() << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what();
         return false;
     }
 }
@@ -247,7 +252,7 @@ bool saveXmpData(const std::string& imagePath, const Exiv2::XmpData& exifData) {
         image->writeMetadata();
         return true;
     } catch (const Exiv2::Error& e) {
-        qDebug() << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what();
+        qWarning() << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what();
         return false;
     }
 }
@@ -267,7 +272,7 @@ bool saveIptcData(const std::string& imagePath, const Exiv2::IptcData& exifData)
         image->writeMetadata();
         return true;
     } catch (const Exiv2::Error& e) {
-        qDebug() << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what();
+        qWarning() << "Erreur lors de la sauvegarde des métadonnées EXIF : " << e.what();
         return false;
     }
 }
@@ -275,27 +280,25 @@ bool saveIptcData(const std::string& imagePath, const Exiv2::IptcData& exifData)
 // Fonction pour afficher les métadonnées EXIF
 void displayExifData(const Exiv2::ExifData& data) {
     if (data.empty()) {
-        qDebug() << "Aucune métadonnée EXIF disponible.";
+        qWarning() << "Aucune métadonnée EXIF disponible.";
     }
-    qDebug() << "métadonnée : ";
+    qInfo() << "métadonnée : ";
 
     for (const auto& item : data) {
-        // if (item.key().substr(0, 10) == "Exif.Image") {
-        qDebug() << item.key() << " : " << item.value().toString();
-        // }
+        qInfo() << item.key() << " : " << item.value().toString();
     }
 }
 
 // Fonction pour afficher les métadonnées EXIF
 void displayXmpData(const Exiv2::XmpData& data) {
     if (data.empty()) {
-        qDebug() << "Aucune métadonnée Xmp disponible.";
+        qWarning() << "Aucune métadonnée Xmp disponible.";
     }
 
-    qDebug() << "métadonnée : ";
+    qInfo() << "métadonnée : ";
 
     for (const auto& item : data) {
-        qDebug() << item.key() << " : " << item.value().toString();
+        qInfo() << item.key() << " : " << item.value().toString();
     }
 }
 
@@ -312,13 +315,13 @@ void MetaData::displayMetaData() {
 // Fonction pour afficher les métadonnées EXIF
 void displayIptcData(const Exiv2::IptcData& data) {
     if (data.empty()) {
-        qDebug() << "Aucune métadonnée Iptc disponible.";
+        qWarning() << "Aucune métadonnée Iptc disponible.";
     }
 
-    qDebug() << "métadonnée : ";
+    qInfo() << "métadonnée : ";
 
     for (const auto& item : data) {
-        qDebug() << item.key() << " : " << item.value().toString();
+        qInfo() << item.key() << " : " << item.value().toString();
     }
 }
 

@@ -16,6 +16,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <unordered_set>
 
 #include "ClickableLabel.hpp"
 #include "Const.hpp"
@@ -320,7 +321,6 @@ void ImageEditor::updateButtons() {
         }
     }
     if (imageDelete) {
-        qDebug() << "updateButtons";
         if (data->isDeleted(data->imagesData.getImageNumberInTotal())) {
             imageDelete->setBackground("#700c13", "#F00c13");
         } else {
@@ -356,7 +356,6 @@ void ImageEditor::updateButtons() {
 }
 
 void ImageEditor::clear() {
-    qDebug() << "clear";
     stopImageOpen();
 }
 
@@ -630,8 +629,6 @@ ClickableLabel* ImageEditor::createImagePersons() {
     imagePersonsNew->setInitialBackground("transparent", "#b3b3b3");
     imagePersonsNew->addLogo("#700c13", "#ffffff");
 
-    qDebug() << "status : " << static_cast<int>(data->imagesData.getCurrentImageData()->isDetectionStatusLoaded());
-
     if (data->imagesData.getCurrentImageData()->isDetectionStatusLoaded()) {
         imagePersonsNew->setLogoNumber(data->imagesData.getCurrentImageData()->getDetectedObjects()["person"].size());
     } else {
@@ -734,20 +731,15 @@ MainImage* ImageEditor::createImageLabel() {
     //     computeFaces(data, currentImagePath);
     // }
 
-    qDebug()
-        << "currentImagePath : " << currentImagePath.c_str();
-
     auto it = data->imageCache->find(currentImagePath);
     if (it == data->imageCache->end()) {
         return imageLabelNew;
     }
 
     int imageNbr = data->imagesData.getImageNumber();
-    if (imageData->isDetectionStatusNotLoaded()
-        // && imageData->getpersons().empty()
-    ) {
+    if (imageData->isDetectionStatusNotLoaded()) {
         imageData->setDetectionStatusLoading();
-        qDebug() << "starting face recognition";
+        qInfo() << "starting face recognition";
         QImage image = data->imageCache->at(currentImagePath).image;
 
         image = data->rotateQImage(image, imageData);
@@ -759,8 +751,7 @@ MainImage* ImageEditor::createImageLabel() {
                 ImageData* imageData = self->data->getImagesData()->getImageData(currentImagePath);
 
                 if (imageData) {
-                    qDebug() << "face recognition done";
-                    // imageData->setpersons(persons);
+                    qInfo() << "face recognition done";
                     imageData->setDetectedObjects(detectedObject.getDetectedObjects());
                     imageData->setDetectionStatusLoaded();
                 }
@@ -806,7 +797,6 @@ void ImageEditor::reloadImageLabel() {
 }
 
 void ImageEditor::keyPressEvent(QKeyEvent* event) {
-    qDebug() << "keyPressEvent called with key:" << event->key();
     if (exifEditor) {
         return;
     }
@@ -1004,7 +994,6 @@ void ImageEditor::exportImage() {
     bool dateInName = (result["Date in image Name"] == "true");
 
     if (exportPath == "") {
-        qDebug() << "No export path selected";
         return;
     }
 
@@ -1012,7 +1001,6 @@ void ImageEditor::exportImage() {
 }
 
 void ImageEditor::deleteImage() {
-    qDebug() << "deleteImage";
     int nbr = data->imagesData.getImageNumber();
     int nbrInTotal = data->getImagesData()->getImageDataId(data->getImagesData()->getImageDataInCurrent(nbr)->getImagePathConst());
     bool saved = data->saved;
@@ -1138,19 +1126,21 @@ void ImageEditor::startImageOpen() {
 
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
         QPointer<ImageEditor> self = this;
-        data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [self]() {
-            if (!self.isNull()) {
-                self->reloadImageLabel();
-            }
-        });
-        imageOpenTimer->stop();
-        for (int i = 0; i < PRE_LOAD_RADIUS; i++) {
-            if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() - (i + 1) >= 0) {
-                data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr);
-            }
+        if (self && data != nullptr) {
+            data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [self]() {
+                if (!self.isNull()) {
+                    self->reloadImageLabel();
+                }
+            });
+            imageOpenTimer->stop();
+            for (int i = 0; i < PRE_LOAD_RADIUS; i++) {
+                if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() - (i + 1) >= 0) {
+                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr);
+                }
 
-            if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() + (i + 1) >= 0) {
-                data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr);
+                if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() + (i + 1) >= 0) {
+                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr);
+                }
             }
         }
     });
@@ -1167,19 +1157,25 @@ void ImageEditor::stopImageOpen() {
 }
 
 void ImageEditor::checkLoadedImage() {
+    std::unordered_set<std::string> loadedImages;
+    int currentImageNumber = data->getImagesData()->getImageNumber();
+    int lowerBound = currentImageNumber - PRE_LOAD_RADIUS;
+    int upperBound = currentImageNumber + PRE_LOAD_RADIUS;
+
+    for (int i = lowerBound; i <= upperBound; ++i) {
+        if (i >= 0 && i < data->imagesData.getCurrent()->size()) {
+            loadedImages.insert(data->imagesData.getImageDataInCurrent(i)->getImagePath());
+        }
+    }
+
     std::vector<std::string> toUnload;
     for (const auto& cache : *data->imageCache) {
         const std::string& imagePath = cache.second.imagePath;
-        const std::string& imagePathBis = cache.first;
-
-        // TODO Change to use -10 to 10 check path and not all images
-        int imageId = data->imagesData.getImageDataIdInCurrent(imagePath);
-        if (imageId != -1) {
-            if (std::abs(data->getImagesData()->getImageNumber() - imageId) > 2 * PRE_LOAD_RADIUS) {
-                toUnload.push_back(imagePathBis);
-            }
+        if (loadedImages.find(imagePath) == loadedImages.end()) {
+            toUnload.push_back(cache.first);
         }
     }
+
     for (const auto& imagePath : toUnload) {
         data->unloadFromCache(imagePath);
     }

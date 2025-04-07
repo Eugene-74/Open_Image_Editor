@@ -13,6 +13,7 @@
 #include <QThreadPool>
 #include <QTimer>
 #include <QTranslator>
+#include <ctime>
 
 #include "AppConfig.hpp"
 #include "Box.hpp"
@@ -70,7 +71,7 @@ InitialWindow::InitialWindow() {
     });
 
     QTimer::singleShot(1, this, [this]() {
-        qDebug() << "Application started";
+        qInfo() << "Application started";
         data = new Data();
 
         QTranslator translator;
@@ -79,7 +80,7 @@ InitialWindow::InitialWindow() {
         if (translator.load(":/translations/open_image_editor_" + language + ".qm")) {
             // app.installTranslator(&translator);
         } else {
-            qDebug() << "Translation file not found for language:" << language;
+            qWarning() << "Translation file not found for language:" << language;
         }
 
         ImagesData imagesData(std::vector<ImageData*>{});
@@ -92,7 +93,7 @@ InitialWindow::InitialWindow() {
         try {
             data->loadData();
         } catch (const std::exception& e) {
-            qDebug() << "Error loading data: " << e.what();
+            qWarning() << "Error loading data: " << e.what();
             showErrorMessage(nullptr, "Error loading data: data corrupted");
         }
         if (!data->currentFolder) {
@@ -184,8 +185,9 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
     curl = curl_easy_init();
     if (curl) {
         std::string url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/releases";
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
+        curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3);
 
         // Set timeout time to avoir bug
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);
@@ -203,12 +205,12 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
         res = curl_easy_perform(curl);
         if (res == CURLE_OPERATION_TIMEDOUT) {
             showWarningMessage(nullptr, "Could not check for update (low connexion)", "Checking for updates");
-            qDebug() << "Error : Could not check for update (low connexion) : " << curl_easy_strerror(res);
+            qWarning() << "Error : Could not check for update (low connexion) : " << curl_easy_strerror(res);
             curl_easy_cleanup(curl);
             return "";
         }
         if (res != CURLE_OK) {
-            qDebug() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
+            qWarning() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
             curl_easy_cleanup(curl);
             return "";
         }
@@ -230,7 +232,7 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
             }
         }
     } else {
-        qDebug() << "Failed to parse JSON: " << errs;
+        qWarning() << "Failed to parse JSON: " << errs;
     }
 
     return "";
@@ -243,10 +245,14 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
 
     curl = curl_easy_init();
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
+        curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3);
 
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
+
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallbackAndSave);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outFile);
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
@@ -257,7 +263,7 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
 
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
-            qDebug() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
+            qWarning() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
         }
         curl_easy_cleanup(curl);
     }
@@ -317,14 +323,14 @@ bool checkForUpdate(QProgressDialog* progressDialog) {
         return true;
     }
 
-    qDebug() << "Latest GitHub Tag Version: " << latestMajor << "." << latestMinor << "." << latestPatch;
-    qDebug() << "Current App Version: " << currentMajor << "." << currentMinor << "." << currentPatch;
+    qInfo() << "Latest GitHub Tag Version: " << latestMajor << "." << latestMinor << "." << latestPatch;
+    qInfo() << "Current App Version: " << currentMajor << "." << currentMinor << "." << currentPatch;
 
     return false;
 }
 
 void startLog() {
-    QString logPath = QString::fromUtf8(APPDATA_PATH.toUtf8()) + "/" + QString::fromUtf8(APP_NAME) + "/logs";
+    QString logPath = APP_FILES + "/logs";
     QDir logDir(logPath);
     if (!logDir.exists()) {
         if (!logDir.mkpath(".")) {
@@ -333,8 +339,11 @@ void startLog() {
         }
     }
     auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    // std::tm* now_tm;
+    // localtime_s(now_tm, &now);
     std::tm* now_tm = std::localtime(&now);
-    QString logFileName = QString(APP_FILES.toUtf8() + "/logs/%1-%2-%3.log")
+
+    QString logFileName = QString(APP_FILES + "/logs/%1-%2-%3.log")
                               .arg(now_tm->tm_mday, 2, 10, QChar('0'))
                               .arg(now_tm->tm_mon + 1, 2, 10, QChar('0'))
                               .arg(now_tm->tm_year + 1900);
@@ -363,14 +372,11 @@ void startLog() {
             case QtCriticalMsg:
                 colorCode = "\033[31m";  // Red
                 formattedMsg = "[CRITICAL] " + formattedMsg;
-                // showErrorInfo(nullptr, formattedMsg, 5000);
-
                 break;
             case QtFatalMsg:
                 colorCode = "\033[41m";  // Red background
                 formattedMsg = "[FATAL   ] " + formattedMsg;
-                // showErrorInfo(nullptr, formattedMsg, 5000);
-                abort();
+                break;
         }
         logStream << formattedMsg << Qt::endl;
         logStream.flush();
@@ -387,6 +393,7 @@ void InitialWindow::closeEvent(QCloseEvent* event) {
                                 }
                             });
     }
+    data->stopAllThreads();
     data->saveData();
     event->accept();
 }
@@ -423,7 +430,7 @@ void InitialWindow::createImageEditor(Data* data) {
 }
 
 void InitialWindow::createImageBooth(Data* data) {
-    qDebug() << "createImageBooth";
+    qInfo() << "createImageBooth";
     data->sizes->imagesBoothSizes->imagesPerLine = std::stoi(data->options.at("Sizes::imageBooth::ImagesPerLine").value);
     data->sizes->update();
 
@@ -512,7 +519,7 @@ void InitialWindow::clearMainWindow() {
 }
 
 void InitialWindow::showImageEditor() {
-    qDebug() << "showImageEditor";
+    qInfo() << "showImageEditor";
     if (imageBooth != nullptr) {
         clearImageBooth();
     }
@@ -523,7 +530,7 @@ void InitialWindow::showImageEditor() {
 }
 
 void InitialWindow::showImageBooth() {
-    qDebug() << "showImageBooth";
+    qInfo() << "showImageBooth";
     if (imageBooth != nullptr) {
         clearImageBooth();
     }
@@ -538,7 +545,7 @@ void InitialWindow::showImageBooth() {
 }
 
 void InitialWindow::showMainWindow() {
-    qDebug() << "showMainWindow";
+    qInfo() << "showMainWindow";
     if (imageEditor != nullptr) {
         clearImageEditor();
     }

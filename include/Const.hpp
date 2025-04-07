@@ -59,6 +59,8 @@ const std::vector<std::string> IMAGE_CONVERTION = {"jpg", "jpeg", "png", "webp",
 const std::vector<int> THUMBNAIL_SIZES = {16, 128, 256, 512};
 
 const std::vector<std::string> IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".svg", ".tiff", ".bmp"};
+const std::vector<std::string> VIDEO_EXTENSIONS = {".mp4"};
+
 const std::vector<std::string> TURNABLE_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".tiff", ".bmp"};
 const std::vector<std::string> MIRRORABLE_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif", ".tiff", ".bmp"};
 const std::vector<std::string> METADA_ACTION_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".heic", ".heif", ".webp", ".tiff"};

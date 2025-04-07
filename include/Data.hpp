@@ -1,14 +1,16 @@
 #pragma once
 
+#include <QImage>
+#include <QMediaPlayer>
+// #include <QMediaPlaylist>
 #include <QRunnable>
 #include <QSize>
+#include <QWidget>
 #include <map>
+#include <mutex>
 #include <opencv2/face.hpp>
 #include <string>
 #include <vector>
-
-// #include "Folders.hpp"
-#include <QImage>
 
 #include "Folders.hpp"
 #include "ImagesData.hpp"
@@ -38,6 +40,8 @@ class Actions {
 
 class Data {
    public:
+    cv::dnn::Net net;
+    std::vector<std::string> classNames;
     cv::Ptr<cv::face::LBPHFaceRecognizer> model = cv::face::LBPHFaceRecognizer::create();
 
     QApplication* app;
@@ -55,7 +59,9 @@ class Data {
 
     std::map<std::string, Option> options;
     Sizes* sizes = new Sizes();
+
     std::unordered_map<std::string, QImageAndPath>* imageCache = nullptr;
+
     bool saved = true;
 
     std::vector<int> imagesSelected;
@@ -77,9 +83,15 @@ class Data {
 
     void removeDeletedImages();
 
+    // QMediaPlayer* loadVideo();
+    QImage loadImageFromVideo(std::string videoPath, int frameNumber = 1);
+
+    DetectedObjects detect(std::string imagePath, QImage image);
+
     QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool rotation = true, bool square = false, bool crop = true, bool force = false);
     QImage loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool force = false);
 
+    std::mutex imageCacheMutex;
     bool loadInCache(std::string imagePath, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
     void loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
 

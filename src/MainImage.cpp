@@ -7,10 +7,17 @@
 #include "Box.hpp"
 #include "Const.hpp"
 #include "Data.hpp"
+#include "Verification.hpp"
 
 MainImage::MainImage(Data* data, const QString& imagePath, QSize size, bool setSize, int thumbnail, bool square, bool force)
     : data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), thumbnail(thumbnail), square(square), force(force) {
-    qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, true, force);
+    if (isImage(imagePath.toStdString())) {
+        qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, true, force);
+    } else if (isVideo(imagePath.toStdString())) {
+        qImage = data->loadImageFromVideo(imagePath.toStdString());
+    } else {
+        qImage = QImage();
+    }
 
     if (!qImage.isNull()) {
         this->setPixmap(QPixmap::fromImage(qImage).scaled(mSize - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -233,7 +240,7 @@ void MainImage::cropImage() {
 
         imageCropted();
     } else {
-        qDebug() << "Erreur : data ou getCurrentImageData() est nul";
+        qWarning() << "Erreur : data ou getCurrentImageData() est nul";
     }
     data->saved = false;
 }

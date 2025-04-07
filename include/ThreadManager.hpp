@@ -35,7 +35,7 @@ class ThreadManager : public QObject {
     int getThreadCount() const;
 
    private:
-    void startJob(std::function<void()> job);
+       void startJob(std::function<void()> job);
     int maxThreads;
     std::queue<std::function<void()>> taskQueue;
     std::queue<std::function<void()>> heavyTaskQueue;

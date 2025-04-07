@@ -11,22 +11,6 @@ class QWidget;
 class Data;
 class ImagesData;
 
-class ThumbnailTask : public QObject, public QRunnable {
-    Q_OBJECT
-
-   public:
-    ThumbnailTask(Data* data, int start, int end)
-        : data(data), start(start), end(end) {
-    }
-
-    void run() override;
-
-   private:
-    Data* data;
-    int start;
-    int end;
-};
-
 bool addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& progressDialog);
 std::string getDirectoryFromUser(QWidget* parent);
 

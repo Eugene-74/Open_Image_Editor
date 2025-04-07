@@ -14,12 +14,8 @@ void ImagesData::setImageNumber(int nbr) {
     if (currentImagesData.size() == 0) {
         nbr = 0;
     } else {
-        while (nbr < 0) {
-            nbr += 1;
-        }
-        while (nbr >= currentImagesData.size()) {
-            nbr -= 1;
-        }
+        nbr = std::max(0, nbr);
+        nbr = std::min(nbr, (int)currentImagesData.size() - 1);
     }
 
     imageNumber = nbr;
@@ -46,13 +42,6 @@ int ImagesData::getImageNumberInCurrent(int imageNbrInTotal) {
         imageNbrInCurrent++;
     }
     return imageNbrInCurrent - 1;
-}
-
-void ImagesData::print() const {
-    // qDebug() << "ImagesData : \n";
-    // for (const ImageData valeur : imagesData) {
-    //     qDebug() << valeur.get();
-    // }
 }
 
 void ImagesData::addImage(ImageData* imageData) {
@@ -163,14 +152,7 @@ std::unordered_map<std::string, ImageData*>* ImagesData::getImageMap() {
 }
 
 void ImagesData::setImageMapValue(std::string imagePath, ImageData* imageData) {
-    // qDebug() << "setImageMapValue : " << imagePath.c_str();
-    // if (imageData->getpersons().size() > 0) {
-    //     qDebug() << "load person 3 : " << imageData->getImagePath();
-    // }
     imageMap[imagePath] = imageData;
-    // if (imageMap[imagePath]->getpersons().size() > 0) {
-    //     qDebug() << "load person 4 : " << imageData->getImagePath();
-    // }
 }
 
 void ImagesData::setImageMapIntValue(int index, ImageData* imageData) {

@@ -8,6 +8,7 @@
 
 #include "Const.hpp"
 #include "Data.hpp"
+#include "Verification.hpp"
 
 ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QString toolTip, QWidget* parent, QSize* sizePtr, bool setSize, int thumbnail, bool square, bool force)
     : QLabel(parent), sizePtr(sizePtr) {
@@ -20,7 +21,15 @@ ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QString too
         setToolTip(toolTip);
     }
 
-    QImage qImage = data->loadImage(this, imagePath.toStdString(), *sizePtr, setSize, thumbnail, true, square, true, force);
+    QImage qImage;
+
+    if (isImage(imagePath.toStdString())) {
+        qImage = data->loadImage(this, imagePath.toStdString(), *sizePtr, setSize, thumbnail, true, square, true, force);
+    } else if (isVideo(imagePath.toStdString())) {
+        qImage = data->loadImageFromVideo(imagePath.toStdString());
+    } else {
+        qImage = QImage();
+    }
 
     if (!qImage.isNull()) {
         setPixmap(QPixmap::fromImage(qImage).scaled(*sizePtr, Qt::KeepAspectRatio, Qt::SmoothTransformation));

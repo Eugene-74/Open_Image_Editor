@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QLabel>
+#include <QMediaPlayer>
 #include <QMessageBox>
 #include <QObject>
 #include <QPainter>
@@ -11,12 +12,14 @@
 #include <QThreadPool>
 #include <QTimer>
 #include <QWidget>
+#include <opencv2/opencv.hpp>
 #include <regex>
 
 #include "Box.hpp"
 #include "Const.hpp"
 #include "Conversion.hpp"
 #include "Data.hpp"
+#include "FaceRecognition.hpp"
 #include "Verification.hpp"
 
 namespace fs = std::filesystem;
@@ -37,7 +40,6 @@ void Data::preDeleteImage(int imageNbr) {
 
     this->deletedImagesData.addImage(imageData);
     qInfo() << "image deleted : " << imageNbr;
-    this->deletedImagesData.print();
 }
 
 /**
@@ -100,6 +102,42 @@ bool Data::isDeleted(int imageNbr) {
     return false;
 }
 
+// QMediaPlayer* Data::loadVideo() {
+// QMediaPlayer* player = new QMediaPlayer;
+// QVideoWidget* videoWidget = new QVideoWidget;
+
+// player->setVideoOutput(videoWidget);
+// player->setSource(QUrl::fromLocalFile("path/to/your/video/file.mp4"));
+
+// videoWidget->show();
+// player->play();
+
+// return player;
+// }
+
+QImage Data::loadImageFromVideo(std::string videoPath, int frameNumber) {
+    cv::VideoCapture cap(videoPath);
+    if (!cap.isOpened()) {
+        qWarning("Impossible d'ouvrir la vidéo : %s", videoPath.c_str());
+        return QImage();
+    }
+
+    cap.set(cv::CAP_PROP_POS_FRAMES, frameNumber);
+
+    cv::Mat frame;
+    if (!cap.read(frame)) {
+        qWarning("Impossible de lire le frame %d", frameNumber);
+        return QImage();
+    }
+
+    QImage image = CvMatToQImage(frame);
+
+    // (*imageCache)[videoPath].image = image;
+    // (*imageCache)[videoPath].imagePath = videoPath;
+
+    return image;
+}
+
 QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
                        bool setSize, int thumbnail, bool rotation,
                        bool square, bool crop, bool force) {
@@ -139,12 +177,6 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
 
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                              bool setSize, int thumbnail, bool force) {
-    // Vérifiez si le chemin de l'image est vide ou contient des caractères invalides
-    // if (imagePath.empty() || imagePath.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.:/\\ ") != std::string::npos) {
-    //     qWarning() << "Broken filename passed to function: " << QString::fromStdString(imagePath);
-    //     return QImage();
-    // }
-
     if (imagePath.at(0) == ':') {
         if (darkMode) {
             imagePath.insert(imagePath.find_first_of(':') + 1, "/255-255-255-255");
@@ -251,8 +283,12 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
             image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         }
     }
-    (*imageCache)[imagePathbis].image = image;
-    (*imageCache)[imagePathbis].imagePath = imagePath;
+
+    {
+        std::lock_guard<std::mutex> lock(imageCacheMutex);
+        (*imageCache)[imagePathbis].image = image;
+        (*imageCache)[imagePathbis].imagePath = imagePath;
+    }
 
     size_t cacheSize = 0;
 
@@ -345,7 +381,15 @@ void Data::createThumbnailAsync(const std::string& imagePath, const int maxDim) 
  */
 bool Data::createThumbnail(const std::string& imagePath, const int maxDim) {
     try {
-        QImage image = loadImageNormal(nullptr, imagePath, QSize(maxDim, maxDim), false, 0);
+        QImage image;
+        if (isImage(imagePath)) {
+            image = loadImageNormal(nullptr, imagePath, QSize(maxDim, maxDim), false, 0);
+        } else if (isVideo(imagePath)) {
+            image = loadImageFromVideo(imagePath);
+        } else {
+            return false;
+        }
+
         double scale = std::min(static_cast<double>(maxDim) / image.width(),
                                 static_cast<double>(maxDim) / image.height());
 
@@ -475,7 +519,10 @@ bool Data::unloadFromCache(std::string imagePath) {
     auto it = imageCache->find(imagePath);
 
     if (it != imageCache->end()) {
-        imageCache->erase(it);
+        {
+            std::lock_guard<std::mutex> lock(imageCacheMutex);
+            imageCache->erase(it);
+        }
         return true;
     }
     return false;
@@ -505,7 +552,6 @@ void Data::exportImages(std::string exportPath, bool dateInName) {
  * @return First Folder with aller images
  */
 Folders* Data::findFirstFolderWithAllImages() {
-    qDebug() << "findFirstFolderWithAllImages";
     Folders* firstFolder = &rootFolders;
     firstFolder = findFirstFolderWithAllImagesSub(&rootFolders);
     return firstFolder;
@@ -637,7 +683,7 @@ void Data::createFolders(Folders* currentFolders, std::string folderPath) {
 }
 
 void Data::saveData() {
-    qDebug() << "Saving data";
+    qInfo() << "Saving data";
 
     std::string filePath = IMAGESDATA_SAVE_DATA_PATH;
     std::ofstream outFile(filePath, std::ios::binary);
@@ -659,15 +705,12 @@ void Data::saveData() {
     size_t imagesDataSize = imagesData.get()->size();
     outFile.write(reinterpret_cast<const char*>(&imagesDataSize), sizeof(imagesDataSize));
     for (auto* imageData : *imagesData.get()) {
-        // if (imageData->getpersons().size() > 0) {
-        //     qDebug() << "save person 1 : " << imageData->getImagePath();
-        // }
         imageData->save(outFile);
     }
 
     // size_t deletedImagesDataSize = deletedImagesData.get()->size();
     // outFile.write(reinterpret_cast<const char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
-    // for (const auto* imageData : *deletedImagesData.get()) {
+    // for (auto* imageData : *deletedImagesData.get()) {
     //     imageData->save(outFile);
     // }
 
@@ -696,7 +739,7 @@ void Data::saveData() {
     outFile.write(currentFolderPath.c_str(), pathSize);
 
     outFile.close();
-    qDebug() << "data saved";
+    qInfo() << "data saved";
 }
 
 void Data::loadData() {
@@ -757,7 +800,6 @@ void Data::loadData() {
     std::string currentFolderPath(pathSize, '\0');
     inFile.read(&currentFolderPath[0], pathSize);
     currentFolder = findFolderByPath(rootFolders, currentFolderPath);
-    qDebug() << "currentFolder : " << currentFolderPath;
 
     inFile.close();
 }
@@ -965,7 +1007,7 @@ void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
     QImage image = loadImage(nullptr, imagesData.getImageData(nbr)->getImagePath(), QSize(0, 0), false);
     image = image.transformed(QTransform().rotate(-rotation));
     if (!image.save(outputPath)) {
-        qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
+        qWarning() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
     }
     unloadFromCache(imagesData.getImageData(nbr)->getImagePath());
     loadInCache(imagesData.getImageData(nbr)->getImagePath());
@@ -1045,9 +1087,8 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
                 break;
         }
     }
-    // qDebug() << "Exif rotate orientation :" << orientation;
-    imageData->turnImage(orientation);
 
+    imageData->turnImage(orientation);
     imageData->saveMetaData();
 
     reload();
@@ -1255,7 +1296,7 @@ void Data::realMirror(int nbr, bool UpDown, std::function<void()> reload) {
         image = image.mirrored(true, false);
     }
     if (!image.save(outputPath)) {
-        qDebug() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
+        qWarning() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
     }
     unloadFromCache(imagesData.getCurrentImageData()->getImagePathConst());
     loadInCache(imagesData.getCurrentImageData()->getImagePathConst());
@@ -1276,21 +1317,17 @@ Folders* Data::getRootFolders() {
  * @return The current Folder
  */
 Folders* Data::getCurrentFolders() {
-    // qDebug() << "getCurrentFolders ";
-
     if (currentFolder == nullptr) {
         qWarning() << "currentFolder is null";
         currentFolder = findFirstFolderWithAllImages();
         qInfo() << "currentFolder is now : " << currentFolder->getName();
     }
-    // qDebug() << "getCurrentFolders 1";
 
     if (currentFolder->getName() == "") {
         qWarning() << "currentFolder is empty";
         currentFolder = findFirstFolderWithAllImages();
         qInfo() << "currentFolder is now : " << currentFolder->getName();
     }
-    // qDebug() << "currentFolder not null : " << currentFolder->getName();
 
     return currentFolder;
 }
@@ -1312,7 +1349,6 @@ void Data::removeImageFromFolders(ImageData& imageData) {
         std::istringstream iss(folderPathBis);
         std::string token;
         bool run = true;
-        qDebug() << "Remove image from folder :  1" << folderPath;
         while (run && std::getline(iss, token, '/')) {
             auto it = std::find_if(currentFolderBis->folders.begin(), currentFolderBis->folders.end(),
                                    [&token](const Folders& f) { return f.getName() == token; });
@@ -1325,24 +1361,14 @@ void Data::removeImageFromFolders(ImageData& imageData) {
         }
         if (currentFolderBis) {
             try {
-                // qDebug() << "Remove image from folder :  2" << folderPath;
-                // qDebug() << "Current folder files:";
-                // for (const auto& file : currentFolderBis->files) {
-                //     qDebug() << QString::fromStdString(file);
-                // }
-                qDebug() << "Image to find: " << QString::fromStdString(imageData.getImagePath());
                 auto it = std::find(currentFolderBis->getFilesPtr()->begin(), currentFolderBis->getFilesPtr()->end(), imageData.getImagePath());
                 if (it != currentFolderBis->getFilesPtr()->end()) {
-                    qDebug() << "find to remove";
-                    // currentFolderBis->files.erase(it);
                     currentFolder->getFilesPtr()->erase(it);
                 }
             } catch (const std::exception& e) {
                 qCritical() << "removeImageFromFolders" << e.what();
             }
         }
-
-        qDebug() << "Remove image from folder : " << currentFolder->getName();
     }
 }
 
@@ -1450,3 +1476,85 @@ cv::Ptr<cv::face::LBPHFaceRecognizer> Data::load_model(const std::string& model_
     }
     return model;
 }
+
+DetectedObjects Data::detect(std::string imagePath, QImage image) {
+    try {
+        cv::Mat mat = QImageToCvMat(image);
+
+        if (mat.channels() == 4) {
+            cv::cvtColor(mat, mat, cv::COLOR_BGRA2BGR);
+        }
+
+        // TODO download the model if it doesn't exist
+        auto netStart = std::chrono::high_resolution_clock::now();
+        std::string modelConfiguration = APP_FILES.toStdString() + "/" + "yolov3.cfg";
+        std::string modelWeights = APP_FILES.toStdString() + "/" + "yolov3.weights";
+        cv::dnn::Net net = cv::dnn::readNetFromDarknet(modelConfiguration, modelWeights);
+        auto netEnd = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> netDuration = netEnd - netStart;
+        qDebug() << "Net creation time:" << netDuration.count() << "seconds";
+
+        std::string classNamesFile = APP_FILES.toStdString() + "/" + "coco.names";
+        std::vector<std::string> classNames = loadClassNames(classNamesFile);
+
+        cv::Mat blob;
+        cv::dnn::blobFromImage(mat, blob, 1 / 255.0, cv::Size(416, 416), cv::Scalar(), true, false);
+        net.setInput(blob);
+
+        std::vector<cv::Mat> outs;
+        auto start = std::chrono::high_resolution_clock::now();
+        net.forward(outs, net.getUnconnectedOutLayersNames());
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> duration = end - start;
+        qDebug() << "Detection time:" << duration.count() << "seconds";
+
+        std::vector<cv::Rect> boxes;
+        std::vector<int> classIds;
+        std::vector<float> confidences;
+        float confidenceThreshold = 0.5;
+        float nmsThreshold = 0.4;
+
+        for (size_t i = 0; i < outs.size(); ++i) {
+            float* data = (float*)outs[i].data;
+            for (int j = 0; j < outs[i].rows; ++j, data += outs[i].cols) {
+                cv::Mat scores = outs[i].row(j).colRange(5, outs[i].cols);
+                cv::Point classIdPoint;
+                double confidence;
+                cv::minMaxLoc(scores, nullptr, &confidence, nullptr, &classIdPoint);
+                if (confidence > confidenceThreshold) {
+                    int centerX = (int)(data[0] * mat.cols);
+                    int centerY = (int)(data[1] * mat.rows);
+                    int width = (int)(data[2] * mat.cols);
+                    int height = (int)(data[3] * mat.rows);
+                    int left = centerX - width / 2;
+                    int top = centerY - height / 2;
+
+                    classIds.push_back(classIdPoint.x);
+                    confidences.push_back((float)confidence);
+                    boxes.push_back(cv::Rect(left, top, width, height));
+                }
+            }
+        }
+
+        std::vector<int> indices;
+        cv::dnn::NMSBoxes(boxes, confidences, confidenceThreshold, nmsThreshold, indices);
+
+        std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects;
+        for (size_t i = 0; i < indices.size(); ++i) {
+            int idx = indices[i];
+            cv::Rect box = boxes[idx];
+            std::string className = classNames[classIds[idx]];  // Use actual class names
+            detectedObjects[className].emplace_back(box, confidences[idx]);
+        }
+
+        DetectedObjects detectedObjectsObj;
+        detectedObjectsObj.setDetectedObjects(detectedObjects);
+
+        return detectedObjectsObj;
+
+    } catch (const std::exception& e) {
+        qWarning() << "detect" << e.what();
+        return {};
+    }
+}
+

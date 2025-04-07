@@ -128,9 +128,7 @@ void ThreadManager::removeAllThreads() {
         heavyTaskQueue.pop();
     }
     QThreadPool::globalInstance()->clear();
-    qDebug() << "All threads stopped";
-    qDebug() << "Thread queue size : " << taskQueue.size();
-    qDebug() << "Heavy thread queue size : " << heavyTaskQueue.size();
+    qInfo() << "All threads stopped";
 }
 
 /**

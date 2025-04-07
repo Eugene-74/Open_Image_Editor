@@ -15,7 +15,6 @@
 
 ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
-    // qDebug() << "ImageBooth::ImageBooth";
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
 
     data->getImagesData()->getCurrent()->clear();
@@ -109,10 +108,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
 
     connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, this, &ImageBooth::onScroll);
 
-    // Make sure that the scrollArea is well initialized (doesn't work without)
-    // qDebug() << "imageNumber " << data->imagesData.getImageNumber();
     // TODO marche pas bien
-
     QTimer::singleShot(100, this, [this]() {
         qInfo() << "go to image";
         gotToImage(data->imagesData.getImageNumber(), true);
@@ -174,7 +170,6 @@ void ImageBooth::openFolder(int index) {
 }
 
 void ImageBooth::updateVisibleImages(bool force) {
-    qDebug() << "updateVisibleImages";
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
@@ -239,19 +234,13 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     if (data->imagesData.getCurrent()->size() <= 0) {
         return nullptr;
     }
-
     ClickableLabel* imageButton;
 
-    // image are croped so we take imageSize->height() + imageSize->width() to avoir bad quality image
-
-    // Image already loaded
     if (data->isInCache(data->getThumbnailPath(imagePath, imageQuality)) || imagePath.rfind(":", 0) == 0) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, imageQuality, true);
 
-        // Image has a poor quality thumbnail
-    } else if (data->hasThumbnail(imagePath, imageQuality)) {
-        // } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)) {
+    } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, imageQuality, true);
         // imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
@@ -280,7 +269,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         //     });
         // });
     } else {
-        qDebug() << "no thumbnail found : " << imagePath;
+        qWarning() << "no thumbnail found : " << imagePath;
         imageButton = new ClickableLabel(data, IMAGE_PATH_ERROR,
                                          "", this, imageSize, false, 0, true);
 
@@ -404,14 +393,9 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
             int imageShiftSelectedInCurrent = data->getImagesData()->getImageNumberInCurrent(imageShiftSelected);
 
-            qDebug() << "imageShiftSelectedInCurrent : " << imageShiftSelectedInCurrent;
-            qDebug() << "imageShiftSelected" << imageShiftSelected;
-            qDebug() << "nbr : " << nbr;
-
             int start = std::min(imageShiftSelectedInCurrent, nbr);
             int end = std::max(imageShiftSelectedInCurrent, nbr);
             
-            qDebug() << start << " : " << end;
             for (int i = start; i <= end; ++i) {
                 int imageNumberInTotal = data->getImagesData()->getImageNumberInTotal(i);
                 auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNumberInTotal);
@@ -491,7 +475,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
 // Go to the line of the image nbr
 void ImageBooth::gotToImage(int imageNumberInCurrent, bool force) {
-    qDebug() << "gotToImage";
+    qInfo() << "gotToImage : " << imageNumberInCurrent;
     int imageLine = imageNumberInCurrent / data->sizes->imagesBoothSizes->widthImageNumber;
     int spacerHeight = imageLine * data->sizes->imagesBoothSizes->realImageSize.height();
 
@@ -553,7 +537,6 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
 // Update all visible images
 void ImageBooth::updateImages() {
     try {
-        // qDebug() << "updateImages";
         int spacerHeight = scrollArea->verticalScrollBar()->value();
         int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
         spacerHeight = (spacerHeight / imageHeight) * imageHeight;
@@ -720,7 +703,7 @@ ClickableLabel* ImageBooth::createImageDelete() {
             showInformationMessage(this, "No image selected", "You need to select an image to delete it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
+        std::vector<int> imagesSelectedBefore = data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             if (data->isDeleted(data->imagesSelected.at(i))) {
                 data->unPreDeleteImage(data->imagesSelected.at(i));
@@ -841,7 +824,7 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
             showInformationMessage(this, "No image selected", "You need to select an image to rotate it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
+        std::vector<int> imagesSelectedBefore = data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i))->getImageExtension();
             data->rotateRight(data->imagesSelected.at(i), extension, [this]() {}, false);
@@ -890,7 +873,7 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
             showInformationMessage(this, "No image selected", "You need to select an image to rotate it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
+        std::vector<int> imagesSelectedBefore = data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i))->getImageExtension();
             data->rotateLeft(data->imagesSelected.at(i), extension, [this]() {}, false);
@@ -939,7 +922,7 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
             showInformationMessage(this, "No image selected", "You need to select an image to mirror it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
+        std::vector<int> imagesSelectedBefore = data->imagesSelected;
 
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i))->getImageExtension();
@@ -989,7 +972,7 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
             showInformationMessage(this, "No image selected", "You need to select an image to mirror it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = *&data->imagesSelected;
+        std::vector<int> imagesSelectedBefore = data->imagesSelected;
         for (int i = 0; i < data->imagesSelected.size(); i++) {
             std::string extension = data->imagesData.get()->at(data->imagesSelected.at(i))->getImageExtension();
             data->mirrorLeftRight(data->imagesSelected.at(i), extension, [this]() {}, false);
@@ -1077,53 +1060,6 @@ ClickableLabel* ImageBooth::createImageConversion() {
     return imageConversionNew;
 }
 
-// ClickableLabel* ImageBooth::createImageMore() {
-//     ClickableLabel* imageMoreNew = new ClickableLabel(data, ICON_PATH_PLUS, TOOL_TIP_IMAGE_BOOTH_CONVERSION, this, actionSize);
-//     imageMoreNew->setInitialBackground("transparent", "#b3b3b3");
-
-//     connect(imageMoreNew, &ClickableLabel::clicked, [this]() {
-//         int lastimagesPerLine = data->sizes->imagesBoothSizes->imagesPerLine;
-//         data->sizes->imagesBoothSizes->changeimagesPerLine(1);
-
-//         emit switchToImageBooth();
-
-//         data->addAction(
-//             [this, lastimagesPerLine]() {
-//                 data->sizes->imagesBoothSizes->setimagesPerLine(lastimagesPerLine);
-//                 emit switchToImageBooth();
-//             },
-//             [this]() {
-//                 data->sizes->imagesBoothSizes->changeimagesPerLine(1);
-//                 emit switchToImageBooth();
-//             });
-//     });
-
-//     return imageMoreNew;
-// }
-
-// ClickableLabel* ImageBooth::createImageLess() {
-//     ClickableLabel* imageLessNew = new ClickableLabel(data, ICON_PATH_MINUS, TOOL_TIP_IMAGE_BOOTH_CONVERSION, this, actionSize);
-//     imageLessNew->setInitialBackground("transparent", "#b3b3b3");
-
-//     connect(imageLessNew, &ClickableLabel::clicked, [this]() {
-//         int lastimagesPerLine = data->sizes->imagesBoothSizes->imagesPerLine;
-//         data->sizes->imagesBoothSizes->changeimagesPerLine(-1);
-//         emit switchToImageBooth();
-
-//         data->addAction(
-//             [this, lastimagesPerLine]() {
-//                 data->sizes->imagesBoothSizes->setimagesPerLine(lastimagesPerLine);
-//                 emit switchToImageBooth();
-//             },
-//             [this]() {
-//                 data->sizes->imagesBoothSizes->changeimagesPerLine(-1);
-//                 emit switchToImageBooth();
-//             });
-//     });
-
-//     return imageLessNew;
-// }
-
 /**
  * @brief reload the images of the scroll area of imageBooth window
  */
@@ -1145,13 +1081,8 @@ void ImageBooth::enterEvent(QEnterEvent* event) {
  * @return the size of the current folders
  */
 int ImageBooth::getCurrentFoldersSize() {
-    // qDebug() << "getCurrentFoldersSize";
     if (data->getCurrentFolders()) {
-        // qDebug() << "getCurrentFoldersSize 0 : " << data->getCurrentFolders()->getName();
-
         if (data->getCurrentFolders()->getFolders()) {
-            // qDebug() << "getCurrentFoldersSize 1 : " << data->getCurrentFolders()->getFolders()->size() + 1;
-
             return data->getCurrentFolders()->getFolders()->size() + 1;
         }
     }
@@ -1163,19 +1094,18 @@ int ImageBooth::getCurrentFoldersSize() {
  * @brief Pre load images so it's more fluid
  */
 void ImageBooth::preLoadImages() {
-    // TODO make imageEditor bug
-    qDebug() << "preLoadImages";
-    data->stopAllThreads();
-    auto currentImages = data->getImagesData()->getCurrent();
-    qDebug() << "currentImages size : " << currentImages->size();
-    const int packetSize = data->sizes->imagesBoothSizes->imagesPerLine * 2;
-    for (size_t i = 0; i < currentImages->size(); i += packetSize) {
-        auto packetEnd = std::min(currentImages->size(), i + packetSize);
-        qInfo() << "creating packet for pre loading : " << packetEnd;
-        for (size_t j = i; j < packetEnd; j++) {
-            // data->loadInCacheAsync(data->getThumbnailPath(currentImages->at(j)->getImagePath(), imageQuality), []() {});
-        }
-    }
+    // data->stopAllThreads();
+    // auto currentImages = data->getImagesData()->getCurrent();
+    // const int packetSize = currentImages->size() / 10;
+    // data->addHeavyThread([this, currentImages, packetSize]() {
+    //     for (size_t i = 0; i < currentImages->size(); i += packetSize) {
+    //         auto packetEnd = std::min(currentImages->size(), i + packetSize);
+    //         for (size_t j = i; j < packetEnd; j++) {
+    //             qDebug() << "preloading image : " << j;
+    //             // data->loadImageNormal(this, data->getImagesData()->getImageDataInCurrent(j)->getImagePath(), QSize(0, 0), false, imageQuality, true);
+    //         }
+    //     }
+    // });
 }
 
 // void ImageBooth::checkThumbnailAndCorrect() {

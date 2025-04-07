@@ -57,4 +57,4 @@ class Folders {
 
 bool getIfExist(Folders* currentFolder, const std::string& path);
 
-bool containImage(const std::string& path);
+bool containMedia(const std::string& path);
