@@ -12,6 +12,8 @@
 #include <QThreadPool>
 #include <QTimer>
 #include <QWidget>
+#include <opencv2/core.hpp>
+#include <opencv2/core/ocl.hpp>
 #include <opencv2/opencv.hpp>
 #include <regex>
 
@@ -1500,6 +1502,20 @@ DetectedObjects Data::detect(std::string imagePath, QImage image) {
         cv::Mat blob;
         cv::dnn::blobFromImage(mat, blob, 1 / 255.0, cv::Size(416, 416), cv::Scalar(), true, false);
         net.setInput(blob);
+
+        if (cv::cuda::getCudaEnabledDeviceCount() > 0) {
+            net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
+            net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
+            qDebug() << "Using CUDA backend for DNN.";
+        } else if (cv::ocl::useOpenCL()) {
+            net.setPreferableBackend(cv::dnn::DNN_BACKEND_DEFAULT);
+            net.setPreferableTarget(cv::dnn::DNN_TARGET_OPENCL);
+            qDebug() << "Using OpenCL backend for DNN.";
+        } else {
+            net.setPreferableBackend(cv::dnn::DNN_BACKEND_DEFAULT);
+            net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
+            qDebug() << "Using CPU backend for DNN.";
+        }
 
         std::vector<cv::Mat> outs;
         auto start = std::chrono::high_resolution_clock::now();

@@ -1178,9 +1178,10 @@ void ImageBooth::openFiltersPopup() {
     }
 
     connect(toggleAllFiltersButton, &QPushButton::clicked, [checkboxes, imageCheckbox, videoCheckbox]() {
-        bool allChecked = imageCheckbox->isChecked() && videoCheckbox->isChecked();
+        bool allChecked = false;
+
         for (auto checkbox : checkboxes) {
-            allChecked = allChecked && checkbox->isChecked();
+            allChecked = checkbox->isChecked();
         }
 
         bool newState = !allChecked;

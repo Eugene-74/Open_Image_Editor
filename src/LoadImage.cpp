@@ -122,6 +122,31 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
     if (!loadImagesThumbnail(data, progressDialog)) {
         return false;
     }
+
+    if (QMessageBox::question(parent, "Pre-detection", "Do you want to perform object pre-detection on all images?") == QMessageBox::Yes) {
+        progressDialog.setLabelText("Detecting objects in images...");
+        progressDialog.setValue(0);
+        progressDialog.setMaximum(data->getImagesData()->get()->size());
+        progressDialog.show();
+        QApplication::processEvents();
+
+        for (int i = 0; i < data->getImagesData()->get()->size(); ++i) {
+            if (progressDialog.wasCanceled()) {
+                return false;
+            }
+
+            ImageData* imageData = data->getImagesData()->get()->at(i);
+            if (imageData->getDetectedObjects().size() > 0) {
+            } else {
+                QImage qImage(QString::fromStdString(imageData->getImagePath()));
+                auto detectedObjects = data->detect(imageData->getImagePath(), qImage).getDetectedObjects();
+                imageData->setDetectedObjects(detectedObjects);
+            }
+            progressDialog.setValue(i + 1);
+            QApplication::processEvents();
+        }
+    }
+
     return true;
 }
 bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
