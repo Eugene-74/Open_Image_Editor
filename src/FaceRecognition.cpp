@@ -111,7 +111,7 @@ std::pair<int, double> recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> mode
 
 void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback) {
     data->addHeavyThread([=]() {
-        DetectedObjects detectedObjects = data->detect(imagePath, image);
+        DetectedObjects detectedObjects = data->detect(imagePath, image, "yolov5x");
 
         try {
             callback(detectedObjects);

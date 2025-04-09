@@ -97,7 +97,6 @@ ImageData* ImagesData::getImageData(std::string imagePath) {
         return nullptr;
     }
     auto foundImageData = imageMap.find(imagePath);
-    qDebug() << "getImageData : " << imageMap.size() << " " << imagePath;
 
     if (foundImageData != imageMap.end()) {
         ImageData* imageData = foundImageData->second;

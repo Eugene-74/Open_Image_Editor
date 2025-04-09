@@ -1452,8 +1452,8 @@ void Data::stopAllThreads() {
     manager.removeAllThreads();
 }
 
-cv::dnn::Net load_net(bool is_cuda) {
-    auto result = cv::dnn::readNet(APP_FILES.toStdString() + "/yolov5n.onnx");
+cv::dnn::Net load_net(std::string model, bool is_cuda) {
+    auto result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
 
     if (result.empty()) {
         std::cerr << "Error loading network\n";
@@ -1501,11 +1501,15 @@ cv::Mat format_yolov5(const cv::Mat& source) {
     return result;
 }
 
-DetectedObjects Data::detect(std::string imagePath, QImage image) {
+DetectedObjects Data::detect(std::string imagePath, QImage image, std::string model) {
     cv::Mat mat = QImageToCvMat(image);
+    if (mat.empty()) {
+        qWarning() << "Image is empty. Check the file path or loading process.";
+        return DetectedObjects();  // Ou une autre gestion d'erreur appropriée.
+    }
 
     bool is_cuda = false;
-    cv::dnn::Net net = load_net(is_cuda);
+    cv::dnn::Net net = load_net(model, is_cuda);
     std::vector<std::string> className = load_class_list();
 
     cv::Mat blob;
@@ -1515,7 +1519,12 @@ DetectedObjects Data::detect(std::string imagePath, QImage image) {
     cv::dnn::blobFromImage(input_image, blob, 1. / 255., cv::Size(INPUT_WIDTH, INPUT_HEIGHT), cv::Scalar(), true, false);
     net.setInput(blob);
     std::vector<cv::Mat> outputs;
+
+    auto start = std::chrono::high_resolution_clock::now();
     net.forward(outputs, net.getUnconnectedOutLayersNames());
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> detectionTime = end - start;
+    qInfo() << "Detection time:" << detectionTime.count() << "seconds";
 
     float x_factor = input_image.cols / INPUT_WIDTH;
     float y_factor = input_image.rows / INPUT_HEIGHT;
@@ -1573,98 +1582,3 @@ DetectedObjects Data::detect(std::string imagePath, QImage image) {
     detectedObjects.setDetectedObjects(detectedObjectsMap);
     return detectedObjects;
 }
-
-// DetectedObjects Data::detect(std::string imagePath, QImage image) {
-//     try {
-//         cv::Mat mat = QImageToCvMat(image);
-
-//         if (mat.channels() == 4) {
-//             cv::cvtColor(mat, mat, cv::COLOR_BGRA2BGR);
-//         }
-
-//         // TODO download the model if it doesn't exist
-//         auto netStart = std::chrono::high_resolution_clock::now();
-//         std::string modelConfiguration = APP_FILES.toStdString() + "/" + "yolov3.cfg";
-//         std::string modelWeights = APP_FILES.toStdString() + "/" + "yolov3.weights";
-//         cv::dnn::Net net = cv::dnn::readNetFromDarknet(modelConfiguration, modelWeights);
-//         auto netEnd = std::chrono::high_resolution_clock::now();
-//         std::chrono::duration<double> netDuration = netEnd - netStart;
-//         qDebug() << "Net creation time:" << netDuration.count() << "seconds";
-
-//         std::string classNamesFile = APP_FILES.toStdString() + "/" + "coco.names";
-//         std::vector<std::string> classNames = loadClassNames(classNamesFile);
-
-//         cv::Mat blob;
-//         cv::dnn::blobFromImage(mat, blob, 1 / 255.0, cv::Size(416, 416), cv::Scalar(), true, false);
-//         net.setInput(blob);
-
-//         if (cv::cuda::getCudaEnabledDeviceCount() > 0) {
-//             net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
-//             net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
-//             qDebug() << "Using CUDA backend for DNN.";
-//         } else if (cv::ocl::useOpenCL()) {
-//             net.setPreferableBackend(cv::dnn::DNN_BACKEND_DEFAULT);
-//             net.setPreferableTarget(cv::dnn::DNN_TARGET_OPENCL);
-//             qDebug() << "Using OpenCL backend for DNN.";
-//         } else {
-//             net.setPreferableBackend(cv::dnn::DNN_BACKEND_DEFAULT);
-//             net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
-//             qDebug() << "Using CPU backend for DNN.";
-//         }
-
-//         std::vector<cv::Mat> outs;
-//         auto start = std::chrono::high_resolution_clock::now();
-//         net.forward(outs, net.getUnconnectedOutLayersNames());
-//         auto end = std::chrono::high_resolution_clock::now();
-//         std::chrono::duration<double> duration = end - start;
-//         qDebug() << "Detection time:" << duration.count() << "seconds";
-
-//         std::vector<cv::Rect> boxes;
-//         std::vector<int> classIds;
-//         std::vector<float> confidences;
-//         float confidenceThreshold = 0.5;
-//         float nmsThreshold = 0.4;
-
-//         for (size_t i = 0; i < outs.size(); ++i) {
-//             float* data = (float*)outs[i].data;
-//             for (int j = 0; j < outs[i].rows; ++j, data += outs[i].cols) {
-//                 cv::Mat scores = outs[i].row(j).colRange(5, outs[i].cols);
-//                 cv::Point classIdPoint;
-//                 double confidence;
-//                 cv::minMaxLoc(scores, nullptr, &confidence, nullptr, &classIdPoint);
-//                 if (confidence > confidenceThreshold) {
-//                     int centerX = (int)(data[0] * mat.cols);
-//                     int centerY = (int)(data[1] * mat.rows);
-//                     int width = (int)(data[2] * mat.cols);
-//                     int height = (int)(data[3] * mat.rows);
-//                     int left = centerX - width / 2;
-//                     int top = centerY - height / 2;
-
-//                     classIds.push_back(classIdPoint.x);
-//                     confidences.push_back((float)confidence);
-//                     boxes.push_back(cv::Rect(left, top, width, height));
-//                 }
-//             }
-//         }
-
-//         std::vector<int> indices;
-//         cv::dnn::NMSBoxes(boxes, confidences, confidenceThreshold, nmsThreshold, indices);
-
-//         std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects;
-//         for (size_t i = 0; i < indices.size(); ++i) {
-//             int idx = indices[i];
-//             cv::Rect box = boxes[idx];
-//             std::string className = classNames[classIds[idx]];  // Use actual class names
-//             detectedObjects[className].emplace_back(box, confidences[idx]);
-//         }
-
-//         DetectedObjects detectedObjectsObj;
-//         detectedObjectsObj.setDetectedObjects(detectedObjects);
-
-//         return detectedObjectsObj;
-
-//     } catch (const std::exception& e) {
-//         qWarning() << "detect" << e.what();
-//         return {};
-//     }
-// }

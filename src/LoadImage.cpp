@@ -133,10 +133,9 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
             }
 
             ImageData* imageData = data->getImagesData()->get()->at(i);
-            if (imageData->getDetectedObjects().size() > 0) {
-            } else {
+            if (imageData->getDetectedObjects().size() <= 0) {
                 QImage qImage(QString::fromStdString(imageData->getImagePath()));
-                auto detectedObjects = data->detect(imageData->getImagePath(), qImage).getDetectedObjects();
+                auto detectedObjects = data->detect(imageData->getImagePath(), qImage, "yolov5n").getDetectedObjects();
                 imageData->setDetectedObjects(detectedObjects);
             }
             progressDialog.setValue(i + 1);
@@ -162,9 +161,6 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
                 data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
                 data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
                 data->createThumbnailIfNotExists(imageData->getImagePath(), 512);
-
-                // auto detectedObjects = data->detect(imageData->getImagePath(), data->imageCache->at(imageData->getImagePath()).image).getDetectedObjects();
-                // imageData->setDetectedObjects(detectedObjects);
 
                 try {
                     data->unloadFromCache(imageData->getImagePath());
@@ -258,23 +254,6 @@ std::map<std::string, std::string> openJsonFile(std::string filePath) {
     std::map<std::string, std::string> jsonMap = parseJsonToMap(jsonString);
     return jsonMap;
 }
-
-// Charges concrètement dans un imagesData toutes les données des images dans un dossier et ses sous dossier
-// bool loadImagesFromFolder(const std::string initialPath, const std::string path, ImagesData* imagesData, int& nbrImage, QProgressDialog& progressDialog) {
-//     for (const auto& entry : fs::directory_iterator(path)) {
-//         if (progressDialog.wasCanceled()) {
-//             return false;
-//         }
-//         if (fs::is_regular_file(entry.status())) {
-//             if (isImage(entry.path().string())) {
-
-//             }
-//         } else if (fs::is_directory(entry.status())) {
-//             loadImagesFromFolder(initialPath, entry.path().string(), imagesData, nbrImage, progressDialog);
-//         }
-//     }
-//     return true;
-// }
 
 bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog) {
     fs::path fsPath(path);

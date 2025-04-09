@@ -198,8 +198,7 @@ void ImageData::save(std::ofstream& out) const {
         out.write(reinterpret_cast<const char*>(cropSize.data()), innerSize * sizeof(QPoint));
     }
 
-    // TODO save doesn't work
-    // out.write(reinterpret_cast<const char*>(&detectionStatus), sizeof(detectionStatus));
+    out.write(reinterpret_cast<const char*>(&detectionStatus), sizeof(detectionStatus));
 
     detectedObjects.save(out);
 }
@@ -221,12 +220,12 @@ void ImageData::load(std::ifstream& in) {
             in.read(reinterpret_cast<char*>(cropSizes[i].data()), innerSize * sizeof(QPoint));
         }
     }
-    // TODO save doesn't work
-    // in.read(reinterpret_cast<char*>(&detectionStatus), sizeof(detectionStatus));
-    // // TODO mettre autre part
-    // if (isDetectionStatusLoading()) {
-    //     setDetectionStatusNotLoaded();
-    // }
+
+    in.read(reinterpret_cast<char*>(&detectionStatus), sizeof(detectionStatus));
+    // TODO mettre autre part
+    if (isDetectionStatusLoading()) {
+        setDetectionStatusNotLoaded();
+    }
 
     detectedObjects.load(in);
 }

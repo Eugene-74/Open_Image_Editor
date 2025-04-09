@@ -347,9 +347,13 @@ void ImageEditor::updateButtons() {
     }
 
     if (imagePersons) {
+        qDebug() << "Image persons : " << data->imagesData.getCurrentImageData()->getDetectedObjects()["person"].size();
         if (data->imagesData.getCurrentImageData()->isDetectionStatusLoaded()) {
+            qDebug() << "Image persons : loaded";
             imagePersons->setLogoNumber(data->imagesData.getCurrentImageData()->getDetectedObjects()["person"].size());
         } else {
+            qDebug() << "Image persons not : loaded";
+
             imagePersons->setLogoNumber(-1);
         }
     }
@@ -621,7 +625,7 @@ ClickableLabel* ImageEditor::createImageConversion() {
 }
 
 ClickableLabel* ImageEditor::createImagePersons() {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesData()->get()->size() <= 0) {
         return nullptr;
     }
 

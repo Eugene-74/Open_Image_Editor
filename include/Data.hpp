@@ -84,7 +84,7 @@ class Data {
     // QMediaPlayer* loadVideo();
     QImage loadImageFromVideo(std::string videoPath, int frameNumber = 1);
 
-    DetectedObjects detect(std::string imagePath, QImage image);
+    DetectedObjects detect(std::string imagePath, QImage image, std::string model);
 
     QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool rotation = true, bool square = false, bool crop = true, bool force = false);
     QImage loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool force = false);
