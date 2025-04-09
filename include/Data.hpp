@@ -71,8 +71,6 @@ class Data {
 
     Data();
 
-    void save_model(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const std::string& model_path);
-    cv::Ptr<cv::face::LBPHFaceRecognizer> load_model(const std::string& model_path);
     void clearCache();
 
     void preDeleteImage(int imageNbr);

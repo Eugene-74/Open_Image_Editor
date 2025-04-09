@@ -29,7 +29,6 @@ namespace fs = std::filesystem;
 Data::Data()
     : imageCache(new std::unordered_map<std::string, QImageAndPath>()) {
     options = DEFAULT_OPTIONS;
-    model = load_model(APP_FILES.toStdString() + "/lbph_face_recognizer.yml");
 }
 
 /**
@@ -1453,34 +1452,9 @@ void Data::stopAllThreads() {
     manager.removeAllThreads();
 }
 
-/**
- * @brief Save the model for face recognition
- * @param model The model it self
- * @param model_path The math to save the model
- */
-void Data::save_model(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const std::string& model_path) {
-    model->save(model_path);
-    std::cout << "Model saved to " << model_path << std::endl;
-}
-
-/**
- * @brief Load the model
- * @param model_path Path to the model
- * @return The model it self
- */
-cv::Ptr<cv::face::LBPHFaceRecognizer> Data::load_model(const std::string& model_path) {
-    cv::Ptr<cv::face::LBPHFaceRecognizer> model = cv::face::LBPHFaceRecognizer::create();
-    if (std::filesystem::exists(model_path)) {
-        model->read(model_path);
-        std::cout << "Model loaded from " << model_path << std::endl;
-    } else {
-        std::cout << "Model file does not exist. Creating a new model." << std::endl;
-    }
-    return model;
-}
-
 cv::dnn::Net load_net(bool is_cuda) {
-    auto result = cv::dnn::readNet(APP_FILES.toStdString() + "/yolov5x.onnx");
+    auto result = cv::dnn::readNet(APP_FILES.toStdString() + "/yolov5n.onnx");
+
     if (result.empty()) {
         std::cerr << "Error loading network\n";
         return result;
@@ -1508,6 +1482,7 @@ std::vector<std::string> load_class_list() {
 }
 
 cv::Mat format_yolov5(const cv::Mat& source) {
+    // source.convertTo(source, CV_32F);
     int col = source.cols;
     int row = source.rows;
     int _max = MAX(col, row);
