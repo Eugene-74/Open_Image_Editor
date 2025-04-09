@@ -163,7 +163,7 @@ void ThreadManager::startJob(std::function<void()> job) {
     try {
         int activeThreads = QThreadPool::globalInstance()->activeThreadCount();
         if (activeThreads >= maxThreads) {
-            qCritical() << "Cannot start job. Active threads: " << activeThreads << ", Max threads: " << maxThreads;
+            qWarning() << "Cannot start job. Active threads: " << activeThreads << ", Max threads: " << maxThreads;
             taskQueue.push(std::move(job));
 
             return;

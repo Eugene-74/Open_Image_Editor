@@ -1479,98 +1479,217 @@ cv::Ptr<cv::face::LBPHFaceRecognizer> Data::load_model(const std::string& model_
     return model;
 }
 
+cv::dnn::Net load_net(bool is_cuda) {
+    auto result = cv::dnn::readNet(APP_FILES.toStdString() + "/yolov5x.onnx");
+    if (result.empty()) {
+        std::cerr << "Error loading network\n";
+        return result;
+    }
+    if (is_cuda) {
+        std::cout << "Attempty to use CUDA\n";
+        result.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
+        result.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA_FP16);
+    } else {
+        std::cout << "Running on CPU\n";
+        result.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
+        result.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
+    }
+    return result;
+}
+
+std::vector<std::string> load_class_list() {
+    std::vector<std::string> class_list;
+    std::ifstream ifs(APP_FILES.toStdString() + "/coco.names");
+    std::string line;
+    while (getline(ifs, line)) {
+        class_list.push_back(line);
+    }
+    return class_list;
+}
+
+cv::Mat format_yolov5(const cv::Mat& source) {
+    int col = source.cols;
+    int row = source.rows;
+    int _max = MAX(col, row);
+    cv::Mat result = cv::Mat::zeros(_max, _max, CV_8UC3);
+
+    cv::Mat source_converted;
+    if (source.channels() == 1) {
+        cv::cvtColor(source, source_converted, cv::COLOR_GRAY2BGR);
+    } else if (source.channels() == 4) {
+        cv::cvtColor(source, source_converted, cv::COLOR_BGRA2BGR);
+    } else {
+        source_converted = source;
+    }
+
+    source_converted.copyTo(result(cv::Rect(0, 0, col, row)));
+    return result;
+}
+
 DetectedObjects Data::detect(std::string imagePath, QImage image) {
-    try {
-        cv::Mat mat = QImageToCvMat(image);
+    cv::Mat mat = QImageToCvMat(image);
 
-        if (mat.channels() == 4) {
-            cv::cvtColor(mat, mat, cv::COLOR_BGRA2BGR);
-        }
+    bool is_cuda = false;
+    cv::dnn::Net net = load_net(is_cuda);
+    std::vector<std::string> className = load_class_list();
 
-        // TODO download the model if it doesn't exist
-        auto netStart = std::chrono::high_resolution_clock::now();
-        std::string modelConfiguration = APP_FILES.toStdString() + "/" + "yolov3.cfg";
-        std::string modelWeights = APP_FILES.toStdString() + "/" + "yolov3.weights";
-        cv::dnn::Net net = cv::dnn::readNetFromDarknet(modelConfiguration, modelWeights);
-        auto netEnd = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> netDuration = netEnd - netStart;
-        qDebug() << "Net creation time:" << netDuration.count() << "seconds";
+    cv::Mat blob;
 
-        std::string classNamesFile = APP_FILES.toStdString() + "/" + "coco.names";
-        std::vector<std::string> classNames = loadClassNames(classNamesFile);
+    auto input_image = format_yolov5(mat);
 
-        cv::Mat blob;
-        cv::dnn::blobFromImage(mat, blob, 1 / 255.0, cv::Size(416, 416), cv::Scalar(), true, false);
-        net.setInput(blob);
+    cv::dnn::blobFromImage(input_image, blob, 1. / 255., cv::Size(INPUT_WIDTH, INPUT_HEIGHT), cv::Scalar(), true, false);
+    net.setInput(blob);
+    std::vector<cv::Mat> outputs;
+    net.forward(outputs, net.getUnconnectedOutLayersNames());
 
-        if (cv::cuda::getCudaEnabledDeviceCount() > 0) {
-            net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
-            net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
-            qDebug() << "Using CUDA backend for DNN.";
-        } else if (cv::ocl::useOpenCL()) {
-            net.setPreferableBackend(cv::dnn::DNN_BACKEND_DEFAULT);
-            net.setPreferableTarget(cv::dnn::DNN_TARGET_OPENCL);
-            qDebug() << "Using OpenCL backend for DNN.";
-        } else {
-            net.setPreferableBackend(cv::dnn::DNN_BACKEND_DEFAULT);
-            net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
-            qDebug() << "Using CPU backend for DNN.";
-        }
+    float x_factor = input_image.cols / INPUT_WIDTH;
+    float y_factor = input_image.rows / INPUT_HEIGHT;
 
-        std::vector<cv::Mat> outs;
-        auto start = std::chrono::high_resolution_clock::now();
-        net.forward(outs, net.getUnconnectedOutLayersNames());
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> duration = end - start;
-        qDebug() << "Detection time:" << duration.count() << "seconds";
+    float* data = (float*)outputs[0].data;
 
-        std::vector<cv::Rect> boxes;
-        std::vector<int> classIds;
-        std::vector<float> confidences;
-        float confidenceThreshold = 0.5;
-        float nmsThreshold = 0.4;
+    const int dimensions = 85;
+    const int rows = 25200;
 
-        for (size_t i = 0; i < outs.size(); ++i) {
-            float* data = (float*)outs[i].data;
-            for (int j = 0; j < outs[i].rows; ++j, data += outs[i].cols) {
-                cv::Mat scores = outs[i].row(j).colRange(5, outs[i].cols);
-                cv::Point classIdPoint;
-                double confidence;
-                cv::minMaxLoc(scores, nullptr, &confidence, nullptr, &classIdPoint);
-                if (confidence > confidenceThreshold) {
-                    int centerX = (int)(data[0] * mat.cols);
-                    int centerY = (int)(data[1] * mat.rows);
-                    int width = (int)(data[2] * mat.cols);
-                    int height = (int)(data[3] * mat.rows);
-                    int left = centerX - width / 2;
-                    int top = centerY - height / 2;
+    std::vector<int> class_ids;
+    std::vector<float> confidences;
+    std::vector<cv::Rect> boxes;
 
-                    classIds.push_back(classIdPoint.x);
-                    confidences.push_back((float)confidence);
-                    boxes.push_back(cv::Rect(left, top, width, height));
-                }
+    for (int i = 0; i < rows; ++i) {
+        float confidence = data[4];
+        if (confidence >= CONFIDENCE_THRESHOLD) {
+            float* classes_scores = data + 5;
+            cv::Mat scores(1, className.size(), CV_32FC1, classes_scores);
+            cv::Point class_id;
+            double max_class_score;
+            minMaxLoc(scores, 0, &max_class_score, 0, &class_id);
+            if (max_class_score > SCORE_THRESHOLD) {
+                confidences.push_back(confidence);
+
+                class_ids.push_back(class_id.x);
+
+                float x = data[0];
+                float y = data[1];
+                float w = data[2];
+                float h = data[3];
+                int left = int((x - 0.5 * w) * x_factor);
+                int top = int((y - 0.5 * h) * y_factor);
+                int width = int(w * x_factor);
+                int height = int(h * y_factor);
+                boxes.push_back(cv::Rect(left, top, width, height));
             }
         }
 
-        std::vector<int> indices;
-        cv::dnn::NMSBoxes(boxes, confidences, confidenceThreshold, nmsThreshold, indices);
-
-        std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects;
-        for (size_t i = 0; i < indices.size(); ++i) {
-            int idx = indices[i];
-            cv::Rect box = boxes[idx];
-            std::string className = classNames[classIds[idx]];  // Use actual class names
-            detectedObjects[className].emplace_back(box, confidences[idx]);
-        }
-
-        DetectedObjects detectedObjectsObj;
-        detectedObjectsObj.setDetectedObjects(detectedObjects);
-
-        return detectedObjectsObj;
-
-    } catch (const std::exception& e) {
-        qWarning() << "detect" << e.what();
-        return {};
+        data += 85;
     }
+    DetectedObjects detectedObjects;
+    std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjectsMap;
+
+    std::vector<int> nms_result;
+    cv::dnn::NMSBoxes(boxes, confidences, SCORE_THRESHOLD, NMS_THRESHOLD, nms_result);
+
+    for (int i = 0; i < nms_result.size(); i++) {
+        int idx = nms_result[i];
+        std::string class_name = className[class_ids[idx]];
+        if (detectedObjectsMap.find(class_name) == detectedObjectsMap.end()) {
+            detectedObjectsMap[class_name] = std::vector<std::pair<cv::Rect, float>>();
+        }
+        detectedObjectsMap[class_name].emplace_back(boxes[idx], confidences[idx]);
+    }
+    detectedObjects.setDetectedObjects(detectedObjectsMap);
+    return detectedObjects;
 }
 
+// DetectedObjects Data::detect(std::string imagePath, QImage image) {
+//     try {
+//         cv::Mat mat = QImageToCvMat(image);
+
+//         if (mat.channels() == 4) {
+//             cv::cvtColor(mat, mat, cv::COLOR_BGRA2BGR);
+//         }
+
+//         // TODO download the model if it doesn't exist
+//         auto netStart = std::chrono::high_resolution_clock::now();
+//         std::string modelConfiguration = APP_FILES.toStdString() + "/" + "yolov3.cfg";
+//         std::string modelWeights = APP_FILES.toStdString() + "/" + "yolov3.weights";
+//         cv::dnn::Net net = cv::dnn::readNetFromDarknet(modelConfiguration, modelWeights);
+//         auto netEnd = std::chrono::high_resolution_clock::now();
+//         std::chrono::duration<double> netDuration = netEnd - netStart;
+//         qDebug() << "Net creation time:" << netDuration.count() << "seconds";
+
+//         std::string classNamesFile = APP_FILES.toStdString() + "/" + "coco.names";
+//         std::vector<std::string> classNames = loadClassNames(classNamesFile);
+
+//         cv::Mat blob;
+//         cv::dnn::blobFromImage(mat, blob, 1 / 255.0, cv::Size(416, 416), cv::Scalar(), true, false);
+//         net.setInput(blob);
+
+//         if (cv::cuda::getCudaEnabledDeviceCount() > 0) {
+//             net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
+//             net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
+//             qDebug() << "Using CUDA backend for DNN.";
+//         } else if (cv::ocl::useOpenCL()) {
+//             net.setPreferableBackend(cv::dnn::DNN_BACKEND_DEFAULT);
+//             net.setPreferableTarget(cv::dnn::DNN_TARGET_OPENCL);
+//             qDebug() << "Using OpenCL backend for DNN.";
+//         } else {
+//             net.setPreferableBackend(cv::dnn::DNN_BACKEND_DEFAULT);
+//             net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
+//             qDebug() << "Using CPU backend for DNN.";
+//         }
+
+//         std::vector<cv::Mat> outs;
+//         auto start = std::chrono::high_resolution_clock::now();
+//         net.forward(outs, net.getUnconnectedOutLayersNames());
+//         auto end = std::chrono::high_resolution_clock::now();
+//         std::chrono::duration<double> duration = end - start;
+//         qDebug() << "Detection time:" << duration.count() << "seconds";
+
+//         std::vector<cv::Rect> boxes;
+//         std::vector<int> classIds;
+//         std::vector<float> confidences;
+//         float confidenceThreshold = 0.5;
+//         float nmsThreshold = 0.4;
+
+//         for (size_t i = 0; i < outs.size(); ++i) {
+//             float* data = (float*)outs[i].data;
+//             for (int j = 0; j < outs[i].rows; ++j, data += outs[i].cols) {
+//                 cv::Mat scores = outs[i].row(j).colRange(5, outs[i].cols);
+//                 cv::Point classIdPoint;
+//                 double confidence;
+//                 cv::minMaxLoc(scores, nullptr, &confidence, nullptr, &classIdPoint);
+//                 if (confidence > confidenceThreshold) {
+//                     int centerX = (int)(data[0] * mat.cols);
+//                     int centerY = (int)(data[1] * mat.rows);
+//                     int width = (int)(data[2] * mat.cols);
+//                     int height = (int)(data[3] * mat.rows);
+//                     int left = centerX - width / 2;
+//                     int top = centerY - height / 2;
+
+//                     classIds.push_back(classIdPoint.x);
+//                     confidences.push_back((float)confidence);
+//                     boxes.push_back(cv::Rect(left, top, width, height));
+//                 }
+//             }
+//         }
+
+//         std::vector<int> indices;
+//         cv::dnn::NMSBoxes(boxes, confidences, confidenceThreshold, nmsThreshold, indices);
+
+//         std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects;
+//         for (size_t i = 0; i < indices.size(); ++i) {
+//             int idx = indices[i];
+//             cv::Rect box = boxes[idx];
+//             std::string className = classNames[classIds[idx]];  // Use actual class names
+//             detectedObjects[className].emplace_back(box, confidences[idx]);
+//         }
+
+//         DetectedObjects detectedObjectsObj;
+//         detectedObjectsObj.setDetectedObjects(detectedObjects);
+
+//         return detectedObjectsObj;
+
+//     } catch (const std::exception& e) {
+//         qWarning() << "detect" << e.what();
+//         return {};
+//     }
+// }

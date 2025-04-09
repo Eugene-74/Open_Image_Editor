@@ -66,13 +66,19 @@ void Folders::load(std::ifstream& in) {
     }
 }
 
-void Folders::addFolder(std::string name) {
+/**
+ * @brief Add a folder to the current folder if it doesn't already exist
+ * @param name the name of the folder to add
+ * @return the index of the added folder
+ */
+int Folders::addFolder(std::string name) {
     if (std::find_if(folders.begin(), folders.end(), [&name](const Folders& folder) { return folder.name == name; }) != folders.end()) {
-        return;
+        return std::distance(folders.begin(), std::find_if(folders.begin(), folders.end(), [&name](const Folders& folder) { return folder.name == name; }));
     }
     Folders child = Folders(name);
     child.parent = this;
     folders.push_back(child);
+    return folders.size() - 1;
 }
 
 void Folders::addFile(std::string name) {

@@ -89,10 +89,6 @@ std::string getDirectoryFromUser(QWidget* parent) {
 bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string imagePaths, QProgressDialog& progressDialog) {
     int nbrImage = 0;
 
-    data->rootFolders = Folders("");
-
-    data->imagesData = ImagesData(std::vector<ImageData*>{});
-
     progressDialog.setLabelText("Scaning for images : ");
     progressDialog.setCancelButtonText("Cancel");
     progressDialog.setRange(0, 0);
@@ -102,6 +98,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     ImagesData* imagesData = data->getImagesData();
     Folders* rootFolder = data->getRootFolders();
+
     if (!addFilesToTree(rootFolder, imagesData, imagePaths, nbrImage, progressDialog)) {
         return false;
     }
@@ -186,14 +183,12 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
         qInfo() << "starting count" << imageIndices.size();
         try {
             for (int index : imageIndices) {
-
                 ImageData* imageData = data->getImagesData()->getImageData(index);
                 data->hasThumbnail(imageData->getImagePath(), 128);
 
                 if (data->hasThumbnail(imageData->getImagePath(), 128) &&
                     data->hasThumbnail(imageData->getImagePath(), 256) &&
                     data->hasThumbnail(imageData->getImagePath(), 512)) {
-
                     ++thumbnailsCreated;
 
                     imageIndices.erase(std::remove(imageIndices.begin(), imageIndices.end(), index), imageIndices.end());
@@ -292,9 +287,12 @@ bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::s
             continue;
 
         std::string folderName = part.string();
-        if (!getIfExist(currentFolder, folderName)) {
-            currentFolder->addFolder(folderName);
-            currentFolder = &currentFolder->getFolders()->back();
+
+        currentFolder->addFolder(folderName);
+        auto it = std::find_if(currentFolder->getFolders()->begin(), currentFolder->getFolders()->end(),
+                               [folderName](Folders& folder) { return folder.getName() == folderName; });
+        if (it != currentFolder->getFolders()->end()) {
+            currentFolder = &(*it);
         }
     }
     if (progressDialog.wasCanceled()) {
@@ -317,20 +315,26 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
         if (entry.is_directory()) {
             if (containMedia(entry.path().string())) {
                 std::string folderName = entry.path().filename().string();
-                rootFolder.addFolder(folderName);
-                addSubfolders(rootFolder.getFolders()->back(), imagesData, entry.path().string(), nbrImage, progressDialog);
+                Folders* subFolder = rootFolder.getFolder(rootFolder.addFolder(folderName));
+                addSubfolders(*subFolder, imagesData, entry.path().string(), nbrImage, progressDialog);
             }
         } else {
             if (isImage(entry.path().filename().string()) || isVideo(entry.path().filename().string())) {
-                Folders folders = Folders(entry.path().string());
-                rootFolder.addFile(entry.path().string());
-                folders.addFolder(fs::absolute(entry.path()).parent_path().string());
-                ImageData* imageData = new ImageData(folders);
-                imageData->loadData();
-                imageData->clearMetaData();
+                // TODO vérifie tres mal et si on ajoute un dossier au dessus elle se copie 2 fois
 
-                imagesData->addImage(imageData);
-
+                std::string imagePath = entry.path().string();
+                std::replace(imagePath.begin(), imagePath.end(), '\\', '/');
+                if (imagesData->getImageData(imagePath) == nullptr) {
+                    // qDebug() << imagesData->getImageMap()->begin()->first;
+                    qDebug() << "Adding image: " << imagePath;
+                    Folders folders = Folders(imagePath);
+                    rootFolder.addFile(imagePath);
+                    folders.addFolder(fs::absolute(entry.path()).parent_path().string());
+                    ImageData* imageData = new ImageData(folders);
+                    imageData->loadData();
+                    imageData->clearMetaData();
+                    imagesData->addImage(imageData);
+                }
                 nbrImage += 1;
                 progressDialog.setLabelText(QString("Scaning for images : %1").arg(nbrImage));
                 QApplication::processEvents();

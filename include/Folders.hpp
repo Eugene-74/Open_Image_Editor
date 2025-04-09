@@ -35,8 +35,7 @@ class Folders {
     void clear();
     void clearRecursively();
 
-
-    void addFolder(std::string name);
+    int addFolder(std::string name);
     void addFile(std::string name);
 
     void print() const;

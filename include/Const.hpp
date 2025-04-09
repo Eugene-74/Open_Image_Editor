@@ -9,6 +9,12 @@
 
 const std::string APP_NAME = "OpenImageEditor";
 
+const float INPUT_WIDTH = 640.0;
+const float INPUT_HEIGHT = 640.0;
+const float SCORE_THRESHOLD = 0.2;
+const float NMS_THRESHOLD = 0.4;
+const float CONFIDENCE_THRESHOLD = 0.4;
+
 const QString DESCKTOP_PATH = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
 const QString DOCUMENTS_PATH = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 const QString PICTURES_PATH = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
@@ -19,7 +25,7 @@ const QString APP_FILES = APPDATA_PATH + "/" + QString::fromStdString(APP_NAME);
 
 const QString DOWNLOAD_PATH = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
 
-const std::vector<std::string> filesToDownload = {"coco.names", "yolov3.cfg", "yolov3.weights"};
+const std::vector<std::string> filesToDownload = {"coco.names", "yolov5n.onnx", "yolov5s.onnx", "yolov5m.onnx", "yolov5l.onnx", "yolov5x.onnx"};
 
 const int PREVIEW_NBR = 3;
 const int PRE_LOAD_RADIUS = 5;  // on en precharge 2 de plus comme ça l'utilisateut ne vois meme pas les images charger
