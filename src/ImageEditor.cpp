@@ -1,10 +1,12 @@
 #include "ImageEditor.hpp"
 
 #include <QCalendarWidget>
+#include <QComboBox>
 #include <QDateTime>
 #include <QDateTimeEdit>
 #include <QFrame>
 #include <QHBoxLayout>
+#include <QInputDialog>
 #include <QKeyEvent>
 #include <QLayout>
 #include <QLineEdit>
@@ -12,7 +14,9 @@
 #include <QObject>
 #include <QPointer>
 #include <QPushButton>
+#include <QRegularExpression>
 #include <QSize>
+#include <QSlider>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -639,7 +643,7 @@ ClickableLabel* ImageEditor::createImagePersons() {
         imagePersonsNew->setLogoNumber(-1);
     }
 
-    connect(imagePersonsNew, &ClickableLabel::clicked, [this, imagePersonsNew]() {
+    connect(imagePersonsNew, &ClickableLabel::leftClicked, [this, imagePersonsNew]() {
         if (!personsEditor) {
             personsEditor = true;
             imagePersonsNew->setBackground("#700c13", "#f00c13");
@@ -652,6 +656,80 @@ ClickableLabel* ImageEditor::createImagePersons() {
         }
         imageLabel->update();
     });
+
+    connect(imagePersonsNew, &ClickableLabel::rightClicked, [this, imagePersonsNew]() {
+        QStringList yoloModels = {"yolov5n - Nano model, fastest but less accurate",
+                                  "yolov5s - Small model, good balance of speed and accuracy",
+                                  "yolov5m - Medium model, more accurate but slower",
+                                  "yolov5l - Large model, higher accuracy, slower",
+                                  "yolov5x - Extra-large model, most accurate but slowest"};
+        QString currentModel = QString::fromStdString(data->model.getModelName());
+        for (int i = 0; i < yoloModels.size(); ++i) {
+            if (yoloModels[i].startsWith(currentModel)) {
+                yoloModels[i] = yoloModels[i] + " -> [Selected]";
+            }
+        }
+
+        // Create a dialog to hold both the model selection and the slider
+        QDialog dialog(this);
+        dialog.setWindowTitle("Select YOLO Model and Confidence");
+
+        QVBoxLayout* dialogLayout = new QVBoxLayout(&dialog);
+
+        // Model selection dropdown
+        QLabel* modelLabel = new QLabel("Choose a YOLO model:", &dialog);
+        QComboBox* modelComboBox = new QComboBox(&dialog);
+        modelComboBox->addItems(yoloModels);
+        modelComboBox->setCurrentText(currentModel);
+
+        dialogLayout->addWidget(modelLabel);
+        dialogLayout->addWidget(modelComboBox);
+
+        // Confidence slider
+        QSlider* confidenceSlider = new QSlider(Qt::Horizontal, &dialog);
+        confidenceSlider->setRange(0, 100);                                               // Confidence range from 0 to 100
+        confidenceSlider->setValue(static_cast<int>(data->model.getConfidence() * 100));  // Set initial value
+        QLabel* confidenceLabel = new QLabel(QString("Confidence: %1%").arg(confidenceSlider->value()), &dialog);
+
+        connect(confidenceSlider, &QSlider::valueChanged, [this, confidenceLabel](int value) {
+            float confidence = value / 100.0f;  // Convert slider value to float
+            confidenceLabel->setText(QString("Confidence: %1%").arg(value));
+            data->model.setConfidence(confidence);  // Update confidence in the model
+            qDebug() << "Confidence updated to:" << confidence;
+        });
+
+        dialogLayout->addWidget(confidenceLabel);
+        dialogLayout->addWidget(confidenceSlider);
+
+        // OK and Cancel buttons
+        QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
+        dialogLayout->addWidget(buttonBox);
+
+        connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+        connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+
+        // Show the dialog and handle the result
+        if (dialog.exec() == QDialog::Accepted) {
+            QString selectedModel = modelComboBox->currentText();
+            selectedModel = selectedModel.remove(QRegularExpression("<[^>]*>"));  // Remove HTML tags
+            qDebug() << "Selected YOLO Model:" << selectedModel;
+
+            // Update the model name
+            data->model.setModelName(selectedModel.split(" - ").first().toStdString());
+
+            // Re-run object detection
+            ImageData* imageData = data->imagesData.getCurrentImageData();
+            if (imageData) {
+                QImage qImage(QString::fromStdString(imageData->getImagePath()));
+                auto detectedObjects = data->detect(imageData->getImagePath(), qImage, data->model.getModelName()).getDetectedObjects();
+                imageData->setDetectedObjects(detectedObjects);
+                qDebug() << "Object detection re-run with model:" << QString::fromStdString(data->model.getModelName());
+            }
+
+            reload();
+        }
+    });
+
     return imagePersonsNew;
 }
 ClickableLabel* ImageEditor::createImageBefore() {

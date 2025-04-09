@@ -12,7 +12,6 @@ const std::string APP_NAME = "OpenImageEditor";
 const float INPUT_WIDTH = 640.0;
 const float INPUT_HEIGHT = 640.0;
 const float SCORE_THRESHOLD = 0.2;
-const float NMS_THRESHOLD = 0.4;
 const float CONFIDENCE_THRESHOLD = 0.4;
 
 const QString DESCKTOP_PATH = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);

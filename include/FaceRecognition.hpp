@@ -25,7 +25,6 @@ class DetectedObjects {
 bool isCudaAvailable();
 void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback);
 // DetectedObjects detect(std::string imagePath, QImage image);
-std::pair<int, double> recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const cv::Mat& test_image);
 void computeFaces(Data* data, std::string imagePath);
 std::vector<std::string> loadClassNames(const std::string& filename);
 cv::Mat QImageToCvMat(const QImage& inImage);

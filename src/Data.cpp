@@ -703,6 +703,8 @@ void Data::saveData() {
         }
     }
 
+    model.save(outFile);
+
     size_t imagesDataSize = imagesData.get()->size();
     outFile.write(reinterpret_cast<const char*>(&imagesDataSize), sizeof(imagesDataSize));
     for (auto* imageData : *imagesData.get()) {
@@ -750,6 +752,8 @@ void Data::loadData() {
         qCritical() << "Couldn't open load file : " << filePath;
         return;
     }
+
+    model.load(inFile);
 
     size_t imagesDataSize;
     inFile.read(reinterpret_cast<char*>(&imagesDataSize), sizeof(imagesDataSize));
@@ -1509,8 +1513,15 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
     }
 
     bool is_cuda = false;
-    cv::dnn::Net net = load_net(model, is_cuda);
-    std::vector<std::string> className = load_class_list();
+    if (this->model.getNet().empty() || this->model.getLoadedModelName() != model) {
+        this->model.setNet(load_net(model, is_cuda));
+    }
+    cv::dnn::Net net = this->model.getNet();
+
+    if (this->model.getClassNames().empty()) {
+        this->model.setClassNames(load_class_list());
+    }
+    std::vector<std::string> className = this->model.getClassNames();
 
     cv::Mat blob;
 
@@ -1524,7 +1535,7 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
     net.forward(outputs, net.getUnconnectedOutLayersNames());
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> detectionTime = end - start;
-    qInfo() << "Detection time:" << detectionTime.count() << "seconds";
+    qInfo() << "Detection time with " + model + " :" << detectionTime.count() << "seconds";
 
     float x_factor = input_image.cols / INPUT_WIDTH;
     float y_factor = input_image.rows / INPUT_HEIGHT;
@@ -1540,7 +1551,7 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
 
     for (int i = 0; i < rows; ++i) {
         float confidence = data[4];
-        if (confidence >= CONFIDENCE_THRESHOLD) {
+        if (confidence >= this->model.getConfidence()) {
             float* classes_scores = data + 5;
             cv::Mat scores(1, className.size(), CV_32FC1, classes_scores);
             cv::Point class_id;
@@ -1569,7 +1580,7 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
     std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjectsMap;
 
     std::vector<int> nms_result;
-    cv::dnn::NMSBoxes(boxes, confidences, SCORE_THRESHOLD, NMS_THRESHOLD, nms_result);
+    cv::dnn::NMSBoxes(boxes, confidences, SCORE_THRESHOLD, this->model.getConfidence(), nms_result);
 
     for (int i = 0; i < nms_result.size(); i++) {
         int idx = nms_result[i];
@@ -1582,3 +1593,4 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
     detectedObjects.setDetectedObjects(detectedObjectsMap);
     return detectedObjects;
 }
+

@@ -2,7 +2,6 @@
 
 #include <QImage>
 #include <QMediaPlayer>
-// #include <QMediaPlaylist>
 #include <QRunnable>
 #include <QSize>
 #include <QWidget>
@@ -12,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "DetectObjectsModel.hpp"
 #include "Folders.hpp"
 #include "ImagesData.hpp"
 #include "Sizes.hpp"
@@ -40,9 +40,8 @@ class Actions {
 
 class Data {
    public:
-    cv::dnn::Net net;
+    DetectObjectsModel model;
     std::vector<std::string> classNames;
-    cv::Ptr<cv::face::LBPHFaceRecognizer> model = cv::face::LBPHFaceRecognizer::create();
 
     QApplication* app;
     ImagesData imagesData;
@@ -81,7 +80,6 @@ class Data {
 
     void removeDeletedImages();
 
-    // QMediaPlayer* loadVideo();
     QImage loadImageFromVideo(std::string videoPath, int frameNumber = 1);
 
     DetectedObjects detect(std::string imagePath, QImage image, std::string model);

@@ -97,21 +97,10 @@ std::vector<std::string> loadClassNames(const std::string& filename) {
     return classNames;
 }
 
-std::pair<int, double> recognize_face(cv::Ptr<cv::face::LBPHFaceRecognizer> model, const cv::Mat& test_image) {
-    int predicted_label = -1;
-    double confidence = 0.0;
-
-    model->predict(test_image, predicted_label, confidence);
-
-    std::cout << "Predicted Label: " << predicted_label << std::endl;
-    std::cout << "Confidence: " << confidence << std::endl;
-
-    return std::make_pair(predicted_label, confidence);
-}
-
 void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback) {
     data->addHeavyThread([=]() {
-        DetectedObjects detectedObjects = data->detect(imagePath, image, "yolov5x");
+        std::string modelName = data->model.getModelName();
+        DetectedObjects detectedObjects = data->detect(imagePath, image, modelName);
 
         try {
             callback(detectedObjects);
