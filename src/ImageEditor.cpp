@@ -670,13 +670,11 @@ ClickableLabel* ImageEditor::createImagePersons() {
             }
         }
 
-        // Create a dialog to hold both the model selection and the slider
         QDialog dialog(this);
         dialog.setWindowTitle("Select YOLO Model and Confidence");
 
         QVBoxLayout* dialogLayout = new QVBoxLayout(&dialog);
 
-        // Model selection dropdown
         QLabel* modelLabel = new QLabel("Choose a YOLO model:", &dialog);
         QComboBox* modelComboBox = new QComboBox(&dialog);
         modelComboBox->addItems(yoloModels);
@@ -685,7 +683,6 @@ ClickableLabel* ImageEditor::createImagePersons() {
         dialogLayout->addWidget(modelLabel);
         dialogLayout->addWidget(modelComboBox);
 
-        // Confidence slider
         QSlider* confidenceSlider = new QSlider(Qt::Horizontal, &dialog);
         confidenceSlider->setRange(0, 100);                                               // Confidence range from 0 to 100
         confidenceSlider->setValue(static_cast<int>(data->model.getConfidence() * 100));  // Set initial value
@@ -701,23 +698,19 @@ ClickableLabel* ImageEditor::createImagePersons() {
         dialogLayout->addWidget(confidenceLabel);
         dialogLayout->addWidget(confidenceSlider);
 
-        // OK and Cancel buttons
         QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
         dialogLayout->addWidget(buttonBox);
 
         connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
         connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
 
-        // Show the dialog and handle the result
         if (dialog.exec() == QDialog::Accepted) {
             QString selectedModel = modelComboBox->currentText();
             selectedModel = selectedModel.remove(QRegularExpression("<[^>]*>"));  // Remove HTML tags
             qDebug() << "Selected YOLO Model:" << selectedModel;
 
-            // Update the model name
             data->model.setModelName(selectedModel.split(" - ").first().toStdString());
 
-            // Re-run object detection
             ImageData* imageData = data->imagesData.getCurrentImageData();
             if (imageData) {
                 QImage qImage(QString::fromStdString(imageData->getImagePath()));
@@ -808,6 +801,7 @@ MainImage* ImageEditor::createImageLabel() {
     std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
 
     ImageData* imageData = data->imagesData.getCurrentImageData();
+    displayXmpData(imageData->getMetaData().getXmpData());
 
     // if (imageData->getpersons().size() > 0 && personsEditor) {
     //     computeFaces(data, currentImagePath);
@@ -1188,14 +1182,14 @@ void ImageEditor::validateMetadata() {
     MetaData* metaData = imageData->getMetaDataPtr();
 
     QString dateTimeStr = dateEdit->dateTime().toString("yyyy:MM:dd HH:mm:ss");
-    metaData->modifyExifValue("Exif.Image.DateTime", dateTimeStr.toStdString());
+    metaData->modifyXmpValue("Xmp.Exif.Image.DateTime", dateTimeStr.toStdString());
 
     QStringList geoData = geoEdit->text().split(",");
     if (geoData.size() == 2) {
-        metaData->modifyExifValue("Exif.GPSInfo.GPSLatitude", geoData[0].trimmed().toStdString());
-        metaData->modifyExifValue("Exif.GPSInfo.GPSLongitude", geoData[1].trimmed().toStdString());
+        metaData->modifyXmpValue("Xmp.Exif.GPSInfo.GPSLatitude", geoData[0].trimmed().toStdString());
+        metaData->modifyXmpValue("Xmp.Exif.GPSInfo.GPSLongitude", geoData[1].trimmed().toStdString());
     }
-    metaData->modifyExifValue("Exif.Image.ImageDescription", descriptionEdit->text().toStdString());
+    metaData->modifyExifValue("Xmp.Exif.Image.ImageDescription", descriptionEdit->text().toStdString());
 
     imageData->saveMetaData();
 }

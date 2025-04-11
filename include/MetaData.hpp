@@ -9,7 +9,7 @@ class MetaData {
    public:
     bool dataLoaded = false;
 
-    Exiv2::ExifData exifMetaData;  // JPEG, TIFF, mais pas PNG
+    Exiv2::ExifData exifMetaData;
     Exiv2::XmpData xmpMetaData;
     Exiv2::IptcData iptcMetaData;
     //
@@ -19,7 +19,9 @@ class MetaData {
 
     // Constructeur de copie
     MetaData(const MetaData& other)
-        : exifMetaData(other.exifMetaData) {}
+        : xmpMetaData(other.xmpMetaData),
+          exifMetaData(other.exifMetaData),
+          iptcMetaData(other.iptcMetaData) {}
 
     // Opérateur d'affectation
     MetaData& operator=(const MetaData& other);
@@ -28,10 +30,6 @@ class MetaData {
     void setExif(const Exiv2::ExifData& toAddMetaData);
 
     void saveMetaData(const std::string& imageName);
-
-    int getImageWidth();
-
-    int getImageHeight();
 
     int getImageOrientation();
     long getTimestamp();

@@ -127,19 +127,32 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
         progressDialog.show();
         QApplication::processEvents();
 
-        for (int i = 0; i < data->getImagesData()->get()->size(); ++i) {
-            if (progressDialog.wasCanceled()) {
-                return false;
-            }
+        int detectedImages = 0;
+        int batchSize = IMAGE_PER_THREAD;
+        int totalImages = data->getImagesData()->get()->size();
 
-            ImageData* imageData = data->getImagesData()->get()->at(i);
-            if (imageData->getDetectedObjects().size() <= 0) {
-                QImage qImage(QString::fromStdString(imageData->getImagePath()));
-                auto detectedObjects = data->detect(imageData->getImagePath(), qImage, "yolov5n").getDetectedObjects();
-                imageData->setDetectedObjects(detectedObjects);
+        for (int start = 0; start < totalImages; start += batchSize) {
+            int end = std::min(start + batchSize, totalImages);
+
+            data->addHeavyThread([start, end, data, &detectedImages]() {
+                for (int i = start; i < end; ++i) {
+                    ImageData* imageData = data->getImagesData()->get()->at(i);
+                    if (imageData->isDetectionStatusNotLoaded()) {
+                        QImage qImage(QString::fromStdString(imageData->getImagePath()));
+                        auto detectedObjects = data->detect(imageData->getImagePath(), qImage, "yolov5n").getDetectedObjects();
+                        imageData->setDetectedObjects(detectedObjects);
+                        imageData->setDetectionStatusLoaded();
+                    }
+                    detectedImages++;
+                }
+            });
+        }
+        while (QThreadPool::globalInstance()->activeThreadCount() > 0) {
+            progressDialog.setValue(detectedImages);
+            QCoreApplication::processEvents();
+            if (progressDialog.wasCanceled()) {
+                break;
             }
-            progressDialog.setValue(i + 1);
-            QApplication::processEvents();
         }
     }
 
@@ -147,7 +160,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 }
 bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
     int totalImages = data->getImagesData()->get()->size();
-    int imagesPerThread = 20;
+    int imagesPerThread = IMAGE_PER_THREAD;
     int thumbnailsCreated = 0;
 
     std::mutex cacheMutex;

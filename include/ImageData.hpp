@@ -88,10 +88,6 @@ class ImageData {
 
     void saveMetaData();
 
-    int getImageWidth();
-
-    int getImageHeight();
-
     int getImageOrientation();
 
     void turnImage(int rotation);

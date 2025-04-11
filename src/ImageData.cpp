@@ -151,21 +151,15 @@ void ImageData::saveMetaData() {
     }
 }
 
-int ImageData::getImageWidth() {
-    return metaData.getImageWidth();
-}
-int ImageData::getImageHeight() {
-    return metaData.getImageHeight();
-}
 int ImageData::getImageOrientation() {
     return metaData.getImageOrientation();
 }
 
 void ImageData::turnImage(int rotation) {
     this->orientation = rotation;
-    metaData.modifyExifValue("Exif.Image.Orientation", std::to_string(rotation));
+    // metaData.modifyExifValue("Xmp.Exif.Image.Orientation", std::to_string(rotation));
     // metaData.modifyExifValue("Exif.Thumbnail.Orientation", std::to_string(rotation));
-    // metaData.modifyXmpValue("Xmp.tiff.Orientation", std::to_string(rotation));
+    metaData.modifyXmpValue("Xmp.Exif.Image.Orientation", std::to_string(rotation));
 }
 
 void ImageData::setOrCreateExifData() {
@@ -178,6 +172,24 @@ std::map<std::string, std::vector<std::pair<cv::Rect, float>>> ImageData::getDet
 
 void ImageData::setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects) {
     this->detectedObjects.setDetectedObjects(detectedObjects);
+
+    // Exiv2::XmpProperties::registerNs("http://ns.example.com/detectedObjects/", "detObj");
+
+    // Save detected objects into metadata
+    // for (const auto& [key, vec] : detectedObjects) {
+    //     std::string detectedObjectsKey = "detObj:" + key;
+    //     std::string detectedObjectsValue;
+
+    //     for (const auto& [rect, confidence] : vec) {
+    //         detectedObjectsValue += std::to_string(rect.x) + "," +
+    //                                 std::to_string(rect.y) + "," +
+    //                                 std::to_string(rect.width) + "," +
+    //                                 std::to_string(rect.height) + "," +
+    //                                 std::to_string(confidence) + ";";
+    //     }
+
+    //     metaData.modifyXmpValue(detectedObjectsKey, detectedObjectsValue);
+    // }
 }
 void ImageData::clearDetectedObjects() {
     detectedObjects.clear();

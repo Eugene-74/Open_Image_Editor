@@ -3,8 +3,6 @@
 #include "Const.hpp"
 class DetectObjectsModel {
    public:
-    cv::dnn::Net getNet();
-    void setNet(cv::dnn::Net net);
     std::vector<std::string> getClassNames();
     void setClassNames(std::vector<std::string> classNames);
     std::string getModelName();
@@ -18,7 +16,6 @@ class DetectObjectsModel {
     void load(std::ifstream& in);
 
    private:
-    cv::dnn::Net net;
     float confidence = CONFIDENCE_THRESHOLD;
     std::vector<std::string> classNames;
     std::string modelName = "yolov5n";

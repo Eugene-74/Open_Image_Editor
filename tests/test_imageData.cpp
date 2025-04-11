@@ -86,14 +86,6 @@ TEST_F(ImageDataTest, EqualityOperator) {
 //     imageData.saveMetaData();
 // }
 
-// TEST_F(ImageDataTest, TestGetImageDimensions) {
-// int width = imageData.getImageWidth();
-// int height = imageData.getImageHeight();
-// EXPECT_GT(width, -1);
-// EXPECT_GT(height, -1);
-// -1 = undefined
-// }
-
 TEST_F(ImageDataTest, TurnImage) {
     imageData.turnImage(90);
     EXPECT_EQ(imageData.getOrientation(), 90);

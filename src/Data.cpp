@@ -1456,7 +1456,15 @@ void Data::stopAllThreads() {
     manager.removeAllThreads();
 }
 
-cv::dnn::Net load_net(std::string model, bool is_cuda) {
+cv::dnn::Net load_net(std::string model) {
+    bool is_cuda = false;
+    if (cv::cuda::getCudaEnabledDeviceCount() > 0) {
+        is_cuda = true;
+        std::cout << "CUDA is available and will be used.\n";
+    } else {
+        std::cout << "CUDA is not available. Falling back to CPU.\n";
+    }
+
     auto result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
 
     if (result.empty()) {
@@ -1512,11 +1520,8 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
         return DetectedObjects();  // Ou une autre gestion d'erreur appropriée.
     }
 
-    bool is_cuda = false;
-    if (this->model.getNet().empty() || this->model.getLoadedModelName() != model) {
-        this->model.setNet(load_net(model, is_cuda));
-    }
-    cv::dnn::Net net = this->model.getNet();
+    // Net is not saved beause other whise it cause bugs
+    cv::dnn::Net net = load_net(model);
 
     if (this->model.getClassNames().empty()) {
         this->model.setClassNames(load_class_list());

@@ -2,14 +2,6 @@
 
 #include <fstream>
 
-cv::dnn::Net DetectObjectsModel::getNet() {
-    return this->net;
-}
-
-void DetectObjectsModel::setNet(cv::dnn::Net net) {
-    this->net = net;
-}
-
 std::vector<std::string> DetectObjectsModel::getClassNames() {
     return this->classNames;
 }

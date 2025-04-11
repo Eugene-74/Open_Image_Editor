@@ -17,9 +17,9 @@ class MetaDataTest : public ::testing::Test {
 
 TEST_F(MetaDataTest, AssignmentOperator) {
     MetaData other;
-    other.modifyExifValue("Exif.Image.Make", "Test Make");
+    other.modifyXmpValue("Xmp.Exif.Image.Make", "Test Make");
     metaData = other;
-    EXPECT_EQ(metaData.getExifData()["Exif.Image.Make"].toString(), "Test Make");
+    EXPECT_EQ(metaData.getXmpData()["Xmp.Exif.Image.Make"].toString(), "Test Make");
 }
 
 TEST_F(MetaDataTest, EqualityOperator) {
@@ -32,23 +32,13 @@ TEST_F(MetaDataTest, EqualityOperator) {
 //     metaData.saveMetaData("test.jpg");
 // }
 
-TEST_F(MetaDataTest, GetImageWidth) {
-    metaData.modifyExifValue("Exif.Image.ImageWidth", "1920");
-    EXPECT_EQ(metaData.getImageWidth(), 1920);
-}
-
-TEST_F(MetaDataTest, GetImageHeight) {
-    metaData.modifyExifValue("Exif.Image.ImageLength", "1080");
-    EXPECT_EQ(metaData.getImageHeight(), 1080);
-}
-
 TEST_F(MetaDataTest, GetImageOrientation) {
-    metaData.modifyExifValue("Exif.Image.Orientation", "1");
+    metaData.modifyXmpValue("Xmp.Exif.Image.Orientation", "1");
     EXPECT_EQ(metaData.getImageOrientation(), 1);
 }
 
 TEST_F(MetaDataTest, GetTimestamp) {
-    metaData.modifyExifValue("Exif.Image.DateTime", "2023:10:10 10:10:10");
+    metaData.modifyXmpValue("Xmp.Exif.Image.DateTime", "2023:10:10 10:10:10");
     EXPECT_GT(metaData.getTimestamp(), 0);
 }
 

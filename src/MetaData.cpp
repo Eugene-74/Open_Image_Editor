@@ -28,37 +28,10 @@ void MetaData::saveMetaData(const std::string& imageName) {
     saveIptcData(imageName, iptcMetaData);
 }
 
-// Fonction pour récupérer la largeur de l'image
-int MetaData::getImageWidth() {
-    for (auto& entry : exifMetaData) {
-        if (entry.key() == "Exif.Image.ImageWidth") {
-#ifdef _WIN32
-            return entry.toLong();
-#else
-            return entry.toInt64();
-#endif
-        }
-    }
-    return -1;
-}
-
-// Fonction pour récupérer la hauteur de l'image
-int MetaData::getImageHeight() {
-    for (auto& entry : exifMetaData) {
-        if (entry.key() == "Exif.Image.ImageLength") {
-#ifdef _WIN32
-            return entry.toLong();
-#else
-            return entry.toInt64();
-#endif
-        }
-    }
-    return -1;
-}
 // Fonction pour récupérer l'orientation de l'image (rotation)
 int MetaData::getImageOrientation() {
-    for (auto& entry : exifMetaData) {
-        if (entry.key() == "Exif.Image.Orientation") {
+    for (auto& entry : xmpMetaData) {
+        if (entry.key() == "Xmp.Exif.Image.Orientation") {
 #ifdef _WIN32
             return entry.toLong();
 #else
@@ -70,8 +43,8 @@ int MetaData::getImageOrientation() {
 }
 
 long MetaData::getTimestamp() {
-    for (auto& entry : exifMetaData) {
-        if (entry.key() == "Exif.Image.DateTime") {
+    for (auto& entry : xmpMetaData) {
+        if (entry.key() == "Xpm.Exif.Image.DateTime") {
             QString dateTimeStr = QString::fromStdString(entry.toString());
             QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
             QDateTime epoch(QDate(1970, 1, 1), QTime(0, 0, 0));
@@ -104,8 +77,7 @@ bool MetaData::modifyExifValue(const std::string& key, const std::string& newVal
     }
         try {
             Exiv2::Exifdatum newDatum(exifKey);
-            newDatum.setValue(newValue);  // Assigner la nouvelle valeur
-
+            newDatum.setValue(newValue);
             exifMetaData.add(newDatum);
 
             return true;
@@ -117,16 +89,25 @@ bool MetaData::modifyExifValue(const std::string& key, const std::string& newVal
 
 // Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
 bool MetaData::modifyXmpValue(const std::string& key, const std::string& newValue) {
-    Exiv2::XmpKey exifKey(key);
+    // qDebug() << "test modify";
+    Exiv2::XmpKey xmpKey(key.c_str());
+    // qDebug() << "created modify";
 
-    auto pos = xmpMetaData.findKey(exifKey);
+    // qDebug() << "try to find";
+
+    auto pos = xmpMetaData.findKey(xmpKey);
     if (pos != xmpMetaData.end()) {
+        qDebug() << "found";
+
         pos->setValue(newValue);
 
         return true;
     } else {
+        qDebug() << "not found";
+
         try {
-            Exiv2::Xmpdatum newDatum(exifKey);
+            qInfo() << "Creating the key : " << key;
+            Exiv2::Xmpdatum newDatum(xmpKey);
             newDatum.setValue(newValue);
 
             xmpMetaData.add(newDatum);
@@ -173,10 +154,10 @@ void MetaData::setOrCreateExifData(std::string imagePath) {
     char dateTime[20];
     strftime(dateTime, sizeof(dateTime), "%Y:%m:%d %H:%M:%S", timeinfo);
 
-    modifyExifValue("Exif.Image.DateTime", dateTime);
-    modifyExifValue("Exif.Image.Make", "made by photo editor");
-    modifyExifValue("Exif.Image.Model", "my model");
-    modifyXmpValue("Exif.Image.DateTime", dateTime);
+    modifyXmpValue("Xmp.Exif.Image.DateTime", dateTime);
+    modifyXmpValue("Xmp.Exif.Image.Make", "made by photo editor");
+    modifyXmpValue("Xmp.Exif.Image.Model", "my model");
+    modifyXmpValue("Xmp.Exif.Image.DateTime", dateTime);
 
     saveMetaData(imagePath);
 }
@@ -200,11 +181,34 @@ void MetaData::loadData(const std::string& imagePath) {
             xmpMetaData = image->xmpData();
             iptcMetaData = image->iptcData();
 
+            // Copy location data
+            auto gpsLatitude = xmpMetaData.findKey(Exiv2::XmpKey("Xmp.exif.GPSLatitude"));
+            if (gpsLatitude != xmpMetaData.end()) {
+                exifMetaData["Exif.GPSInfo.GPSLatitude"] = gpsLatitude->value();
+            }
+
+            auto gpsLongitude = xmpMetaData.findKey(Exiv2::XmpKey("Xmp.exif.GPSLongitude"));
+            if (gpsLongitude != xmpMetaData.end()) {
+                exifMetaData["Exif.GPSInfo.GPSLongitude"] = gpsLongitude->value();
+            }
+
+            // Copy timestamp data
+            auto dateTime = xmpMetaData.findKey(Exiv2::XmpKey("Xmp.Exif.Image.DateTime"));
+            if (dateTime != xmpMetaData.end()) {
+                exifMetaData["Exif.Image.DateTime"] = dateTime->value();
+            }
+
+            // Copy orientation data
+            auto orientation = xmpMetaData.findKey(Exiv2::XmpKey("Xmp.Exif.Image.Orientation"));
+            if (orientation != xmpMetaData.end()) {
+                exifMetaData["Exif.Image.Orientation"] = orientation->value();
+            }
+
             dataLoaded = true;
 
-            auto pos = exifMetaData.findKey(Exiv2::ExifKey("Exif.Image.DateTime"));
-            if (pos == exifMetaData.end()) {
-                qWarning() << "Erreur : 'Exif.Image.DateTime' n'existe pas dans les métadonnées.";
+            auto pos = xmpMetaData.findKey(Exiv2::XmpKey("Xmp.Exif.Image.DateTime"));
+            if (pos == xmpMetaData.end()) {
+                qWarning() << "Erreur : 'Xmp.Exif.Image.DateTime' n'existe pas dans les métadonnées.";
             }
         }
     } catch (const Exiv2::Error& e) {
