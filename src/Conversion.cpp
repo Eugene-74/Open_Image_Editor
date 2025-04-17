@@ -2,8 +2,8 @@
 
 #include <heif.h>
 
-// #include <ConversionDialog>
 #include <QComboBox>
+#include <QDebug>
 #include <QDialog>
 #include <QFileInfo>
 #include <QImage>
@@ -11,6 +11,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <cstring>
 #include <exiv2/exiv2.hpp>
 #include <filesystem>
 #include <iostream>
@@ -21,6 +22,11 @@
 
 namespace fs = std::filesystem;
 
+/**
+ * @brief Dialog to choose the output file type and convert the image
+ * @param parent Parent widget
+ * @note It use the IMAGE_CONVERTION const to choose the output file type
+ */
 ConversionDialog::ConversionDialog(QWidget* parent)
     : QDialog(parent) {
     setWindowTitle("Choose Output File Type");
@@ -45,6 +51,12 @@ ConversionDialog::ConversionDialog(QWidget* parent)
     connect(okButton, &QPushButton::clicked, this, &ConversionDialog::accept);
 }
 
+/**
+ * @brief Convert the image to the selected format and copy the metaData if possible
+ * @param inputPath Path to the input image
+ * @param outputPath Path to the output image
+ * @return true if the conversion is successful, false otherwise
+ */
 bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath) {
     try {
         QImage image;
@@ -92,12 +104,17 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
     }
 }
 
-QImage readHeicAndHeif(const std::string& filename) {
+/**
+ * @brief Read a HEIC/HEIF image and return it as a QImage
+ * @param filePath Path to the HEIC/HEIF file
+ * @return QImage object containing the image data
+ */
+QImage readHeicAndHeif(const std::string& filePath) {
     struct heif_context* ctx = heif_context_alloc();
-    struct heif_error err = heif_context_read_from_file(ctx, filename.c_str(), nullptr);
+    struct heif_error err = heif_context_read_from_file(ctx, filePath.c_str(), nullptr);
 
     if (err.code != heif_error_Ok) {
-        qCritical() << "Error: Unable to read HEIC/HEIF file: " << filename;
+        qCritical() << "Error: Unable to read HEIC/HEIF file: " << filePath;
         heif_context_free(ctx);
         return QImage();
     }
@@ -105,7 +122,7 @@ QImage readHeicAndHeif(const std::string& filename) {
     struct heif_image_handle* handle;
     err = heif_context_get_primary_image_handle(ctx, &handle);
     if (err.code != heif_error_Ok) {
-        qCritical() << "Error: Unable to get image handle: " << filename;
+        qCritical() << "Error: Unable to get image handle: " << filePath;
         heif_context_free(ctx);
         return QImage();
     }
@@ -113,7 +130,7 @@ QImage readHeicAndHeif(const std::string& filename) {
     struct heif_image* img;
     err = heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGB, nullptr);
     if (err.code != heif_error_Ok) {
-        qCritical() << "Erreur : Impossible de décoder l'image : " << filename;
+        qCritical() << "Erreur : Impossible de décoder l'image : " << filePath;
         heif_image_handle_release(handle);
         heif_context_free(ctx);
         return QImage();
@@ -137,13 +154,12 @@ QImage readHeicAndHeif(const std::string& filename) {
     return qImage;
 }
 
-#include <heif.h>
-
-#include <QDebug>
-#include <QImage>
-#include <cstring>
-#include <string>
-
+/**
+ * @brief Write a QImage to a HEIC/HEIF file
+ * @param qImage QImage object to be written
+ * @param imagePath Path to the output HEIC/HEIF file
+ * @return true if the write operation is successful, false otherwise
+ */
 bool writeHeicAndHeif(const QImage& qImage, const std::string& imagePath) {
     QImage img = qImage.convertToFormat(QImage::Format_RGBA8888);
     int width = img.width();
@@ -229,6 +245,11 @@ bool writeHeicAndHeif(const QImage& qImage, const std::string& imagePath) {
     return true;
 }
 
+/**
+ * @brief Open a dialog to choose the output file type and convert the image
+ * @param inputImagePath Path to the input image
+ * @note It use the IMAGE_CONVERTION const to choose the output file type
+ */
 void launchConversionDialogAndConvert(const QString& inputImagePath) {
     QString selectedFormat = launchConversionDialog();
     if (selectedFormat != nullptr) {
@@ -236,6 +257,11 @@ void launchConversionDialogAndConvert(const QString& inputImagePath) {
     }
 }
 
+/**
+ * @brief Open a dialog to choose the output file type
+ * @note It use the IMAGE_CONVERTION const to choose the output file type
+ * @return
+ */
 QString launchConversionDialog() {
     ConversionDialog dialog;
     if (dialog.exec() == QDialog::Accepted) {
@@ -245,6 +271,11 @@ QString launchConversionDialog() {
     return nullptr;
 }
 
+/**
+ * @brief Convert the image to the selected format and copy the metaData if possible
+ * @param inputImagePath Path to the input image
+ * @param selectedFormat Selected output format
+ */
 void convertion(const QString& inputImagePath, const QString& selectedFormat) {
     QFileInfo fileInfo(inputImagePath);
     QString currentExtension = fileInfo.suffix().toLower();
@@ -262,10 +293,20 @@ void convertion(const QString& inputImagePath, const QString& selectedFormat) {
     qInfo() << "Le format sélectionné est identique au format actuel. Aucune conversion nécessaire.";
 }
 
-QImage readRaw(const std::string& filename) {
+/**
+ * @brief Read a RAW image and return it as a QImage
+ * @param filePath Path to the RAW file
+ * @return QImage object containing the image data
+ * @warning This function doesn't work for now
+ */
+QImage readRaw(const std::string& filePath) {
     return QImage();
 }
 
+/**
+ * @brief Get the selected format from the dialog
+ * @return QString containing the selected format
+ */
 QString ConversionDialog::getSelectedFormat() const {
     return comboBox->currentText();
 }

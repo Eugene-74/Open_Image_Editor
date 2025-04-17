@@ -10,6 +10,18 @@
 #include "Data.hpp"
 #include "Verification.hpp"
 
+/**
+ * @brief Constructor for ClickableLabel
+ * @param data Pointer to Data
+ * @param imagePath Path to the image
+ * @param toolTip Tool tip text
+ * @param parent Parent widget
+ * @param sizePtr Pointer to the size of the label
+ * @param setSize If true, set the size of the label to the sizePtr
+ * @param thumbnail Thumbnail size (16, 128, 256, 512 or 0 for full size)
+ * @param square If true, the label will be square
+ * @param force If true, force the loading of the image
+ */
 ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QString toolTip, QWidget* parent, QSize* sizePtr, bool setSize, int thumbnail, bool square, bool force)
     : QLabel(parent), sizePtr(sizePtr) {
     initial_border_color = border_color;
@@ -57,18 +69,11 @@ ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QString too
     updateStyleSheet();
 }
 
-void ClickableLabel::enterEvent(QEnterEvent* event) {
-    QLabel::enterEvent(event);
-}
-
-void ClickableLabel::leaveEvent(QEvent* event) {
-    QLabel::leaveEvent(event);
-}
-
-void ClickableLabel::mousePressEvent(QMouseEvent* event) {
-    QLabel::mousePressEvent(event);
-}
-
+/**
+ * @brief Emit the right signal when the label is clicked (left, right, shift left, ctrl left)
+ * @param event Mouse event
+ * @note This function also calls the base class mouseReleaseEvent function
+ */
 void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
     emit clicked();
     if (event->button() == Qt::LeftButton) {
@@ -87,6 +92,9 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent* event) {
     QLabel::mouseReleaseEvent(event);
 }
 
+/**
+ * @brief Update the style sheet of the label with the current colors and border of the object
+ */
 void ClickableLabel::updateStyleSheet() {
     QString styleSheet = QString(R"(
         QLabel {
@@ -119,52 +127,115 @@ void ClickableLabel::updateStyleSheet() {
     setStyleSheet(styleSheet);
 }
 
+/**
+ * @brief Set the color of the label when it is disabled
+ * @param borderColor Color of the border when disabled
+ * @param backgroundColor Color of the background when disabled
+ * @note This function also updates the style sheet of the label
+ */
 void ClickableLabel::setDisabledColor(std::string borderColor, std::string backgroundColor) {
     setDisabledBorderColor(borderColor);
     setDisabledBackgroundColor(backgroundColor);
     updateStyleSheet();
 }
 
+/**
+ * @brief Set the color of the border when the label is disabled
+ * @param borderColor Color of the border when disabled
+ * @note This function doesn't updates the style sheet of the label
+ */
 void ClickableLabel::setDisabledBorderColor(std::string borderColor) {
     this->disabled_border_color = borderColor;
 }
 
+/**
+ * @brief Set the color of the background when the label is disabled
+ * @param backgroundColor Color of the background when disabled
+ * @note This function doesn't updates the style sheet of the label
+ */
 void ClickableLabel::setDisabledBackgroundColor(std::string backgroundColor) {
     this->disabled_background_color = backgroundColor;
 }
 
+/**
+ * @brief Set the color of the border when the label is in normal state
+ * @param borderColor Color of the border when in normal state
+ * @note This function doesn't updates the style sheet of the label
+ */
 void ClickableLabel::setBorderColor(std::string borderColor) {
     this->border_color = borderColor;
 }
 
+/**
+ * @brief Set the color of the border when the label is hovered
+ * @param hoverBorderColor Color of the border when hovered
+ * @note This function doesn't updates the style sheet of the label
+ */
 void ClickableLabel::setHoverBorderColor(std::string hoverBorderColor) {
     this->hover_border_color = hoverBorderColor;
 }
 
+/**
+ * @brief Set the color of the initial background
+ * @param borderColor Color of the initial background
+ * @note This function doesn't updates the style sheet of the label
+ */
 void ClickableLabel::setInitialBorderColor(std::string borderColor) {
     this->initial_border_color = borderColor;
 }
 
+/**
+ * @brief Set the color of the initial hover background
+ * @param hoverBorderColor Color of the initial hover background
+ * @note This function doesn't updates the style sheet of the label
+ */
 void ClickableLabel::setInitialHoverBorderColor(std::string hoverBorderColor) {
     this->initial_hover_border_color = hoverBorderColor;
 }
 
+/**
+ * @brief Set the color of the background when the label is in normal state
+ * @param backgroundColor Color of the background
+ * @note This function doesn't updates the style sheet of the label
+ */
 void ClickableLabel::setBackgroundColor(std::string backgroundColor) {
     this->background_color = backgroundColor;
 }
 
+/**
+ * @brief Set the color of the background when the label is hovered
+ * @param hoverBackgroundColor Color of the background when hovered
+ * @note This function doesn't updates the style sheet of the label
+ */
 void ClickableLabel::setHoverBackgroundColor(std::string hoverBackgroundColor) {
     this->hover_background_color = hoverBackgroundColor;
 }
 
+/**
+ * @brief Set the color of the initial background
+ * @param backgroundColor Color of the initial background
+ * @note This function doesn't updates the style sheet of the label
+ */
 void ClickableLabel::setInitialBackgroundColor(std::string backgroundColor) {
     this->initial_background_color = backgroundColor;
 }
 
+/**
+ * @brief Set the color of the initial hover background
+ * @param hoverBackgroundColor Color of the initial hover background
+ * @note This function doesn't updates the style sheet of the label
+ */
 void ClickableLabel::setInitialHoverBackgroundColor(std::string hoverBackgroundColor) {
     this->initial_hover_background_color = hoverBackgroundColor;
 }
 
+/**
+ * @brief Set the initial border and hover border color of the label
+ * @param borderColor Color of the border
+ * @param hoverBorderColor Color of the hover border
+ * @note This function also sets the border radius and border size of the label
+ * @note This function also updates the style sheet of the label
+ */
 void ClickableLabel::setInitialBorder(std::string borderColor, std::string hoverBorderColor) {
     int border = (size().width() + size().height()) / 50;
     setBorder(border);
@@ -177,17 +248,31 @@ void ClickableLabel::setInitialBorder(std::string borderColor, std::string hover
     updateStyleSheet();
 }
 
+/**
+ * @brief Set the border and hover border color of the label
+ * @param borderColor Color of the border
+ * @param hoverBorderColor Color of the hover border
+ * @note This function also updates the style sheet of the label
+ */
 void ClickableLabel::setBorder(std::string borderColor, std::string hoverBorderColor) {
-    setBorderRadius(border_radius);
     setBorderColor(borderColor);
     setHoverBorderColor(hoverBorderColor);
     updateStyleSheet();
 }
 
+/**
+ * @brief Set the border color of the label to the initial color
+ */
 void ClickableLabel::resetBorder() {
     setBorder(initial_border_color, initial_hover_border_color);
 }
 
+/**
+ * @brief Set the initial background and hover background color of the label
+ * @param backgroundColor Color of the background
+ * @param hoverBackgroundColor Color of the hover background
+ * @note This function also updates the style sheet of the label
+ */
 void ClickableLabel::setInitialBackground(std::string backgroundColor, std::string hoverBackgroundColor) {
     setBackgroundColor(backgroundColor);
     setHoverBackgroundColor(hoverBackgroundColor);
@@ -196,26 +281,50 @@ void ClickableLabel::setInitialBackground(std::string backgroundColor, std::stri
     updateStyleSheet();
 }
 
+/**
+ * @brief Set the background and hover background color of the label
+ * @param backgroundColor Color of the background
+ * @param hoverBackgroundColor Color of the hover background
+ * @note This function also updates the style sheet of the label
+ */
 void ClickableLabel::setBackground(std::string backgroundColor, std::string hoverBackgroundColor) {
     setBackgroundColor(backgroundColor);
     setHoverBackgroundColor(hoverBackgroundColor);
     updateStyleSheet();
 }
 
+/**
+ * @brief Set the background color of the label to the initial color
+ */
 void ClickableLabel::resetBackground() {
     setBackground(initial_background_color, initial_hover_background_color);
 }
 
+/**
+ * @brief Set the border radius of the label
+ * @param border_radius Border radius in pixels
+ * @note This function also updates the style sheet of the label
+ */
 void ClickableLabel::setBorderRadius(int border_radius) {
     this->border_radius = border_radius;
     updateStyleSheet();
 }
 
+/**
+ * @brief set the border of the label
+ * @param border Color of the border
+ * @note This function also updates the style sheet of the label
+ */
 void ClickableLabel::setBorder(int border) {
     this->border = border;
     updateStyleSheet();
 }
 
+/**
+ * @brief Paint the label with a logo if it is visible
+ * @param event Paint event
+ * @note This function also calls the base class paintEvent function
+ */
 void ClickableLabel::paintEvent(QPaintEvent* event) {
     QLabel::paintEvent(event);
 
@@ -241,6 +350,12 @@ void ClickableLabel::paintEvent(QPaintEvent* event) {
     }
 }
 
+/**
+ * @brief Add a logo to the label
+ * @param logoColor Color of the logo
+ * @param logoTextColor Color of the logo text
+ * @note This function also sets the logo visible and updates the label
+ */
 void ClickableLabel::addLogo(QColor logoColor, QColor logoTextColor) {
     setLogoColor(logoColor);
     setLogoTextColor(logoTextColor);
@@ -248,6 +363,13 @@ void ClickableLabel::addLogo(QColor logoColor, QColor logoTextColor) {
     update();
 }
 
+/**
+ * @brief Add a logo to the label
+ * @param logoColor Color of the logo
+ * @param logoTextColor Color of the logo text
+ * @param logoNumber Number to display in the logo
+ * @note This function also sets the logo visible and updates the label
+ */
 void ClickableLabel::addLogo(QColor logoColor, QColor logoTextColor, int logoNumber) {
     setLogoColor(logoColor);
     setLogoTextColor(logoTextColor);
@@ -256,37 +378,62 @@ void ClickableLabel::addLogo(QColor logoColor, QColor logoTextColor, int logoNum
     update();
 }
 
+/**
+ * @brief Set the logo number to display in the logo
+ * @param logoNumber Number to display in the logo
+ * @note If the number is less than 0, it will display "?".
+ * @note If the number is greater than 99, it will display "99".
+ */
 void ClickableLabel::setLogoNumber(int logoNumber) {
     if (logoNumber < 0) {
         logoText = "?";
     } else if (logoNumber > 99) {
-        logoText = "+99";
+        logoText = "99";
     } else {
         logoText = QString::number(logoNumber);
     }
 }
 
+/**
+ * @brief Set the color of the logo
+ * @param logoColor Color of the logo
+ * @note This function also updates the label
+ */
 void ClickableLabel::setLogoColor(QColor logoColor) {
     this->logoColor = logoColor;
 }
 
+/**
+ * @brief Set the color of the logo text
+ * @param logoTextColor Color of the logo text
+ * @note This function also updates the label
+ */
 void ClickableLabel::setLogoTextColor(QColor logoTextColor) {
     this->logoTextColor = logoTextColor;
 }
 
+/**
+ * @brief Set the visibility of the logo
+ * @param logoVisible If true, the logo will be visible, else it will be hidden
+ * @note This function also updates the label
+ */
 void ClickableLabel::setLogoVisible(bool logoVisible) {
     this->logoVisible = logoVisible;
 }
 
+/**
+ * @brief Set the logo to be enabled (visible)
+ * @note This function also updates the label
+ */
 void ClickableLabel::setLogoEnabled() {
     setLogoVisible(true);
     update();
 }
+/**
+ * @brief Set the logo to be disabled (hidden)
+ * @note This function also updates the label
+ */
 void ClickableLabel::setLogoDisabled() {
     setLogoVisible(false);
     update();
-}
-
-void ClickableLabel::resizeEvent(QResizeEvent* event) {
-    QLabel::resizeEvent(event);
 }

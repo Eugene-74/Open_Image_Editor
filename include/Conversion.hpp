@@ -23,7 +23,7 @@ QString launchConversionDialog();
 void convertion(const QString& inputImagePath, const QString& selectedFormat);
 bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath);
 
-QImage readHeicAndHeif(const std::string& filename);
+QImage readHeicAndHeif(const std::string& filePath);
 bool writeHeicAndHeif(const QImage& image, const std::string& imagePath);
 
-QImage readRaw(const std::string& filename);
+QImage readRaw(const std::string& filePath);

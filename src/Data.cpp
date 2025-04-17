@@ -26,6 +26,10 @@
 
 namespace fs = std::filesystem;
 
+/**
+ * @brief Constructor for the Data class
+ * @note It initializes the imageCache and sets the default options
+ */
 Data::Data()
     : imageCache(new std::unordered_map<std::string, QImageAndPath>()) {
     options = DEFAULT_OPTIONS;
@@ -53,11 +57,19 @@ void Data::unPreDeleteImage(int imageNbr) {
     deletedImagesData.removeImage(imageData);
 }
 
+/**
+ * @brief Recover an image from the deleted images
+ * @param imageData image to recover
+ */
 void Data::revocerDeletedImage(ImageData& imageData) {
     imagesData.addImage(&imageData);
     deletedImagesData.removeImage(imageData);
 }
 
+/**
+ * @brief Recover an image from the deleted images
+ * @param imageNbr nbr of the images in the deleted images list
+ */
 void Data::revocerDeletedImage(int imageNbr) {
     ImageData* imageData = deletedImagesData.getImageData(imageNbr);
     revocerDeletedImage(*imageData);
@@ -66,11 +78,11 @@ void Data::revocerDeletedImage(int imageNbr) {
     deletedImagesData.removeImage(*imageData);
 }
 
-// Delete in imagesData images that are also in deletedImagesData
+/**
+ * @brief Remove all deleted images from the imagesData
+ */
 void Data::removeDeletedImages() {
     for (const auto& deletedImage : *deletedImagesData.get()) {
-        // auto it = std::find(imagesData.get()->begin(), imagesData.get()->end(),
-        //                     deletedImage);
         // TODO faire sans mais ça marche pas ...
         ImageData* imageData = getImagesData()->getImageData(deletedImage->getImagePath());
 
@@ -85,7 +97,11 @@ void Data::removeDeletedImages() {
     qInfo() << "All images deleted";
 }
 
-// Check if the imageNumber is deleted or not (!! imageNumber in imagesData!!)
+/**
+ * @brief Check if an image is deleted or not
+ * @param imageNbr nbr of the image in the imagesData list
+ * @return true if the image is deleted false otherwise
+ */
 bool Data::isDeleted(int imageNbr) {
     std::string imagePath = imagesData.getImageData(imageNbr)->getImagePathConst();
     auto it = std::find_if(deletedImagesData.get()->begin(),
@@ -103,19 +119,12 @@ bool Data::isDeleted(int imageNbr) {
     return false;
 }
 
-// QMediaPlayer* Data::loadVideo() {
-// QMediaPlayer* player = new QMediaPlayer;
-// QVideoWidget* videoWidget = new QVideoWidget;
-
-// player->setVideoOutput(videoWidget);
-// player->setSource(QUrl::fromLocalFile("path/to/your/video/file.mp4"));
-
-// videoWidget->show();
-// player->play();
-
-// return player;
-// }
-
+/**
+ * @brief Load a frale from a video
+ * @param videoPath Path to the video file
+ * @param frameNumber Frame number to load
+ * @return QImage object containing the frame
+ */
 QImage Data::loadImageFromVideo(std::string videoPath, int frameNumber) {
     cv::VideoCapture cap(videoPath);
     if (!cap.isOpened()) {
@@ -139,6 +148,19 @@ QImage Data::loadImageFromVideo(std::string videoPath, int frameNumber) {
     return image;
 }
 
+/**
+ * @brief Load and transform an image from a path and put it in the cache
+ * @param parent Parent widget
+ * @param imagePath Path to the image
+ * @param size Size of the image
+ * @param setSize Set if the image should be resized
+ * @param thumbnail Thumbnail size (16,128,256,512 or 0 for no thumbnail)
+ * @param rotation Set if the image should be rotated (according to metadata)
+ * @param square Set if the image should be square
+ * @param crop Set if the image should be cropped (according to crop information)
+ * @param force Set if the image should be loaded even if it is already in the cache
+ * @return QImage object containing the image data
+ */
 QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
                        bool setSize, int thumbnail, bool rotation,
                        bool square, bool crop, bool force) {
@@ -176,6 +198,16 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
     return image;
 }
 
+/**
+ * @brief Load an image from a path and put it in the cache
+ * @param parent Parent widget
+ * @param imagePath Path to the image
+ * @param size Size of the image
+ * @param setSize Set if the image should be resized
+ * @param thumbnail Thumbnail size (16,128,256,512 or 0 for no thumbnail)
+ * @param force Set if the image should be loaded even if it is already in the cache
+ * @return QImage object containing the image data
+ */
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                              bool setSize, int thumbnail, bool force) {
     if (imagePath.at(0) == ':') {
@@ -303,6 +335,14 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     return image;
 }
 
+/**
+ * @brief Load an image and put it in the cache asynchronously
+ * @param imagePath The path to the image
+ * @param callback The callback function to call after loading the image
+ * @param setSize Set if the image should be resized
+ * @param size size of the image if it should be resized
+ * @param force Force the image to be loaded
+ */
 void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
     // TODO this function make the app crash
     addThread([this, callback, imagePath, setSize, size, force]() {
@@ -361,6 +401,11 @@ bool Data::getLoadedImage(std::string imagePath, QImage& image) {
     return false;
 }
 
+/**
+ * @brief Create thumbnails for a specific size
+ * @param imagePaths Path to the full size images
+ * @param maxDim Maximum dimension for the thumbnails
+ */
 void Data::createThumbnails(const std::vector<std::string>& imagePaths,
                             const int maxDim) {
     for (const auto& imagePath : imagePaths) {
@@ -368,6 +413,11 @@ void Data::createThumbnails(const std::vector<std::string>& imagePaths,
     }
 }
 
+/**
+ * @brief Create a thumbnail for a specific size asynchronously
+ * @param imagePath Path to the full size image
+ * @param maxDim Maximum dimension for the thumbnail
+ */
 void Data::createThumbnailAsync(const std::string& imagePath, const int maxDim) {
     addThread([this, imagePath, maxDim]() {
         createThumbnail(imagePath, maxDim);
@@ -377,7 +427,7 @@ void Data::createThumbnailAsync(const std::string& imagePath, const int maxDim) 
 /**
  * @brief Create a thumbnail for a specific size
  * @param imagePath Path to the full size image
- * @param maxDim Maximum for the image (both width and height)
+ * @param maxDim Maximum for the thumbnail
  * @return true if the thumbnail is successfuly created false otherwise
  */
 bool Data::createThumbnail(const std::string& imagePath, const int maxDim) {
@@ -485,6 +535,11 @@ void Data::createAllThumbnailIfNotExists(const std::string& imagePath, const int
     }
 }
 
+/**
+ * @brief Create all thumbnails sizes smaller or equal to size
+ * @param imagePath Path to the full size image
+ * @param size max size to load
+ */
 void Data::createAllThumbnail(const std::string& imagePath, const int size) {
     if (size > 16) {
         createThumbnail(imagePath, 16);
@@ -500,6 +555,12 @@ void Data::createAllThumbnail(const std::string& imagePath, const int size) {
     }
 }
 
+/**
+ * @brief Get the thumbnail path for a specific image and size
+ * @param imagePath Path to the full size image
+ * @param size Size of the thumbnail
+ * @return Path to the thumbnail image
+ */
 std::string Data::getThumbnailPath(const std::string& imagePath,
                                    const int size) {
     std::hash<std::string> hasher;
@@ -512,6 +573,11 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
     return thumbnailPath;
 }
 
+/**
+ * @brief Unload an image from the cache
+ * @param imagePath Path to the image
+ * @return true if the image is unloaded from the cache false otherwise
+ */
 bool Data::unloadFromCache(std::string imagePath) {
     if (!imageCache) {
         qWarning() << "imageCache is not initialized : " << imagePath;
@@ -569,6 +635,13 @@ Folders* Data::findFirstFolderWithAllImagesSub(Folders* currentF) {
     return currentF;
 }
 
+/**
+ * @brief Copy all images to a destination path with the folder structure
+ * @param rootFolders Root folder to start the copy
+ * @param destinationPath Destination path for the copy
+ * @param dateInName Parameter for the image Name to use the date in the name
+ * @note It will create the folders if they don't exist
+ */
 void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInName) {
     std::string initialFolder = fs::path(destinationPath).filename().string();
 
@@ -635,6 +708,13 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
     }
 }
 
+/**
+ * @brief Rotate an image according to the metadata (in imageData)
+ * @param image Image to rotate
+ * @param imageData ImageData object containing the metadata
+ * @return Rotated image
+ * @note The rotation is done according to the Exif orientation tag
+ */
 QImage Data::rotateQImage(QImage image, ImageData* imageData) {
     if (imageData != nullptr) {
         int orientation = imageData->getOrientation();
@@ -668,6 +748,11 @@ QImage Data::rotateQImage(QImage image, ImageData* imageData) {
     return image;
 }
 
+/**
+ * @brief Create folders for the images
+ * @param currentFolders Current folder to create the folders in
+ * @param folderPath Path to the folder to create
+ */
 void Data::createFolders(Folders* currentFolders, std::string folderPath) {
     std::string initialFolderPath = folderPath;
     if (!fs::exists(initialFolderPath)) {
@@ -683,6 +768,9 @@ void Data::createFolders(Folders* currentFolders, std::string folderPath) {
     }
 }
 
+/**
+ * @brief Save the data to a file
+ */
 void Data::saveData() {
     qInfo() << "Saving data";
 
@@ -711,11 +799,11 @@ void Data::saveData() {
         imageData->save(outFile);
     }
 
-    // size_t deletedImagesDataSize = deletedImagesData.get()->size();
-    // outFile.write(reinterpret_cast<const char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
-    // for (auto* imageData : *deletedImagesData.get()) {
-    //     imageData->save(outFile);
-    // }
+    size_t deletedImagesDataSize = deletedImagesData.get()->size();
+    outFile.write(reinterpret_cast<const char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
+    for (auto* imageData : *deletedImagesData.get()) {
+        imageData->save(outFile);
+    }
 
     size_t optionsSize = options.size();
     outFile.write(reinterpret_cast<const char*>(&optionsSize),
@@ -745,6 +833,9 @@ void Data::saveData() {
     qInfo() << "data saved";
 }
 
+/**
+ * @brief Load the data from a file
+ */
 void Data::loadData() {
     std::string filePath = IMAGESDATA_SAVE_DATA_PATH;
     std::ifstream inFile(filePath, std::ios::binary);
@@ -770,13 +861,13 @@ void Data::loadData() {
         index++;
     }
 
-    // size_t deletedImagesDataSize;
-    // inFile.read(reinterpret_cast<char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
-    // for (size_t i = 0; i < deletedImagesDataSize; ++i) {
-    //     ImageData* imageData = new ImageData();
-    //     imageData->load(inFile);
-    //     // deletedImagesData.push_back(*imageData);
-    // }
+    size_t deletedImagesDataSize;
+    inFile.read(reinterpret_cast<char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
+    for (size_t i = 0; i < deletedImagesDataSize; ++i) {
+        ImageData* imageData = new ImageData();
+        imageData->load(inFile);
+        deletedImagesData.get()->push_back(imageData);
+    }
 
     options.clear();
     size_t optionsSize;
@@ -809,6 +900,11 @@ void Data::loadData() {
     inFile.close();
 }
 
+/**
+ * @brief Add an action to the undo/redo stack
+ * @param unDo Action for undo
+ * @param reDo Action for redo
+ */
 void Data::addAction(std::function<void()> unDo, std::function<void()> reDo) {
     Actions action;
     action.unDo = unDo;
@@ -819,6 +915,10 @@ void Data::addAction(std::function<void()> unDo, std::function<void()> reDo) {
     }
 }
 
+/**
+ * @brief Save an action as done
+ * @param action Action to save as done
+ */
 void Data::addActionDone(Actions action) {
     lastActionsDone.emplace_back(action);
     if (lastActionsDone.size() > 100) {
@@ -826,6 +926,9 @@ void Data::addActionDone(Actions action) {
     }
 }
 
+/**
+ * @brief Do the last action in the redo stack
+ */
 void Data::reDoAction() {
     try {
         if (lastActionsDone.size() > 0) {
@@ -839,6 +942,9 @@ void Data::reDoAction() {
     }
 }
 
+/**
+ * @brief Do the last action in the undo stack
+ */
 void Data::unDoAction() {
     try {
         if (lastActions.size() > 0) {
@@ -853,6 +959,9 @@ void Data::unDoAction() {
     }
 }
 
+/**
+ * @brief Sort the current images data by date
+ */
 void Data::sortCurrentImagesData() {
     QElapsedTimer timer;
     timer.start();
@@ -886,10 +995,21 @@ void Data::sortCurrentImagesData() {
     timer.invalidate();
 }
 
+/**
+ * @brief Clear the image cache
+ * @note This will remove all images from the cache
+ */
 void Data::clearCache() {
     imageCache->clear();
 }
 
+/**
+ * @brief Rotate an image to the left
+ * @param nbr Image number to rotate (index in the imagesData)
+ * @param extension Image extension
+ * @param reload Function to reload
+ * @param action Set if the action should be added to the undo stack
+ */
 void Data::rotateLeft(int nbr, std::string extension, std::function<void()> reload, bool action) {
     if (isExif(extension)) {
         exifRotate(nbr, Const::Rotation::LEFT, reload);
@@ -948,6 +1068,13 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
     }
 }
 
+/**
+ * @brief Rotate an image to the right
+ * @param nbr Image number to rotate (index in the imagesData)
+ * @param extension Image extension
+ * @param reload Function to reload
+ * @param action Set if the action should be added to the undo stack
+ */
 void Data::rotateRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
     if (isExif(extension)) {
         exifRotate(nbr, Const::Rotation::RIGHT, reload);
@@ -1007,6 +1134,12 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
     }
 }
 
+/**
+ * @brief Rotate an image to the left or right (real rotation not metadata rotation)
+ * @param nbr Image number to rotate (index in the imagesData)
+ * @param rotation Rotation to apply (in degrees)
+ * @param reload Function to reload
+ */
 void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
     QString outputPath = QString::fromStdString(imagesData.getImageData(nbr)->getImagePath());
     QImage image = loadImage(nullptr, imagesData.getImageData(nbr)->getImagePath(), QSize(0, 0), false);
@@ -1020,6 +1153,12 @@ void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
     reload();
 }
 
+/**
+ * @brief Rotate an image to the left or right (metadata rotation)
+ * @param nbr Image number to rotate (index in the imagesData)
+ * @param rotation Rotation to apply (in degrees, 90 or -90)
+ * @param reload Function to reload
+ */
 void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
     ImageData* imageData = imagesData.getImageData(nbr);
     // TODO faire sans mais ça marche pas ...
@@ -1099,6 +1238,13 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
     reload();
 }
 
+/**
+ * @brief Mirror an image up/down (metadata rotation)
+ * @param nbr Image number to mirror (index in the imagesData)
+ * @param extension Image extension
+ * @param reload Function to reload
+ * @param action Set if the action should be added to the undo stack
+ */
 void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> reload, bool action) {
     if (isExif(extension)) {
         exifMirror(nbr, true, reload);
@@ -1160,6 +1306,13 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
     saved = false;
 }
 
+/**
+ * @brief Mirror an image left/right (metadata rotation)
+ * @param nbr Image number to mirror (index in the imagesData)
+ * @param extension Image extension
+ * @param reload Function to reload
+ * @param action Set if the action should be added to the undo stack
+ */
 void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
     if (isExif(extension)) {
         exifMirror(nbr, false, reload);
@@ -1220,6 +1373,12 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
     saved = false;
 }
 
+/**
+ * @brief Mirror an image up/down or left/right (metadata rotation)
+ * @param nbr Image number to mirror (index in the imagesData)
+ * @param UpDown True for up/down, false for left/right
+ * @param reload Function to reload
+ */
 void Data::exifMirror(int nbr, bool UpDown, std::function<void()> reload) {
     ImageData* imageData = imagesData.getImageData(nbr);
 
@@ -1292,6 +1451,12 @@ void Data::exifMirror(int nbr, bool UpDown, std::function<void()> reload) {
     reload();
 }
 
+/**
+ * @brief Mirror an image up/down or left/right (real rotation)
+ * @param nbr Image number to mirror (index in the imagesData)
+ * @param UpDown True for up/down, false for left/right
+ * @param reload Function to reload
+ */
 void Data::realMirror(int nbr, bool UpDown, std::function<void()> reload) {
     QString outputPath = QString::fromStdString(imagesData.getCurrentImageData()->getImagePathConst());
     QImage image = loadImage(nullptr, imagesData.getCurrentImageData()->getImagePathConst(), QSize(0, 0), false);
@@ -1309,11 +1474,19 @@ void Data::realMirror(int nbr, bool UpDown, std::function<void()> reload) {
     reload();
 }
 
+/**
+ * @brief Clear the actions stack
+ * @note This will remove all actions from the stack
+ */
 void Data::clearActions() {
     lastActions.clear();
     lastActionsDone.clear();
 }
 
+/**
+ * @brief Give you the root folders
+ * @return The root folders
+ */
 Folders* Data::getRootFolders() {
     return &rootFolders;
 }
@@ -1345,6 +1518,10 @@ ImagesData* Data::getImagesData() {
     return &imagesData;
 }
 
+/**
+ * @brief Remove an image from all folders
+ * @param imageData ImageData object to remove from folders
+ */
 void Data::removeImageFromFolders(ImageData& imageData) {
     Folders* rootFolders = getRootFolders();
     for (auto& folder : imageData.getFolders()) {
@@ -1377,6 +1554,11 @@ void Data::removeImageFromFolders(ImageData& imageData) {
     }
 }
 
+/**
+ * @brief Get the absolute path of a folder
+ * @param folder Folder to get the path of
+ * @return The absolute path of the folder
+ */
 std::string Data::getFolderPath(Folders* folder) {
     if (folder == &rootFolders) {
         return "/";
@@ -1396,6 +1578,12 @@ std::string Data::getFolderPath(Folders* folder) {
     return path;
 }
 
+/**
+ * @brief Find a folder by its absolute path
+ * @param root Root folder to search in
+ * @param path Absolute path of the folder to find
+ * @return Pointer to the found folder, or nullptr if not found
+ */
 Folders* Data::findFolderByPath(Folders& root, const std::string& path) {
     if (path == "/") {
         return &root;
@@ -1419,6 +1607,10 @@ Folders* Data::findFolderByPath(Folders& root, const std::string& path) {
     return current;
 }
 
+/**
+ * @brief Clear all data
+ * @note This will remove all images, folders, and options from the data
+ */
 void Data::clear() {
     manager.removeAllThreads();
     imagesData.clear();
@@ -1456,6 +1648,11 @@ void Data::stopAllThreads() {
     manager.removeAllThreads();
 }
 
+/**
+ * @brief Load a network from a file
+ * @param model The name of the model file (without extension)
+ * @return The loaded network
+ */
 cv::dnn::Net load_net(std::string model) {
     bool is_cuda = false;
     if (cv::cuda::getCudaEnabledDeviceCount() > 0) {
@@ -1483,6 +1680,10 @@ cv::dnn::Net load_net(std::string model) {
     return result;
 }
 
+/**
+ * @brief Load the class list from a file
+ * @return A vector of class names
+ */
 std::vector<std::string> load_class_list() {
     std::vector<std::string> class_list;
     std::ifstream ifs(APP_FILES.toStdString() + "/coco.names");
@@ -1493,8 +1694,12 @@ std::vector<std::string> load_class_list() {
     return class_list;
 }
 
+/**
+ * @brief Format the input image for YOLOv5
+ * @param source The input image
+ * @return The formatted image
+ */
 cv::Mat format_yolov5(const cv::Mat& source) {
-    // source.convertTo(source, CV_32F);
     int col = source.cols;
     int row = source.rows;
     int _max = MAX(col, row);
@@ -1513,6 +1718,13 @@ cv::Mat format_yolov5(const cv::Mat& source) {
     return result;
 }
 
+/**
+ * @brief Detect objects in an image using a YOLOv5 model
+ * @param imagePath Path to the image file
+ * @param image The image to process
+ * @param model The name of the model file (without extension)
+ * @return A DetectedObjects object containing the detected objects
+ */
 DetectedObjects Data::detect(std::string imagePath, QImage image, std::string model) {
     cv::Mat mat = QImageToCvMat(image);
     if (mat.empty()) {
