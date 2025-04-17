@@ -7,8 +7,6 @@ class DetectObjectsModel {
     void setClassNames(std::vector<std::string> classNames);
     std::string getModelName();
     void setModelName(std::string modelName);
-    std::string getLoadedModelName();
-    void setLoadedModelName(std::string loadedModelName);
     float getConfidence() const;
     void setConfidence(float confidence);
 
@@ -19,5 +17,4 @@ class DetectObjectsModel {
     float confidence = CONFIDENCE_THRESHOLD;
     std::vector<std::string> classNames;
     std::string modelName = "yolov5n";
-    std::string loadedModelName = "yolov5n";
 };

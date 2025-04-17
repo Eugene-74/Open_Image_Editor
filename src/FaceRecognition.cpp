@@ -8,6 +8,10 @@
 
 #include "Data.hpp"
 
+/**
+ * @brief Save the detected objects to a file
+ * @param out The output file stream
+ */
 void DetectedObjects::save(std::ofstream& out) const {
     size_t mapSize = detectedObjects.size();
     out.write(reinterpret_cast<const char*>(&mapSize), sizeof(mapSize));
@@ -25,6 +29,10 @@ void DetectedObjects::save(std::ofstream& out) const {
     }
 }
 
+/**
+ * @brief Load the detected objects from a file
+ * @param in The input file stream
+ */
 void DetectedObjects::load(std::ifstream& in) {
     size_t mapSize;
     in.read(reinterpret_cast<char*>(&mapSize), sizeof(mapSize));
@@ -44,6 +52,11 @@ void DetectedObjects::load(std::ifstream& in) {
     }
 }
 
+/**
+ * @brief Convert a QImage to a cv::Mat
+ * @param inImage The input QImage
+ * @return The converted cv::Mat
+ */
 cv::Mat QImageToCvMat(const QImage& inImage) {
     switch (inImage.format()) {
         case QImage::Format_RGB32: {
@@ -64,6 +77,11 @@ cv::Mat QImageToCvMat(const QImage& inImage) {
     return cv::Mat();
 }
 
+/**
+ * @brief Convert a cv::Mat to a QImage
+ * @param inImage The input cv::Mat
+ * @return The converted QImage
+ */
 QImage CvMatToQImage(const cv::Mat& inImage) {
     switch (inImage.type()) {
         case CV_8UC4: {
@@ -84,6 +102,11 @@ QImage CvMatToQImage(const cv::Mat& inImage) {
     return QImage();
 }
 
+/**
+ * @brief Load class names from a file
+ * @param filename Path to the file containing class names
+ * @return A vector of class names
+ */
 std::vector<std::string> loadClassNames(const std::string& filename) {
     std::vector<std::string> classNames;
     std::ifstream file(filename);
@@ -97,7 +120,14 @@ std::vector<std::string> loadClassNames(const std::string& filename) {
     return classNames;
 }
 
-void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback) {
+/**
+ * @brief
+ * @param data
+ * @param imagePath
+ * @param image
+ * @param callback
+ */
+void detectObjectsAsync(Data* data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback) {
     data->addHeavyThread([=]() {
         std::string modelName = data->model.getModelName();
         DetectedObjects detectedObjects = data->detect(imagePath, image, modelName);
@@ -110,18 +140,35 @@ void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::func
     });
 }
 
+/**
+ * @brief Get the detected objects
+ * @return A map of detected objects with their bounding boxes and confidence scores
+ */
 std::map<std::string, std::vector<std::pair<cv::Rect, float>>> DetectedObjects::getDetectedObjects() {
     return detectedObjects;
 }
 
+/**
+ * @brief Get the detected objects (const version)
+ * @return A const map of detected objects with their bounding boxes and confidence scores
+ */
 std::map<std::string, std::vector<std::pair<cv::Rect, float>>> DetectedObjects::getDetectedObjectsConst() const {
     return detectedObjects;
 }
 
+/**
+ * @brief Set the detected objects
+ * @param detectedObjects The detected objects to set
+ * @note This function replaces the current detected objects with the new ones
+ */
 void DetectedObjects::setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects) {
     this->detectedObjects = detectedObjects;
 }
 
+/**
+ * @brief Clear the detected objects
+ * @note This function removes all detected objects from the current instance
+ */
 void DetectedObjects::clear() {
     detectedObjects.clear();
 }

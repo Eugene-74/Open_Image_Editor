@@ -2,6 +2,10 @@
 
 #include <QFileDialog>
 
+/**
+ * @brief Open a file dialog to select files
+ * @return A list of selected file names
+ */
 QStringList fileSelector::openFileDialog() {
     QStringList fileNames;
 
@@ -15,6 +19,10 @@ QStringList fileSelector::openFileDialog() {
     return fileNames;
 }
 
+/**
+ * @brief Open a directory dialog to select directories
+ * @return A list of selected directory names
+ */
 QStringList fileSelector::openDirectoryDialog() {
     QStringList fileNames;
 

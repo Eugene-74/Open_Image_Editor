@@ -6,6 +6,11 @@
 #include "Verification.hpp"
 namespace fs = std::filesystem;
 
+/**
+ * @brief Operator = for Folders
+ * @param other The other Folders object to copy from
+ * @return A reference to the current object
+ */
 Folders& Folders::operator=(const Folders& other) {
     if (this != &other) {
         name = other.name;
@@ -15,12 +20,22 @@ Folders& Folders::operator=(const Folders& other) {
     return *this;
 }
 
+/**
+ * @brief Operator == for Folders
+ * @param other The other Folders object to compare with
+ * @return True if the objects are equal, false otherwise
+ * @note This function compares the name, files, and folders of the two objects
+ */
 bool Folders::operator==(const Folders& other) const {
     return this->name == other.name &&
            this->files == other.files &&
            this->folders == other.folders;
 }
 
+/**
+ * @brief Save the folder to a file
+ * @param out The output file stream
+ */
 void Folders::save(std::ofstream& out) const {
     size_t folderNameSize = name.size();
     out.write(reinterpret_cast<const char*>(&folderNameSize), sizeof(folderNameSize));
@@ -41,6 +56,10 @@ void Folders::save(std::ofstream& out) const {
     }
 }
 
+/**
+ * @brief Load the folder from a file
+ * @param in The input file stream
+ */
 void Folders::load(std::ifstream& in) {
     size_t folderNameSize;
     in.read(reinterpret_cast<char*>(&folderNameSize), sizeof(folderNameSize));
@@ -105,48 +124,106 @@ std::string Folders::getName() const {
     return name;
 }
 
+/**
+ * @brief Give you the folders of the current folder
+ * @return A pointer to the vector of folders
+ */
 std::vector<Folders>* Folders::getFolders() {
     return &folders;
 }
 
+/**
+ * @brief Give you the folders of the current folder (const version)
+ * @return A vector of folders
+ */
 std::vector<Folders> Folders::getFoldersConst() const {
     return folders;
 }
 
+/**
+ * @brief Give you the files of the current folder
+ * @return A vector of files
+ */
 std::vector<std::string> Folders::getFiles() {
     return files;
 }
 
+/**
+ * @brief Give you the files of the current folder (ptr version)
+ * @return A pointer to the vector of files
+ */
 std::vector<std::string>* Folders::getFilesPtr() {
     return &files;
 }
 
+/**
+ * @brief Give you the files of the current folder (const version)
+ * @return A vector of files
+ */
 std::vector<std::string> Folders::getFilesConst() const {
     return files;
 }
 
+/**
+ * @brief Give you the folder at the index
+ * @param index The index of the folder to get
+ * @return A pointer to the folder at the index
+ * @note This function checks if the index is valid and returns nullptr if it is not
+ * @note This function returns a pointer to the folder, not a copy of it
+ */
 Folders* Folders::getFolder(int index) {
+    if (index < 0 || index >= folders.size()) {
+        qCritical() << "Index out of range in getFolder()";
+        return nullptr;
+    }
     return &folders.at(index);
 }
 
+/**
+ * @brief Give you the file at the index
+ * @param index The index of the file to get
+ * @return A pointer to the file at the index
+ * @note This function checks if the index is valid and returns nullptr if it is not
+ * @note This function returns a pointer to the file string, not a copy of it
+ */
 std::string* Folders::getFile(int index) {
+    if (index < 0 || index >= files.size()) {
+        qCritical() << "Index out of range in getFile()";
+        return nullptr;
+    }
     return &files.at(index);
 }
 
+/**
+ * @brief Give you the parent of the current folder
+ * @return A pointer to the parent folder
+ */
 Folders* Folders::getParent() {
     return parent;
 }
 
+/**
+ * @brief Set the parent of the current folder
+ * @param parent The parent folder to set
+ */
 void Folders::setParent(Folders* parent) {
     this->parent = parent;
 }
 
+/**
+ * @brief Clear the current folder
+ * @note This function clears the name, files, and folders of the current folder
+ */
 void Folders::clear() {
     name.clear();
     files.clear();
     folders.clear();
 }
 
+/**
+ * @brief Clear the current folder and all its subfolders recursively
+ * @note This function clears the name, files, and folders of the current folder and all its subfolders
+ */
 void Folders::clearRecursively() {
     for (auto& folder : folders) {
         folder.clearRecursively();
@@ -154,14 +231,23 @@ void Folders::clearRecursively() {
     clear();
 }
 
-// Verifie si un dossier existe dans un Folders
-bool getIfExist(Folders* currentFolder, const std::string& path) {
-    auto folder = std::find_if(currentFolder->getFolders()->begin(), currentFolder->getFolders()->end(), [&path](const Folders& folder) { return folder.getName() == path; });
+/**
+ * @brief Check if a folder with the given name exists in the current folder
+ * @param currentFolder The current folder to check in
+ * @param folderName The name of the folder to check for
+ * @return True if the folder exists, false otherwise
+ */
+bool getIfExist(Folders* currentFolder, const std::string& folderName) {
+    auto folder = std::find_if(currentFolder->getFolders()->begin(), currentFolder->getFolders()->end(), [&folderName](const Folders& folder) { return folder.getName() == folderName; });
 
     return folder != currentFolder->getFolders()->end();
 }
 
-// Verifie si un dossier contient une image dans un de ses sous dossier
+/**
+ * @brief Check if a path contains media files (images or videos)
+ * @param path The path to check
+ * @return True if the path contains media files, false otherwise
+ */
 bool containMedia(const std::string& path) {
     bool valide = false;
     for (const auto& entry : fs::recursive_directory_iterator(path)) {

@@ -822,7 +822,7 @@ MainImage* ImageEditor::createImageLabel() {
 
         QPointer<ImageEditor> self = this;
 
-        detectFacesAsync(data, currentImagePath, image, [self, imageNbr, currentImagePath](DetectedObjects detectedObject) {
+        detectObjectsAsync(data, currentImagePath, image, [self, imageNbr, currentImagePath](DetectedObjects detectedObject) {
             if (!self.isNull()) {
                 ImageData* imageData = self->data->getImagesData()->getImageData(currentImagePath);
 

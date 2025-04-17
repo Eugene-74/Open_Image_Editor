@@ -54,6 +54,6 @@ class Folders {
     void setParent(Folders* parent);
 };
 
-bool getIfExist(Folders* currentFolder, const std::string& path);
+bool getIfExist(Folders* currentFolder, const std::string& folderName);
 
 bool containMedia(const std::string& path);

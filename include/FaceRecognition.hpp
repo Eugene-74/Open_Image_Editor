@@ -23,7 +23,7 @@ class DetectedObjects {
 };
 
 bool isCudaAvailable();
-void detectFacesAsync(Data* data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback);
+void detectObjectsAsync(Data* data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback);
 // DetectedObjects detect(std::string imagePath, QImage image);
 void computeFaces(Data* data, std::string imagePath);
 std::vector<std::string> loadClassNames(const std::string& filename);

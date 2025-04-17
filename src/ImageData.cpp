@@ -8,27 +8,47 @@
 
 namespace fs = std::filesystem;
 
+/**
+ * @brief Default constructor for the ImageData class
+ * @note Initializes the folders, cropSizes, orientation, and date members.
+ */
 ImageData::ImageData()
     : folders(Folders()), cropSizes(), orientation(), date() {
     orientation = Const::Orientation::UNDEFINED;
 }
 
+/**
+ * @brief Constructor for the ImageData class with a Folders object
+ * @param folders Folders object to initialize the ImageData object
+ */
 ImageData::ImageData(const Folders folders)
     : folders(folders) {
     orientation = Const::Orientation::UNDEFINED;
 }
 
+/**
+ * @brief Constructor for the ImageData class with a string path
+ * @param imagePath Path to the image
+ */
 ImageData::ImageData(std::string imagePath)
     : folders(Folders(imagePath)) {
     orientation = Const::Orientation::UNDEFINED;
 }
 
+/**
+ * @brief Copy constructor for the ImageData class
+ * @param other The ImageData object to copy from
+ * @note Initializes the folders, metaData, cropSizes, orientation, date, and detectionStatus members.
+ */
 ImageData::ImageData(const ImageData& other)
-    : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date)
-      // , persons(other.persons)
-      ,
-      detectionStatus(other.detectionStatus) {}
+    : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), detectionStatus(other.detectionStatus) {}
 
+/**
+ * @brief Assignment operator for the ImageData class
+ * @param other The ImageData object to assign from
+ * @return Reference to the current object
+ * @note Copies the folders, metaData, cropSizes, orientation, date, detectedObjects, and detectionStatus members from the other object.
+ */
 ImageData& ImageData::operator=(const ImageData& other) {
     if (this != &other) {
         folders.getName() = other.folders.getName();
@@ -42,14 +62,28 @@ ImageData& ImageData::operator=(const ImageData& other) {
     return *this;
 }
 
+/**
+ * @brief Equality operator for the ImageData class
+ * @param other The ImageData object to compare with
+ * @return True if the folders names are equal, false otherwise
+ * @note Compares the names of the folders in both ImageData objects.
+ */
 bool ImageData::operator==(const ImageData& other) const {
     return this->folders.getName() == other.folders.getName();
 }
 
+/**
+ * @brief Print the image data to the console
+ */
 void ImageData::print() const {
     qInfo() << get();
 }
 
+/**
+ * @brief Check if the image data respects the given filters
+ * @param filters A map of filters to check against
+ * @return True if the image data respects the filters, false otherwise
+ */
 bool ImageData::respectFilters(const std::map<std::string, bool>& filters) const {
     if (std::all_of(filters.begin(), filters.end(), [](const auto& filter) {
             return !filter.second || filter.first == "image" || filter.first == "video";
@@ -68,6 +102,11 @@ bool ImageData::respectFilters(const std::map<std::string, bool>& filters) const
     return false;
 }
 
+/**
+ * @brief Get a string representation of the image data
+ * @return A string containing the image path and folder names
+ * @note This function is used for debugging purposes.
+ */
 std::string ImageData::get() const {
     std::string name;
     name += "Image : " + getImagePathConst() + " folders : ";
@@ -79,46 +118,90 @@ std::string ImageData::get() const {
     return name;
 }
 
+/**
+ * @brief Get a pointer to the MetaData object
+ * @return A pointer to the MetaData object
+ */
 MetaData* ImageData::getMetaDataPtr() {
     return &metaData;
 }
 
+/**
+ * @brief Get the MetaData object
+ * @return The MetaData object
+ */
 MetaData ImageData::getMetaData() const {
     return metaData;
 }
 
+/**
+ * @brief Get the folders associated with the imageData
+ * @return A vector of Folders objects
+ */
 std::vector<Folders> ImageData::getFolders() {
     return *folders.getFolders();
 }
 
-
+/**
+ * @brief Add a folder to the imageData
+ * @param toAddFolder The folder to add
+ */
 void ImageData::addFolder(const std::string& toAddFolder) {
     folders.addFolder(toAddFolder);
 }
 
+/**
+ * @brief Add multiple folders to the imageData
+ * @param toAddFolders A vector of folders to add
+ */
 void ImageData::addFolders(const std::vector<std::string>& toAddFolders) {
     for (const auto& folder : toAddFolders) {
         folders.addFolder(folder);
     }
 }
 
+/**
+ * @brief Get the name of the image
+ * @return The name of the image
+ */
 std::string ImageData::getImageName() const {
-    std::filesystem::path filePath(getImagePathConst());
-    return filePath.filename().string();
+    std::string imagePath = getImagePathConst();
+    size_t lastSlash = imagePath.find_last_of("/\\");
+    return imagePath.substr(lastSlash + 1);
 }
 
+/**
+ * @brief Get the path of the image
+ * @return
+ */
 std::string ImageData::getImagePath() {
     return folders.getName();
 }
 
+/**
+ * @brief Get the path of the image (const version)
+ * @return The path of the image
+ */
 std::string ImageData::getImagePathConst() const {
     return folders.getName();
 }
 
+/**
+ * @brief Get the extension of the image
+ * @return The extension of the image
+ */
 std::string ImageData::getImageExtension() {
-    return fs::path(getImagePath()).extension().string();
+    size_t dotPosition = getImagePath().find_last_of('.');
+    if (dotPosition != std::string::npos) {
+        return getImagePath().substr(dotPosition);
+    }
+    return "";
 }
 
+/**
+ * @brief Set the exif metaData of the image
+ * @param toAddMetaData The exif metaData
+ */
 void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
     try {
         metaData.setExifData(toAddMetaData);
@@ -128,6 +211,9 @@ void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
     }
 }
 
+/**
+ * @brief Load the image metadata
+ */
 void ImageData::loadData() {
     try {
         if (!metaData.dataLoaded) {
@@ -143,6 +229,9 @@ void ImageData::loadData() {
     }
 }
 
+/**
+ * @brief Save the image metadata
+ */
 void ImageData::saveMetaData() {
     try {
         metaData.saveMetaData(getImagePath());
@@ -151,17 +240,27 @@ void ImageData::saveMetaData() {
     }
 }
 
+/**
+ * @brief Get the image orientation (in metadata)
+ * @return The image orientation (exif orientation(1-8))
+ */
 int ImageData::getImageOrientation() {
     return metaData.getImageOrientation();
 }
 
+/**
+ * @brief Turn the image to the specified orientation
+ * @param rotation The rotation value (1-8) to set the image orientation
+ */
 void ImageData::turnImage(int rotation) {
     this->orientation = rotation;
-    // metaData.modifyExifValue("Xmp.Exif.Image.Orientation", std::to_string(rotation));
-    // metaData.modifyExifValue("Exif.Thumbnail.Orientation", std::to_string(rotation));
     metaData.modifyXmpValue("Xmp.Exif.Image.Orientation", std::to_string(rotation));
+    metaData.modifyExifValue("Exif.Image.Orientation", std::to_string(rotation));
 }
 
+/**
+ * @brief Set or create the Exif data for the image
+ */
 void ImageData::setOrCreateExifData() {
     metaData.setOrCreateExifData(getImagePath());
 }
@@ -170,32 +269,26 @@ std::map<std::string, std::vector<std::pair<cv::Rect, float>>> ImageData::getDet
     return detectedObjects.getDetectedObjects();
 }
 
+/**
+ * @brief Set the detected objects for the image
+ * @param detectedObjects A map of detected objects with their bounding boxes and confidence scores
+ */
 void ImageData::setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects) {
     this->detectedObjects.setDetectedObjects(detectedObjects);
-
-    // Exiv2::XmpProperties::registerNs("http://ns.example.com/detectedObjects/", "detObj");
-
-    // Save detected objects into metadata
-    // for (const auto& [key, vec] : detectedObjects) {
-    //     std::string detectedObjectsKey = "detObj:" + key;
-    //     std::string detectedObjectsValue;
-
-    //     for (const auto& [rect, confidence] : vec) {
-    //         detectedObjectsValue += std::to_string(rect.x) + "," +
-    //                                 std::to_string(rect.y) + "," +
-    //                                 std::to_string(rect.width) + "," +
-    //                                 std::to_string(rect.height) + "," +
-    //                                 std::to_string(confidence) + ";";
-    //     }
-
-    //     metaData.modifyXmpValue(detectedObjectsKey, detectedObjectsValue);
-    // }
 }
+
+/**
+ * @brief Clear the detected objects for the image
+ */
 void ImageData::clearDetectedObjects() {
     detectedObjects.clear();
     setDetectionStatusNotLoaded();
 }
 
+/**
+ * @brief Save the imageData to a file
+ * @param out The output file stream to save the data to
+ */
 void ImageData::save(std::ofstream& out) const {
     out.write(reinterpret_cast<const char*>(&orientation), sizeof(orientation));
     out.write(reinterpret_cast<const char*>(&date), sizeof(date));
@@ -215,6 +308,10 @@ void ImageData::save(std::ofstream& out) const {
     detectedObjects.save(out);
 }
 
+/**
+ * @brief Load the imageData from a file
+ * @param in The input file stream to load the data from
+ */
 void ImageData::load(std::ifstream& in) {
     in.read(reinterpret_cast<char*>(&orientation), sizeof(orientation));
     in.read(reinterpret_cast<char*>(&date), sizeof(date));
@@ -242,55 +339,95 @@ void ImageData::load(std::ifstream& in) {
     detectedObjects.load(in);
 }
 
+/**
+ * @brief Get the crop sizes for the image
+ * @return A vector of vectors of QPoint representing the crop sizes
+ */
 std::vector<std::vector<QPoint>> ImageData::getCropSizes() const {
     return cropSizes;
 }
 
+/**
+ * @brief Set the crop sizes for the image
+ * @param cropSizes A vector of vectors of QPoint representing the crop sizes
+ */
 void ImageData::setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes) {
     this->cropSizes = cropSizes;
 }
 
+/**
+ * @brief Clear the metadata of the image
+ */
 void ImageData::clearMetaData() {
     metaData.clear();
     metaData.dataLoaded = false;
 }
 
-// DetectionStatus ImageData::getDetectionStatus() const {
-//     return detectionStatus;
-// }
-
+/**
+ * @brief Set the detection status of the image
+ * @param detectionStatus The detection status to set
+ */
 void ImageData::setDetectionStatus(DetectionStatus detectionStatus) {
     this->detectionStatus = detectionStatus;
 }
 
+/**
+ * @brief Set the detection status to loading
+ */
 void ImageData::setDetectionStatusLoading() {
     setDetectionStatus(DetectionStatus::Loading);
 }
 
+/**
+ * @brief Set the detection status to not loaded
+ */
 void ImageData::setDetectionStatusNotLoaded() {
     setDetectionStatus(DetectionStatus::NotLoaded);
 }
 
+/**
+ * @brief Set the detection status to loaded
+ */
 void ImageData::setDetectionStatusLoaded() {
     setDetectionStatus(DetectionStatus::Loaded);
 }
 
+/**
+ * @brief Check if the detection status is loading
+ * @return True if the detection status is loading, false otherwise
+ */
 bool ImageData::isDetectionStatusLoading() {
     return detectionStatus == DetectionStatus::Loading;
 }
 
+/**
+ * @brief Check if the detection status is not loaded
+ * @return True if the detection status is not loaded, false otherwise
+ */
 bool ImageData::isDetectionStatusNotLoaded() {
     return detectionStatus == ImageData::DetectionStatus::NotLoaded;
 }
 
+/**
+ * @brief Check if the detection status is loaded
+ * @return True if the detection status is loaded, false otherwise
+ */
 bool ImageData::isDetectionStatusLoaded() {
     return detectionStatus == ImageData::DetectionStatus::Loaded;
 }
 
+/**
+ * @brief Set the metaData for the image
+ * @param metaData The metaData to set
+ */
 void ImageData::setMetaData(const MetaData& metaData) {
     this->metaData = metaData;
 }
 
+/**
+ * @brief Set the date for the image
+ * @param date The date to set
+ */
 void ImageData::setDate(long date) {
     if (date < 0) {
         qWarning() << "Date invalide : " << date;
@@ -299,10 +436,19 @@ void ImageData::setDate(long date) {
     this->date = date;
 }
 
+/**
+ * @brief Get the date for the image
+ * @return The date of the image
+ */
 long ImageData::getDate() const {
     return date;
 }
 
+/**
+ * @brief Set the orientation for the image
+ * @param orientation The orientation to set (1-8)
+ *
+ */
 void ImageData::setOrientation(int orientation) {
     if (orientation < 0 || orientation > 8) {
         qWarning() << "Orientation invalide : " << orientation;
@@ -311,6 +457,10 @@ void ImageData::setOrientation(int orientation) {
     this->orientation = orientation;
 }
 
+/**
+ * @brief Get the orientation for the image
+ * @return The orientation of the image (1-8)
+ */
 int ImageData::getOrientation() const {
     return orientation;
 }

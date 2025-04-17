@@ -16,6 +16,11 @@
 #include "Conversion.hpp"
 #include "Verification.hpp"
 
+/**
+ * @brief Constructor for the ImageBooth class
+ * @param dat Pointer to the Data object
+ * @param parent Pointer to the parent widget
+ */
 ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
@@ -124,6 +129,10 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
     });
 }
 
+/**
+ * @brief Open a folder and load its images
+ * @param index Index of the folder to open (in the current folder) (-2 for parent folder, -1 for all images)
+ */
 void ImageBooth::openFolder(int index) {
     data->getImagesData()->getCurrent()->clear();
 
@@ -175,6 +184,7 @@ void ImageBooth::openFolder(int index) {
 
     data->addAction(
         [this, index]() {
+            
             // TODO adapter ne permet pas de faire autre chose que remonter dans les dossier
             openFolder(index);
         },
@@ -183,6 +193,10 @@ void ImageBooth::openFolder(int index) {
         });
 }
 
+/**
+ * @brief Update the visible images in the image booth
+ * @param force Force the update even if the number of visible images has not changed
+ */
 void ImageBooth::updateVisibleImages(bool force) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
@@ -203,7 +217,11 @@ void ImageBooth::updateVisibleImages(bool force) {
     lastLineNbr = lineNbr;
 }
 
-// Check if an image is visible
+/**
+ * @brief Check if the image is visible in the current view
+ * @param imageIndex Index of the image to check
+ * @return True if the image is visible, false otherwise
+ */
 bool ImageBooth::isImageVisible(int imageIndex) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
     int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
@@ -215,6 +233,9 @@ bool ImageBooth::isImageVisible(int imageIndex) {
     return (imageIndex >= firstImageNbr && imageIndex <= lastImageNbr);
 }
 
+/**
+ * @brief Create the first images in the image booth
+ */
 void ImageBooth::createFirstImages() {
     int foldersLineNumber = (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber) + 1;
 
@@ -240,10 +261,20 @@ void ImageBooth::createFirstImages() {
     }
 }
 
+/**
+ * @brief Update the images in the image booth when scrolling
+ * @param value Value of the scroll bar
+ */
 void ImageBooth::onScroll(int value) {
     updateVisibleImages();
 }
 
+/**
+ * @brief Create an image button in the image booth
+ * @param imagePath Path to the image
+ * @param nbr Index of the image in the current folder
+ * @return Pointer to the created ClickableLabel object
+ */
 ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     if (data->imagesData.getCurrent()->size() <= 0) {
         return nullptr;
@@ -487,7 +518,11 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     return imageButton;
 }
 
-// Go to the line of the image nbr
+/**
+ * @brief Go to a specific image in the image booth
+ * @param imageNumberInCurrent The image number in the current folder
+ * @param force Force the update even if the image is already visible
+ */
 void ImageBooth::gotToImage(int imageNumberInCurrent, bool force) {
     qInfo() << "gotToImage : " << imageNumberInCurrent;
     int imageLine = imageNumberInCurrent / data->sizes->imagesBoothSizes->widthImageNumber;
@@ -499,7 +534,10 @@ void ImageBooth::gotToImage(int imageNumberInCurrent, bool force) {
     QCoreApplication::processEvents();
 }
 
-// Add a nbr to the selected images
+/**
+ * @brief Add a number to the selected images
+ * @param nbr The number to add (image number in imagesData)
+ */
 void ImageBooth::addNbrToSelectedImages(int nbr) {
     auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
     if (it == data->imagesSelected.end()) {
@@ -507,7 +545,10 @@ void ImageBooth::addNbrToSelectedImages(int nbr) {
     }
 }
 
-// remove a nbr to the selected images
+/**
+ * @brief Remove a number from the selected images
+ * @param nbr The number to remove (image number in imagesData)
+ */
 void ImageBooth::removeNbrToSelectedImages(int nbr) {
     auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
     if (it != data->imagesSelected.end()) {
@@ -515,9 +556,13 @@ void ImageBooth::removeNbrToSelectedImages(int nbr) {
     }
 }
 
-// Get the clickableLabel + lineLayout of imageNbr if exist
+/**
+ * @brief Get the clickableLabel (and lineLayout) of imageNbr if it exists (visible in the current view)
+ * @param imageNbr The image number in the current folder
+ * @param lineLayout Reference to the line layout containing the image button
+ * @return Pointer to the ClickableLabel object if it exists, nullptr otherwise
+ */
 ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr, QHBoxLayout*& lineLayout) {
-    // Adapt to folders
     int foldersLineNumber = (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber) + 1;
     imageNbr += foldersLineNumber * data->sizes->imagesBoothSizes->widthImageNumber;
 
@@ -542,13 +587,19 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr, QHBoxLayout*&
     return nullptr;
 }
 
-// Get the clickable label of imageNbr if exist
+/**
+ * @brief Get the clickableLabel of imageNbr if it exists (visible in the current view)
+ * @param imageNbr The image number in the current folder
+ * @return Pointer to the ClickableLabel object if it exists, nullptr otherwise
+ */
 ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
     QHBoxLayout* lineLayout = nullptr;
     return getClickableLabelIfExist(imageNbr, lineLayout);
 }
 
-// Update all visible images
+/**
+ * @brief Update the images in the image booth
+ */
 void ImageBooth::updateImages() {
     try {
         int spacerHeight = scrollArea->verticalScrollBar()->value();
@@ -675,6 +726,10 @@ void ImageBooth::updateImages() {
     }
 }
 
+/**
+ * @brief Handle key release events in the image booth
+ * @param event Pointer to the key event
+ */
 void ImageBooth::keyReleaseEvent(QKeyEvent* event) {
     switch (event->key()) {
         case Qt::Key_Escape: {
@@ -701,7 +756,9 @@ void ImageBooth::keyReleaseEvent(QKeyEvent* event) {
     }
 }
 
-// Create all the buttons
+/**
+ * @brief Create the action buttons in the image booth
+ */
 void ImageBooth::createButtons() {
     imageRotateRight = createImageRotateRight();
     imageRotateLeft = createImageRotateLeft();
@@ -730,6 +787,10 @@ void ImageBooth::createButtons() {
     actionButtonLayout->addWidget(editFilters);
 }
 
+/**
+ * @brief Create the delete image button
+ * @return Pointer to the created ClickableLabel object
+ */
 ClickableLabel* ImageBooth::createImageDelete() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -806,6 +867,10 @@ ClickableLabel* ImageBooth::createImageDelete() {
     return imageDeleteNew;
 }
 
+/**
+ * @brief Create the save image button
+ * @return Pointer to the created ClickableLabel object
+ */
 ClickableLabel* ImageBooth::createImageSave() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -835,6 +900,10 @@ ClickableLabel* ImageBooth::createImageSave() {
     return imageSaveNew;
 }
 
+/**
+ * @brief Create the export image button
+ * @return Pointer to the created ClickableLabel object
+ */
 ClickableLabel* ImageBooth::createImageExport() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -851,6 +920,10 @@ ClickableLabel* ImageBooth::createImageExport() {
     return imageExportNew;
 }
 
+/**
+ * @brief Create the rotate right image button
+ * @return Pointer to the created ClickableLabel object
+ */
 ClickableLabel* ImageBooth::createImageRotateRight() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -900,6 +973,10 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
     return imageRotateRightNew;
 }
 
+/**
+ * @brief Create the rotate left image button
+ * @return Pointer to the created ClickableLabel object
+ */
 ClickableLabel* ImageBooth::createImageRotateLeft() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -949,6 +1026,10 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
     return imageRotateLeftNew;
 }
 
+/**
+ * @brief Create the mirror up down image button
+ * @return Pointer to the created ClickableLabel object
+ */
 ClickableLabel* ImageBooth::createImageMirrorUpDown() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -999,6 +1080,10 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
     return imageMirrorUpDownNew;
 }
 
+/**
+ * @brief Create the mirror left right image button
+ * @return Pointer to the created ClickableLabel object
+ */
 ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -1048,6 +1133,10 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
     return imageMirrorLeftRightNew;
 }
 
+/**
+ * @brief Create the edit exif image button
+ * @return Pointer to the created ClickableLabel object
+ */
 ClickableLabel* ImageBooth::createImageEditExif() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -1064,6 +1153,10 @@ ClickableLabel* ImageBooth::createImageEditExif() {
     return imageEditExifNew;
 }
 
+/**
+ * @brief Create the image conversion button
+ * @return Pointer to the created ClickableLabel object
+ */
 ClickableLabel* ImageBooth::createImageConversion() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -1100,6 +1193,10 @@ ClickableLabel* ImageBooth::createImageConversion() {
     return imageConversionNew;
 }
 
+/**
+ * @brief Create the edit filters button
+ * @return Pointer to the created ClickableLabel object
+ */
 ClickableLabel* ImageBooth::createEditFilters() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -1243,6 +1340,7 @@ int ImageBooth::getCurrentFoldersSize() {
 
 /**
  * @brief Pre load images so it's more fluid
+ * @warning This function is not working yet, it needs to be implemented
  */
 void ImageBooth::preLoadImages() {
     // data->stopAllThreads();
