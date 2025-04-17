@@ -1,5 +1,31 @@
 var searchData=
 [
-  ['threadmanager_0',['ThreadManager',['../class_thread_manager.html',1,'ThreadManager'],['../class_thread_manager.html#a8c6c6f3881027ebdcb4e242353ebe2e7',1,'ThreadManager::ThreadManager()']]],
-  ['thumbnailtask_1',['ThumbnailTask',['../class_thumbnail_task.html',1,'']]]
+  ['save_0',['save',['../class_detect_objects_model.html#a7bc0e2d128a112926f7c41a613a1a0b3',1,'DetectObjectsModel::save()'],['../class_detected_objects.html#a3beb3aba26e0eda8c51a1a33c772eeaa',1,'DetectedObjects::save()'],['../class_folders.html#a832f13112910f29184bff9475916806b',1,'Folders::save()'],['../class_image_data.html#a3a4d2d2891fd8121f52a20187049f67d',1,'ImageData::save()']]],
+  ['savedata_1',['saveData',['../class_data.html#ab564b449efa1ad6bd6f47a5475f68065',1,'Data']]],
+  ['savemetadata_2',['saveMetaData',['../class_image_data.html#ac6b494dcde3641e7cf544ada0b5009a3',1,'ImageData']]],
+  ['setbackground_3',['setBackground',['../class_clickable_label.html#aa550596abff263952352227cad6d2d05',1,'ClickableLabel']]],
+  ['setborder_4',['setBorder',['../class_clickable_label.html#a95ee7876c78ebc1312e097a404ce0412',1,'ClickableLabel']]],
+  ['setclassnames_5',['setClassNames',['../class_detect_objects_model.html#aa056c38a6795587e8534ac6853a5c985',1,'DetectObjectsModel']]],
+  ['setconfidence_6',['setConfidence',['../class_detect_objects_model.html#a72761f4dcfea777c241caf3a190f1ab9',1,'DetectObjectsModel']]],
+  ['setcropsizes_7',['setCropSizes',['../class_image_data.html#a3866a896d0ce5525745c0ba2227491bf',1,'ImageData']]],
+  ['setdate_8',['setDate',['../class_image_data.html#a7f561e13c27d0f005b8e60eaba6556dd',1,'ImageData']]],
+  ['setdetectedobjects_9',['setDetectedObjects',['../class_detected_objects.html#a84a2789f6ecd97f0b5b779487e38bc2f',1,'DetectedObjects::setDetectedObjects()'],['../class_image_data.html#a358d8b960fa3f478b01ad8e233bd8d82',1,'ImageData::setDetectedObjects(const std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt; &amp;detectedObjects)']]],
+  ['setdetectionstatus_10',['setDetectionStatus',['../class_image_data.html#a2324273170e9701e94254ddd94a8c6d5',1,'ImageData']]],
+  ['setdetectionstatusloaded_11',['setDetectionStatusLoaded',['../class_image_data.html#ac7581481a28c7699d9c76f998160b573',1,'ImageData']]],
+  ['setdetectionstatusloading_12',['setDetectionStatusLoading',['../class_image_data.html#a8e5f15bac5086fa00605ba38c809be3c',1,'ImageData']]],
+  ['setdetectionstatusnotloaded_13',['setDetectionStatusNotLoaded',['../class_image_data.html#ac6f25c1027294cf044c14c8bf6926013',1,'ImageData']]],
+  ['setexifmetadata_14',['setExifMetaData',['../class_image_data.html#a4dc84b07b49887b26fc0df892af4f0af',1,'ImageData']]],
+  ['setinitialbackground_15',['setInitialBackground',['../class_clickable_label.html#a02a40df49210cbb293998332947d04ae',1,'ClickableLabel']]],
+  ['setinitialborder_16',['setInitialBorder',['../class_clickable_label.html#a2f7fa5171a0f7615cbac130b3097395a',1,'ClickableLabel']]],
+  ['setlogodisabled_17',['setLogoDisabled',['../class_clickable_label.html#a7b4258a19f8290ef615abf1c41ce9c3c',1,'ClickableLabel']]],
+  ['setlogoenabled_18',['setLogoEnabled',['../class_clickable_label.html#a6cd35b4fd9c5ed57e67682ea4a2720a6',1,'ClickableLabel']]],
+  ['setlogonumber_19',['setLogoNumber',['../class_clickable_label.html#ac18f2423fe0aa2fa2c383f14f962c9e1',1,'ClickableLabel']]],
+  ['setmetadata_20',['setMetaData',['../class_image_data.html#a4f8ea275a7300685d5c1e97aeec04cfc',1,'ImageData']]],
+  ['setmodelname_21',['setModelName',['../class_detect_objects_model.html#a96be9962e814ae676c4f76020fefe432',1,'DetectObjectsModel']]],
+  ['setorcreateexifdata_22',['setOrCreateExifData',['../class_image_data.html#a6a9a7bdc1e8cf0882f19ff0502d537fc',1,'ImageData']]],
+  ['setorientation_23',['setOrientation',['../class_image_data.html#a13bcf697bd9ca3945d22be9f1dc53dc9',1,'ImageData']]],
+  ['setparent_24',['setParent',['../class_folders.html#a63dd19cfbb6b20bd604962c8620e92fa',1,'Folders']]],
+  ['sizes_25',['Sizes',['../class_sizes.html',1,'']]],
+  ['sortcurrentimagesdata_26',['sortCurrentImagesData',['../class_data.html#a001016d11a7a0d52d537c4d95e367b4a',1,'Data']]],
+  ['stopallthreads_27',['stopAllThreads',['../class_data.html#a96c082d18b1b973f7d1f66c92bac28d9',1,'Data']]]
 ];

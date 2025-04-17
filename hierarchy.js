@@ -4,6 +4,7 @@ var hierarchy =
     [ "Const", "class_const.html", null ],
     [ "Data", "class_data.html", null ],
     [ "DetectedObjects", "class_detected_objects.html", null ],
+    [ "DetectObjectsModel", "class_detect_objects_model.html", null ],
     [ "fileSelector", "classfile_selector.html", null ],
     [ "Folders", "class_folders.html", null ],
     [ "ImageData", "class_image_data.html", null ],
@@ -29,11 +30,9 @@ var hierarchy =
       [ "MainWindow", "class_main_window.html", null ]
     ] ],
     [ "QObject", null, [
-      [ "ThreadManager", "class_thread_manager.html", null ],
-      [ "ThumbnailTask", "class_thumbnail_task.html", null ]
+      [ "ThreadManager", "class_thread_manager.html", null ]
     ] ],
     [ "QRunnable", null, [
-      [ "ThumbnailTask", "class_thumbnail_task.html", null ],
       [ "Worker", "class_worker.html", null ]
     ] ],
     [ "Const::Rotation", "class_const_1_1_rotation.html", null ],

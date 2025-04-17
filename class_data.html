@@ -114,14 +114,11 @@ $(function(){initNavTree('class_data.html',''); initResizable(true); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a858ab7d8b6a1eb423c44ec459af28143" id="r_a858ab7d8b6a1eb423c44ec459af28143"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a858ab7d8b6a1eb423c44ec459af28143">save_model</a> (cv::Ptr&lt; cv::face::LBPHFaceRecognizer &gt; model, const std::string &amp;model_path)</td></tr>
-<tr class="memdesc:a858ab7d8b6a1eb423c44ec459af28143"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save the model for face recognition.  <br /></td></tr>
-<tr class="separator:a858ab7d8b6a1eb423c44ec459af28143"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35bb6b71d70b1e173cc2d64dcef6cd37" id="r_a35bb6b71d70b1e173cc2d64dcef6cd37"><td class="memItemLeft" align="right" valign="top">cv::Ptr&lt; cv::face::LBPHFaceRecognizer &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35bb6b71d70b1e173cc2d64dcef6cd37">load_model</a> (const std::string &amp;model_path)</td></tr>
-<tr class="memdesc:a35bb6b71d70b1e173cc2d64dcef6cd37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the model.  <br /></td></tr>
-<tr class="separator:a35bb6b71d70b1e173cc2d64dcef6cd37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07c367ea35288f2ee324c684e5132039" id="r_a07c367ea35288f2ee324c684e5132039"><td class="memItemLeft" align="right" valign="top"><a id="a07c367ea35288f2ee324c684e5132039" name="a07c367ea35288f2ee324c684e5132039"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clearCache</b> ()</td></tr>
+<tr class="memitem:af11f741cb7f587e2e495452a8905a22a" id="r_af11f741cb7f587e2e495452a8905a22a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af11f741cb7f587e2e495452a8905a22a">Data</a> ()</td></tr>
+<tr class="memdesc:af11f741cb7f587e2e495452a8905a22a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for the <a class="el" href="class_data.html">Data</a> class.  <br /></td></tr>
+<tr class="separator:af11f741cb7f587e2e495452a8905a22a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07c367ea35288f2ee324c684e5132039" id="r_a07c367ea35288f2ee324c684e5132039"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a07c367ea35288f2ee324c684e5132039">clearCache</a> ()</td></tr>
+<tr class="memdesc:a07c367ea35288f2ee324c684e5132039"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the image cache.  <br /></td></tr>
 <tr class="separator:a07c367ea35288f2ee324c684e5132039"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3000024fbd81870872d3b36cca543418" id="r_a3000024fbd81870872d3b36cca543418"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3000024fbd81870872d3b36cca543418">preDeleteImage</a> (int imageNbr)</td></tr>
 <tr class="memdesc:a3000024fbd81870872d3b36cca543418"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move an image to the delete images.  <br /></td></tr>
@@ -129,29 +126,36 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clearCache</b> ()</td
 <tr class="memitem:a323d02f7e2a85b7397c30f78080bc28c" id="r_a323d02f7e2a85b7397c30f78080bc28c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a323d02f7e2a85b7397c30f78080bc28c">unPreDeleteImage</a> (int imageNbr)</td></tr>
 <tr class="memdesc:a323d02f7e2a85b7397c30f78080bc28c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recover an image from the deleted images.  <br /></td></tr>
 <tr class="separator:a323d02f7e2a85b7397c30f78080bc28c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a687965d6f84cb037078ffba1e721c63b" id="r_a687965d6f84cb037078ffba1e721c63b"><td class="memItemLeft" align="right" valign="top"><a id="a687965d6f84cb037078ffba1e721c63b" name="a687965d6f84cb037078ffba1e721c63b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>revocerDeletedImage</b> (int imageNbr)</td></tr>
+<tr class="memitem:a687965d6f84cb037078ffba1e721c63b" id="r_a687965d6f84cb037078ffba1e721c63b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a687965d6f84cb037078ffba1e721c63b">revocerDeletedImage</a> (int imageNbr)</td></tr>
+<tr class="memdesc:a687965d6f84cb037078ffba1e721c63b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recover an image from the deleted images.  <br /></td></tr>
 <tr class="separator:a687965d6f84cb037078ffba1e721c63b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa172a06a0277fc019ed55a573683e3ef" id="r_aa172a06a0277fc019ed55a573683e3ef"><td class="memItemLeft" align="right" valign="top"><a id="aa172a06a0277fc019ed55a573683e3ef" name="aa172a06a0277fc019ed55a573683e3ef"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>revocerDeletedImage</b> (<a class="el" href="class_image_data.html">ImageData</a> &amp;imageData)</td></tr>
+<tr class="memitem:aa172a06a0277fc019ed55a573683e3ef" id="r_aa172a06a0277fc019ed55a573683e3ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa172a06a0277fc019ed55a573683e3ef">revocerDeletedImage</a> (<a class="el" href="class_image_data.html">ImageData</a> &amp;imageData)</td></tr>
+<tr class="memdesc:aa172a06a0277fc019ed55a573683e3ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recover an image from the deleted images.  <br /></td></tr>
 <tr class="separator:aa172a06a0277fc019ed55a573683e3ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af04435ade309945647a8a2dc15db90f0" id="r_af04435ade309945647a8a2dc15db90f0"><td class="memItemLeft" align="right" valign="top"><a id="af04435ade309945647a8a2dc15db90f0" name="af04435ade309945647a8a2dc15db90f0"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeDeletedImages</b> ()</td></tr>
+<tr class="memdesc:af04435ade309945647a8a2dc15db90f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all deleted images from the imagesData. <br /></td></tr>
 <tr class="separator:af04435ade309945647a8a2dc15db90f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a975dd808b048c374de61cbdbebf3d2d1" id="r_a975dd808b048c374de61cbdbebf3d2d1"><td class="memItemLeft" align="right" valign="top"><a id="a975dd808b048c374de61cbdbebf3d2d1" name="a975dd808b048c374de61cbdbebf3d2d1"></a>
-QImage&#160;</td><td class="memItemRight" valign="bottom"><b>loadImage</b> (QWidget *parent, std::string imagePath, QSize size, bool setSize, int thumbnail=0, bool rotation=true, bool square=false, bool crop=true, bool force=false)</td></tr>
+<tr class="memitem:a1c9983bdf423704655aeab087fe94464" id="r_a1c9983bdf423704655aeab087fe94464"><td class="memItemLeft" align="right" valign="top">QImage&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c9983bdf423704655aeab087fe94464">loadImageFromVideo</a> (std::string videoPath, int frameNumber=1)</td></tr>
+<tr class="memdesc:a1c9983bdf423704655aeab087fe94464"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a frale from a video.  <br /></td></tr>
+<tr class="separator:a1c9983bdf423704655aeab087fe94464"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86278554e6db11ca90df353c7a6e329a" id="r_a86278554e6db11ca90df353c7a6e329a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_detected_objects.html">DetectedObjects</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a86278554e6db11ca90df353c7a6e329a">detect</a> (std::string imagePath, QImage image, std::string model)</td></tr>
+<tr class="memdesc:a86278554e6db11ca90df353c7a6e329a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detect objects in an image using a YOLOv5 model.  <br /></td></tr>
+<tr class="separator:a86278554e6db11ca90df353c7a6e329a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a975dd808b048c374de61cbdbebf3d2d1" id="r_a975dd808b048c374de61cbdbebf3d2d1"><td class="memItemLeft" align="right" valign="top">QImage&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a975dd808b048c374de61cbdbebf3d2d1">loadImage</a> (QWidget *parent, std::string imagePath, QSize size, bool setSize, int thumbnail=0, bool rotation=true, bool square=false, bool crop=true, bool force=false)</td></tr>
+<tr class="memdesc:a975dd808b048c374de61cbdbebf3d2d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load and transform an image from a path and put it in the cache.  <br /></td></tr>
 <tr class="separator:a975dd808b048c374de61cbdbebf3d2d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae644dec09ac4df198e5ff865ebe854db" id="r_ae644dec09ac4df198e5ff865ebe854db"><td class="memItemLeft" align="right" valign="top"><a id="ae644dec09ac4df198e5ff865ebe854db" name="ae644dec09ac4df198e5ff865ebe854db"></a>
-QImage&#160;</td><td class="memItemRight" valign="bottom"><b>loadImageNormal</b> (QWidget *parent, std::string imagePath, QSize size, bool setSize, int thumbnail=0, bool force=false)</td></tr>
+<tr class="memitem:ae644dec09ac4df198e5ff865ebe854db" id="r_ae644dec09ac4df198e5ff865ebe854db"><td class="memItemLeft" align="right" valign="top">QImage&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae644dec09ac4df198e5ff865ebe854db">loadImageNormal</a> (QWidget *parent, std::string imagePath, QSize size, bool setSize, int thumbnail=0, bool force=false)</td></tr>
+<tr class="memdesc:ae644dec09ac4df198e5ff865ebe854db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load an image from a path and put it in the cache.  <br /></td></tr>
 <tr class="separator:ae644dec09ac4df198e5ff865ebe854db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab95a0e30ef0ffd8b4407c923c262ae0f" id="r_ab95a0e30ef0ffd8b4407c923c262ae0f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab95a0e30ef0ffd8b4407c923c262ae0f">loadInCache</a> (std::string imagePath, bool setSize=false, QSize size=QSize(0, 0), bool force=false)</td></tr>
 <tr class="memdesc:ab95a0e30ef0ffd8b4407c923c262ae0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load an image and put it in the cache.  <br /></td></tr>
 <tr class="separator:ab95a0e30ef0ffd8b4407c923c262ae0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf7a774999bfd42eb41cf0743f6c5677" id="r_adf7a774999bfd42eb41cf0743f6c5677"><td class="memItemLeft" align="right" valign="top"><a id="adf7a774999bfd42eb41cf0743f6c5677" name="adf7a774999bfd42eb41cf0743f6c5677"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>loadInCacheAsync</b> (std::string imagePath, std::function&lt; void()&gt; callback, bool setSize=false, QSize size=QSize(0, 0), bool force=false)</td></tr>
+<tr class="memitem:adf7a774999bfd42eb41cf0743f6c5677" id="r_adf7a774999bfd42eb41cf0743f6c5677"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adf7a774999bfd42eb41cf0743f6c5677">loadInCacheAsync</a> (std::string imagePath, std::function&lt; void()&gt; callback, bool setSize=false, QSize size=QSize(0, 0), bool force=false)</td></tr>
+<tr class="memdesc:adf7a774999bfd42eb41cf0743f6c5677"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load an image and put it in the cache asynchronously.  <br /></td></tr>
 <tr class="separator:adf7a774999bfd42eb41cf0743f6c5677"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:accafdc4fab9b96527dc27fdc423d855c" id="r_accafdc4fab9b96527dc27fdc423d855c"><td class="memItemLeft" align="right" valign="top"><a id="accafdc4fab9b96527dc27fdc423d855c" name="accafdc4fab9b96527dc27fdc423d855c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>unloadFromCache</b> (std::string imagePath)</td></tr>
+<tr class="memitem:accafdc4fab9b96527dc27fdc423d855c" id="r_accafdc4fab9b96527dc27fdc423d855c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#accafdc4fab9b96527dc27fdc423d855c">unloadFromCache</a> (std::string imagePath)</td></tr>
+<tr class="memdesc:accafdc4fab9b96527dc27fdc423d855c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unload an image from the cache.  <br /></td></tr>
 <tr class="separator:accafdc4fab9b96527dc27fdc423d855c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5846b78a22423e822db298e960695ba0" id="r_a5846b78a22423e822db298e960695ba0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5846b78a22423e822db298e960695ba0">isInCache</a> (std::string imagePath)</td></tr>
 <tr class="memdesc:a5846b78a22423e822db298e960695ba0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if an image is loaded in cache or not.  <br /></td></tr>
@@ -159,8 +163,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>unloadFromCache</b> (
 <tr class="memitem:a7723a615035d76f15ad79f85ccf77f2b" id="r_a7723a615035d76f15ad79f85ccf77f2b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7723a615035d76f15ad79f85ccf77f2b">getLoadedImage</a> (std::string imagePath, QImage &amp;image)</td></tr>
 <tr class="memdesc:a7723a615035d76f15ad79f85ccf77f2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get if an image is loaded in the cache and return it.  <br /></td></tr>
 <tr class="separator:a7723a615035d76f15ad79f85ccf77f2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9668f3abe8b69946049f346bf45a5ac" id="r_aa9668f3abe8b69946049f346bf45a5ac"><td class="memItemLeft" align="right" valign="top"><a id="aa9668f3abe8b69946049f346bf45a5ac" name="aa9668f3abe8b69946049f346bf45a5ac"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>createThumbnailAsync</b> (const std::string &amp;imagePath, const int maxDim)</td></tr>
+<tr class="memitem:aa9668f3abe8b69946049f346bf45a5ac" id="r_aa9668f3abe8b69946049f346bf45a5ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa9668f3abe8b69946049f346bf45a5ac">createThumbnailAsync</a> (const std::string &amp;imagePath, const int maxDim)</td></tr>
+<tr class="memdesc:aa9668f3abe8b69946049f346bf45a5ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thumbnail for a specific size asynchronously.  <br /></td></tr>
 <tr class="separator:aa9668f3abe8b69946049f346bf45a5ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a189734a9548fcfe79f79e69b3e4b5545" id="r_a189734a9548fcfe79f79e69b3e4b5545"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a189734a9548fcfe79f79e69b3e4b5545">createThumbnail</a> (const std::string &amp;imagePath, const int maxDim)</td></tr>
 <tr class="memdesc:a189734a9548fcfe79f79e69b3e4b5545"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thumbnail for a specific size.  <br /></td></tr>
@@ -168,8 +172,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>createThumbnailAsync<
 <tr class="memitem:aed3ea6629f6482a15d45939358eda3e7" id="r_aed3ea6629f6482a15d45939358eda3e7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aed3ea6629f6482a15d45939358eda3e7">deleteThumbnail</a> (const std::string &amp;imagePath, const int maxDim)</td></tr>
 <tr class="memdesc:aed3ea6629f6482a15d45939358eda3e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thumbnail for a specific size.  <br /></td></tr>
 <tr class="separator:aed3ea6629f6482a15d45939358eda3e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a101569ad4915dec29e24887931da68ac" id="r_a101569ad4915dec29e24887931da68ac"><td class="memItemLeft" align="right" valign="top"><a id="a101569ad4915dec29e24887931da68ac" name="a101569ad4915dec29e24887931da68ac"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>createThumbnails</b> (const std::vector&lt; std::string &gt; &amp;imagePaths, const int maxDim)</td></tr>
+<tr class="memitem:a101569ad4915dec29e24887931da68ac" id="r_a101569ad4915dec29e24887931da68ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a101569ad4915dec29e24887931da68ac">createThumbnails</a> (const std::vector&lt; std::string &gt; &amp;imagePaths, const int maxDim)</td></tr>
+<tr class="memdesc:a101569ad4915dec29e24887931da68ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create thumbnails for a specific size.  <br /></td></tr>
 <tr class="separator:a101569ad4915dec29e24887931da68ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae78c4a7243b4add7f6bb3b1f003e8ed2" id="r_ae78c4a7243b4add7f6bb3b1f003e8ed2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae78c4a7243b4add7f6bb3b1f003e8ed2">createThumbnailIfNotExists</a> (const std::string &amp;imagePath, const int maxDim)</td></tr>
 <tr class="memdesc:ae78c4a7243b4add7f6bb3b1f003e8ed2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thumbnail for a specific size if it doesn't exist alread.  <br /></td></tr>
@@ -177,8 +181,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>createThumbnails</b> 
 <tr class="memitem:a824cae3b176fed1f42b20b3112a5806a" id="r_a824cae3b176fed1f42b20b3112a5806a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a824cae3b176fed1f42b20b3112a5806a">createThumbnailsIfNotExists</a> (const std::vector&lt; std::string &gt; &amp;imagePaths, const int maxDim)</td></tr>
 <tr class="memdesc:a824cae3b176fed1f42b20b3112a5806a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create thumbnails for a specific size if it doesn't exist alread.  <br /></td></tr>
 <tr class="separator:a824cae3b176fed1f42b20b3112a5806a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35538c818729585433e73c1a7b9cf6a1" id="r_a35538c818729585433e73c1a7b9cf6a1"><td class="memItemLeft" align="right" valign="top"><a id="a35538c818729585433e73c1a7b9cf6a1" name="a35538c818729585433e73c1a7b9cf6a1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>createAllThumbnail</b> (const std::string &amp;imagePath, const int maxDim)</td></tr>
+<tr class="memitem:a35538c818729585433e73c1a7b9cf6a1" id="r_a35538c818729585433e73c1a7b9cf6a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35538c818729585433e73c1a7b9cf6a1">createAllThumbnail</a> (const std::string &amp;imagePath, const int maxDim)</td></tr>
+<tr class="memdesc:a35538c818729585433e73c1a7b9cf6a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create all thumbnails sizes smaller or equal to size.  <br /></td></tr>
 <tr class="separator:a35538c818729585433e73c1a7b9cf6a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc7ef6d83dc19e0d0e87742f18a0bd2b" id="r_abc7ef6d83dc19e0d0e87742f18a0bd2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc7ef6d83dc19e0d0e87742f18a0bd2b">createAllThumbnailIfNotExists</a> (const std::string &amp;imagePath, const int maxDim)</td></tr>
 <tr class="memdesc:abc7ef6d83dc19e0d0e87742f18a0bd2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create all thumbnails sizes smaller or equal to size if they doesn't exist.  <br /></td></tr>
@@ -186,71 +190,76 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>createAllThumbnail</b
 <tr class="memitem:a7b129ac0e68e4c7c67fa17179eb28314" id="r_a7b129ac0e68e4c7c67fa17179eb28314"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b129ac0e68e4c7c67fa17179eb28314">hasThumbnail</a> (const std::string &amp;imagePath, const int maxDim)</td></tr>
 <tr class="memdesc:a7b129ac0e68e4c7c67fa17179eb28314"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if an image as a thumbnail for a specific size.  <br /></td></tr>
 <tr class="separator:a7b129ac0e68e4c7c67fa17179eb28314"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af092b0c00a1d758d07dd833e690cca74" id="r_af092b0c00a1d758d07dd833e690cca74"><td class="memItemLeft" align="right" valign="top"><a id="af092b0c00a1d758d07dd833e690cca74" name="af092b0c00a1d758d07dd833e690cca74"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getThumbnailPath</b> (const std::string &amp;imagePath, const int size)</td></tr>
+<tr class="memitem:af092b0c00a1d758d07dd833e690cca74" id="r_af092b0c00a1d758d07dd833e690cca74"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af092b0c00a1d758d07dd833e690cca74">getThumbnailPath</a> (const std::string &amp;imagePath, const int size)</td></tr>
+<tr class="memdesc:af092b0c00a1d758d07dd833e690cca74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the thumbnail path for a specific image and size.  <br /></td></tr>
 <tr class="separator:af092b0c00a1d758d07dd833e690cca74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9773ada330a47d675a93ed96ff7d0a12" id="r_a9773ada330a47d675a93ed96ff7d0a12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9773ada330a47d675a93ed96ff7d0a12">exportImages</a> (std::string exportPath, bool dateInName)</td></tr>
 <tr class="memdesc:a9773ada330a47d675a93ed96ff7d0a12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export all images with the folder arborecence.  <br /></td></tr>
 <tr class="separator:a9773ada330a47d675a93ed96ff7d0a12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab564b449efa1ad6bd6f47a5475f68065" id="r_ab564b449efa1ad6bd6f47a5475f68065"><td class="memItemLeft" align="right" valign="top"><a id="ab564b449efa1ad6bd6f47a5475f68065" name="ab564b449efa1ad6bd6f47a5475f68065"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>saveData</b> ()</td></tr>
+<tr class="memdesc:ab564b449efa1ad6bd6f47a5475f68065"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save the data to a file. <br /></td></tr>
 <tr class="separator:ab564b449efa1ad6bd6f47a5475f68065"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab607a0fdbc656419e9e81a0119268238" id="r_ab607a0fdbc656419e9e81a0119268238"><td class="memItemLeft" align="right" valign="top"><a id="ab607a0fdbc656419e9e81a0119268238" name="ab607a0fdbc656419e9e81a0119268238"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>loadData</b> ()</td></tr>
+<tr class="memdesc:ab607a0fdbc656419e9e81a0119268238"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the data from a file. <br /></td></tr>
 <tr class="separator:ab607a0fdbc656419e9e81a0119268238"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44b749f64ffa35e034f9503fdec4917e" id="r_a44b749f64ffa35e034f9503fdec4917e"><td class="memItemLeft" align="right" valign="top"><a id="a44b749f64ffa35e034f9503fdec4917e" name="a44b749f64ffa35e034f9503fdec4917e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+<tr class="memitem:a44b749f64ffa35e034f9503fdec4917e" id="r_a44b749f64ffa35e034f9503fdec4917e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a44b749f64ffa35e034f9503fdec4917e">clear</a> ()</td></tr>
+<tr class="memdesc:a44b749f64ffa35e034f9503fdec4917e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all data.  <br /></td></tr>
 <tr class="separator:a44b749f64ffa35e034f9503fdec4917e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a45c55e20187316666979ae2e848a72" id="r_a7a45c55e20187316666979ae2e848a72"><td class="memItemLeft" align="right" valign="top"><a id="a7a45c55e20187316666979ae2e848a72" name="a7a45c55e20187316666979ae2e848a72"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isDeleted</b> (int imageNbr)</td></tr>
+<tr class="memitem:a7a45c55e20187316666979ae2e848a72" id="r_a7a45c55e20187316666979ae2e848a72"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a45c55e20187316666979ae2e848a72">isDeleted</a> (int imageNbr)</td></tr>
+<tr class="memdesc:a7a45c55e20187316666979ae2e848a72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if an image is deleted or not.  <br /></td></tr>
 <tr class="separator:a7a45c55e20187316666979ae2e848a72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8f72b8ea15d3b6c8f8cb84b880092fc" id="r_ad8f72b8ea15d3b6c8f8cb84b880092fc"><td class="memItemLeft" align="right" valign="top"><a id="ad8f72b8ea15d3b6c8f8cb84b880092fc" name="ad8f72b8ea15d3b6c8f8cb84b880092fc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addAction</b> (std::function&lt; void()&gt; unDo, std::function&lt; void()&gt; reDo)</td></tr>
+<tr class="memitem:ad8f72b8ea15d3b6c8f8cb84b880092fc" id="r_ad8f72b8ea15d3b6c8f8cb84b880092fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad8f72b8ea15d3b6c8f8cb84b880092fc">addAction</a> (std::function&lt; void()&gt; unDo, std::function&lt; void()&gt; reDo)</td></tr>
+<tr class="memdesc:ad8f72b8ea15d3b6c8f8cb84b880092fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add an action to the undo/redo stack.  <br /></td></tr>
 <tr class="separator:ad8f72b8ea15d3b6c8f8cb84b880092fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45f2a7ab0978ac58c149de337c45ab33" id="r_a45f2a7ab0978ac58c149de337c45ab33"><td class="memItemLeft" align="right" valign="top"><a id="a45f2a7ab0978ac58c149de337c45ab33" name="a45f2a7ab0978ac58c149de337c45ab33"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addActionDone</b> (<a class="el" href="class_actions.html">Actions</a> action)</td></tr>
+<tr class="memitem:a45f2a7ab0978ac58c149de337c45ab33" id="r_a45f2a7ab0978ac58c149de337c45ab33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a45f2a7ab0978ac58c149de337c45ab33">addActionDone</a> (<a class="el" href="class_actions.html">Actions</a> action)</td></tr>
+<tr class="memdesc:a45f2a7ab0978ac58c149de337c45ab33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save an action as done.  <br /></td></tr>
 <tr class="separator:a45f2a7ab0978ac58c149de337c45ab33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3386c89920d95656ef9d92752da22c03" id="r_a3386c89920d95656ef9d92752da22c03"><td class="memItemLeft" align="right" valign="top"><a id="a3386c89920d95656ef9d92752da22c03" name="a3386c89920d95656ef9d92752da22c03"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>unDoAction</b> ()</td></tr>
+<tr class="memdesc:a3386c89920d95656ef9d92752da22c03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Do the last action in the undo stack. <br /></td></tr>
 <tr class="separator:a3386c89920d95656ef9d92752da22c03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ed08e1c2b1fa519cf824ac70c501966" id="r_a4ed08e1c2b1fa519cf824ac70c501966"><td class="memItemLeft" align="right" valign="top"><a id="a4ed08e1c2b1fa519cf824ac70c501966" name="a4ed08e1c2b1fa519cf824ac70c501966"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reDoAction</b> ()</td></tr>
+<tr class="memdesc:a4ed08e1c2b1fa519cf824ac70c501966"><td class="mdescLeft">&#160;</td><td class="mdescRight">Do the last action in the redo stack. <br /></td></tr>
 <tr class="separator:a4ed08e1c2b1fa519cf824ac70c501966"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a001016d11a7a0d52d537c4d95e367b4a" id="r_a001016d11a7a0d52d537c4d95e367b4a"><td class="memItemLeft" align="right" valign="top"><a id="a001016d11a7a0d52d537c4d95e367b4a" name="a001016d11a7a0d52d537c4d95e367b4a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>sortCurrentImagesData</b> ()</td></tr>
+<tr class="memdesc:a001016d11a7a0d52d537c4d95e367b4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort the current images data by date. <br /></td></tr>
 <tr class="separator:a001016d11a7a0d52d537c4d95e367b4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fe2a14460834d2ecd8051e478c514b1" id="r_a0fe2a14460834d2ecd8051e478c514b1"><td class="memItemLeft" align="right" valign="top"><a id="a0fe2a14460834d2ecd8051e478c514b1" name="a0fe2a14460834d2ecd8051e478c514b1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>rotateLeft</b> (int nbr, std::string extension, std::function&lt; void()&gt; reload, bool action=true)</td></tr>
+<tr class="memitem:a0fe2a14460834d2ecd8051e478c514b1" id="r_a0fe2a14460834d2ecd8051e478c514b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0fe2a14460834d2ecd8051e478c514b1">rotateLeft</a> (int nbr, std::string extension, std::function&lt; void()&gt; reload, bool action=true)</td></tr>
+<tr class="memdesc:a0fe2a14460834d2ecd8051e478c514b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate an image to the left.  <br /></td></tr>
 <tr class="separator:a0fe2a14460834d2ecd8051e478c514b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abdf845cfb852a489d37d1a98ae417e52" id="r_abdf845cfb852a489d37d1a98ae417e52"><td class="memItemLeft" align="right" valign="top"><a id="abdf845cfb852a489d37d1a98ae417e52" name="abdf845cfb852a489d37d1a98ae417e52"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>rotateRight</b> (int nbr, std::string extension, std::function&lt; void()&gt; reload, bool action=true)</td></tr>
+<tr class="memitem:abdf845cfb852a489d37d1a98ae417e52" id="r_abdf845cfb852a489d37d1a98ae417e52"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abdf845cfb852a489d37d1a98ae417e52">rotateRight</a> (int nbr, std::string extension, std::function&lt; void()&gt; reload, bool action=true)</td></tr>
+<tr class="memdesc:abdf845cfb852a489d37d1a98ae417e52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate an image to the right.  <br /></td></tr>
 <tr class="separator:abdf845cfb852a489d37d1a98ae417e52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f7094a5c6514f9545383dc34435d0d5" id="r_a8f7094a5c6514f9545383dc34435d0d5"><td class="memItemLeft" align="right" valign="top"><a id="a8f7094a5c6514f9545383dc34435d0d5" name="a8f7094a5c6514f9545383dc34435d0d5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>mirrorLeftRight</b> (int nbr, std::string extension, std::function&lt; void()&gt; reload, bool action=true)</td></tr>
+<tr class="memitem:a8f7094a5c6514f9545383dc34435d0d5" id="r_a8f7094a5c6514f9545383dc34435d0d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8f7094a5c6514f9545383dc34435d0d5">mirrorLeftRight</a> (int nbr, std::string extension, std::function&lt; void()&gt; reload, bool action=true)</td></tr>
+<tr class="memdesc:a8f7094a5c6514f9545383dc34435d0d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mirror an image left/right (metadata rotation)  <br /></td></tr>
 <tr class="separator:a8f7094a5c6514f9545383dc34435d0d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab449a6ed6c8288a08867fe4d55f70ba9" id="r_ab449a6ed6c8288a08867fe4d55f70ba9"><td class="memItemLeft" align="right" valign="top"><a id="ab449a6ed6c8288a08867fe4d55f70ba9" name="ab449a6ed6c8288a08867fe4d55f70ba9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>mirrorUpDown</b> (int nbr, std::string extension, std::function&lt; void()&gt; reload, bool action=true)</td></tr>
+<tr class="memitem:ab449a6ed6c8288a08867fe4d55f70ba9" id="r_ab449a6ed6c8288a08867fe4d55f70ba9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab449a6ed6c8288a08867fe4d55f70ba9">mirrorUpDown</a> (int nbr, std::string extension, std::function&lt; void()&gt; reload, bool action=true)</td></tr>
+<tr class="memdesc:ab449a6ed6c8288a08867fe4d55f70ba9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mirror an image up/down (metadata rotation)  <br /></td></tr>
 <tr class="separator:ab449a6ed6c8288a08867fe4d55f70ba9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a2ee6bcdf855133634187747c496409" id="r_a6a2ee6bcdf855133634187747c496409"><td class="memItemLeft" align="right" valign="top"><a id="a6a2ee6bcdf855133634187747c496409" name="a6a2ee6bcdf855133634187747c496409"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>realRotate</b> (int nbr, int rotation, std::function&lt; void()&gt; reload)</td></tr>
+<tr class="memitem:a6a2ee6bcdf855133634187747c496409" id="r_a6a2ee6bcdf855133634187747c496409"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6a2ee6bcdf855133634187747c496409">realRotate</a> (int nbr, int rotation, std::function&lt; void()&gt; reload)</td></tr>
+<tr class="memdesc:a6a2ee6bcdf855133634187747c496409"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate an image to the left or right (real rotation not metadata rotation)  <br /></td></tr>
 <tr class="separator:a6a2ee6bcdf855133634187747c496409"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa837bbce0326dd5e5f976787ec3e0da0" id="r_aa837bbce0326dd5e5f976787ec3e0da0"><td class="memItemLeft" align="right" valign="top"><a id="aa837bbce0326dd5e5f976787ec3e0da0" name="aa837bbce0326dd5e5f976787ec3e0da0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>exifRotate</b> (int nbr, int rotation, std::function&lt; void()&gt; reload)</td></tr>
+<tr class="memitem:aa837bbce0326dd5e5f976787ec3e0da0" id="r_aa837bbce0326dd5e5f976787ec3e0da0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa837bbce0326dd5e5f976787ec3e0da0">exifRotate</a> (int nbr, int rotation, std::function&lt; void()&gt; reload)</td></tr>
+<tr class="memdesc:aa837bbce0326dd5e5f976787ec3e0da0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate an image to the left or right (metadata rotation)  <br /></td></tr>
 <tr class="separator:aa837bbce0326dd5e5f976787ec3e0da0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78d7cb9e72413d8d038241cbd255a97a" id="r_a78d7cb9e72413d8d038241cbd255a97a"><td class="memItemLeft" align="right" valign="top"><a id="a78d7cb9e72413d8d038241cbd255a97a" name="a78d7cb9e72413d8d038241cbd255a97a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>exifMirror</b> (int nbr, bool UpDown, std::function&lt; void()&gt; reload)</td></tr>
+<tr class="memitem:a78d7cb9e72413d8d038241cbd255a97a" id="r_a78d7cb9e72413d8d038241cbd255a97a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a78d7cb9e72413d8d038241cbd255a97a">exifMirror</a> (int nbr, bool UpDown, std::function&lt; void()&gt; reload)</td></tr>
+<tr class="memdesc:a78d7cb9e72413d8d038241cbd255a97a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mirror an image up/down or left/right (metadata rotation)  <br /></td></tr>
 <tr class="separator:a78d7cb9e72413d8d038241cbd255a97a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe962cd7629a7061e10e4da0941858ce" id="r_afe962cd7629a7061e10e4da0941858ce"><td class="memItemLeft" align="right" valign="top"><a id="afe962cd7629a7061e10e4da0941858ce" name="afe962cd7629a7061e10e4da0941858ce"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>realMirror</b> (int nbr, bool UpDown, std::function&lt; void()&gt; reload)</td></tr>
+<tr class="memitem:afe962cd7629a7061e10e4da0941858ce" id="r_afe962cd7629a7061e10e4da0941858ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afe962cd7629a7061e10e4da0941858ce">realMirror</a> (int nbr, bool UpDown, std::function&lt; void()&gt; reload)</td></tr>
+<tr class="memdesc:afe962cd7629a7061e10e4da0941858ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mirror an image up/down or left/right (real rotation)  <br /></td></tr>
 <tr class="separator:afe962cd7629a7061e10e4da0941858ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7748a0c372b9d0372f797cbcbe77f3ac" id="r_a7748a0c372b9d0372f797cbcbe77f3ac"><td class="memItemLeft" align="right" valign="top"><a id="a7748a0c372b9d0372f797cbcbe77f3ac" name="a7748a0c372b9d0372f797cbcbe77f3ac"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clearActions</b> ()</td></tr>
+<tr class="memitem:a7748a0c372b9d0372f797cbcbe77f3ac" id="r_a7748a0c372b9d0372f797cbcbe77f3ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7748a0c372b9d0372f797cbcbe77f3ac">clearActions</a> ()</td></tr>
+<tr class="memdesc:a7748a0c372b9d0372f797cbcbe77f3ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the actions stack.  <br /></td></tr>
 <tr class="separator:a7748a0c372b9d0372f797cbcbe77f3ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a555eeda5977eb91b7f316bdac9b70b9d" id="r_a555eeda5977eb91b7f316bdac9b70b9d"><td class="memItemLeft" align="right" valign="top"><a id="a555eeda5977eb91b7f316bdac9b70b9d" name="a555eeda5977eb91b7f316bdac9b70b9d"></a>
-QImage&#160;</td><td class="memItemRight" valign="bottom"><b>rotateQImage</b> (QImage image, <a class="el" href="class_image_data.html">ImageData</a> *imageData)</td></tr>
+<tr class="memitem:a555eeda5977eb91b7f316bdac9b70b9d" id="r_a555eeda5977eb91b7f316bdac9b70b9d"><td class="memItemLeft" align="right" valign="top">QImage&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a555eeda5977eb91b7f316bdac9b70b9d">rotateQImage</a> (QImage image, <a class="el" href="class_image_data.html">ImageData</a> *imageData)</td></tr>
+<tr class="memdesc:a555eeda5977eb91b7f316bdac9b70b9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate an image according to the metadata (in imageData)  <br /></td></tr>
 <tr class="separator:a555eeda5977eb91b7f316bdac9b70b9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afed88b8003dc635a5cc70bd23796b53f" id="r_afed88b8003dc635a5cc70bd23796b53f"><td class="memItemLeft" align="right" valign="top"><a id="afed88b8003dc635a5cc70bd23796b53f" name="afed88b8003dc635a5cc70bd23796b53f"></a>
-<a class="el" href="class_folders.html">Folders</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getRootFolders</b> ()</td></tr>
+<tr class="memitem:afed88b8003dc635a5cc70bd23796b53f" id="r_afed88b8003dc635a5cc70bd23796b53f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_folders.html">Folders</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afed88b8003dc635a5cc70bd23796b53f">getRootFolders</a> ()</td></tr>
+<tr class="memdesc:afed88b8003dc635a5cc70bd23796b53f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Give you the root folders.  <br /></td></tr>
 <tr class="separator:afed88b8003dc635a5cc70bd23796b53f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8661893f06670f1126de1ac9d3ae5fe" id="r_ad8661893f06670f1126de1ac9d3ae5fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_folders.html">Folders</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad8661893f06670f1126de1ac9d3ae5fe">getCurrentFolders</a> ()</td></tr>
 <tr class="memdesc:ad8661893f06670f1126de1ac9d3ae5fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Give you the current folder and correct it if it's not initialized.  <br /></td></tr>
@@ -261,14 +270,14 @@ QImage&#160;</td><td class="memItemRight" valign="bottom"><b>rotateQImage</b> (Q
 <tr class="memitem:afbd5fc44a10ea4e4f85a6b63e218ac77" id="r_afbd5fc44a10ea4e4f85a6b63e218ac77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_folders.html">Folders</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afbd5fc44a10ea4e4f85a6b63e218ac77">findFirstFolderWithAllImages</a> ()</td></tr>
 <tr class="memdesc:afbd5fc44a10ea4e4f85a6b63e218ac77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the fist folder that contain all images starting with rootFolders.  <br /></td></tr>
 <tr class="separator:afbd5fc44a10ea4e4f85a6b63e218ac77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fe09a91b3b9c97e798f9b9d3af0553d" id="r_a5fe09a91b3b9c97e798f9b9d3af0553d"><td class="memItemLeft" align="right" valign="top"><a id="a5fe09a91b3b9c97e798f9b9d3af0553d" name="a5fe09a91b3b9c97e798f9b9d3af0553d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>removeImageFromFolders</b> (<a class="el" href="class_image_data.html">ImageData</a> &amp;imageData)</td></tr>
+<tr class="memitem:a5fe09a91b3b9c97e798f9b9d3af0553d" id="r_a5fe09a91b3b9c97e798f9b9d3af0553d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5fe09a91b3b9c97e798f9b9d3af0553d">removeImageFromFolders</a> (<a class="el" href="class_image_data.html">ImageData</a> &amp;imageData)</td></tr>
+<tr class="memdesc:a5fe09a91b3b9c97e798f9b9d3af0553d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove an image from all folders.  <br /></td></tr>
 <tr class="separator:a5fe09a91b3b9c97e798f9b9d3af0553d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49b9561e18b338ea6f3ae1af048e3608" id="r_a49b9561e18b338ea6f3ae1af048e3608"><td class="memItemLeft" align="right" valign="top"><a id="a49b9561e18b338ea6f3ae1af048e3608" name="a49b9561e18b338ea6f3ae1af048e3608"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getFolderPath</b> (<a class="el" href="class_folders.html">Folders</a> *folder)</td></tr>
+<tr class="memitem:a49b9561e18b338ea6f3ae1af048e3608" id="r_a49b9561e18b338ea6f3ae1af048e3608"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49b9561e18b338ea6f3ae1af048e3608">getFolderPath</a> (<a class="el" href="class_folders.html">Folders</a> *folder)</td></tr>
+<tr class="memdesc:a49b9561e18b338ea6f3ae1af048e3608"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the absolute path of a folder.  <br /></td></tr>
 <tr class="separator:a49b9561e18b338ea6f3ae1af048e3608"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72b2056a25c39e8ad7a2387327e07f5a" id="r_a72b2056a25c39e8ad7a2387327e07f5a"><td class="memItemLeft" align="right" valign="top"><a id="a72b2056a25c39e8ad7a2387327e07f5a" name="a72b2056a25c39e8ad7a2387327e07f5a"></a>
-<a class="el" href="class_folders.html">Folders</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>findFolderByPath</b> (<a class="el" href="class_folders.html">Folders</a> &amp;root, const std::string &amp;path)</td></tr>
+<tr class="memitem:a72b2056a25c39e8ad7a2387327e07f5a" id="r_a72b2056a25c39e8ad7a2387327e07f5a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_folders.html">Folders</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72b2056a25c39e8ad7a2387327e07f5a">findFolderByPath</a> (<a class="el" href="class_folders.html">Folders</a> &amp;root, const std::string &amp;path)</td></tr>
+<tr class="memdesc:a72b2056a25c39e8ad7a2387327e07f5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find a folder by its absolute path.  <br /></td></tr>
 <tr class="separator:a72b2056a25c39e8ad7a2387327e07f5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6c14be46ba777fd8c37604053790c8f" id="r_ab6c14be46ba777fd8c37604053790c8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6c14be46ba777fd8c37604053790c8f">addThread</a> (std::function&lt; void()&gt; job)</td></tr>
 <tr class="memdesc:ab6c14be46ba777fd8c37604053790c8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a thread to thread queue, a thread that should no be heavy to execute.  <br /></td></tr>
@@ -283,9 +292,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>stopAllThreads</b> ()
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a32d6b3e78561d5d3839215a957c7e993" id="r_a32d6b3e78561d5d3839215a957c7e993"><td class="memItemLeft" align="right" valign="top"><a id="a32d6b3e78561d5d3839215a957c7e993" name="a32d6b3e78561d5d3839215a957c7e993"></a>
-cv::Ptr&lt; cv::face::LBPHFaceRecognizer &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>model</b> = cv::face::LBPHFaceRecognizer::create()</td></tr>
-<tr class="separator:a32d6b3e78561d5d3839215a957c7e993"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a8c07b96a3441e85562b381617e54e2" id="r_a9a8c07b96a3441e85562b381617e54e2"><td class="memItemLeft" align="right" valign="top"><a id="a9a8c07b96a3441e85562b381617e54e2" name="a9a8c07b96a3441e85562b381617e54e2"></a>
+<a class="el" href="class_detect_objects_model.html">DetectObjectsModel</a>&#160;</td><td class="memItemRight" valign="bottom"><b>model</b></td></tr>
+<tr class="separator:a9a8c07b96a3441e85562b381617e54e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5631eaf67d4c1f21aeecec4f66b9b1e2" id="r_a5631eaf67d4c1f21aeecec4f66b9b1e2"><td class="memItemLeft" align="right" valign="top"><a id="a5631eaf67d4c1f21aeecec4f66b9b1e2" name="a5631eaf67d4c1f21aeecec4f66b9b1e2"></a>
+std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>classNames</b></td></tr>
+<tr class="separator:a5631eaf67d4c1f21aeecec4f66b9b1e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c35fa0196bc7f5ae5c915e2c9e22c7c" id="r_a5c35fa0196bc7f5ae5c915e2c9e22c7c"><td class="memItemLeft" align="right" valign="top"><a id="a5c35fa0196bc7f5ae5c915e2c9e22c7c" name="a5c35fa0196bc7f5ae5c915e2c9e22c7c"></a>
 QApplication *&#160;</td><td class="memItemRight" valign="bottom"><b>app</b></td></tr>
 <tr class="separator:a5c35fa0196bc7f5ae5c915e2c9e22c7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -329,7 +341,83 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>darkMode</b> = true</
 std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>imageCacheMutex</b></td></tr>
 <tr class="separator:a00659768ef9cf636d5d1f4961429b22b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="af11f741cb7f587e2e495452a8905a22a" name="af11f741cb7f587e2e495452a8905a22a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af11f741cb7f587e2e495452a8905a22a">&#9670;&#160;</a></span>Data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Data::Data </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor for the <a class="el" href="class_data.html">Data</a> class. </p>
+<dl class="section note"><dt>Note</dt><dd>It initializes the imageCache and sets the default options </dd></dl>
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ad8f72b8ea15d3b6c8f8cb84b880092fc" name="ad8f72b8ea15d3b6c8f8cb84b880092fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8f72b8ea15d3b6c8f8cb84b880092fc">&#9670;&#160;</a></span>addAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::addAction </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>unDo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>reDo</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add an action to the undo/redo stack. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">unDo</td><td>Action for undo </td></tr>
+    <tr><td class="paramname">reDo</td><td>Action for redo </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a45f2a7ab0978ac58c149de337c45ab33" name="a45f2a7ab0978ac58c149de337c45ab33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45f2a7ab0978ac58c149de337c45ab33">&#9670;&#160;</a></span>addActionDone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::addActionDone </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_actions.html">Actions</a></td>          <td class="paramname"><span class="paramname"><em>action</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Save an action as done. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">action</td><td>Action to save as done </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a174bb5a48ab4a25a51c33dfb7865bb50" name="a174bb5a48ab4a25a51c33dfb7865bb50"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a174bb5a48ab4a25a51c33dfb7865bb50">&#9670;&#160;</a></span>addHeavyThread()</h2>
 
@@ -374,6 +462,96 @@ std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>imageCacheMutex
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">job</td><td>The function to execute </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a44b749f64ffa35e034f9503fdec4917e" name="a44b749f64ffa35e034f9503fdec4917e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44b749f64ffa35e034f9503fdec4917e">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::clear </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear all data. </p>
+<dl class="section note"><dt>Note</dt><dd>This will remove all images, folders, and options from the data </dd></dl>
+
+</div>
+</div>
+<a id="a7748a0c372b9d0372f797cbcbe77f3ac" name="a7748a0c372b9d0372f797cbcbe77f3ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7748a0c372b9d0372f797cbcbe77f3ac">&#9670;&#160;</a></span>clearActions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::clearActions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear the actions stack. </p>
+<dl class="section note"><dt>Note</dt><dd>This will remove all actions from the stack </dd></dl>
+
+</div>
+</div>
+<a id="a07c367ea35288f2ee324c684e5132039" name="a07c367ea35288f2ee324c684e5132039"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07c367ea35288f2ee324c684e5132039">&#9670;&#160;</a></span>clearCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::clearCache </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear the image cache. </p>
+<dl class="section note"><dt>Note</dt><dd>This will remove all images from the cache </dd></dl>
+
+</div>
+</div>
+<a id="a35538c818729585433e73c1a7b9cf6a1" name="a35538c818729585433e73c1a7b9cf6a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35538c818729585433e73c1a7b9cf6a1">&#9670;&#160;</a></span>createAllThumbnail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::createAllThumbnail </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>imagePath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>size</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create all thumbnails sizes smaller or equal to size. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">imagePath</td><td>Path to the full size image </td></tr>
+    <tr><td class="paramname">size</td><td>max size to load </td></tr>
   </table>
   </dd>
 </dl>
@@ -433,11 +611,41 @@ std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>imageCacheMutex
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">imagePath</td><td>Path to the full size image </td></tr>
-    <tr><td class="paramname">maxDim</td><td>Maximum for the image (both width and height) </td></tr>
+    <tr><td class="paramname">maxDim</td><td>Maximum for the thumbnail </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the thumbnail is successfuly created false otherwise </dd></dl>
+
+</div>
+</div>
+<a id="aa9668f3abe8b69946049f346bf45a5ac" name="aa9668f3abe8b69946049f346bf45a5ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9668f3abe8b69946049f346bf45a5ac">&#9670;&#160;</a></span>createThumbnailAsync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::createThumbnailAsync </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>imagePath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>maxDim</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a thumbnail for a specific size asynchronously. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">imagePath</td><td>Path to the full size image </td></tr>
+    <tr><td class="paramname">maxDim</td><td>Maximum dimension for the thumbnail </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -465,6 +673,36 @@ std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>imageCacheMutex
   <table class="params">
     <tr><td class="paramname">imagePath</td><td>Path to the full size image </td></tr>
     <tr><td class="paramname">maxDim</td><td>Maximum dimension for the thumbnail </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a101569ad4915dec29e24887931da68ac" name="a101569ad4915dec29e24887931da68ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a101569ad4915dec29e24887931da68ac">&#9670;&#160;</a></span>createThumbnails()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::createThumbnails </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>imagePaths</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>maxDim</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create thumbnails for a specific size. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">imagePaths</td><td>Path to the full size images </td></tr>
+    <tr><td class="paramname">maxDim</td><td>Maximum dimension for the thumbnails </td></tr>
   </table>
   </dd>
 </dl>
@@ -532,6 +770,115 @@ std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>imageCacheMutex
 
 </div>
 </div>
+<a id="a86278554e6db11ca90df353c7a6e329a" name="a86278554e6db11ca90df353c7a6e329a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86278554e6db11ca90df353c7a6e329a">&#9670;&#160;</a></span>detect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_detected_objects.html">DetectedObjects</a> Data::detect </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>imagePath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">QImage</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>model</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Detect objects in an image using a YOLOv5 model. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">imagePath</td><td>Path to the image file </td></tr>
+    <tr><td class="paramname">image</td><td>The image to process </td></tr>
+    <tr><td class="paramname">model</td><td>The name of the model file (without extension) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="class_detected_objects.html">DetectedObjects</a> object containing the detected objects </dd></dl>
+
+</div>
+</div>
+<a id="a78d7cb9e72413d8d038241cbd255a97a" name="a78d7cb9e72413d8d038241cbd255a97a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78d7cb9e72413d8d038241cbd255a97a">&#9670;&#160;</a></span>exifMirror()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::exifMirror </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nbr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>UpDown</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>reload</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mirror an image up/down or left/right (metadata rotation) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nbr</td><td>Image number to mirror (index in the imagesData) </td></tr>
+    <tr><td class="paramname">UpDown</td><td>True for up/down, false for left/right </td></tr>
+    <tr><td class="paramname">reload</td><td>Function to reload </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa837bbce0326dd5e5f976787ec3e0da0" name="aa837bbce0326dd5e5f976787ec3e0da0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa837bbce0326dd5e5f976787ec3e0da0">&#9670;&#160;</a></span>exifRotate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::exifRotate </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nbr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>rotation</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>reload</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rotate an image to the left or right (metadata rotation) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nbr</td><td>Image number to rotate (index in the imagesData) </td></tr>
+    <tr><td class="paramname">rotation</td><td>Rotation to apply (in degrees, 90 or -90) </td></tr>
+    <tr><td class="paramname">reload</td><td>Function to reload </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a9773ada330a47d675a93ed96ff7d0a12" name="a9773ada330a47d675a93ed96ff7d0a12"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9773ada330a47d675a93ed96ff7d0a12">&#9670;&#160;</a></span>exportImages()</h2>
 
@@ -582,6 +929,37 @@ std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>imageCacheMutex
 
 </div>
 </div>
+<a id="a72b2056a25c39e8ad7a2387327e07f5a" name="a72b2056a25c39e8ad7a2387327e07f5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72b2056a25c39e8ad7a2387327e07f5a">&#9670;&#160;</a></span>findFolderByPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_folders.html">Folders</a> * Data::findFolderByPath </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_folders.html">Folders</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>root</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find a folder by its absolute path. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">root</td><td>Root folder to search in </td></tr>
+    <tr><td class="paramname">path</td><td>Absolute path of the folder to find </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to the found folder, or nullptr if not found </dd></dl>
+
+</div>
+</div>
 <a id="ad8661893f06670f1126de1ac9d3ae5fe" name="ad8661893f06670f1126de1ac9d3ae5fe"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad8661893f06670f1126de1ac9d3ae5fe">&#9670;&#160;</a></span>getCurrentFolders()</h2>
 
@@ -599,6 +977,32 @@ std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>imageCacheMutex
 
 <p>Give you the current folder and correct it if it's not initialized. </p>
 <dl class="section return"><dt>Returns</dt><dd>The current Folder </dd></dl>
+
+</div>
+</div>
+<a id="a49b9561e18b338ea6f3ae1af048e3608" name="a49b9561e18b338ea6f3ae1af048e3608"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49b9561e18b338ea6f3ae1af048e3608">&#9670;&#160;</a></span>getFolderPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Data::getFolderPath </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_folders.html">Folders</a> *</td>          <td class="paramname"><span class="paramname"><em>folder</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the absolute path of a folder. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">folder</td><td>Folder to get the path of </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The absolute path of the folder </dd></dl>
 
 </div>
 </div>
@@ -653,6 +1057,57 @@ std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>imageCacheMutex
 
 </div>
 </div>
+<a id="afed88b8003dc635a5cc70bd23796b53f" name="afed88b8003dc635a5cc70bd23796b53f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afed88b8003dc635a5cc70bd23796b53f">&#9670;&#160;</a></span>getRootFolders()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_folders.html">Folders</a> * Data::getRootFolders </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Give you the root folders. </p>
+<dl class="section return"><dt>Returns</dt><dd>The root folders </dd></dl>
+
+</div>
+</div>
+<a id="af092b0c00a1d758d07dd833e690cca74" name="af092b0c00a1d758d07dd833e690cca74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af092b0c00a1d758d07dd833e690cca74">&#9670;&#160;</a></span>getThumbnailPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Data::getThumbnailPath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>imagePath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>size</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the thumbnail path for a specific image and size. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">imagePath</td><td>Path to the full size image </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the thumbnail </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Path to the thumbnail image </dd></dl>
+
+</div>
+</div>
 <a id="a7b129ac0e68e4c7c67fa17179eb28314" name="a7b129ac0e68e4c7c67fa17179eb28314"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7b129ac0e68e4c7c67fa17179eb28314">&#9670;&#160;</a></span>hasThumbnail()</h2>
 
@@ -684,6 +1139,32 @@ std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>imageCacheMutex
 
 </div>
 </div>
+<a id="a7a45c55e20187316666979ae2e848a72" name="a7a45c55e20187316666979ae2e848a72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a45c55e20187316666979ae2e848a72">&#9670;&#160;</a></span>isDeleted()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Data::isDeleted </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>imageNbr</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check if an image is deleted or not. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">imageNbr</td><td>nbr of the image in the imagesData list </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the image is deleted false otherwise </dd></dl>
+
+</div>
+</div>
 <a id="a5846b78a22423e822db298e960695ba0" name="a5846b78a22423e822db298e960695ba0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5846b78a22423e822db298e960695ba0">&#9670;&#160;</a></span>isInCache()</h2>
 
@@ -710,29 +1191,162 @@ std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>imageCacheMutex
 
 </div>
 </div>
-<a id="a35bb6b71d70b1e173cc2d64dcef6cd37" name="a35bb6b71d70b1e173cc2d64dcef6cd37"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a35bb6b71d70b1e173cc2d64dcef6cd37">&#9670;&#160;</a></span>load_model()</h2>
+<a id="a975dd808b048c374de61cbdbebf3d2d1" name="a975dd808b048c374de61cbdbebf3d2d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a975dd808b048c374de61cbdbebf3d2d1">&#9670;&#160;</a></span>loadImage()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">cv::Ptr&lt; cv::face::LBPHFaceRecognizer &gt; Data::load_model </td>
+          <td class="memname">QImage Data::loadImage </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>model_path</em></span></td><td>)</td>
+          <td class="paramtype">QWidget *</td>          <td class="paramname"><span class="paramname"><em>parent</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>imagePath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">QSize</td>          <td class="paramname"><span class="paramname"><em>size</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>setSize</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>thumbnail</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>rotation</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>square</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>crop</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>force</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Load the model. </p>
+<p>Load and transform an image from a path and put it in the cache. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">model_path</td><td>Path to the model </td></tr>
+    <tr><td class="paramname">parent</td><td>Parent widget </td></tr>
+    <tr><td class="paramname">imagePath</td><td>Path to the image </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the image </td></tr>
+    <tr><td class="paramname">setSize</td><td>Set if the image should be resized </td></tr>
+    <tr><td class="paramname">thumbnail</td><td>Thumbnail size (16,128,256,512 or 0 for no thumbnail) </td></tr>
+    <tr><td class="paramname">rotation</td><td>Set if the image should be rotated (according to metadata) </td></tr>
+    <tr><td class="paramname">square</td><td>Set if the image should be square </td></tr>
+    <tr><td class="paramname">crop</td><td>Set if the image should be cropped (according to crop information) </td></tr>
+    <tr><td class="paramname">force</td><td>Set if the image should be loaded even if it is already in the cache </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The model it self </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>QImage object containing the image data </dd></dl>
+
+</div>
+</div>
+<a id="a1c9983bdf423704655aeab087fe94464" name="a1c9983bdf423704655aeab087fe94464"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c9983bdf423704655aeab087fe94464">&#9670;&#160;</a></span>loadImageFromVideo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QImage Data::loadImageFromVideo </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>videoPath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>frameNumber</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Load a frale from a video. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">videoPath</td><td>Path to the video file </td></tr>
+    <tr><td class="paramname">frameNumber</td><td>Frame number to load </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>QImage object containing the frame </dd></dl>
+
+</div>
+</div>
+<a id="ae644dec09ac4df198e5ff865ebe854db" name="ae644dec09ac4df198e5ff865ebe854db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae644dec09ac4df198e5ff865ebe854db">&#9670;&#160;</a></span>loadImageNormal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QImage Data::loadImageNormal </td>
+          <td>(</td>
+          <td class="paramtype">QWidget *</td>          <td class="paramname"><span class="paramname"><em>parent</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>imagePath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">QSize</td>          <td class="paramname"><span class="paramname"><em>size</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>setSize</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>thumbnail</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>force</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Load an image from a path and put it in the cache. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parent</td><td>Parent widget </td></tr>
+    <tr><td class="paramname">imagePath</td><td>Path to the image </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the image </td></tr>
+    <tr><td class="paramname">setSize</td><td>Set if the image should be resized </td></tr>
+    <tr><td class="paramname">thumbnail</td><td>Thumbnail size (16,128,256,512 or 0 for no thumbnail) </td></tr>
+    <tr><td class="paramname">force</td><td>Set if the image should be loaded even if it is already in the cache </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>QImage object containing the image data </dd></dl>
 
 </div>
 </div>
@@ -779,6 +1393,138 @@ std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>imageCacheMutex
 
 </div>
 </div>
+<a id="adf7a774999bfd42eb41cf0743f6c5677" name="adf7a774999bfd42eb41cf0743f6c5677"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf7a774999bfd42eb41cf0743f6c5677">&#9670;&#160;</a></span>loadInCacheAsync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::loadInCacheAsync </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>imagePath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>callback</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>setSize</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">QSize</td>          <td class="paramname"><span class="paramname"><em>size</em></span><span class="paramdefsep"> = </span><span class="paramdefval">QSize(0,&#160;0)</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>force</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Load an image and put it in the cache asynchronously. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">imagePath</td><td>The path to the image </td></tr>
+    <tr><td class="paramname">callback</td><td>The callback function to call after loading the image </td></tr>
+    <tr><td class="paramname">setSize</td><td>Set if the image should be resized </td></tr>
+    <tr><td class="paramname">size</td><td>size of the image if it should be resized </td></tr>
+    <tr><td class="paramname">force</td><td>Force the image to be loaded </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8f7094a5c6514f9545383dc34435d0d5" name="a8f7094a5c6514f9545383dc34435d0d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f7094a5c6514f9545383dc34435d0d5">&#9670;&#160;</a></span>mirrorLeftRight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::mirrorLeftRight </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nbr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>extension</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>reload</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>action</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mirror an image left/right (metadata rotation) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nbr</td><td>Image number to mirror (index in the imagesData) </td></tr>
+    <tr><td class="paramname">extension</td><td>Image extension </td></tr>
+    <tr><td class="paramname">reload</td><td>Function to reload </td></tr>
+    <tr><td class="paramname">action</td><td>Set if the action should be added to the undo stack </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ab449a6ed6c8288a08867fe4d55f70ba9" name="ab449a6ed6c8288a08867fe4d55f70ba9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab449a6ed6c8288a08867fe4d55f70ba9">&#9670;&#160;</a></span>mirrorUpDown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::mirrorUpDown </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nbr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>extension</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>reload</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>action</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mirror an image up/down (metadata rotation) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nbr</td><td>Image number to mirror (index in the imagesData) </td></tr>
+    <tr><td class="paramname">extension</td><td>Image extension </td></tr>
+    <tr><td class="paramname">reload</td><td>Function to reload </td></tr>
+    <tr><td class="paramname">action</td><td>Set if the action should be added to the undo stack </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a3000024fbd81870872d3b36cca543418" name="a3000024fbd81870872d3b36cca543418"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3000024fbd81870872d3b36cca543418">&#9670;&#160;</a></span>preDeleteImage()</h2>
 
@@ -804,33 +1550,292 @@ std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>imageCacheMutex
 
 </div>
 </div>
-<a id="a858ab7d8b6a1eb423c44ec459af28143" name="a858ab7d8b6a1eb423c44ec459af28143"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a858ab7d8b6a1eb423c44ec459af28143">&#9670;&#160;</a></span>save_model()</h2>
+<a id="afe962cd7629a7061e10e4da0941858ce" name="afe962cd7629a7061e10e4da0941858ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe962cd7629a7061e10e4da0941858ce">&#9670;&#160;</a></span>realMirror()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Data::save_model </td>
+          <td class="memname">void Data::realMirror </td>
           <td>(</td>
-          <td class="paramtype">cv::Ptr&lt; cv::face::LBPHFaceRecognizer &gt;</td>          <td class="paramname"><span class="paramname"><em>model</em></span>, </td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nbr</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>model_path</em></span>&#160;)</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>UpDown</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>reload</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Save the model for face recognition. </p>
+<p>Mirror an image up/down or left/right (real rotation) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">model</td><td>The model it self </td></tr>
-    <tr><td class="paramname">model_path</td><td>The math to save the model </td></tr>
+    <tr><td class="paramname">nbr</td><td>Image number to mirror (index in the imagesData) </td></tr>
+    <tr><td class="paramname">UpDown</td><td>True for up/down, false for left/right </td></tr>
+    <tr><td class="paramname">reload</td><td>Function to reload </td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a6a2ee6bcdf855133634187747c496409" name="a6a2ee6bcdf855133634187747c496409"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a2ee6bcdf855133634187747c496409">&#9670;&#160;</a></span>realRotate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::realRotate </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nbr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>rotation</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>reload</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rotate an image to the left or right (real rotation not metadata rotation) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nbr</td><td>Image number to rotate (index in the imagesData) </td></tr>
+    <tr><td class="paramname">rotation</td><td>Rotation to apply (in degrees) </td></tr>
+    <tr><td class="paramname">reload</td><td>Function to reload </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5fe09a91b3b9c97e798f9b9d3af0553d" name="a5fe09a91b3b9c97e798f9b9d3af0553d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fe09a91b3b9c97e798f9b9d3af0553d">&#9670;&#160;</a></span>removeImageFromFolders()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::removeImageFromFolders </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_image_data.html">ImageData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>imageData</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove an image from all folders. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">imageData</td><td><a class="el" href="class_image_data.html">ImageData</a> object to remove from folders </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa172a06a0277fc019ed55a573683e3ef" name="aa172a06a0277fc019ed55a573683e3ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa172a06a0277fc019ed55a573683e3ef">&#9670;&#160;</a></span>revocerDeletedImage() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::revocerDeletedImage </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_image_data.html">ImageData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>imageData</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Recover an image from the deleted images. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">imageData</td><td>image to recover </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a687965d6f84cb037078ffba1e721c63b" name="a687965d6f84cb037078ffba1e721c63b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a687965d6f84cb037078ffba1e721c63b">&#9670;&#160;</a></span>revocerDeletedImage() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::revocerDeletedImage </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>imageNbr</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Recover an image from the deleted images. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">imageNbr</td><td>nbr of the images in the deleted images list </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0fe2a14460834d2ecd8051e478c514b1" name="a0fe2a14460834d2ecd8051e478c514b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fe2a14460834d2ecd8051e478c514b1">&#9670;&#160;</a></span>rotateLeft()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::rotateLeft </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nbr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>extension</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>reload</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>action</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rotate an image to the left. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nbr</td><td>Image number to rotate (index in the imagesData) </td></tr>
+    <tr><td class="paramname">extension</td><td>Image extension </td></tr>
+    <tr><td class="paramname">reload</td><td>Function to reload </td></tr>
+    <tr><td class="paramname">action</td><td>Set if the action should be added to the undo stack </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a555eeda5977eb91b7f316bdac9b70b9d" name="a555eeda5977eb91b7f316bdac9b70b9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a555eeda5977eb91b7f316bdac9b70b9d">&#9670;&#160;</a></span>rotateQImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QImage Data::rotateQImage </td>
+          <td>(</td>
+          <td class="paramtype">QImage</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_image_data.html">ImageData</a> *</td>          <td class="paramname"><span class="paramname"><em>imageData</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rotate an image according to the metadata (in imageData) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">image</td><td>Image to rotate </td></tr>
+    <tr><td class="paramname">imageData</td><td><a class="el" href="class_image_data.html">ImageData</a> object containing the metadata </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Rotated image </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The rotation is done according to the Exif orientation tag </dd></dl>
+
+</div>
+</div>
+<a id="abdf845cfb852a489d37d1a98ae417e52" name="abdf845cfb852a489d37d1a98ae417e52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdf845cfb852a489d37d1a98ae417e52">&#9670;&#160;</a></span>rotateRight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Data::rotateRight </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nbr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>extension</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>reload</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>action</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rotate an image to the right. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nbr</td><td>Image number to rotate (index in the imagesData) </td></tr>
+    <tr><td class="paramname">extension</td><td>Image extension </td></tr>
+    <tr><td class="paramname">reload</td><td>Function to reload </td></tr>
+    <tr><td class="paramname">action</td><td>Set if the action should be added to the undo stack </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="accafdc4fab9b96527dc27fdc423d855c" name="accafdc4fab9b96527dc27fdc423d855c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accafdc4fab9b96527dc27fdc423d855c">&#9670;&#160;</a></span>unloadFromCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Data::unloadFromCache </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>imagePath</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unload an image from the cache. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">imagePath</td><td>Path to the image </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the image is unloaded from the cache false otherwise </dd></dl>
 
 </div>
 </div>

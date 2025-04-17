@@ -1,8 +1,19 @@
 var searchData=
 [
-  ['createallthumbnailifnotexists_0',['createAllThumbnailIfNotExists',['../class_data.html#abc7ef6d83dc19e0d0e87742f18a0bd2b',1,'Data']]],
-  ['createimageeditor_1',['createImageEditor',['../class_initial_window.html#a16c50ed7c05d4de34976ef51cc774414',1,'InitialWindow']]],
-  ['createthumbnail_2',['createThumbnail',['../class_data.html#a189734a9548fcfe79f79e69b3e4b5545',1,'Data']]],
-  ['createthumbnailifnotexists_3',['createThumbnailIfNotExists',['../class_data.html#ae78c4a7243b4add7f6bb3b1f003e8ed2',1,'Data']]],
-  ['createthumbnailsifnotexists_4',['createThumbnailsIfNotExists',['../class_data.html#a824cae3b176fed1f42b20b3112a5806a',1,'Data']]]
+  ['clear_0',['clear',['../class_data.html#a44b749f64ffa35e034f9503fdec4917e',1,'Data::clear()'],['../class_detected_objects.html#a5eb71da55a0cdd1f364748d2a97981c1',1,'DetectedObjects::clear()'],['../class_folders.html#aaa63ca280c10fc90c09cc29e38c80a02',1,'Folders::clear()']]],
+  ['clearactions_1',['clearActions',['../class_data.html#a7748a0c372b9d0372f797cbcbe77f3ac',1,'Data']]],
+  ['clearcache_2',['clearCache',['../class_data.html#a07c367ea35288f2ee324c684e5132039',1,'Data']]],
+  ['cleardetectedobjects_3',['clearDetectedObjects',['../class_image_data.html#ad24d7ad3591bb7a703b11a2cbd5919b8',1,'ImageData']]],
+  ['clearmetadata_4',['clearMetaData',['../class_image_data.html#ad01b78e5b42c00407dd4593bed49cae6',1,'ImageData']]],
+  ['clearrecursively_5',['clearRecursively',['../class_folders.html#a37d380b2a155a287f102e8a8680d3570',1,'Folders']]],
+  ['clickablelabel_6',['ClickableLabel',['../class_clickable_label.html#adb9248ff5d01620fce78d8d30c3723ea',1,'ClickableLabel']]],
+  ['conversiondialog_7',['ConversionDialog',['../class_conversion_dialog.html#ad6ed831ecfe92f40bd1f5472bf380f5e',1,'ConversionDialog']]],
+  ['createallthumbnail_8',['createAllThumbnail',['../class_data.html#a35538c818729585433e73c1a7b9cf6a1',1,'Data']]],
+  ['createallthumbnailifnotexists_9',['createAllThumbnailIfNotExists',['../class_data.html#abc7ef6d83dc19e0d0e87742f18a0bd2b',1,'Data']]],
+  ['createimageeditor_10',['createImageEditor',['../class_initial_window.html#a16c50ed7c05d4de34976ef51cc774414',1,'InitialWindow']]],
+  ['createthumbnail_11',['createThumbnail',['../class_data.html#a189734a9548fcfe79f79e69b3e4b5545',1,'Data']]],
+  ['createthumbnailasync_12',['createThumbnailAsync',['../class_data.html#aa9668f3abe8b69946049f346bf45a5ac',1,'Data']]],
+  ['createthumbnailifnotexists_13',['createThumbnailIfNotExists',['../class_data.html#ae78c4a7243b4add7f6bb3b1f003e8ed2',1,'Data']]],
+  ['createthumbnails_14',['createThumbnails',['../class_data.html#a101569ad4915dec29e24887931da68ac',1,'Data']]],
+  ['createthumbnailsifnotexists_15',['createThumbnailsIfNotExists',['../class_data.html#a824cae3b176fed1f42b20b3112a5806a',1,'Data']]]
 ];

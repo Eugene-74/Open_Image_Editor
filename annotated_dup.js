@@ -1,15 +1,16 @@
 var annotated_dup =
 [
     [ "Actions", "class_actions.html", null ],
-    [ "ClickableLabel", "class_clickable_label.html", null ],
+    [ "ClickableLabel", "class_clickable_label.html", "class_clickable_label" ],
     [ "Const", "class_const.html", "class_const" ],
-    [ "ConversionDialog", "class_conversion_dialog.html", null ],
+    [ "ConversionDialog", "class_conversion_dialog.html", "class_conversion_dialog" ],
     [ "Data", "class_data.html", "class_data" ],
-    [ "DetectedObjects", "class_detected_objects.html", null ],
-    [ "fileSelector", "classfile_selector.html", null ],
+    [ "DetectedObjects", "class_detected_objects.html", "class_detected_objects" ],
+    [ "DetectObjectsModel", "class_detect_objects_model.html", "class_detect_objects_model" ],
+    [ "fileSelector", "classfile_selector.html", "classfile_selector" ],
     [ "Folders", "class_folders.html", "class_folders" ],
     [ "ImageBooth", "class_image_booth.html", "class_image_booth" ],
-    [ "ImageData", "class_image_data.html", null ],
+    [ "ImageData", "class_image_data.html", "class_image_data" ],
     [ "ImageEditor", "class_image_editor.html", null ],
     [ "ImagesData", "class_images_data.html", "class_images_data" ],
     [ "InitialWindow", "class_initial_window.html", "class_initial_window" ],
@@ -20,6 +21,5 @@ var annotated_dup =
     [ "QImageAndPath", "class_q_image_and_path.html", null ],
     [ "Sizes", "class_sizes.html", "class_sizes" ],
     [ "ThreadManager", "class_thread_manager.html", "class_thread_manager" ],
-    [ "ThumbnailTask", "class_thumbnail_task.html", null ],
     [ "Worker", "class_worker.html", "class_worker" ]
 ];

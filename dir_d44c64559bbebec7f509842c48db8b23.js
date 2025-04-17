@@ -6,6 +6,7 @@ var dir_d44c64559bbebec7f509842c48db8b23 =
     [ "Const.hpp", "_const_8hpp_source.html", null ],
     [ "Conversion.hpp", "_conversion_8hpp_source.html", null ],
     [ "Data.hpp", "_data_8hpp_source.html", null ],
+    [ "DetectObjectsModel.hpp", "_detect_objects_model_8hpp_source.html", null ],
     [ "FaceRecognition.hpp", "_face_recognition_8hpp_source.html", null ],
     [ "FileSelector.hpp", "_file_selector_8hpp_source.html", null ],
     [ "Folders.hpp", "_folders_8hpp_source.html", null ],

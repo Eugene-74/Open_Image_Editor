@@ -120,11 +120,11 @@ Inheritance diagram for ConversionDialog:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad6ed831ecfe92f40bd1f5472bf380f5e" id="r_ad6ed831ecfe92f40bd1f5472bf380f5e"><td class="memItemLeft" align="right" valign="top"><a id="ad6ed831ecfe92f40bd1f5472bf380f5e" name="ad6ed831ecfe92f40bd1f5472bf380f5e"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ConversionDialog</b> (QWidget *parent=nullptr)</td></tr>
+<tr class="memitem:ad6ed831ecfe92f40bd1f5472bf380f5e" id="r_ad6ed831ecfe92f40bd1f5472bf380f5e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad6ed831ecfe92f40bd1f5472bf380f5e">ConversionDialog</a> (QWidget *parent=nullptr)</td></tr>
+<tr class="memdesc:ad6ed831ecfe92f40bd1f5472bf380f5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dialog to choose the output file type and convert the image.  <br /></td></tr>
 <tr class="separator:ad6ed831ecfe92f40bd1f5472bf380f5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58f302f310eec4e2dbf326e183471f5c" id="r_a58f302f310eec4e2dbf326e183471f5c"><td class="memItemLeft" align="right" valign="top"><a id="a58f302f310eec4e2dbf326e183471f5c" name="a58f302f310eec4e2dbf326e183471f5c"></a>
-QString&#160;</td><td class="memItemRight" valign="bottom"><b>getSelectedFormat</b> () const</td></tr>
+<tr class="memitem:a58f302f310eec4e2dbf326e183471f5c" id="r_a58f302f310eec4e2dbf326e183471f5c"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a58f302f310eec4e2dbf326e183471f5c">getSelectedFormat</a> () const</td></tr>
+<tr class="memdesc:a58f302f310eec4e2dbf326e183471f5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the selected format from the dialog.  <br /></td></tr>
 <tr class="separator:a58f302f310eec4e2dbf326e183471f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -133,6 +133,54 @@ Public Attributes</h2></td></tr>
 QComboBox *&#160;</td><td class="memItemRight" valign="bottom"><b>comboBox</b></td></tr>
 <tr class="separator:a81c0ce4c86515d0b41b0b18a98f7b706"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ad6ed831ecfe92f40bd1f5472bf380f5e" name="ad6ed831ecfe92f40bd1f5472bf380f5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6ed831ecfe92f40bd1f5472bf380f5e">&#9670;&#160;</a></span>ConversionDialog()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ConversionDialog::ConversionDialog </td>
+          <td>(</td>
+          <td class="paramtype">QWidget *</td>          <td class="paramname"><span class="paramname"><em>parent</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Dialog to choose the output file type and convert the image. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parent</td><td>Parent widget </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>It use the IMAGE_CONVERTION const to choose the output file type </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a58f302f310eec4e2dbf326e183471f5c" name="a58f302f310eec4e2dbf326e183471f5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58f302f310eec4e2dbf326e183471f5c">&#9670;&#160;</a></span>getSelectedFormat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QString ConversionDialog::getSelectedFormat </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the selected format from the dialog. </p>
+<dl class="section return"><dt>Returns</dt><dd>QString containing the selected format </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>include/<a class="el" href="_conversion_8hpp_source.html">Conversion.hpp</a></li>
 <li>src/<b>Conversion.cpp</b></li>
