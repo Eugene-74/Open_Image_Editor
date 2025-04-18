@@ -207,7 +207,7 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
         std::string url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/releases";
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
-        curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3);
+        curl_easy_setopt(curl, CURLOPT_SSLVERSION, (long)CURL_SSLVERSION_MAX_DEFAULT);
 
         // Set timeout time to avoir bug
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);
