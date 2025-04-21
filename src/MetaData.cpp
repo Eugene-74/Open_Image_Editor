@@ -66,7 +66,7 @@ int MetaData::getImageOrientation() {
  */
 long MetaData::getTimestamp() {
     for (auto& entry : xmpMetaData) {
-        if (entry.key() == "Xpm.Exif.Image.DateTime") {
+        if (entry.key() == "Xmp.Exif.Image.DateTime") {
             QString dateTimeStr = QString::fromStdString(entry.toString());
             QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
             QDateTime epoch(QDate(1970, 1, 1), QTime(0, 0, 0));
