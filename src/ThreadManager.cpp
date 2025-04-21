@@ -159,6 +159,10 @@ void ThreadManager::processQueue() {
     }
 }
 
+/**
+ * @brief Start a job in the thread pool
+ * @param job function for the thread
+ */
 void ThreadManager::startJob(std::function<void()> job) {
     try {
         int activeThreads = QThreadPool::globalInstance()->activeThreadCount();

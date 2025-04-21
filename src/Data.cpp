@@ -28,7 +28,7 @@ namespace fs = std::filesystem;
 
 /**
  * @brief Constructor for the Data class
- * @note It initializes the imageCache and sets the default options
+ * @details It initializes the imageCache and sets the default options
  */
 Data::Data()
     : imageCache(new std::unordered_map<std::string, QImageAndPath>()) {
@@ -640,7 +640,7 @@ Folders* Data::findFirstFolderWithAllImagesSub(Folders* currentF) {
  * @param rootFolders Root folder to start the copy
  * @param destinationPath Destination path for the copy
  * @param dateInName Parameter for the image Name to use the date in the name
- * @note It will create the folders if they don't exist
+ * @details It will create the folders if they don't exist
  */
 void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInName) {
     std::string initialFolder = fs::path(destinationPath).filename().string();
@@ -713,7 +713,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
  * @param image Image to rotate
  * @param imageData ImageData object containing the metadata
  * @return Rotated image
- * @note The rotation is done according to the Exif orientation tag
+ * @details The rotation is done according to the Exif orientation tag
  */
 QImage Data::rotateQImage(QImage image, ImageData* imageData) {
     if (imageData != nullptr) {
@@ -857,7 +857,6 @@ void Data::loadData() {
     int index = 0;
     for (auto* imageData : *imagesData.get()) {
         imagesData.setImageMapValue(imageData->getImagePath(), imageData);
-        imagesData.setImageMapIntValue(index, imageData);
         index++;
     }
 
@@ -997,7 +996,7 @@ void Data::sortCurrentImagesData() {
 
 /**
  * @brief Clear the image cache
- * @note This will remove all images from the cache
+ * @details This will remove all images from the cache
  */
 void Data::clearCache() {
     imageCache->clear();
@@ -1476,7 +1475,7 @@ void Data::realMirror(int nbr, bool UpDown, std::function<void()> reload) {
 
 /**
  * @brief Clear the actions stack
- * @note This will remove all actions from the stack
+ * @details This will remove all actions from the stack
  */
 void Data::clearActions() {
     lastActions.clear();
@@ -1609,7 +1608,7 @@ Folders* Data::findFolderByPath(Folders& root, const std::string& path) {
 
 /**
  * @brief Clear all data
- * @note This will remove all images, folders, and options from the data
+ * @details This will remove all images, folders, and options from the data
  */
 void Data::clear() {
     manager.removeAllThreads();

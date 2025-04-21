@@ -6,6 +6,11 @@
 #include <ctime>
 #include <locale>
 
+/**
+ * @brief Assignment operator for the MetaData class
+ * @param other The other MetaData object to copy from
+ * @return A reference to the current object
+ */
 MetaData& MetaData::operator=(const MetaData& other) {
     if (this != &other) {
         exifMetaData = other.exifMetaData;
@@ -15,6 +20,12 @@ MetaData& MetaData::operator=(const MetaData& other) {
     return *this;
 }
 
+/**
+ * @brief Equality operator for the MetaData class
+ * @param other The other MetaData object to compare with
+ * @return True if the objects are equal, false otherwise
+ * @details NOT implemented yet. This function should compare the exifMetaData, xmpMetaData, and iptcMetaData members.
+ */
 bool MetaData::operator==(const MetaData& other) const {
     // return std::equal(this->exifMetaData.begin(), this->exifMetaData.end(), other.exifMetaData.begin(), other.exifMetaData.end()) &&
     //        std::equal(this->xmpMetaData.begin(), this->xmpMetaData.end(), other.xmpMetaData.begin(), other.xmpMetaData.end()) &&
@@ -22,13 +33,20 @@ bool MetaData::operator==(const MetaData& other) const {
     return true;
 }
 
-void MetaData::saveMetaData(const std::string& imageName) {
-    saveExifData(imageName, exifMetaData);
-    saveXmpData(imageName, xmpMetaData);
-    saveIptcData(imageName, iptcMetaData);
+/**
+ * @brief Saves the metadata to the specified image file
+ * @param imagePath The path to the image file
+ */
+void MetaData::saveMetaData(const std::string& imagePath) {
+    saveExifData(imagePath, exifMetaData);
+    saveXmpData(imagePath, xmpMetaData);
+    saveIptcData(imagePath, iptcMetaData);
 }
 
-// Fonction pour récupérer l'orientation de l'image (rotation)
+/**
+ * @brief Get the image orientation from the metadata
+ * @return The image orientation (1-8)
+ */
 int MetaData::getImageOrientation() {
     for (auto& entry : xmpMetaData) {
         if (entry.key() == "Xmp.Exif.Image.Orientation") {
@@ -42,6 +60,10 @@ int MetaData::getImageOrientation() {
     return 1;
 }
 
+/**
+ * @brief Get the timestamp from the metadata
+ * @return The timestamp in seconds since the Unix epoch
+ */
 long MetaData::getTimestamp() {
     for (auto& entry : xmpMetaData) {
         if (entry.key() == "Xpm.Exif.Image.DateTime") {
@@ -59,15 +81,19 @@ long MetaData::getTimestamp() {
     return 0;
 }
 
-// Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
+/**
+ * @brief Set the Exif data
+ * @param key The Exif key to set
+ * @param newValue The new value to set for the Exif key
+ * @return True if the value was modified successfully, false otherwise
+ */
 bool MetaData::modifyExifValue(const std::string& key, const std::string& newValue) {
     Exiv2::ExifKey exifKey(key);
 
-    // Chercher la clé dans les métadonnées
     auto pos = exifMetaData.findKey(exifKey);
     if (pos != exifMetaData.end()) {
         try {
-            pos->setValue(newValue);  // Assigner la nouvelle valeur
+            pos->setValue(newValue);
             return true;
         } catch (const Exiv2::Error& e) {
             qWarning() << "Invalid value for key " << key.c_str() << ": " << e.what();
@@ -87,24 +113,21 @@ bool MetaData::modifyExifValue(const std::string& key, const std::string& newVal
         }
 }
 
-// Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
+/**
+ * @brief Modify or create a value in Exiv2::XmpData
+ * @param key The XMP key to modify or create
+ * @param newValue The new value to set for the XMP key
+ * @return True if the value was modified successfully, false otherwise
+ */
 bool MetaData::modifyXmpValue(const std::string& key, const std::string& newValue) {
-    // qDebug() << "test modify";
     Exiv2::XmpKey xmpKey(key.c_str());
-    // qDebug() << "created modify";
-
-    // qDebug() << "try to find";
 
     auto pos = xmpMetaData.findKey(xmpKey);
     if (pos != xmpMetaData.end()) {
-        qDebug() << "found";
-
         pos->setValue(newValue);
 
         return true;
     } else {
-        qDebug() << "not found";
-
         try {
             qInfo() << "Creating the key : " << key;
             Exiv2::Xmpdatum newDatum(xmpKey);
@@ -119,7 +142,13 @@ bool MetaData::modifyXmpValue(const std::string& key, const std::string& newValu
         }
     }
 }
-// Fonction pour modifier une valeur dans Exiv2::ExifData ou la créer si elle n'existe pas
+
+/**
+ * @brief Modify or create a value in Exiv2::IptcData
+ * @param key The IPTC key to modify or create
+ * @param newValue The new value to set for the IPTC key
+ * @return True if the value was modified successfully, false otherwise
+ */
 bool MetaData::modifyIptcValue(const std::string& key, const std::string& newValue) {
     Exiv2::IptcKey exifKey(key);
 
@@ -143,12 +172,13 @@ bool MetaData::modifyIptcValue(const std::string& key, const std::string& newVal
     }
 }
 
-// Fonction pour mettre à jour ou créer les métadonnées EXIF si elles n'existent pas
+/**
+ * @brief Set or create Exif data for the image
+ * @param imagePath The path to the image file
+ * @details This function sets or creates Exif data for the image, including the date and time, make, model, and orientation.
+ */
 void MetaData::setOrCreateExifData(std::string imagePath) {
     time_t now = time(0);
-    // struct tm* timeinfo = localtime(&now);
-    // std::tm* timeinfo;
-    // localtime_s(timeinfo, &now);
     std::tm* timeinfo = std::localtime(&now);
 
     char dateTime[20];
@@ -162,7 +192,11 @@ void MetaData::setOrCreateExifData(std::string imagePath) {
     saveMetaData(imagePath);
 }
 
-// Fonction pour charger les métadonnées EXIF d'une image
+/**
+ * @brief Load the metadata from the specified image file
+ * @param imagePath The path to the image file
+ * @details This function loads the metadata from the image file and copies location and timestamp data from EXIF to XMP.
+ */
 void MetaData::loadData(const std::string& imagePath) {
     try {
         std::unique_ptr<Exiv2::Image> image;
@@ -181,35 +215,35 @@ void MetaData::loadData(const std::string& imagePath) {
             xmpMetaData = image->xmpData();
             iptcMetaData = image->iptcData();
 
-            // Copy location data
-            auto gpsLatitude = xmpMetaData.findKey(Exiv2::XmpKey("Xmp.exif.GPSLatitude"));
-            if (gpsLatitude != xmpMetaData.end()) {
-                exifMetaData["Exif.GPSInfo.GPSLatitude"] = gpsLatitude->value();
-            }
+            // Copy date, geolocation, and rotation data from EXIF to XMP
+            // auto dateTimePos = exifMetaData.findKey(Exiv2::ExifKey("Exif.Photo.DateTimeOriginal"));
+            // if (dateTimePos != exifMetaData.end()) {
+            //     modifyXmpValue("Xmp.Exif.Image.DateTime", dateTimePos->toString());
+            // }
 
-            auto gpsLongitude = xmpMetaData.findKey(Exiv2::XmpKey("Xmp.exif.GPSLongitude"));
-            if (gpsLongitude != xmpMetaData.end()) {
-                exifMetaData["Exif.GPSInfo.GPSLongitude"] = gpsLongitude->value();
-            }
+            // auto latitudePos = exifMetaData.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSLatitude"));
+            // auto latitudeRefPos = exifMetaData.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSLatitudeRef"));
+            // auto longitudePos = exifMetaData.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSLongitude"));
+            // auto longitudeRefPos = exifMetaData.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSLongitudeRef"));
 
-            // Copy timestamp data
-            auto dateTime = xmpMetaData.findKey(Exiv2::XmpKey("Xmp.Exif.Image.DateTime"));
-            if (dateTime != xmpMetaData.end()) {
-                exifMetaData["Exif.Image.DateTime"] = dateTime->value();
-            }
+            // if (latitudePos != exifMetaData.end() && latitudeRefPos != exifMetaData.end() &&
+            //     longitudePos != exifMetaData.end() && longitudeRefPos != exifMetaData.end()) {
+            //     modifyXmpValue("Xmp.GPSInfo.GPSLatitude", latitudePos->toString());
+            //     modifyXmpValue("Xmp.GPSInfo.GPSLatitudeRef", latitudeRefPos->toString());
+            //     modifyXmpValue("Xmp.GPSInfo.GPSLongitude", longitudePos->toString());
+            //     modifyXmpValue("Xmp.GPSInfo.GPSLongitudeRef", longitudeRefPos->toString());
+            // }
 
-            // Copy orientation data
-            auto orientation = xmpMetaData.findKey(Exiv2::XmpKey("Xmp.Exif.Image.Orientation"));
-            if (orientation != xmpMetaData.end()) {
-                exifMetaData["Exif.Image.Orientation"] = orientation->value();
-            }
+            // auto orientationPos = exifMetaData.findKey(Exiv2::ExifKey("Exif.Image.Orientation"));
+            // if (orientationPos != exifMetaData.end()) {
+            //     modifyXmpValue("Xmp.Exif.Image.Orientation", orientationPos->toString());
+            // }
+            // dataLoaded = true;
 
-            dataLoaded = true;
-
-            auto pos = xmpMetaData.findKey(Exiv2::XmpKey("Xmp.Exif.Image.DateTime"));
-            if (pos == xmpMetaData.end()) {
-                qWarning() << "Erreur : 'Xmp.Exif.Image.DateTime' n'existe pas dans les métadonnées.";
-            }
+            // auto pos = xmpMetaData.findKey(Exiv2::XmpKey("Xmp.Exif.Image.DateTime"));
+            // if (pos == xmpMetaData.end()) {
+            //     qWarning() << "Erreur : 'Xmp.Exif.Image.DateTime' n'existe pas dans les métadonnées.";
+            // }
         }
     } catch (const Exiv2::Error& e) {
         qWarning() << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what();
@@ -218,7 +252,12 @@ void MetaData::loadData(const std::string& imagePath) {
     }
 }
 
-// Fonction pour sauvegarder les métadonnées EXIF dans une image
+/**
+ * @brief Save the EXIF data to the specified image file
+ * @param imagePath The path to the image file
+ * @param exifData The EXIF data to save
+ * @return True if the data was saved successfully, false otherwise
+ */
 bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData) {
     try {
 #ifdef _WIN32
@@ -240,6 +279,13 @@ bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData)
         return false;
     }
 }
+
+/**
+ * @brief Save the XMP data to the specified image file
+ * @param imagePath The path to the image file
+ * @param exifData The XMP data to save
+ * @return True if the data was saved successfully, false otherwise
+ */
 bool saveXmpData(const std::string& imagePath, const Exiv2::XmpData& exifData) {
     try {
 #ifdef _WIN32
@@ -260,6 +306,13 @@ bool saveXmpData(const std::string& imagePath, const Exiv2::XmpData& exifData) {
         return false;
     }
 }
+
+/**
+ * @brief Save the IPTC data to the specified image file
+ * @param imagePath The path to the image file
+ * @param exifData The IPTC data to save
+ * @return True if the data was saved successfully, false otherwise
+ */
 bool saveIptcData(const std::string& imagePath, const Exiv2::IptcData& exifData) {
     try {
 #ifdef _WIN32
@@ -281,7 +334,10 @@ bool saveIptcData(const std::string& imagePath, const Exiv2::IptcData& exifData)
     }
 }
 
-// Fonction pour afficher les métadonnées EXIF
+/**
+ * @brief Display the EXIF data
+ * @param data The EXIF data to display
+ */
 void displayExifData(const Exiv2::ExifData& data) {
     if (data.empty()) {
         qWarning() << "Aucune métadonnée EXIF disponible.";
@@ -293,7 +349,10 @@ void displayExifData(const Exiv2::ExifData& data) {
     }
 }
 
-// Fonction pour afficher les métadonnées EXIF
+/**
+ * @brief Display the XMP data
+ * @param data The XMP data to display
+ */
 void displayXmpData(const Exiv2::XmpData& data) {
     if (data.empty()) {
         qWarning() << "Aucune métadonnée Xmp disponible.";
@@ -306,17 +365,10 @@ void displayXmpData(const Exiv2::XmpData& data) {
     }
 }
 
-void displayData(const MetaData metaData) {
-    displayExifData(metaData.exifMetaData);
-    displayXmpData(metaData.xmpMetaData);
-    displayIptcData(metaData.iptcMetaData);
-}
-
-void MetaData::displayMetaData() {
-    displayData(*this);
-}
-
-// Fonction pour afficher les métadonnées EXIF
+/**
+ * @brief Display the IPTC data
+ * @param data The IPTC data to display
+ */
 void displayIptcData(const Exiv2::IptcData& data) {
     if (data.empty()) {
         qWarning() << "Aucune métadonnée Iptc disponible.";
@@ -329,26 +381,76 @@ void displayIptcData(const Exiv2::IptcData& data) {
     }
 }
 
+/**
+ * @brief Display the metadata
+ * @param metaData The metadata to display
+ * @details This function displays the EXIF, XMP, and IPTC metadata.
+ */
+void displayData(const MetaData metaData) {
+    displayExifData(metaData.exifMetaData);
+    displayXmpData(metaData.xmpMetaData);
+    displayIptcData(metaData.iptcMetaData);
+}
+
+/**
+ * @brief Display the metadata
+ * @details This function displays the EXIF, XMP, and IPTC metadata.
+ */
+void MetaData::displayMetaData() {
+    displayData(*this);
+}
+
+/**
+ * @brief Set the EXIF data
+ * @param data The EXIF data to set
+ */
 void MetaData::setExifData(const Exiv2::ExifData data) {
-    exifMetaData = data;
+    this->exifMetaData = data;
 }
+
+/**
+ * @brief Set the XMP data
+ * @param data The XMP data to set
+ */
 void MetaData::setXmpData(const Exiv2::XmpData data) {
-    xmpMetaData = data;
+    this->xmpMetaData = data;
 }
+/**
+ * @brief Set the IPTC data
+ * @param data The IPTC data to set
+ */
 void MetaData::setIptcData(const Exiv2::IptcData data) {
-    iptcMetaData = data;
+    this->iptcMetaData = data;
 }
 
+/**
+ * @brief Get the EXIF data
+ * @return The EXIF data
+ */
 Exiv2::ExifData MetaData::getExifData() {
-    return exifMetaData;
-}
-Exiv2::XmpData MetaData::getXmpData() {
-    return xmpMetaData;
-}
-Exiv2::IptcData MetaData::getIptcData() {
-    return iptcMetaData;
+    return this->exifMetaData;
 }
 
+/**
+ * @brief Get the XMP data
+ * @return The XMP data
+ */
+Exiv2::XmpData MetaData::getXmpData() {
+    return this->xmpMetaData;
+}
+
+/**
+ * @brief Get the IPTC data
+ * @return The IPTC data
+ */
+Exiv2::IptcData MetaData::getIptcData() {
+    return this->iptcMetaData;
+}
+
+/**
+ * @brief Clear the metadata
+ * @details This function clears the EXIF, XMP, and IPTC metadata.
+ */
 void MetaData::clear() {
     exifMetaData.clear();
     xmpMetaData.clear();

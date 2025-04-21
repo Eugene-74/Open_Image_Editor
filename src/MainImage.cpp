@@ -9,6 +9,17 @@
 #include "Data.hpp"
 #include "Verification.hpp"
 
+/**
+ * @brief Constructor for the MainImage class
+ * @param data Pointer to the Data object containing application data
+ * @param imagePath Path to the image file
+ * @param size Size of the image to be displayed
+ * @param setSize Set if the image should be resized
+ * @param thumbnail Thumbnail size (16,128,256,512 or 0 for no thumbnail)
+ * @param square Set if the image should be displayed as a square
+ * @param force Force the image to be loaded even if it is already in the cache
+ * @details This constructor initializes the MainImage widget with the specified image and size.
+ */
 MainImage::MainImage(Data* data, const QString& imagePath, QSize size, bool setSize, int thumbnail, bool square, bool force)
     : data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), thumbnail(thumbnail), square(square), force(force) {
     if (isImage(imagePath.toStdString())) {
@@ -39,6 +50,9 @@ MainImage::MainImage(Data* data, const QString& imagePath, QSize size, bool setS
     updateStyleSheet();
 }
 
+/**
+ * @brief Update the style sheet of the MainImage widget
+ */
 void MainImage::updateStyleSheet() {
     QString styleSheet = QString(R"(
         QLabel {
@@ -65,14 +79,11 @@ void MainImage::updateStyleSheet() {
     this->setStyleSheet(styleSheet);
 }
 
-void MainImage::enterEvent(QEnterEvent* event) {
-    QLabel::enterEvent(event);
-}
-
-void MainImage::leaveEvent(QEvent* event) {
-    QLabel::leaveEvent(event);
-}
-
+/**
+ * @brief Handle mouse press events
+ * @param event Pointer to the mouse event
+ * @details This function is called when the mouse is pressed on the widget. It emits signals based on the mouse button pressed and the state of the widget.
+ */
 void MainImage::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
@@ -90,6 +101,12 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
     }
 }
 
+/**
+ * @brief Handle mouse move events
+ * @param event Pointer to the mouse event
+ * @details This function is called when the mouse is moved over the widget. It updates the hover background color and style sheet.
+ * @details It also handles the cropping rectangle drawing if the mouse is pressed and the cropping mode is enabled.
+ */
 void MainImage::mouseReleaseEvent(QMouseEvent* event) {
     if (!drawingRectangle) {
         emit clicked();
@@ -144,6 +161,10 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
     QLabel::mouseReleaseEvent(event);
 }
 
+/**
+ * @brief Crop the image based on the selected rectangle
+ * @details This function crops the image based on the selected rectangle and updates the displayed image.
+ */
 void MainImage::cropImage() {
     QImage qImageReel = qImage.copy();
     if (cropStart == QPoint(-1, -1) || cropEnd == QPoint(-1, -1)) {
@@ -245,6 +266,12 @@ void MainImage::cropImage() {
     data->saved = false;
 }
 
+/**
+ * @brief Paint event handler for the MainImage widget
+ * @param event Pointer to the paint event
+ * @details This function is called when the widget needs to be repainted. It draws the cropping rectangle.
+ * @details It also draws detected objects if the personsEditor is enabled and there are detected objects in the image data.
+ */
 void MainImage::paintEvent(QPaintEvent* event) {
     QLabel::paintEvent(event);
 
@@ -289,6 +316,10 @@ void MainImage::paintEvent(QPaintEvent* event) {
     }
 }
 
+/**
+ * @brief Handle mouse move events for cropping
+ * @param event Pointer to the mouse event
+ */
 void MainImage::mouseMoveEvent(QMouseEvent* event) {
     if (drawingRectangle) {
         cropEnd = event->pos();
@@ -296,6 +327,13 @@ void MainImage::mouseMoveEvent(QMouseEvent* event) {
     }
 }
 
+/**
+ * @brief Adjust points for image orientation
+ * @param points Vector of points to adjust
+ * @param orientation Image orientation value (1-8)
+ * @param imageSize Size of the image
+ * @return Adjusted points based on the image orientation
+ */
 std::vector<QPoint> MainImage::adjustPointsForOrientation(const std::vector<QPoint>& points, int orientation, QSize imageSize) {
     std::vector<QPoint> adjustedPoints;
 

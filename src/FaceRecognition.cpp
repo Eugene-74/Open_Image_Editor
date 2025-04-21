@@ -159,7 +159,7 @@ std::map<std::string, std::vector<std::pair<cv::Rect, float>>> DetectedObjects::
 /**
  * @brief Set the detected objects
  * @param detectedObjects The detected objects to set
- * @note This function replaces the current detected objects with the new ones
+ * @details This function replaces the current detected objects with the new ones
  */
 void DetectedObjects::setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects) {
     this->detectedObjects = detectedObjects;
@@ -167,7 +167,7 @@ void DetectedObjects::setDetectedObjects(const std::map<std::string, std::vector
 
 /**
  * @brief Clear the detected objects
- * @note This function removes all detected objects from the current instance
+ * @details This function removes all detected objects from the current instance
  */
 void DetectedObjects::clear() {
     detectedObjects.clear();

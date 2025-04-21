@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 
 /**
  * @brief Default constructor for the ImageData class
- * @note Initializes the folders, cropSizes, orientation, and date members.
+ * @details Initializes the folders, cropSizes, orientation, and date members.
  */
 ImageData::ImageData()
     : folders(Folders()), cropSizes(), orientation(), date() {
@@ -38,7 +38,7 @@ ImageData::ImageData(std::string imagePath)
 /**
  * @brief Copy constructor for the ImageData class
  * @param other The ImageData object to copy from
- * @note Initializes the folders, metaData, cropSizes, orientation, date, and detectionStatus members.
+ * @details Initializes the folders, metaData, cropSizes, orientation, date, and detectionStatus members.
  */
 ImageData::ImageData(const ImageData& other)
     : folders(other.folders), metaData(other.metaData), cropSizes(other.cropSizes), orientation(other.orientation), date(other.date), detectionStatus(other.detectionStatus) {}
@@ -47,7 +47,7 @@ ImageData::ImageData(const ImageData& other)
  * @brief Assignment operator for the ImageData class
  * @param other The ImageData object to assign from
  * @return Reference to the current object
- * @note Copies the folders, metaData, cropSizes, orientation, date, detectedObjects, and detectionStatus members from the other object.
+ * @details Copies the folders, metaData, cropSizes, orientation, date, detectedObjects, and detectionStatus members from the other object.
  */
 ImageData& ImageData::operator=(const ImageData& other) {
     if (this != &other) {
@@ -66,7 +66,7 @@ ImageData& ImageData::operator=(const ImageData& other) {
  * @brief Equality operator for the ImageData class
  * @param other The ImageData object to compare with
  * @return True if the folders names are equal, false otherwise
- * @note Compares the names of the folders in both ImageData objects.
+ * @details Compares the names of the folders in both ImageData objects.
  */
 bool ImageData::operator==(const ImageData& other) const {
     return this->folders.getName() == other.folders.getName();
@@ -105,7 +105,7 @@ bool ImageData::respectFilters(const std::map<std::string, bool>& filters) const
 /**
  * @brief Get a string representation of the image data
  * @return A string containing the image path and folder names
- * @note This function is used for debugging purposes.
+ * @details This function is used for debugging purposes.
  */
 std::string ImageData::get() const {
     std::string name;
@@ -254,7 +254,7 @@ int ImageData::getImageOrientation() {
  */
 void ImageData::turnImage(int rotation) {
     this->orientation = rotation;
-    metaData.modifyXmpValue("Xmp.Exif.Image.Orientation", std::to_string(rotation));
+    // metaData.modifyXmpValue("Xmp.Exif.Image.Orientation", std::to_string(rotation));
     metaData.modifyExifValue("Exif.Image.Orientation", std::to_string(rotation));
 }
 

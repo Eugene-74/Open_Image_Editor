@@ -48,7 +48,7 @@ class ImageBooth : public QMainWindow {
     QVBoxLayout* linesLayout;
 
     QSize* imageSize = &data->sizes->imagesBoothSizes->imageSize;
-    QSize* actionSize = &data->sizes->imagesEditorSizes->actionSize;
+    QSize* actionSize = &data->sizes->imageEditorSizes->actionSize;
     QSize* realImageSize = &data->sizes->imagesBoothSizes->realImageSize;
 
     QHBoxLayout* scrollLayout;

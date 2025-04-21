@@ -25,7 +25,7 @@
  * @param posX X position of the dialog (-1 to center)
  * @param posY Y position of the dialog (-1 to center)
  * @param async If true, the dialog will be non-modal and will not block the parent widget
- * @note The dialog will be deleted automatically when closed
+ * @details The dialog will be deleted automatically when closed
  */
 void showModalDialog(QWidget* parent, QMessageBox::Icon icon, const std::string& text, const std::string& title, int posX, int posY, bool async) {
     auto* msgBox = new QMessageBox(parent);
@@ -55,7 +55,7 @@ void showModalDialog(QWidget* parent, QMessageBox::Icon icon, const std::string&
  * @param posX X position of the dialog (-1 to center)
  * @param posY Y position of the dialog (-1 to center)
  * @param async If true, the dialog will be non-modal and will not block the parent widget
- * @note The dialog will be deleted automatically when closed
+ * @details The dialog will be deleted automatically when closed
  */
 void showInformationMessage(QWidget* parent, const std::string& text, const std::string& title, int posX, int posY, bool async) {
     showModalDialog(parent, QMessageBox::Information, text, title, posX, posY, async);
@@ -69,7 +69,7 @@ void showInformationMessage(QWidget* parent, const std::string& text, const std:
  * @param posX X position of the dialog (-1 to center)
  * @param posY Y position of the dialog (-1 to center)
  * @param async If true, the dialog will be non-modal and will not block the parent widget
- * @note The dialog will be deleted automatically when closed
+ * @details The dialog will be deleted automatically when closed
  */
 void showWarningMessage(QWidget* parent, const std::string& text, const std::string& title, int posX, int posY, bool async) {
     showModalDialog(parent, QMessageBox::Warning, text, title, posX, posY, async);
@@ -83,7 +83,7 @@ void showWarningMessage(QWidget* parent, const std::string& text, const std::str
  * @param posX X position of the dialog (-1 to center)
  * @param posY Y position of the dialog (-1 to center)
  * @param async If true, the dialog will be non-modal and will not block the parent widget
- * @note The dialog will be deleted automatically when closed
+ * @details The dialog will be deleted automatically when closed
  */
 void showErrorMessage(QWidget* parent, const std::string& text, const std::string& title, int posX, int posY, bool async) {
     showModalDialog(parent, QMessageBox::Critical, text, title, posX, posY, async);
@@ -98,7 +98,7 @@ void showErrorMessage(QWidget* parent, const std::string& text, const std::strin
  * @param posX X position of the dialog (-1 to center)
  * @param posY Y position of the dialog (-1 to center)
  * @param async If true, the dialog will be non-modal and will not block the parent widget
- * @note The dialog will be deleted automatically when closed
+ * @details The dialog will be deleted automatically when closed
  */
 void showQuestionMessage(QWidget* parent, const std::string& text, std::function<void(bool)> callback, const std::string& title, int posX, int posY, bool async) {
     auto* msgBox = new QMessageBox(parent);
@@ -133,7 +133,7 @@ void showQuestionMessage(QWidget* parent, const std::string& text, std::function
  * @param parent Parent widget
  * @param windowName Name of the window
  * @param options Map of options to display
- * @note The dialog will be deleted automatically when closed
+ * @details The dialog will be deleted automatically when closed
  * @return Map of selected options
  */
 std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std::string& windowName, const std::map<std::string, Option>& options) {

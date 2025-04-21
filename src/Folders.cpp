@@ -7,7 +7,7 @@
 namespace fs = std::filesystem;
 
 /**
- * @brief Operator = for Folders
+ * @brief Assignment operator for Folders class
  * @param other The other Folders object to copy from
  * @return A reference to the current object
  */
@@ -21,10 +21,10 @@ Folders& Folders::operator=(const Folders& other) {
 }
 
 /**
- * @brief Operator == for Folders
+ * @brief Equality operator for Folders class
  * @param other The other Folders object to compare with
  * @return True if the objects are equal, false otherwise
- * @note This function compares the name, files, and folders of the two objects
+ * @details This function compares the name, files, and folders of the two objects
  */
 bool Folders::operator==(const Folders& other) const {
     return this->name == other.name &&
@@ -168,8 +168,8 @@ std::vector<std::string> Folders::getFilesConst() const {
  * @brief Give you the folder at the index
  * @param index The index of the folder to get
  * @return A pointer to the folder at the index
- * @note This function checks if the index is valid and returns nullptr if it is not
- * @note This function returns a pointer to the folder, not a copy of it
+ * @details This function checks if the index is valid and returns nullptr if it is not
+ * @details This function returns a pointer to the folder, not a copy of it
  */
 Folders* Folders::getFolder(int index) {
     if (index < 0 || index >= folders.size()) {
@@ -183,8 +183,8 @@ Folders* Folders::getFolder(int index) {
  * @brief Give you the file at the index
  * @param index The index of the file to get
  * @return A pointer to the file at the index
- * @note This function checks if the index is valid and returns nullptr if it is not
- * @note This function returns a pointer to the file string, not a copy of it
+ * @details This function checks if the index is valid and returns nullptr if it is not
+ * @details This function returns a pointer to the file string, not a copy of it
  */
 std::string* Folders::getFile(int index) {
     if (index < 0 || index >= files.size()) {
@@ -212,7 +212,7 @@ void Folders::setParent(Folders* parent) {
 
 /**
  * @brief Clear the current folder
- * @note This function clears the name, files, and folders of the current folder
+ * @details This function clears the name, files, and folders of the current folder
  */
 void Folders::clear() {
     name.clear();
@@ -222,7 +222,7 @@ void Folders::clear() {
 
 /**
  * @brief Clear the current folder and all its subfolders recursively
- * @note This function clears the name, files, and folders of the current folder and all its subfolders
+ * @details This function clears the name, files, and folders of the current folder and all its subfolders
  */
 void Folders::clearRecursively() {
     for (auto& folder : folders) {

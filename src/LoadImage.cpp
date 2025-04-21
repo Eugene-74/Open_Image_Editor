@@ -27,6 +27,12 @@
 
 namespace fs = std::filesystem;
 
+/**
+ * @brief Add images from a folder to the data structure
+ * @param data Pointer to the Data object
+ * @param parent Pointer to the parent QWidget (usually the main window)
+ * @details This function opens a file dialog to select a folder and adds all images from that folder and it's sub folders to the data structure.
+ */
 void addImagesFromFolder(Data* data, QWidget* parent) {
     QProgressDialog progressDialog(parent);
     progressDialog.setWindowModality(Qt::ApplicationModal);
@@ -38,11 +44,10 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
 
     if (!addSelectedFilesToFolders(data, parent, progressDialog)) {
         qCritical() << "Loading canceled";
-
+        data->clear();
+        data->loadData();
         return;
     }
-
-    // auto images = data->getImagesData()->get();
 
     // ensure that it's well loaded
     qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
@@ -54,7 +59,14 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
     qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
 }
 
-// Fonction pour ajouter des fichiers sélectionnés à la liste des dossiers
+/**
+ * @brief Add selected files to folders
+ * @param data Pointer to the Data object
+ * @param parent Pointer to the parent QWidget (usually the main window)
+ * @param progressDialog Reference to the QProgressDialog object
+ * @return true if files were added successfully, false otherwise
+ * @details This function opens a file dialog to select files and adds them to the folders in the data structure.
+ */
 bool addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& progressDialog) {
     fileSelector fileSelector;
     QStringList selectedFiles;
@@ -71,21 +83,14 @@ bool addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& pro
     return true;
 }
 
-std::string getDirectoryFromUser(QWidget* parent) {
-    QFileDialog dialog(parent);
-    dialog.setFileMode(QFileDialog::Directory);
-    dialog.setOption(QFileDialog::ShowDirsOnly, true);
-
-    if (dialog.exec()) {
-        QStringList selectedDirectories = dialog.selectedFiles();
-        if (!selectedDirectories.isEmpty()) {
-            return selectedDirectories.first().toStdString();
-        }
-    }
-    return "";
-}
-
-// Charges dans un imagesData toutes les données des images dans un dossier et ses sous dossier
+/**
+ * @brief Load images from a folder and its subfolders into the data structure and create a tree of folders
+ * @param parent Pointer to the parent QWidget (usually the main window)
+ * @param data Pointer to the Data object
+ * @param imagePaths The path of the folder to load images from
+ * @param progressDialog Reference to the QProgressDialog object
+ * @return true if images were loaded successfully, false otherwise
+ */
 bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string imagePaths, QProgressDialog& progressDialog) {
     int nbrImage = 0;
 
@@ -158,6 +163,13 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
 
     return true;
 }
+
+/**
+ * @brief Load images thumbnails in a separate thread
+ * @param data Pointer to the Data object
+ * @param progressDialog Reference to the QProgressDialog object
+ * @return true if images were loaded successfully, false otherwise
+ */
 bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
     int totalImages = data->getImagesData()->get()->size();
     int imagesPerThread = IMAGE_PER_THREAD;
@@ -226,48 +238,15 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
     return true;
 }
 
-std::string readFile(const std::string& filePath) {
-    std::ifstream file(filePath);
-    if (!file.is_open()) {
-        qCritical() << "Could not open file: " << QString::fromStdString(filePath);
-    }
-
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
-}
-
-std::map<std::string, std::string> parseJsonToMap(const std::string& jsonString) {
-    std::map<std::string, std::string> resultMap;
-    std::string key, value;
-    std::istringstream jsonStream(jsonString);
-    char ch;
-
-    while (jsonStream >> ch) {
-        if (ch == '"') {
-            std::getline(jsonStream, key, '"');
-            jsonStream >> ch;
-            jsonStream >> ch;
-            if (ch == '"') {
-                std::getline(jsonStream, value, '"');
-            } else {
-                jsonStream.putback(ch);
-                std::getline(jsonStream, value, ',');
-                value.pop_back();
-            }
-            resultMap[key] = value;
-        }
-    }
-
-    return resultMap;
-}
-
-std::map<std::string, std::string> openJsonFile(std::string filePath) {
-    std::string jsonString = readFile(filePath);
-    std::map<std::string, std::string> jsonMap = parseJsonToMap(jsonString);
-    return jsonMap;
-}
-
+/**
+ * @brief Add files to the tree structure (of folders)
+ * @param currentFolder Pointer to the current folder
+ * @param imagesData Pointer to the ImagesData object
+ * @param path The path of the folder to add
+ * @param nbrImage Reference to the number of images added
+ * @param progressDialog Reference to the QProgressDialog object
+ * @return true if files were added successfully, false otherwise
+ */
 bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog) {
     fs::path fsPath(path);
 
@@ -297,6 +276,15 @@ bool addFilesToTree(Folders* currentFolder, ImagesData* imagesData, const std::s
     return true;
 }
 
+/**
+ * @brief Add subfolders to the tree structure (of folders)
+ * @param rootFolder Pointer to the root folder
+ * @param imagesData Pointer to the ImagesData object
+ * @param path The path of the folder to add
+ * @param nbrImage Reference to the number of images added
+ * @param progressDialog Reference to the QProgressDialog object
+ * @return true if subfolders were added successfully, false otherwise
+ */
 bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::string& path, int& nbrImage, QProgressDialog& progressDialog) {
     auto subDirectories = fs::directory_iterator(path);
 
@@ -312,13 +300,9 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
             }
         } else {
             if (isImage(entry.path().filename().string()) || isVideo(entry.path().filename().string())) {
-                // TODO vérifie tres mal et si on ajoute un dossier au dessus elle se copie 2 fois
-
                 std::string imagePath = entry.path().string();
                 std::replace(imagePath.begin(), imagePath.end(), '\\', '/');
                 if (imagesData->getImageData(imagePath) == nullptr) {
-                    // qDebug() << imagesData->getImageMap()->begin()->first;
-                    qDebug() << "Adding image: " << imagePath;
                     Folders folders = Folders(imagePath);
                     rootFolder.addFile(imagePath);
                     folders.addFolder(fs::absolute(entry.path()).parent_path().string());

@@ -9,6 +9,13 @@
 
 #include "InitialWindow.hpp"
 
+/**
+ * @brief Main function of the application
+ * @param argc ...
+ * @param argv ...
+ * @return ...
+ * @details This function initializes the application, sets the window icon, and shows the initial window.
+ */
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 

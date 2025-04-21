@@ -30,6 +30,11 @@
 #include "MainImage.hpp"
 #include "Verification.hpp"
 
+/**
+ * @brief Constructor for the ImageEditor class
+ * @param dat Pointer to the Data object containing application data
+ * @param parent Pointer to the parent QWidget (usually the main window)
+ */
 ImageEditor::ImageEditor(Data* dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_EDITOR_WINDOW_NAME);
@@ -37,14 +42,14 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent)
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
     mainLayout = new QHBoxLayout(centralWidget);
-    mainLayout->setSpacing(data->sizes->imagesEditorSizes->mainLayoutSpacing);
-    mainLayout->setContentsMargins(data->sizes->imagesEditorSizes->mainLayoutMargins[0],
-                                   data->sizes->imagesEditorSizes->mainLayoutMargins[1],
-                                   data->sizes->imagesEditorSizes->mainLayoutMargins[2],
-                                   data->sizes->imagesEditorSizes->mainLayoutMargins[3]);  // Marges autour des bords (gauche, haut, droite, bas)
+    mainLayout->setSpacing(data->sizes->imageEditorSizes->mainLayoutSpacing);
+    mainLayout->setContentsMargins(data->sizes->imageEditorSizes->mainLayoutMargins[0],
+                                   data->sizes->imageEditorSizes->mainLayoutMargins[1],
+                                   data->sizes->imageEditorSizes->mainLayoutMargins[2],
+                                   data->sizes->imageEditorSizes->mainLayoutMargins[3]);  // Marges autour des bords (gauche, haut, droite, bas)
 
     fixedFrame = new QFrame();
-    fixedFrame->setFixedSize(data->sizes->imagesEditorSizes->mainImageSize);
+    fixedFrame->setFixedSize(data->sizes->imageEditorSizes->mainImageSize);
     QVBoxLayout* fixedFrameLayout = new QVBoxLayout(fixedFrame);
     fixedFrameLayout->setAlignment(Qt::AlignCenter);
     fixedFrame->setLayout(fixedFrameLayout);
@@ -117,21 +122,38 @@ ImageEditor::ImageEditor(Data* dat, QWidget* parent)
     }
 }
 
+/**
+ * @brief Go to the next image in the list
+ * @param nbr Number of images to skip (default is 1)
+ */
 void ImageEditor::nextImage(int nbr) {
+    if (nbr < 0) {
+        nbr = 0;
+    }
     data->imagesData.setImageNumber(data->imagesData.getImageNumber() + nbr);
     reload();
 }
 
+/**
+ * @brief Go to the previous image in the list
+ * @param nbr Number of images to skip (default is 1)
+ */
 void ImageEditor::previousImage(int nbr) {
+    if (nbr < 0) {
+        nbr = 0;
+    }
     data->imagesData.setImageNumber(data->imagesData.getImageNumber() - nbr);
     reload();
 }
 
+/**
+ * @brief Reload imageEditor window
+ */
 void ImageEditor::reload() {
     if (bigImage) {
-        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imagesEditorSizes->bigImage), false, 0, false, true);
+        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, 0, false, true);
 
-        bigImageLabelNew->setFixedSize(data->sizes->imagesEditorSizes->bigImage);
+        bigImageLabelNew->setFixedSize(data->sizes->imageEditorSizes->bigImage);
         bool oldExifEditor = exifEditor;
         connect(bigImageLabelNew, &MainImage::leftClicked, [this, oldExifEditor]() {
             closeBigImageLabel(bigImageLabel, oldExifEditor);
@@ -165,6 +187,9 @@ void ImageEditor::reload() {
     }
 }
 
+/**
+ * @brief Initialise a preview of the images in the editor
+ */
 void ImageEditor::createPreview() {
     ImagesData* imagesData = &data->imagesData;
 
@@ -181,6 +206,9 @@ void ImageEditor::createPreview() {
     previewButtonLayout->setAlignment(Qt::AlignCenter);
 }
 
+/**
+ * @brief Update the preview of the images in the editor
+ */
 void ImageEditor::updatePreview() {
     ImagesData* imagesData = &data->imagesData;
 
@@ -241,6 +269,9 @@ void ImageEditor::updatePreview() {
     }
 }
 
+/**
+ * @brief Create buttons for the imageEditor
+ */
 void ImageEditor::createButtons() {
     imageRotateRight = createImageRotateRight();
     imageRotateLeft = createImageRotateLeft();
@@ -284,6 +315,9 @@ void ImageEditor::createButtons() {
     buttonLayout->setAlignment(Qt::AlignCenter);
 }
 
+/**
+ * @brief Update the buttons in the image editor based on the current image state
+ */
 void ImageEditor::updateButtons() {
     if (data->imagesData.get()->size() <= 0) {
         return;
@@ -363,10 +397,16 @@ void ImageEditor::updateButtons() {
     }
 }
 
+/**
+ * @brief Clear the image editor and stop any image opening process
+ */
 void ImageEditor::clear() {
     stopImageOpen();
 }
 
+/**
+ * @brief Hide imageEditor and its components
+ */
 void ImageEditor::hide() {
     stopImageOpen();
 
@@ -416,6 +456,9 @@ void ImageEditor::hide() {
     }
 }
 
+/**
+ * @brief Unhide imageEditor and its components
+ */
 void ImageEditor::unHide() {
     if (imageLabelLayout) {
         for (int i = 0; i < imageLabelLayout->count(); ++i) {
@@ -462,6 +505,10 @@ void ImageEditor::unHide() {
     }
 }
 
+/**
+ * @brief Create a delete button for the image editor
+ * @return A pointer to the ClickableLabel object representing the delete button
+ */
 ClickableLabel* ImageEditor::createImageDelete() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -480,6 +527,10 @@ ClickableLabel* ImageEditor::createImageDelete() {
     return imageDeleteNew;
 }
 
+/**
+ * @brief Create a save button for the image editor
+ * @return A pointer to the ClickableLabel object representing the save button
+ */
 ClickableLabel* ImageEditor::createImageSave() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -495,6 +546,10 @@ ClickableLabel* ImageEditor::createImageSave() {
     return imageSaveNew;
 }
 
+/**
+ * @brief Create an export button for the image editor
+ * @return A pointer to the ClickableLabel object representing the export button
+ */
 ClickableLabel* ImageEditor::createImageExport() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -510,6 +565,10 @@ ClickableLabel* ImageEditor::createImageExport() {
     return imageExportNew;
 }
 
+/**
+ * @brief Create a rotate right button for the image editor
+ * @return A pointer to the ClickableLabel object representing the rotate right button
+ */
 ClickableLabel* ImageEditor::createImageRotateRight() {
     ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_TIP_IMAGE_EDITOR_ROTATE_RIGHT, this, actionSize);
     imageRotateRightNew->setInitialBackground("transparent", "#b3b3b3");
@@ -526,6 +585,10 @@ ClickableLabel* ImageEditor::createImageRotateRight() {
     return imageRotateRightNew;
 }
 
+/**
+ * @brief Create a rotate left button for the image editor
+ * @return A pointer to the ClickableLabel object representing the rotate left button
+ */
 ClickableLabel* ImageEditor::createImageRotateLeft() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -546,6 +609,10 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
     return imageRotateLeftNew;
 }
 
+/**
+ * @brief Create a mirror up-down button for the image editor
+ * @return A pointer to the ClickableLabel object representing the mirror up-down button
+ */
 ClickableLabel* ImageEditor::createImageMirrorUpDown() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -566,6 +633,10 @@ ClickableLabel* ImageEditor::createImageMirrorUpDown() {
     return imageMirrorUpDownNew;
 }
 
+/**
+ * @brief Create a mirror left-right button for the image editor
+ * @return A pointer to the ClickableLabel object representing the mirror left-right button
+ */
 ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -587,6 +658,10 @@ ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
     return imageMirrorLeftRightNew;
 }
 
+/**
+ * @brief Create a button to open the editor for EXIF metadata for the image editor
+ * @return A pointer to the ClickableLabel object representing the edit EXIF button
+ */
 ClickableLabel* ImageEditor::createImageEditExif() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -613,6 +688,10 @@ ClickableLabel* ImageEditor::createImageEditExif() {
     return imageEditExifNew;
 }
 
+/**
+ * @brief Create a button to open the convertion editor for the image editor
+ * @return A pointer to the ClickableLabel object representing the conversion button
+ */
 ClickableLabel* ImageEditor::createImageConversion() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -628,6 +707,10 @@ ClickableLabel* ImageEditor::createImageConversion() {
     return imageConversionNew;
 }
 
+/**
+ * @brief Create a button to open the persons editor for the image editor
+ * @return A pointer to the ClickableLabel object representing the persons editor button
+ */
 ClickableLabel* ImageEditor::createImagePersons() {
     if (data->getImagesData()->get()->size() <= 0) {
         return nullptr;
@@ -725,6 +808,11 @@ ClickableLabel* ImageEditor::createImagePersons() {
 
     return imagePersonsNew;
 }
+
+/**
+ * @brief Create a button to go to the previous image in the image editor
+ * @return A pointer to the ClickableLabel object representing the previous image button
+ */
 ClickableLabel* ImageEditor::createImageBefore() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -745,6 +833,10 @@ ClickableLabel* ImageEditor::createImageBefore() {
     return buttonImageBeforeNew;
 }
 
+/**
+ * @brief Create a button to go to the next image in the image editor
+ * @return A pointer to the ClickableLabel object representing the next image button
+ */
 ClickableLabel* ImageEditor::createImageNext() {
     if (data->imagesData.get()->size() <= 0) {
         return nullptr;
@@ -803,10 +895,6 @@ MainImage* ImageEditor::createImageLabel() {
     ImageData* imageData = data->imagesData.getCurrentImageData();
     displayXmpData(imageData->getMetaData().getXmpData());
 
-    // if (imageData->getpersons().size() > 0 && personsEditor) {
-    //     computeFaces(data, currentImagePath);
-    // }
-
     auto it = data->imageCache->find(currentImagePath);
     if (it == data->imageCache->end()) {
         return imageLabelNew;
@@ -859,6 +947,9 @@ MainImage* ImageEditor::createImageLabel() {
     return imageLabelNew;
 }
 
+/**
+ * @brief Reload the image label in the image editor
+ */
 void ImageEditor::reloadImageLabel() {
     if (imageLabel) {
         MainImage* imageLabelNew = createImageLabel();
@@ -872,6 +963,10 @@ void ImageEditor::reloadImageLabel() {
     }
 }
 
+/**
+ * @brief Handle key press events in the image editor
+ * @param event The key event to handle
+ */
 void ImageEditor::keyPressEvent(QKeyEvent* event) {
     if (exifEditor) {
         return;
@@ -933,6 +1028,10 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
     }
 }
 
+/**
+ * @brief Handle key release events in the image editor
+ * @param event The key event to handle
+ */
 void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
     if (exifEditor) {
         return;
@@ -1028,6 +1127,10 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
     }
 }
 
+/**
+ * @brief Handle wheel events in the image editor
+ * @param event The wheel event to handle
+ */
 void ImageEditor::wheelEvent(QWheelEvent* event) {
     int numDegrees = event->angleDelta().y() / 8;
     int numSteps = numDegrees / 15;
@@ -1041,6 +1144,10 @@ void ImageEditor::wheelEvent(QWheelEvent* event) {
     }
 }
 
+/**
+ * @brief Save the image and update deleted images
+ * @details This function updates the image number and removes deleted images from the data.
+ */
 void ImageEditor::saveImage() {
     int id = data->getImagesData()->getImageNumber();
     for (int i = 0; i <= id; ++i) {
@@ -1060,6 +1167,10 @@ void ImageEditor::saveImage() {
     reload();
 }
 
+/**
+ * @brief Export the image to a specified path
+ * @details This function opens a dialog to select the export path and whether to include the date in the image name.
+ */
 void ImageEditor::exportImage() {
     std::map<std::string, std::string> result;
     std::map<std::string, Option> map = {
@@ -1076,6 +1187,9 @@ void ImageEditor::exportImage() {
     data->exportImages(exportPath, dateInName);
 }
 
+/**
+ * @brief (Pre)Delete the current image
+ */
 void ImageEditor::deleteImage() {
     int nbr = data->imagesData.getImageNumber();
     int nbrInTotal = data->getImagesData()->getImageDataId(data->getImagesData()->getImageDataInCurrent(nbr)->getImagePathConst());
@@ -1149,6 +1263,10 @@ void ImageEditor::deleteImage() {
     data->saved = false;
 }
 
+/**
+ * @brief Populate the metadata fields with data from the current image
+ * @details This function retrieves the metadata from the current image and populates the corresponding fields in the UI.
+ */
 void ImageEditor::populateMetadataFields() {
     ImagesData* imagesData = &data->imagesData;
     ImageData* imageData = imagesData->getCurrentImageData();
@@ -1176,6 +1294,10 @@ void ImageEditor::populateMetadataFields() {
     }
 }
 
+/**
+ * @brief Validate and save the metadata fields
+ * @details This function retrieves the values from the metadata fields and saves them to the current image's metadata.
+ */
 void ImageEditor::validateMetadata() {
     ImagesData* imagesData = &data->imagesData;
     ImageData* imageData = imagesData->getCurrentImageData();
@@ -1194,6 +1316,10 @@ void ImageEditor::validateMetadata() {
     imageData->saveMetaData();
 }
 
+/**
+ * @brief Start the image open process
+ * @details This function sets up a timer to load the image in the background and pre-load surrounding images.
+ */
 void ImageEditor::startImageOpen() {
     if (imageOpenTimer) {
         imageOpenTimer->disconnect();
@@ -1225,6 +1351,10 @@ void ImageEditor::startImageOpen() {
     imageOpenTimer->start();
 }
 
+/**
+ * @brief Stop the image open process
+ * @details This function stops the timer that loads the image in the background and pre-loads surrounding images.
+ */
 void ImageEditor::stopImageOpen() {
     if (imageOpenTimer) {
         imageOpenTimer->disconnect();
@@ -1232,6 +1362,10 @@ void ImageEditor::stopImageOpen() {
     }
 }
 
+/**
+ * @brief Check if the loaded image is still in the cache and unload it if not
+ * @details This function checks the loaded images in the cache and unloads any images that are not currently being used.
+ */
 void ImageEditor::checkLoadedImage() {
     std::unordered_set<std::string> loadedImages;
     int currentImageNumber = data->getImagesData()->getImageNumber();
@@ -1257,11 +1391,18 @@ void ImageEditor::checkLoadedImage() {
     }
 }
 
+/**
+ * @brief Check the cache for loaded images and unload any that are not currently being used
+ */
 void ImageEditor::checkCache() {
     startImageOpen();
     checkLoadedImage();
 }
 
+/**
+ * @brief Rotate the image to the left
+ * @details This function rotates the current image to the left and updates the image label.
+ */
 void ImageEditor::rotateLeft() {
     ImageData* imageData = data->getImagesData()->getCurrentImageData();
     imageData->clearDetectedObjects();
@@ -1271,6 +1412,11 @@ void ImageEditor::rotateLeft() {
     int imageInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
     data->rotateLeft(imageInTotal, extension, [this]() { reload(); });
 }
+
+/**
+ * @brief Rotate the image to the right
+ * @details This function rotates the current image to the right and updates the image label.
+ */
 void ImageEditor::rotateRight() {
     ImageData* imageData = data->getImagesData()->getCurrentImageData();
     imageData->clearDetectedObjects();
@@ -1282,6 +1428,10 @@ void ImageEditor::rotateRight() {
     data->rotateRight(imageInTotal, extension, [this]() { reload(); });
 }
 
+/**
+ * @brief Mirror the image up and down
+ * @details This function mirrors the current image up-down and updates the image label.
+ */
 void ImageEditor::mirrorUpDown() {
     ImageData* imageData = data->getImagesData()->getCurrentImageData();
     imageData->clearDetectedObjects();
@@ -1293,6 +1443,10 @@ void ImageEditor::mirrorUpDown() {
     data->mirrorUpDown(imageInTotal, extension, [this]() { reload(); });
 }
 
+/**
+ * @brief Mirror the image left and right
+ * @details This function mirrors the current image left-right and updates the image label.
+ */
 void ImageEditor::mirrorLeftRight() {
     ImageData* imageData = data->getImagesData()->getCurrentImageData();
     imageData->clearDetectedObjects();
@@ -1303,12 +1457,16 @@ void ImageEditor::mirrorLeftRight() {
     data->mirrorLeftRight(imageInTotal, extension, [this]() { reload(); });
 }
 
+/**
+ * @brief Open a large image label for viewing
+ * @details This function creates a new MainImage object for displaying a larger version of the current image.
+ */
 void ImageEditor::openBigImageLabel() {
     bigImage = true;
     hide();
 
-    bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imagesEditorSizes->bigImage), false, 0, false, true);
-    bigImageLabel->setFixedSize(data->sizes->imagesEditorSizes->bigImage);
+    bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, 0, false, true);
+    bigImageLabel->setFixedSize(data->sizes->imageEditorSizes->bigImage);
 
     mainLayout->addWidget(bigImageLabel);
 
@@ -1327,6 +1485,13 @@ void ImageEditor::openBigImageLabel() {
     });
 }
 
+/**
+ * @brief Close the large image label and restore the original image editor state
+ * @param bigImageLabel The MainImage object representing the large image label
+ * @param oldExifEditor The previous state of the exif editor
+ * @details This function removes the large image label from the layout and restores the original image editor state.
+ * @details It also unhides the metadata fields and reloads the image label.
+ */
 void ImageEditor::closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEditor) {
     bigImage = false;
 
@@ -1347,6 +1512,12 @@ void ImageEditor::closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEdito
     reload();
 }
 
+/**
+ * @brief Handle the enter event for the image editor
+ * @param event The enter event to handle
+ * @details This function sets the focus to the image editor when the mouse enters the widget.
+ * @details It also calls the base class implementation of the enter event.
+ */
 void ImageEditor::enterEvent(QEnterEvent* event) {
     this->setFocus();
     QMainWindow::enterEvent(event);

@@ -40,6 +40,7 @@ class InitialWindow : public QMainWindow {
     void showImageEditor();
     void showImageBooth();
     void showMainWindow();
+    void clearWindows();
 
    private:
     // QSize* linkButton = &data->sizes->linkButton;

@@ -29,7 +29,7 @@ class MetaData {
 
     void setExif(const Exiv2::ExifData& toAddMetaData);
 
-    void saveMetaData(const std::string& imageName);
+    void saveMetaData(const std::string& imagePath);
 
     int getImageOrientation();
     long getTimestamp();

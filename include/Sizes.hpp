@@ -18,19 +18,19 @@ class Sizes {
 
     int pixelRatio;
 
-    class ImagesEditorSizes;
+    class ImageEditorSizes;
     class ImagesBoothSizes;
     class MainWindowSizes;
 
-    ImagesEditorSizes* imagesEditorSizes;
+    ImageEditorSizes* imageEditorSizes;
     ImagesBoothSizes* imagesBoothSizes;
     MainWindowSizes* mainWindowSizes;
     void update();
 };
 
-class Sizes::ImagesEditorSizes {
+class Sizes::ImageEditorSizes {
    public:
-    ImagesEditorSizes(Sizes* parent)
+    ImageEditorSizes(Sizes* parent)
         : parentSizes(parent) {
           };
     QSize previewSize;

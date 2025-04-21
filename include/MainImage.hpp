@@ -22,8 +22,6 @@ class MainImage : public QLabel {
    void imageCropted();
 
   protected:
-   void enterEvent(QEnterEvent* event) override;
-   void leaveEvent(QEvent* event) override;
    void mousePressEvent(QMouseEvent* event) override;
    void mouseReleaseEvent(QMouseEvent* event) override;
 

@@ -26,11 +26,12 @@
 
 namespace fs = std::filesystem;
 
+/**
+ * @brief Constructor for the InitialWindow class
+ * @details This constructor initializes the initialWindow of the application.
+ */
 InitialWindow::InitialWindow() {
     startLog();
-
-    // QThreadPool* threadPool = QThreadPool::globalInstance();
-    // threadPool->setMaxThreadCount(std::max(threadPool->maxThreadCount() - 1, 1));
 
     resizeTimer = new QTimer(this);
     resizeTimer->setInterval(TIME_BEFORE_REZISE);
@@ -144,6 +145,13 @@ InitialWindow::InitialWindow() {
         }
     });
 }
+
+/**
+ * @brief Check for files to download
+ * @details This function checks if the files to download are present in the application directory.
+ * @details If not, it downloads them from the specified URL and saves them in the application directory.
+ * @details It uses a progress dialog to show the download progress.
+ */
 void checkForFilesToDownload() {
     QProgressDialog progressDialog("Downloading ", nullptr, 0, 100, nullptr);
     progressDialog.setWindowModality(Qt::ApplicationModal);
@@ -166,11 +174,27 @@ void checkForFilesToDownload() {
     progressDialog.close();
 }
 
+/**
+ * @brief Callback function for writing data received from the server
+ * @param contents Pointer to the data received from the server
+ * @param size Size of each data element
+ * @param nmemb Number of data elements
+ * @param userp Pointer to the user-defined data (in this case, a string)
+ * @return The size of the data written
+ */
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
 
+/**
+ * @brief Callback function for writing data received from the server and saving it to a file
+ * @param contents Pointer to the data received from the server
+ * @param size Size of each data element
+ * @param nmemb Number of data elements
+ * @param userp Pointer to the user-defined data (in this case, an ofstream object)
+ * @return The size of the data written
+ */
 size_t WriteCallbackAndSave(void* contents, size_t size, size_t nmemb, void* userp) {
     std::ofstream* out = static_cast<std::ofstream*>(userp);
     static_cast<std::ofstream*>(userp);
@@ -178,6 +202,17 @@ size_t WriteCallbackAndSave(void* contents, size_t size, size_t nmemb, void* use
     out->write(static_cast<char*>(contents), totalSize);
     return totalSize;
 }
+
+/**
+ * @brief Callback function for progress updates during file download (shows the progress)
+ * @param ptr Pointer to the user-defined data (in this case, a QProgressDialog object)
+ * @param totalToDownload Total size of the data to be downloaded
+ * @param nowDownloaded Size of the data downloaded so far
+ * @param totalToUpload Total size of the data to be uploaded (not used in this case)
+ * @param nowUploaded Size of the data uploaded so far (not used in this case)
+ * @return 0 to continue, non-zero to abort the operation
+ * @details This function is used to update the progress dialog during the download process.
+ */
 int progressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded) {
     QProgressDialog* progressDialog = static_cast<QProgressDialog*>(ptr);
     QApplication::processEvents();
@@ -188,12 +223,28 @@ int progressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownlo
     return 0;
 }
 
+/**
+ * @brief Callback function for progress updates during file download (alternative version (dosn't shows the progress))
+ * @param ptr Pointer to the user-defined data (in this case, a QProgressDialog object)
+ * @param totalToDownload Total size of the data to be downloaded
+ * @param nowDownloaded Size of the data downloaded so far
+ * @param totalToUpload Total size of the data to be uploaded (not used in this case)
+ * @param nowUploaded Size of the data uploaded so far (not used in this case)
+ * @return 0 to continue, non-zero to abort the operation
+ * @details This function is used to update the progress dialog during the download process.
+ */
 int progressCallbackBis(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded) {
     QProgressDialog* progressDialog = static_cast<QProgressDialog*>(ptr);
     QApplication::processEvents();
     return 0;
 }
 
+/**
+ * @brief Get the latest GitHub tag from the repository (without pre-release)
+ * @param progressDialog Pointer to the progress dialog for showing download progress
+ * @return The latest GitHub tag as a string
+ * @details This function uses the GitHub API to get the latest release tag from the specified repository.
+ */
 std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
     CURL* curl;
     CURLcode res;
@@ -258,6 +309,13 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
     return "";
 }
 
+/**
+ * @brief Download a file from the specified URL and save it to the specified output path
+ * @param url The URL of the file to download
+ * @param outputPath The path where the downloaded file will be saved
+ * @param progressDialog Pointer to the progress dialog for showing download progress
+ * @return true if the download was successful, false otherwise
+ */
 bool downloadFile(const std::string& url, const std::string& outputPath, QProgressDialog* progressDialog) {
     CURL* curl;
     CURLcode res;
@@ -293,6 +351,12 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
     return res == CURLE_OK;
 }
 
+/**
+ * @brief Check for updates and prompt the user to download the latest version if available
+ * @param progressDialog Pointer to the progress dialog for showing download progress
+ * @return true if it's updating, false otherwise
+ * @details This function checks for the latest version of the application on GitHub and compares it with the current version.
+ */
 bool checkForUpdate(QProgressDialog* progressDialog) {
     if (!fs::exists(SAVE_PATH)) {
         fs::create_directories(SAVE_PATH);
@@ -349,6 +413,10 @@ bool checkForUpdate(QProgressDialog* progressDialog) {
     return false;
 }
 
+/**
+ * @brief Start the log file and remove old log files
+ * @details This function creates a log file in the specified directory and sets up a message handler to log messages to the file.
+ */
 void startLog() {
     QString logPath = APP_FILES + "/logs";
     QDir logDir(logPath);
@@ -402,8 +470,25 @@ void startLog() {
         logStream.flush();
         std::cerr << colorCode.toStdString() << formattedMsg.toStdString() << "\033[0m" << std::endl;  // Reset color
     });
+    // Remove log files older than 1 month if there are more than 10
+    QFileInfoList logFiles = logDir.entryInfoList(QDir::Files, QDir::Time);
+    const int maxLogFiles = 10;
+    const QDateTime oneMonthAgo = QDateTime::currentDateTime().addMonths(-1);
+
+    if (logFiles.size() > maxLogFiles) {
+        for (const QFileInfo& fileInfo : logFiles) {
+            if (fileInfo.lastModified() < oneMonthAgo) {
+                QFile::remove(fileInfo.filePath());
+            }
+        }
+    }
 }
 
+/**
+ * @brief Handle the close event of the window
+ * @param event Pointer to the close event
+ * @details This function is called when the window is closed. It checks if there are unsaved changes and prompts the user to save before quitting.
+ */
 void InitialWindow::closeEvent(QCloseEvent* event) {
     if (!data->saved && data->deletedImagesData.get()->size() > 0) {
         showQuestionMessage(this, "Do you want to save before quit ?",
@@ -419,8 +504,9 @@ void InitialWindow::closeEvent(QCloseEvent* event) {
 }
 
 /**
- * @brief
- * @param data
+ * @brief Create the imageEditor widget
+ * @param data Pointer to the Data object
+ * @details This function creates the image editor widget and connects its signals to the appropriate slots.
  */
 void InitialWindow::createImageEditor(Data* data) {
     imageEditor = new ImageEditor(this->data, this);
@@ -449,6 +535,12 @@ void InitialWindow::createImageEditor(Data* data) {
     });
 }
 
+/**
+ * @brief Create the imageBooth widget
+ * @param data Pointer to the Data object
+ * @details This function creates the image booth widget and connects its signals to the appropriate slots.
+ * @details It also sets the number of images per line based on the configuration options.
+ */
 void InitialWindow::createImageBooth(Data* data) {
     qInfo() << "createImageBooth";
     data->sizes->imagesBoothSizes->imagesPerLine = std::stoi(data->options.at("Sizes::imageBooth::ImagesPerLine").value);
@@ -490,6 +582,11 @@ void InitialWindow::createImageBooth(Data* data) {
     });
 }
 
+/**
+ * @brief Create the mainWindow widget
+ * @param data Pointer to the Data object
+ * @details This function creates the main window widget and connects its signals to the appropriate slots.
+ */
 void InitialWindow::createMainWindow(Data* data) {
     mainWindow = new MainWindow(data, this);
 
@@ -516,6 +613,12 @@ void InitialWindow::createMainWindow(Data* data) {
             });
     });
 }
+
+/**
+ * @brief Clear the imageEditor widget
+ * @details This function removes the image editor widget from the layout and deletes it.
+ * @details It also stops all threads associated with the data object.
+ */
 void InitialWindow::clearImageEditor() {
     data->stopAllThreads();
     layout->removeWidget(imageEditor);
@@ -524,6 +627,11 @@ void InitialWindow::clearImageEditor() {
     imageEditor = nullptr;
 }
 
+/**
+ * @brief Clear the imageBooth widget
+ * @details This function removes the image booth widget from the layout and deletes it.
+ * @details It also stops all threads associated with the data object.
+ */
 void InitialWindow::clearImageBooth() {
     data->stopAllThreads();
     layout->removeWidget(imageBooth);
@@ -531,6 +639,11 @@ void InitialWindow::clearImageBooth() {
     imageBooth = nullptr;
 }
 
+/**
+ * @brief Clear the mainWindow widget
+ * @details This function removes the main window widget from the layout and deletes it.
+ * @details It also stops all threads associated with the data object.
+ */
 void InitialWindow::clearMainWindow() {
     data->stopAllThreads();
     layout->removeWidget(mainWindow);
@@ -538,43 +651,42 @@ void InitialWindow::clearMainWindow() {
     mainWindow = nullptr;
 }
 
+/**
+ * @brief Show the imageEditor widget
+ * @details This function clears the existing windows and creates a new imageEditor widget.
+ */
 void InitialWindow::showImageEditor() {
     qInfo() << "showImageEditor";
-    if (imageBooth != nullptr) {
-        clearImageBooth();
-    }
-    if (mainWindow != nullptr) {
-        clearMainWindow();
-    }
+    clearWindows();
     createImageEditor(data);
 }
 
+/**
+ * @brief Show the imageBooth widget
+ * @details This function clears the existing windows and creates a new imageBooth widget.
+ */
 void InitialWindow::showImageBooth() {
     qInfo() << "showImageBooth";
-    if (imageBooth != nullptr) {
-        clearImageBooth();
-    }
-    if (imageEditor != nullptr) {
-        clearImageEditor();
-    }
-    if (mainWindow != nullptr) {
-        clearMainWindow();
-    }
-
+    clearWindows();
     createImageBooth(data);
 }
 
+/**
+ * @brief Show the mainWindow widget
+ * @details This function clears the existing windows and creates a new mainWindow widget.
+ */
 void InitialWindow::showMainWindow() {
     qInfo() << "showMainWindow";
-    if (imageEditor != nullptr) {
-        clearImageEditor();
-    }
-    if (imageBooth != nullptr) {
-        clearImageBooth();
-    }
+    clearWindows();
     createMainWindow(data);
 }
 
+/**
+ * @brief Create the Discord image label
+ * @return ClickableLabel* Pointer to the created ClickableLabel object
+ * @details This function creates a clickable label to open the Discord server link.
+ * @details It also sets up a signal to handle the resize event and update the label accordingly.
+ */
 ClickableLabel* InitialWindow::createImageDiscord() {
     ClickableLabel* newImageDiscord = new ClickableLabel(data, ICON_PATH_DISCORD, TOOL_TIP_DISCORD, this, linkButton, false, 0, true);
     newImageDiscord->setInitialBackground("transparent", "#b3b3b3");
@@ -593,6 +705,12 @@ ClickableLabel* InitialWindow::createImageDiscord() {
     return newImageDiscord;
 }
 
+/**
+ * @brief Create the GitHub image label
+ * @return ClickableLabel* Pointer to the created ClickableLabel object
+ * @details This function creates a clickable label to open the GitHub repository link.
+ * @details It also sets up a signal to handle the resize event and update the label accordingly.
+ */
 ClickableLabel* InitialWindow::createImageGithub() {
     ClickableLabel* newImageGithub = new ClickableLabel(data, ICON_PATH_GITHUB, TOOL_TIP_GITHUB, this, linkButton, false, 0, true);
     newImageGithub->setInitialBackground("transparent", "#b3b3b3");
@@ -628,6 +746,10 @@ ClickableLabel* InitialWindow::createImageOption() {
     return newImageOption;
 }
 
+/**
+ * @brief Open the options dialog and update the options
+ * @details This function opens the options dialog and allows the user to modify the application options.
+ */
 void InitialWindow::openOption() {
     if (data->options.size() == 0) {
         data->options = DEFAULT_OPTIONS;
@@ -645,6 +767,10 @@ void InitialWindow::openOption() {
     }
 }
 
+/**
+ * @brief Check if the system is in dark mode
+ * @return true if the system is in dark mode, false otherwise
+ */
 bool isDarkMode() {
     HKEY hKey;
     DWORD value = 0;
@@ -657,6 +783,11 @@ bool isDarkMode() {
     return (result == ERROR_SUCCESS) && (value == 0);
 }
 
+/**
+ * @brief Handle the resize event of the window
+ * @param event Pointer to the resize event
+ * @details This function is called when the window is resized. It starts a timer to delay the resize event handling.
+ */
 void InitialWindow::resizeEvent(QResizeEvent* event) {
     QWidget* widget = QApplication::activeWindow();
     if (dynamic_cast<QMainWindow*>(widget)) {
@@ -668,3 +799,17 @@ void InitialWindow::resizeEvent(QResizeEvent* event) {
     QMainWindow::resizeEvent(event);
 }
 
+/**
+ * @brief Clear all windows (imageEditor, imageBooth, mainWindow)
+ */
+void InitialWindow::clearWindows() {
+    if (imageEditor != nullptr) {
+        clearImageEditor();
+    }
+    if (imageBooth != nullptr) {
+        clearImageBooth();
+    }
+    if (mainWindow != nullptr) {
+        clearMainWindow();
+    }
+}

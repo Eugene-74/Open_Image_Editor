@@ -3,6 +3,9 @@
 #include <QApplication>
 #include <QMainWindow>
 
+/**
+ * @brief Update the sizes of the application
+ */
 void Sizes::update() {
     QWidget* activeWindow = QApplication::activeWindow();
 
@@ -40,12 +43,15 @@ void Sizes::update() {
         linkButton = QSize(screenGeometry.height() * 1 / 20, screenGeometry.height() * 1 / 20);
     }
 
-    imagesEditorSizes->update();
+    imageEditorSizes->update();
     imagesBoothSizes->update();
     mainWindowSizes->update();
 }
 
-void Sizes::ImagesEditorSizes::update() {
+/**
+ * @brief Update the sizes of the imageEditor
+ */
+void Sizes::ImageEditorSizes::update() {
     if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height()) {
         actionSize = QSize((parentSizes->screenGeometry.width() * 1 / 24) / parentSizes->pixelRatio, (parentSizes->screenGeometry.width() * 1 / 24) / parentSizes->pixelRatio);
     } else {
@@ -58,6 +64,9 @@ void Sizes::ImagesEditorSizes::update() {
     bigImage = parentSizes->screenGeometry - QSize(0, parentSizes->linkButton.height()) - QSize(mainLayoutMargins[0] + mainLayoutMargins[2], mainLayoutMargins[1] + mainLayoutMargins[3]) - QSize(mainLayoutSpacing * 0, mainLayoutSpacing * 2);
 }
 
+/**
+ * @brief Update the sizes of the imageBooth
+ */
 void Sizes::ImagesBoothSizes::update() {
     // int imagesPerLine = 10;
     if (parentSizes->screenGeometry.width() > parentSizes->screenGeometry.height()) {
@@ -79,6 +88,9 @@ void Sizes::ImagesBoothSizes::update() {
     heightImageNumber = scrollAreaSize.height() / realImageSize.height();
 }
 
+/**
+ * @brief Update the sizes of the mainWindow
+ */
 void Sizes::MainWindowSizes::update() {
     if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height()) {
         actionSize = QSize((parentSizes->screenGeometry.width() * 1 / 3) / parentSizes->pixelRatio, (parentSizes->screenGeometry.width() * 1 / 3) / parentSizes->pixelRatio);
@@ -87,15 +99,20 @@ void Sizes::MainWindowSizes::update() {
     }
 }
 
-// Sizes::Sizes(Data* parent)
-//     : data(parent) {
+/**
+ * @brief Constructor for the Sizes class
+ */
 Sizes::Sizes() {
-    imagesEditorSizes = new ImagesEditorSizes(this);
+    imageEditorSizes = new ImageEditorSizes(this);
     imagesBoothSizes = new ImagesBoothSizes(this);
     mainWindowSizes = new MainWindowSizes(this);
     update();
 }
 
+/**
+ * @brief Set the number of images per line in the imageBooth
+ * @param imagesPerLine The number of images per line
+ */
 void Sizes::ImagesBoothSizes::setimagesPerLine(int imagesPerLine) {
     this->imagesPerLine = imagesPerLine;
     while (imagesPerLine < 4) {
@@ -104,6 +121,10 @@ void Sizes::ImagesBoothSizes::setimagesPerLine(int imagesPerLine) {
     update();
 }
 
+/**
+ * @brief Change the number of images per line in the imageBooth
+ * @param imagesPerLine The number of images per line to change
+ */
 void Sizes::ImagesBoothSizes::changeimagesPerLine(int imagesPerLine) {
-    setimagesPerLine(this->imagesPerLine + imagesPerLine);
+    setimagesPerLine(imagesPerLine);
 }

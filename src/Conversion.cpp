@@ -25,7 +25,7 @@ namespace fs = std::filesystem;
 /**
  * @brief Dialog to choose the output file type and convert the image
  * @param parent Parent widget
- * @note It use the IMAGE_CONVERTION const to choose the output file type
+ * @details It use the IMAGE_CONVERTION const to choose the output file type
  */
 ConversionDialog::ConversionDialog(QWidget* parent)
     : QDialog(parent) {
@@ -248,7 +248,7 @@ bool writeHeicAndHeif(const QImage& qImage, const std::string& imagePath) {
 /**
  * @brief Open a dialog to choose the output file type and convert the image
  * @param inputImagePath Path to the input image
- * @note It use the IMAGE_CONVERTION const to choose the output file type
+ * @details It use the IMAGE_CONVERTION const to choose the output file type
  */
 void launchConversionDialogAndConvert(const QString& inputImagePath) {
     QString selectedFormat = launchConversionDialog();
@@ -259,7 +259,7 @@ void launchConversionDialogAndConvert(const QString& inputImagePath) {
 
 /**
  * @brief Open a dialog to choose the output file type
- * @note It use the IMAGE_CONVERTION const to choose the output file type
+ * @details It use the IMAGE_CONVERTION const to choose the output file type
  * @return
  */
 QString launchConversionDialog() {
