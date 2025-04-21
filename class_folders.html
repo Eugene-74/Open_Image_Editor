@@ -124,10 +124,10 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Folders</b> (const <a class="el" href="class_folders.html">Folders</a> &amp;other)</td></tr>
 <tr class="separator:ae3d5f347d1e8360dc3af8859a70e5e61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81d8155a2289d5677881d40976599a2c" id="r_a81d8155a2289d5677881d40976599a2c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_folders.html">Folders</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81d8155a2289d5677881d40976599a2c">operator=</a> (const <a class="el" href="class_folders.html">Folders</a> &amp;other)</td></tr>
-<tr class="memdesc:a81d8155a2289d5677881d40976599a2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator = for <a class="el" href="class_folders.html">Folders</a>.  <br /></td></tr>
+<tr class="memdesc:a81d8155a2289d5677881d40976599a2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assignment operator for <a class="el" href="class_folders.html">Folders</a> class.  <br /></td></tr>
 <tr class="separator:a81d8155a2289d5677881d40976599a2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7d90513ce0f409125e4e77fe5fb0edb" id="r_ad7d90513ce0f409125e4e77fe5fb0edb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad7d90513ce0f409125e4e77fe5fb0edb">operator==</a> (const <a class="el" href="class_folders.html">Folders</a> &amp;other) const</td></tr>
-<tr class="memdesc:ad7d90513ce0f409125e4e77fe5fb0edb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator == for <a class="el" href="class_folders.html">Folders</a>.  <br /></td></tr>
+<tr class="memdesc:ad7d90513ce0f409125e4e77fe5fb0edb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Equality operator for <a class="el" href="class_folders.html">Folders</a> class.  <br /></td></tr>
 <tr class="separator:ad7d90513ce0f409125e4e77fe5fb0edb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a832f13112910f29184bff9475916806b" id="r_a832f13112910f29184bff9475916806b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a832f13112910f29184bff9475916806b">save</a> (std::ofstream &amp;out) const</td></tr>
 <tr class="memdesc:a832f13112910f29184bff9475916806b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save the folder to a file.  <br /></td></tr>
@@ -230,7 +230,7 @@ std::vector&lt; <a class="el" href="class_folders.html">Folders</a> &gt;&#160;</
 </div><div class="memdoc">
 
 <p>Clear the current folder. </p>
-<dl class="section note"><dt>Note</dt><dd>This function clears the name, files, and folders of the current folder </dd></dl>
+<p>This function clears the name, files, and folders of the current folder </p>
 
 </div>
 </div>
@@ -250,7 +250,7 @@ std::vector&lt; <a class="el" href="class_folders.html">Folders</a> &gt;&#160;</
 </div><div class="memdoc">
 
 <p>Clear the current folder and all its subfolders recursively. </p>
-<dl class="section note"><dt>Note</dt><dd>This function clears the name, files, and folders of the current folder and all its subfolders </dd></dl>
+<p>This function clears the name, files, and folders of the current folder and all its subfolders </p>
 
 </div>
 </div>
@@ -276,10 +276,9 @@ std::vector&lt; <a class="el" href="class_folders.html">Folders</a> &gt;&#160;</
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A pointer to the file at the index </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>This function checks if the index is valid and returns nullptr if it is not </dd>
-<dd>
-This function returns a pointer to the file string, not a copy of it </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the file at the index</dd></dl>
+<p>This function checks if the index is valid and returns nullptr if it is not</p>
+<p>This function returns a pointer to the file string, not a copy of it </p>
 
 </div>
 </div>
@@ -365,10 +364,9 @@ This function returns a pointer to the file string, not a copy of it </dd></dl>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A pointer to the folder at the index </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>This function checks if the index is valid and returns nullptr if it is not </dd>
-<dd>
-This function returns a pointer to the folder, not a copy of it </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the folder at the index</dd></dl>
+<p>This function checks if the index is valid and returns nullptr if it is not</p>
+<p>This function returns a pointer to the folder, not a copy of it </p>
 
 </div>
 </div>
@@ -492,7 +490,7 @@ This function returns a pointer to the folder, not a copy of it </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Operator = for <a class="el" href="class_folders.html">Folders</a>. </p>
+<p>Assignment operator for <a class="el" href="class_folders.html">Folders</a> class. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td>The other <a class="el" href="class_folders.html">Folders</a> object to copy from </td></tr>
@@ -518,15 +516,15 @@ This function returns a pointer to the folder, not a copy of it </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Operator == for <a class="el" href="class_folders.html">Folders</a>. </p>
+<p>Equality operator for <a class="el" href="class_folders.html">Folders</a> class. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td>The other <a class="el" href="class_folders.html">Folders</a> object to compare with </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>True if the objects are equal, false otherwise </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>This function compares the name, files, and folders of the two objects </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the objects are equal, false otherwise</dd></dl>
+<p>This function compares the name, files, and folders of the two objects </p>
 
 </div>
 </div>

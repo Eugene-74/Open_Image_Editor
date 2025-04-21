@@ -131,8 +131,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>switchToImageEditor</
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a27b7df0b1b8261dcb25dca139686d0ee" id="r_a27b7df0b1b8261dcb25dca139686d0ee"><td class="memItemLeft" align="right" valign="top"><a id="a27b7df0b1b8261dcb25dca139686d0ee" name="a27b7df0b1b8261dcb25dca139686d0ee"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>MainWindow</b> (<a class="el" href="class_data.html">Data</a> *dat, QWidget *parent=nullptr)</td></tr>
+<tr class="memitem:a27b7df0b1b8261dcb25dca139686d0ee" id="r_a27b7df0b1b8261dcb25dca139686d0ee"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a27b7df0b1b8261dcb25dca139686d0ee">MainWindow</a> (<a class="el" href="class_data.html">Data</a> *dat, QWidget *parent=nullptr)</td></tr>
+<tr class="memdesc:a27b7df0b1b8261dcb25dca139686d0ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for the <a class="el" href="class_main_window.html">MainWindow</a> class.  <br /></td></tr>
 <tr class="separator:a27b7df0b1b8261dcb25dca139686d0ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -152,10 +152,77 @@ QSize *&#160;</td><td class="memItemRight" valign="bottom"><b>actionSize</b> = &
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a379d8ebd251561f4b5c621902c63584f" id="r_a379d8ebd251561f4b5c621902c63584f"><td class="memItemLeft" align="right" valign="top"><a id="a379d8ebd251561f4b5c621902c63584f" name="a379d8ebd251561f4b5c621902c63584f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>enterEvent</b> (QEnterEvent *event) override</td></tr>
+<tr class="memitem:a379d8ebd251561f4b5c621902c63584f" id="r_a379d8ebd251561f4b5c621902c63584f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a379d8ebd251561f4b5c621902c63584f">enterEvent</a> (QEnterEvent *event) override</td></tr>
+<tr class="memdesc:a379d8ebd251561f4b5c621902c63584f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the focus to the mainWindow when the mouse enters.  <br /></td></tr>
 <tr class="separator:a379d8ebd251561f4b5c621902c63584f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a27b7df0b1b8261dcb25dca139686d0ee" name="a27b7df0b1b8261dcb25dca139686d0ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27b7df0b1b8261dcb25dca139686d0ee">&#9670;&#160;</a></span>MainWindow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MainWindow::MainWindow </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_data.html">Data</a> *</td>          <td class="paramname"><span class="paramname"><em>dat</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">QWidget *</td>          <td class="paramname"><span class="paramname"><em>parent</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor for the <a class="el" href="class_main_window.html">MainWindow</a> class. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dat</td><td>Pointer to the <a class="el" href="class_data.html">Data</a> object containing application data </td></tr>
+    <tr><td class="paramname">parent</td><td>Pointer to the parent QWidget (usually the main window)</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This constructor initializes the mainWindow of the application. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a379d8ebd251561f4b5c621902c63584f" name="a379d8ebd251561f4b5c621902c63584f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a379d8ebd251561f4b5c621902c63584f">&#9670;&#160;</a></span>enterEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MainWindow::enterEvent </td>
+          <td>(</td>
+          <td class="paramtype">QEnterEvent *</td>          <td class="paramname"><span class="paramname"><em>event</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the focus to the mainWindow when the mouse enters. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">event</td><td>Pointer to the enter event</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>It also calls the base class implementation of the enter event. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>include/<a class="el" href="_main_window_8hpp_source.html">MainWindow.hpp</a></li>
 <li>src/<b>MainWindow.cpp</b></li>

@@ -1,10 +1,15 @@
 var searchData=
 [
-  ['mainimage_0',['MainImage',['../class_main_image.html',1,'']]],
-  ['mainwindow_1',['MainWindow',['../class_main_window.html',1,'']]],
+  ['mainimage_0',['MainImage',['../class_main_image.html',1,'MainImage'],['../class_main_image.html#a4ee86a03ee80108eefff68e9db7acc88',1,'MainImage::MainImage()']]],
+  ['mainwindow_1',['MainWindow',['../class_main_window.html',1,'MainWindow'],['../class_main_window.html#a27b7df0b1b8261dcb25dca139686d0ee',1,'MainWindow::MainWindow()']]],
   ['mainwindowsizes_2',['MainWindowSizes',['../class_sizes_1_1_main_window_sizes.html',1,'Sizes']]],
   ['metadata_3',['MetaData',['../class_meta_data.html',1,'']]],
   ['mirrorleftright_4',['mirrorLeftRight',['../class_data.html#a8f7094a5c6514f9545383dc34435d0d5',1,'Data']]],
   ['mirrorupdown_5',['mirrorUpDown',['../class_data.html#ab449a6ed6c8288a08867fe4d55f70ba9',1,'Data']]],
-  ['mousereleaseevent_6',['mouseReleaseEvent',['../class_clickable_label.html#a040d1af68245bbc4989fefe04b9ffdd0',1,'ClickableLabel']]]
+  ['modifyexifvalue_6',['modifyExifValue',['../class_meta_data.html#ad50fd65e0af3c3b44930e0e0e14fa4dd',1,'MetaData']]],
+  ['modifyiptcvalue_7',['modifyIptcValue',['../class_meta_data.html#af7e73cdf515338b03cf6def67a7717dd',1,'MetaData']]],
+  ['modifyxmpvalue_8',['modifyXmpValue',['../class_meta_data.html#a1b5a0252d8f38a75dd21d0be598bec40',1,'MetaData']]],
+  ['mousemoveevent_9',['mouseMoveEvent',['../class_main_image.html#a320004859e4683538a4b6fca0bb394f6',1,'MainImage']]],
+  ['mousepressevent_10',['mousePressEvent',['../class_main_image.html#ad6a8695d3bc10729371bcde5283dcdf2',1,'MainImage']]],
+  ['mousereleaseevent_11',['mouseReleaseEvent',['../class_clickable_label.html#a040d1af68245bbc4989fefe04b9ffdd0',1,'ClickableLabel::mouseReleaseEvent()'],['../class_main_image.html#abf999804f378f86006337ad54dfc612a',1,'MainImage::mouseReleaseEvent()']]]
 ];

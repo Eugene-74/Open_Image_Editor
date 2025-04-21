@@ -132,21 +132,21 @@ $(function(){initNavTree('_image_editor_8hpp_source.html',''); initResizable(tru
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span>QLayout;</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="class_image_editor.html">   25</a></span><span class="keyword">class </span>ImageEditor : <span class="keyword">public</span> QMainWindow {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="class_image_editor.html">   25</a></span><span class="keyword">class </span><a class="code hl_function" href="class_image_editor.html#a7a10619186734c3e9ea81c439e2a41ae">ImageEditor</a> : <span class="keyword">public</span> QMainWindow {</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    Q_OBJECT</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>   <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    ImageEditor(<a class="code hl_class" href="class_data.html">Data</a>* dat, QWidget* parent = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    ~ImageEditor() {}</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_function" href="class_image_editor.html#a7a10619186734c3e9ea81c439e2a41ae">ImageEditor</a>(<a class="code hl_class" href="class_data.html">Data</a>* dat, QWidget* parent = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_function" href="class_image_editor.html#a7a10619186734c3e9ea81c439e2a41ae">~ImageEditor</a>() {}</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">void</span> clear();</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span> reload();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_image_editor.html#a5fc8f409069540e84a79536842dfc65e">clear</a>();</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_image_editor.html#abbf3663c3fe95f152aba4fb7a8de7430">reload</a>();</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>   <span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> keyPressEvent(QKeyEvent* event) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> keyReleaseEvent(QKeyEvent* event) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">void</span> wheelEvent(QWheelEvent* event) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> enterEvent(QEnterEvent* event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_image_editor.html#a89218dd7b0ce08875de40b61d1e12a6b">keyPressEvent</a>(QKeyEvent* event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_image_editor.html#ad9d02a8e5392796633aa6af15a61b3b6">keyReleaseEvent</a>(QKeyEvent* event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_image_editor.html#a0d267de458dca479a27d97fd47669f67">wheelEvent</a>(QWheelEvent* event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_image_editor.html#a1c5c99be722e6ca5b3ac9b9398c4eeb4">enterEvent</a>(QEnterEvent* event) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>   <span class="keyword">private</span>:</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">void</span> hide();</div>
@@ -229,9 +229,9 @@ $(function(){initNavTree('_image_editor_8hpp_source.html',''); initResizable(tru
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    QVBoxLayout* infoLayout;</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    QVBoxLayout* editionLayout;</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    QSize* previewSize = &amp;data-&gt;sizes-&gt;imagesEditorSizes-&gt;previewSize;</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    QSize* actionSize = &amp;data-&gt;sizes-&gt;imagesEditorSizes-&gt;actionSize;</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    QSize* mainImageSize = &amp;data-&gt;sizes-&gt;imagesEditorSizes-&gt;mainImageSize;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    QSize* previewSize = &amp;data-&gt;sizes-&gt;imageEditorSizes-&gt;previewSize;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    QSize* actionSize = &amp;data-&gt;sizes-&gt;imageEditorSizes-&gt;actionSize;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    QSize* mainImageSize = &amp;data-&gt;sizes-&gt;imageEditorSizes-&gt;mainImageSize;</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    std::vector&lt;ClickableLabel*&gt; previewButtons;</div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
@@ -263,6 +263,13 @@ $(function(){initNavTree('_image_editor_8hpp_source.html',''); initResizable(tru
 </div>
 <div class="ttc" id="aclass_clickable_label_html"><div class="ttname"><a href="class_clickable_label.html">ClickableLabel</a></div><div class="ttdef"><b>Definition</b> ClickableLabel.hpp:12</div></div>
 <div class="ttc" id="aclass_data_html"><div class="ttname"><a href="class_data.html">Data</a></div><div class="ttdef"><b>Definition</b> Data.hpp:41</div></div>
+<div class="ttc" id="aclass_image_editor_html_a0d267de458dca479a27d97fd47669f67"><div class="ttname"><a href="class_image_editor.html#a0d267de458dca479a27d97fd47669f67">ImageEditor::wheelEvent</a></div><div class="ttdeci">void wheelEvent(QWheelEvent *event) override</div><div class="ttdoc">Handle wheel events in the image editor.</div><div class="ttdef"><b>Definition</b> ImageEditor.cpp:1134</div></div>
+<div class="ttc" id="aclass_image_editor_html_a1c5c99be722e6ca5b3ac9b9398c4eeb4"><div class="ttname"><a href="class_image_editor.html#a1c5c99be722e6ca5b3ac9b9398c4eeb4">ImageEditor::enterEvent</a></div><div class="ttdeci">void enterEvent(QEnterEvent *event) override</div><div class="ttdoc">Handle the enter event for the image editor.</div><div class="ttdef"><b>Definition</b> ImageEditor.cpp:1521</div></div>
+<div class="ttc" id="aclass_image_editor_html_a5fc8f409069540e84a79536842dfc65e"><div class="ttname"><a href="class_image_editor.html#a5fc8f409069540e84a79536842dfc65e">ImageEditor::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Clear the image editor and stop any image opening process.</div><div class="ttdef"><b>Definition</b> ImageEditor.cpp:403</div></div>
+<div class="ttc" id="aclass_image_editor_html_a7a10619186734c3e9ea81c439e2a41ae"><div class="ttname"><a href="class_image_editor.html#a7a10619186734c3e9ea81c439e2a41ae">ImageEditor::ImageEditor</a></div><div class="ttdeci">ImageEditor(Data *dat, QWidget *parent=nullptr)</div><div class="ttdoc">Constructor for the ImageEditor class.</div><div class="ttdef"><b>Definition</b> ImageEditor.cpp:38</div></div>
+<div class="ttc" id="aclass_image_editor_html_a89218dd7b0ce08875de40b61d1e12a6b"><div class="ttname"><a href="class_image_editor.html#a89218dd7b0ce08875de40b61d1e12a6b">ImageEditor::keyPressEvent</a></div><div class="ttdeci">void keyPressEvent(QKeyEvent *event) override</div><div class="ttdoc">Handle key press events in the image editor.</div><div class="ttdef"><b>Definition</b> ImageEditor.cpp:970</div></div>
+<div class="ttc" id="aclass_image_editor_html_abbf3663c3fe95f152aba4fb7a8de7430"><div class="ttname"><a href="class_image_editor.html#abbf3663c3fe95f152aba4fb7a8de7430">ImageEditor::reload</a></div><div class="ttdeci">void reload()</div><div class="ttdoc">Reload imageEditor window.</div><div class="ttdef"><b>Definition</b> ImageEditor.cpp:152</div></div>
+<div class="ttc" id="aclass_image_editor_html_ad9d02a8e5392796633aa6af15a61b3b6"><div class="ttname"><a href="class_image_editor.html#ad9d02a8e5392796633aa6af15a61b3b6">ImageEditor::keyReleaseEvent</a></div><div class="ttdeci">void keyReleaseEvent(QKeyEvent *event) override</div><div class="ttdoc">Handle key release events in the image editor.</div><div class="ttdef"><b>Definition</b> ImageEditor.cpp:1035</div></div>
 <div class="ttc" id="aclass_main_image_html"><div class="ttname"><a href="class_main_image.html">MainImage</a></div><div class="ttdef"><b>Definition</b> MainImage.hpp:10</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
