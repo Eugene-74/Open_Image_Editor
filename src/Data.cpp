@@ -1142,7 +1142,7 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
 void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
     QString outputPath = QString::fromStdString(imagesData.getImageData(nbr)->getImagePath());
     QImage image = loadImage(nullptr, imagesData.getImageData(nbr)->getImagePath(), QSize(0, 0), false);
-    image = image.transformed(QTransform().rotate(-rotation));
+    image = image.transformed(QTransform().rotate(rotation));
     if (!image.save(outputPath)) {
         qWarning() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
     }
