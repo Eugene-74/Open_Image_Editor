@@ -21,7 +21,7 @@
 #include "Const.hpp"
 #include "Conversion.hpp"
 #include "Data.hpp"
-#include "FaceRecognition.hpp"
+#include "ObjectRecognition.hpp"
 #include "Verification.hpp"
 
 namespace fs = std::filesystem;

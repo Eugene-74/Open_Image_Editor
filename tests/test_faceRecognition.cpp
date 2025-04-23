@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "FaceRecognition.hpp"
+#include "ObjectRecognition.hpp"
 
 class PersonTest : public ::testing::Test {
    protected:

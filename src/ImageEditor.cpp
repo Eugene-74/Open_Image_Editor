@@ -25,9 +25,9 @@
 #include "ClickableLabel.hpp"
 #include "Const.hpp"
 #include "Conversion.hpp"
-#include "FaceRecognition.hpp"
 #include "LoadImage.hpp"
 #include "MainImage.hpp"
+#include "ObjectRecognition.hpp"
 #include "Verification.hpp"
 
 /**

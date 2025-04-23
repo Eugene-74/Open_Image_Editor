@@ -3,9 +3,9 @@
 #include <iostream>
 #include <vector>
 
-#include "FaceRecognition.hpp"
 #include "Folders.hpp"
 #include "MetaData.hpp"
+#include "ObjectRecognition.hpp"
 
 // Forward declaration
 class QPoint;
