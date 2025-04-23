@@ -73,7 +73,7 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
             return false;
         }
 
-        Exiv2::Image::AutoPtr exivImage = Exiv2::ImageFactory::open(inputPath);
+        std::unique_ptr<Exiv2::Image> exivImage(Exiv2::ImageFactory::open(inputPath).release());
         exivImage->readMetadata();
 
         if (isHeicOrHeif(outputPath)) {
@@ -86,7 +86,7 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
             }
         }
         if (isExifPath(inputPath) && isExifPath(outputPath)) {
-            Exiv2::Image::AutoPtr exivOutputImage = Exiv2::ImageFactory::open(outputPath);
+            std::unique_ptr<Exiv2::Image> exivOutputImage = Exiv2::ImageFactory::open(outputPath);
             exivOutputImage->readMetadata();
 
             exivOutputImage->setExifData(exivImage->exifData());

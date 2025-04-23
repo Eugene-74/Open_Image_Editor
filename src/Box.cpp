@@ -222,7 +222,7 @@ std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std:
  */
 void showErrorInfo(QWidget* parent, const QString& message, int timeout) {
     if (timeout < 1000) {
-        timeout == 1000;
+        timeout = 1000;
     }
     QLabel* errorLabel = new QLabel(message, parent);
     errorLabel->setStyleSheet(

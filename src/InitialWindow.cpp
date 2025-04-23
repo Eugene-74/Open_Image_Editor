@@ -197,7 +197,6 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
  */
 size_t WriteCallbackAndSave(void* contents, size_t size, size_t nmemb, void* userp) {
     std::ofstream* out = static_cast<std::ofstream*>(userp);
-    static_cast<std::ofstream*>(userp);
     size_t totalSize = size * nmemb;
     out->write(static_cast<char*>(contents), totalSize);
     return totalSize;

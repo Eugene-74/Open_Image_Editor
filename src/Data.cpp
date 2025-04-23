@@ -689,9 +689,9 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
                 }
                 image.save(QString::fromStdString(destinationFile));
 
-                Exiv2::Image::AutoPtr srcImage = Exiv2::ImageFactory::open(imageData->getImagePath());
+                std::unique_ptr<Exiv2::Image> srcImage = Exiv2::ImageFactory::open(imageData->getImagePath());
                 srcImage->readMetadata();
-                Exiv2::Image::AutoPtr destImage = Exiv2::ImageFactory::open(destinationFile);
+                std::unique_ptr<Exiv2::Image> destImage = Exiv2::ImageFactory::open(destinationFile);
                 destImage->setExifData(srcImage->exifData());
                 destImage->setIptcData(srcImage->iptcData());
                 destImage->setXmpData(srcImage->xmpData());

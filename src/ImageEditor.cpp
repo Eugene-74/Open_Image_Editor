@@ -1322,7 +1322,6 @@ void ImageEditor::validateMetadata() {
  */
 void ImageEditor::startImageOpen() {
     if (imageOpenTimer) {
-        imageOpenTimer->disconnect();
         imageOpenTimer->stop();
     }
 
@@ -1346,9 +1345,10 @@ void ImageEditor::startImageOpen() {
             }
         }
     });
-
-    imageOpenTimer->setInterval(TIME_BEFORE_FULL_QUALITY);
-    imageOpenTimer->start();
+    if (imageOpenTimer) {
+        imageOpenTimer->setInterval(TIME_BEFORE_FULL_QUALITY);
+        imageOpenTimer->start();
+    }
 }
 
 /**
