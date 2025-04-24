@@ -48,8 +48,8 @@ void MetaData::saveMetaData(const std::string& imagePath) {
  * @return The image orientation (1-8)
  */
 int MetaData::getImageOrientation() {
-    for (auto& entry : xmpMetaData) {
-        if (entry.key() == "Xmp.Exif.Image.Orientation") {
+    for (auto& entry : exifMetaData) {
+        if (entry.key() == "Exif.Image.Orientation") {
 #ifdef _WIN32
             return entry.toLong();
 #else
@@ -65,8 +65,8 @@ int MetaData::getImageOrientation() {
  * @return The timestamp in seconds since the Unix epoch
  */
 long MetaData::getTimestamp() {
-    for (auto& entry : xmpMetaData) {
-        if (entry.key() == "Xmp.Exif.Image.DateTime") {
+    for (auto& entry : exifMetaData) {
+        if (entry.key() == "Exif.Image.DateTime") {
             QString dateTimeStr = QString::fromStdString(entry.toString());
             QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
             QDateTime epoch(QDate(1970, 1, 1), QTime(0, 0, 0));
@@ -184,10 +184,10 @@ void MetaData::setOrCreateExifData(std::string imagePath) {
     char dateTime[20];
     strftime(dateTime, sizeof(dateTime), "%Y:%m:%d %H:%M:%S", timeinfo);
 
-    modifyXmpValue("Xmp.Exif.Image.DateTime", dateTime);
-    modifyXmpValue("Xmp.Exif.Image.Make", "made by photo editor");
-    modifyXmpValue("Xmp.Exif.Image.Model", "my model");
-    modifyXmpValue("Xmp.Exif.Image.DateTime", dateTime);
+    modifyXmpValue("Exif.Image.DateTime", dateTime);
+    modifyXmpValue("Exif.Image.Make", "made by photo editor");
+    modifyXmpValue("Exif.Image.Model", "my model");
+    modifyXmpValue("Exif.Image.DateTime", dateTime);
 
     saveMetaData(imagePath);
 }
@@ -215,35 +215,12 @@ void MetaData::loadData(const std::string& imagePath) {
             xmpMetaData = image->xmpData();
             iptcMetaData = image->iptcData();
 
-            // Copy date, geolocation, and rotation data from EXIF to XMP
-            // auto dateTimePos = exifMetaData.findKey(Exiv2::ExifKey("Exif.Photo.DateTimeOriginal"));
-            // if (dateTimePos != exifMetaData.end()) {
-            //     modifyXmpValue("Xmp.Exif.Image.DateTime", dateTimePos->toString());
-            // }
+            dataLoaded = true;
 
-            // auto latitudePos = exifMetaData.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSLatitude"));
-            // auto latitudeRefPos = exifMetaData.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSLatitudeRef"));
-            // auto longitudePos = exifMetaData.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSLongitude"));
-            // auto longitudeRefPos = exifMetaData.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSLongitudeRef"));
-
-            // if (latitudePos != exifMetaData.end() && latitudeRefPos != exifMetaData.end() &&
-            //     longitudePos != exifMetaData.end() && longitudeRefPos != exifMetaData.end()) {
-            //     modifyXmpValue("Xmp.GPSInfo.GPSLatitude", latitudePos->toString());
-            //     modifyXmpValue("Xmp.GPSInfo.GPSLatitudeRef", latitudeRefPos->toString());
-            //     modifyXmpValue("Xmp.GPSInfo.GPSLongitude", longitudePos->toString());
-            //     modifyXmpValue("Xmp.GPSInfo.GPSLongitudeRef", longitudeRefPos->toString());
-            // }
-
-            // auto orientationPos = exifMetaData.findKey(Exiv2::ExifKey("Exif.Image.Orientation"));
-            // if (orientationPos != exifMetaData.end()) {
-            //     modifyXmpValue("Xmp.Exif.Image.Orientation", orientationPos->toString());
-            // }
-            // dataLoaded = true;
-
-            // auto pos = xmpMetaData.findKey(Exiv2::XmpKey("Xmp.Exif.Image.DateTime"));
-            // if (pos == xmpMetaData.end()) {
-            //     qWarning() << "Erreur : 'Xmp.Exif.Image.DateTime' n'existe pas dans les métadonnées.";
-            // }
+            auto pos = xmpMetaData.findKey(Exiv2::XmpKey("Exif.Image.DateTime"));
+            if (pos == xmpMetaData.end()) {
+                qWarning() << "Erreur : 'Exif.Image.DateTime' n'existe pas dans les métadonnées.";
+            }
         }
     } catch (const Exiv2::Error& e) {
         qWarning() << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what();

@@ -962,6 +962,7 @@ void Data::unDoAction() {
  * @brief Sort the current images data by date
  */
 void Data::sortCurrentImagesData() {
+    qDebug() << "Sorting images data ...";
     QElapsedTimer timer;
     timer.start();
 

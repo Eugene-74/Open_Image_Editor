@@ -28,9 +28,8 @@ TEST_F(MetaDataTest, EqualityOperator) {
 }
 
 TEST_F(MetaDataTest, GetImageOrientation) {
-    // TOOD marche pas jsp pk car avec vraie image ça marche tres bien
-    // metaData.modifyXmpValue("Xmp.Exif.Image.Orientation", "5");
-    // EXPECT_EQ(metaData.getImageOrientation(), 5);
+    metaData.modifyXmpValue("Exif.Image.Orientation", "5");
+    EXPECT_EQ(metaData.getImageOrientation(), 5);
 }
 
 TEST_F(MetaDataTest, GetTimestamp) {

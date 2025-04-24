@@ -218,8 +218,9 @@ void ImageData::loadData() {
     try {
         if (!metaData.dataLoaded) {
             metaData.loadData(getImagePath());
-            orientation = metaData.getImageOrientation();
-            date = metaData.getTimestamp();
+
+            setOrientation(metaData.getImageOrientation());
+            setDate(metaData.getTimestamp());
 
             metaData.dataLoaded = true;
         }
@@ -254,7 +255,6 @@ int ImageData::getImageOrientation() {
  */
 void ImageData::turnImage(int rotation) {
     this->orientation = rotation;
-    // metaData.modifyXmpValue("Xmp.Exif.Image.Orientation", std::to_string(rotation));
     metaData.modifyExifValue("Exif.Image.Orientation", std::to_string(rotation));
 }
 

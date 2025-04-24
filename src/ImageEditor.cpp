@@ -1304,14 +1304,14 @@ void ImageEditor::validateMetadata() {
     MetaData* metaData = imageData->getMetaDataPtr();
 
     QString dateTimeStr = dateEdit->dateTime().toString("yyyy:MM:dd HH:mm:ss");
-    metaData->modifyXmpValue("Xmp.Exif.Image.DateTime", dateTimeStr.toStdString());
+    metaData->modifyXmpValue("Exif.Image.DateTime", dateTimeStr.toStdString());
 
     QStringList geoData = geoEdit->text().split(",");
     if (geoData.size() == 2) {
-        metaData->modifyXmpValue("Xmp.Exif.GPSInfo.GPSLatitude", geoData[0].trimmed().toStdString());
-        metaData->modifyXmpValue("Xmp.Exif.GPSInfo.GPSLongitude", geoData[1].trimmed().toStdString());
+        metaData->modifyXmpValue("Exif.GPSInfo.GPSLatitude", geoData[0].trimmed().toStdString());
+        metaData->modifyXmpValue("Exif.GPSInfo.GPSLongitude", geoData[1].trimmed().toStdString());
     }
-    metaData->modifyExifValue("Xmp.Exif.Image.ImageDescription", descriptionEdit->text().toStdString());
+    metaData->modifyExifValue("Exif.Image.ImageDescription", descriptionEdit->text().toStdString());
 
     imageData->saveMetaData();
 }
