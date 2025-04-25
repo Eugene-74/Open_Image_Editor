@@ -131,8 +131,6 @@ if(WIN32)
 
     if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Debug")
         add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
-        # target_compile_options(${PROJECT_NAME} PRIVATE -O0 -g -Wall)
-        target_compile_options(${PROJECT_NAME} PRIVATE -O0 -g -Wall)
 
         target_link_libraries(${PROJECT_NAME} PRIVATE OpenImageEditorLib)
 

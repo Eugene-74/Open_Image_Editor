@@ -109,7 +109,6 @@ class ImageBooth : public QMainWindow {
     void createFirstImages();
     ClickableLabel* createImage(std::string imagePath, int nbr);
     void updateVisibleImages(bool force = false);
-    // void checkThumbnailAndCorrect();
    signals:
     void switchToImageEditor();
     void switchToImageBooth();

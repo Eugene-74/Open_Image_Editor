@@ -112,5 +112,8 @@
         <file>0-0-0-255/images/loading.png</file>
         <file>255-255-255-255/images/loading.png</file>
 
+        <file>0-0-0-255/images/error.png</file>
+        <file>255-255-255-255/images/error.png</file>
+
     </qresource>
 </RCC>

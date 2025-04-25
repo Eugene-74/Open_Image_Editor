@@ -55,7 +55,10 @@ void ThreadManager::addHeavyThread(std::function<void()> job) {
     if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
         startJob(std::move(job));
     } else {
-        heavyTaskQueue.push_back(std::move(job));
+        {
+            std::lock_guard<std::mutex> lock(heavyTaskQueueMutex);
+            heavyTaskQueue.push_back(std::move(job));
+        }
         if (heavyTaskQueue.size() > 100) {
             qWarning() << "Heavy thread queue" << heavyTaskQueue.size();
         }
@@ -74,8 +77,11 @@ void ThreadManager::addThread(std::function<void()> job) {
             qWarning() << "Thread queue" << taskQueue.size();
         }
     } else {
-        if (taskQueue.size() < 1000) {  // Limiter la taille de la file d'attente
-            taskQueue.push_back(std::move(job));
+        if (taskQueue.size() < 1000) {
+            {
+                std::lock_guard<std::mutex> lock(taskQueueMutex);
+                taskQueue.push_back(std::move(job));
+            }
             qInfo() << "Job added to queue. Queue size: " << taskQueue.size();
         } else {
             qCritical() << "Thread queue is full. Job discarded.";
@@ -88,18 +94,17 @@ void ThreadManager::addThread(std::function<void()> job) {
  * @param job function for the thread
  */
 void ThreadManager::addThreadToFront(std::function<void()> job) {
-    // std::queue<std::function<void()>> tempQueue;
-
-    // tempQueue.push(std::move(job));
-    // while (!taskQueue.empty()) {
-    //     tempQueue.push(std::move(taskQueue.front()));
-    //     taskQueue.pop_front();
-    // }
-
-    // taskQueue = std::move(tempQueue);
-
-    taskQueue.push_front(std::move(job));
-    qInfo() << "Job added to front of queue. Queue size: " << taskQueue.size();
+    if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
+        startJob(std::move(job));
+    } else {
+        {
+            std::lock_guard<std::mutex> lock(taskQueueMutex);
+            heavyTaskQueue.push_front(std::move(job));
+        }
+        if (heavyTaskQueue.size() > 100) {
+            qWarning() << "Heavy thread queue" << heavyTaskQueue.size();
+        }
+    }
 }
 
 /**
@@ -107,18 +112,23 @@ void ThreadManager::addThreadToFront(std::function<void()> job) {
  * @param job function for the thread
  */
 void ThreadManager::addHeavyThreadToFront(std::function<void()> job) {
-    // std::queue<std::function<void()>> tempQueue;
+    if (QThreadPool::globalInstance()->activeThreadCount() < maxThreads) {
+        startJob(std::move(job));
 
-    // tempQueue.push(std::move(job));
-    // while (!heavyTaskQueue.empty()) {
-    //     tempQueue.push(std::move(heavyTaskQueue.front()));
-    //     heavyTaskQueue.pop();
-    // }
-
-    // heavyTaskQueue = std::move(tempQueue);
-
-    heavyTaskQueue.push_front(std::move(job));
-    qInfo() << "Job added to front of queue. Queue size: " << heavyTaskQueue.size();
+        if (taskQueue.size() > 100) {
+            qWarning() << "Thread queue" << taskQueue.size();
+        }
+    } else {
+        if (taskQueue.size() < 1000) {
+            {
+                std::lock_guard<std::mutex> lock(taskQueueMutex);
+                taskQueue.push_front(std::move(job));
+            }
+            qInfo() << "Job added to queue. Queue size: " << taskQueue.size();
+        } else {
+            qCritical() << "Thread queue is full. Job discarded.";
+        }
+    }
 }
 
 /**
@@ -126,10 +136,16 @@ void ThreadManager::addHeavyThreadToFront(std::function<void()> job) {
  */
 void ThreadManager::removeAllThreads() {
     while (!taskQueue.empty()) {
-        taskQueue.clear();
+        {
+            std::lock_guard<std::mutex> lock(taskQueueMutex);
+            taskQueue.clear();
+        }
     }
     while (!heavyTaskQueue.empty()) {
-        heavyTaskQueue.clear();
+        {
+            std::lock_guard<std::mutex> lock(heavyTaskQueueMutex);
+            heavyTaskQueue.clear();
+        }
     }
     QThreadPool::globalInstance()->clear();
     qInfo() << "All threads stopped";
@@ -149,14 +165,20 @@ int ThreadManager::getThreadCount() const {
 void ThreadManager::processQueue() {
     if (!taskQueue.empty() && QThreadPool::globalInstance()->activeThreadCount() <= maxThreads) {
         std::function<void()> job = std::move(taskQueue.front());
-        taskQueue.pop_front();
+        {
+            std::lock_guard<std::mutex> lock(taskQueueMutex);
+            taskQueue.pop_front();
+        }
         if (job) {
             startJob(std::move(job));
         }
 
     } else if (!heavyTaskQueue.empty() && (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD)) {
         std::function<void()> job = std::move(heavyTaskQueue.front());
-        heavyTaskQueue.pop_front();
+        {
+            std::lock_guard<std::mutex> lock(heavyTaskQueueMutex);
+            heavyTaskQueue.pop_front();
+        }
         if (job) {
             startJob(std::move(job));
         }
@@ -172,7 +194,11 @@ void ThreadManager::startJob(std::function<void()> job) {
         int activeThreads = QThreadPool::globalInstance()->activeThreadCount();
         if (activeThreads >= maxThreads) {
             qWarning() << "Cannot start job. Active threads: " << activeThreads << ", Max threads: " << maxThreads;
-            taskQueue.push_back(std::move(job));
+
+            {
+                std::lock_guard<std::mutex> lock(taskQueueMutex);
+                taskQueue.push_back(std::move(job));
+            }
 
             return;
         }
@@ -182,7 +208,7 @@ void ThreadManager::startJob(std::function<void()> job) {
             qCritical() << "Could not start thread";
             qInfo() << "Could not start thread. Active threads: " << getThreadCount();
             // taskQueue.push_front(std::move(worker->job));  // Re-add the job to the front of the queue
-            delete worker;  // Ensure the worker is deleted to avoid memory leaks
+            delete worker;
         } else {
             qInfo() << "Thread started successfully. Active threads: " << getThreadCount();
         }

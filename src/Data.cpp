@@ -210,7 +210,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
  * @return QImage object containing the image data
  */
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
-                             bool setSize, int thumbnail, bool force) {
+                             bool setSize, int thumbnail, bool force, bool cache) {
     if (imagePath.at(0) == ':') {
         if (darkMode) {
             imagePath.insert(imagePath.find_first_of(':') + 1, "/255-255-255-255");
@@ -253,14 +253,16 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     if (imagePath.at(0) == ':') {
         QResource ressource(QString::fromStdString(imagePath));
         if (ressource.isValid()) {
-            image.load(QString::fromStdString(imagePathbis));
+            image.load(QString::fromStdString(imagePath));
         }
 
     } else {
         if (!fs::exists(imagePath)) {
             qCritical() << "Error: The specified path does not exist: " << QString::fromStdString(imagePath);
-            return QImage();
+            image.load(IMAGE_PATH_ERROR);
+            return image;
         }
+
         if (thumbnail == 16) {
             if (hasThumbnail(imagePath, 16)) {
                 imagePathbis = getThumbnailPath(imagePath, 16);
@@ -308,6 +310,9 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
             if (thumbnail == 0) {
                 image = readRaw(imagePathbis);
             }
+        }
+        if (isVideo(imagePath)) {
+            image = loadImageFromVideo(imagePath);
         } else {
             image.load(QString::fromStdString(imagePathbis));
         }
@@ -323,11 +328,11 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         }
     }
 
-    // {
-    //     std::lock_guard<std::mutex> lock(imageCacheMutex);
-    //     (*imageCache)[imagePathbis].image = image;
-    //     (*imageCache)[imagePathbis].imagePath = imagePath;
-    // }
+    if (cache) {
+        std::lock_guard<std::mutex> lock(imageCacheMutex);
+        (*imageCache)[imagePathbis].image = image;
+        (*imageCache)[imagePathbis].imagePath = imagePath;
+    }
 
     size_t cacheSize = 0;
 
@@ -349,11 +354,12 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
  * @param size size of the image if it should be resized
  * @param force Force the image to be loaded
  */
-void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
+void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, int thumbnail, bool force) {
     // TODO this function make the app crash
     if (!isInCache(imagePath)) {
-        addThread([this, callback, imagePath, setSize, size, force]() {
-            loadInCache(imagePath, setSize, size, force);
+        addThreadToFront([this, callback, imagePath, setSize, size, force, thumbnail]() {
+            QImage image = loadImageNormal(nullptr, imagePath, size, setSize, thumbnail, force);
+
             if (callback) {
                 QMetaObject::invokeMethod(QApplication::instance(), callback,
                                           Qt::QueuedConnection);
@@ -425,10 +431,40 @@ void Data::createThumbnails(const std::vector<std::string>& imagePaths,
  * @brief Create a thumbnail for a specific size asynchronously
  * @param imagePath Path to the full size image
  * @param maxDim Maximum dimension for the thumbnail
+ * @param callback Callback function to call after creating the thumbnail it give you a boolean
+ *                true if the thumbnail is created false otherwise
  */
-void Data::createThumbnailAsync(const std::string& imagePath, const int maxDim) {
-    addThread([this, imagePath, maxDim]() {
-        createThumbnail(imagePath, maxDim);
+void Data::createThumbnailAsync(const std::string& imagePath, const int maxDim, std::function<void(bool)> callback) {
+    addHeavyThreadToFront([this, imagePath, maxDim, callback]() {
+        bool success = createThumbnailIfNotExists(imagePath, maxDim);
+        unloadFromCache(imagePath);
+
+        if (callback) {
+            callback(success);
+        }
+    });
+}
+
+/**
+ * @brief Create all thumbnails asynchronously
+ * @param imagePath Path to the full size image
+ * @param callback Callback function to call after creating thumbnails it give you a boolean
+ *                true if the thumbnails are created false otherwise
+ */
+void Data::createAllThumbnailsAsync(const std::string& imagePath, std::function<void(bool)> callback) {
+    addHeavyThreadToFront([this, imagePath, callback]() {
+        bool success = true;
+        for (auto size : THUMBNAIL_SIZES) {
+            if (!createThumbnailIfNotExists(imagePath, size)) {
+                success = false;
+                qCritical() << "Error: Could not create thumbnail for image: " << QString::fromStdString(imagePath) << " size: " << size;
+            }
+        }
+        unloadFromCache(imagePath);
+
+        if (callback) {
+            callback(success);
+        }
     });
 }
 
@@ -441,11 +477,14 @@ void Data::createThumbnailAsync(const std::string& imagePath, const int maxDim) 
 bool Data::createThumbnail(const std::string& imagePath, const int maxDim) {
     try {
         QImage image;
-        if (isImage(imagePath)) {
-            image = loadImageNormal(nullptr, imagePath, QSize(maxDim, maxDim), false, 0);
-        } else if (isVideo(imagePath)) {
-            image = loadImageFromVideo(imagePath);
+        if (isImage(imagePath) || isVideo(imagePath)) {
+            image = loadImageNormal(nullptr, imagePath, QSize(0, 0), false, 0);
         } else {
+            return false;
+        }
+
+        if (image.isNull()) {
+            qCritical() << "Error: Could not load image for thumbnail: " << QString::fromStdString(imagePath);
             return false;
         }
 
@@ -504,12 +543,14 @@ void Data::createThumbnailsIfNotExists(
  * @brief Create a thumbnail for a specific size if it doesn't exist alread
  * @param imagePath Path to the full size image
  * @param maxDim Maximum dimension for the thumbnail
+ * @return true if the thumbnail exist false otherwise
  */
-void Data::createThumbnailIfNotExists(const std::string& imagePath,
+bool Data::createThumbnailIfNotExists(const std::string& imagePath,
                                       const int maxDim) {
     if (!hasThumbnail(imagePath, maxDim)) {
-        createThumbnail(imagePath, maxDim);
+        return createThumbnail(imagePath, maxDim);
     }
+    return true;
 }
 
 /**
@@ -1640,11 +1681,27 @@ void Data::addThread(std::function<void()> job) {
 }
 
 /**
+ * @brief Add a thread to front of the thread queue, a thread that should no be heavy to execute
+ * @param job The function to execute
+ */
+void Data::addThreadToFront(std::function<void()> job) {
+    manager.addThreadToFront(job);
+}
+
+/**
  * @brief Add an heavy thread to thread queue, a thread that can be heavy to execute
  * @param job The function to execute
  */
 void Data::addHeavyThread(std::function<void()> job) {
     manager.addHeavyThread(job);
+}
+
+/**
+ * @brief Add a heavy thread to front of the thread queue, a thread that can be heavy to execute
+ * @param job The function to execute
+ */
+void Data::addHeavyThreadToFront(std::function<void()> job) {
+    manager.addHeavyThreadToFront(job);
 }
 
 /**
@@ -1819,11 +1876,16 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
     return detectedObjects;
 }
 
+/**
+ * @brief Check if images are loaded in the cache and unload them if not
+ * @param center Center index of the images to check
+ * @param radius Radius around the center index to check (it unload radius*2 images on each side)
+ */
 void Data::checkToUnloadImages(int center, int radius) {
     std::unordered_set<std::string> loadedImages;
 
-    int lowerBound = center - radius;
-    int upperBound = center + radius;
+    int lowerBound = center - radius * 2;
+    int upperBound = center + radius * 2;
 
     for (int i = lowerBound; i <= upperBound; ++i) {
         if (i >= 0 && i < imagesData.getCurrent()->size()) {
@@ -1841,5 +1903,53 @@ void Data::checkToUnloadImages(int center, int radius) {
 
     for (const auto& imagePath : toUnload) {
         unloadFromCache(imagePath);
+    }
+}
+
+/**
+ * @brief Check if images are loaded in the cache and load them if not
+ * @param center Center index of the images to check
+ * @param radius Radius around the center index to check (it load radius images on each side)
+ * @param thumbnailSize Size of the thumbnail to load
+ */
+void Data::checkToLoadImages(int center, int radius, int thumbnailSize) {
+    std::unordered_set<std::string> loadedImages;
+
+    int lowerBound = center - radius;
+    int upperBound = center + radius;
+
+    for (int i = lowerBound; i <= upperBound; ++i) {
+        if (i >= 0 && i < imagesData.getCurrent()->size()) {
+            loadedImages.insert(imagesData.getImageDataInCurrent(i)->getImagePath());
+        }
+    }
+
+    for (const auto& cache : *imageCache) {
+        const std::string& imagePath = cache.second.imagePath;
+        if (loadedImages.find(imagePath) == loadedImages.end()) {
+            loadInCacheAsync(imagePath, nullptr, false, QSize(0, 0), thumbnailSize);
+        }
+    }
+}
+
+/**
+ * @brief Check if the thumbnail exists and create it if not
+ */
+void Data::checkThumbnailAndCorrect() {
+    auto currentImages = data->getImagesData()->getCurrent();
+    for (auto& imageData : *currentImages) {
+        static int delay = 0;
+        if (!data->hasThumbnail(imageData->getImagePath(), imageQuality)) {
+            QTimer::singleShot(delay, [this, imageData]() {
+                data->createAllThumbnailsAsync(imageData->getImagePath(), [this, imageData](bool success) {
+                    if (success) {
+                        qDebug() << "Thumbnail created for image: " << QString::fromStdString(imageData->getImagePath());
+                    } else {
+                        qCritical() << "Error creating thumbnail for image: " << QString::fromStdString(imageData->getImagePath());
+                    }
+                });
+            });
+            delay += 100;
+        }
     }
 }

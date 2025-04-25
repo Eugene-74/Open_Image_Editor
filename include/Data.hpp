@@ -85,25 +85,26 @@ class Data {
     DetectedObjects detect(std::string imagePath, QImage image, std::string model);
 
     QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool rotation = true, bool square = false, bool crop = true, bool force = false);
-    QImage loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool force = false);
+    QImage loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool force = false, bool cache = true);
 
     std::mutex imageCacheMutex;
     bool loadInCache(std::string imagePath, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
-    void loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
+    void loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize = false, QSize size = QSize(0, 0), int thumbnail = 0, bool force = false);
 
     bool unloadFromCache(std::string imagePath);
 
     bool isInCache(std::string imagePath);
     bool getLoadedImage(std::string imagePath, QImage& image);
 
-    void createThumbnailAsync(const std::string& imagePath, const int maxDim);
+    void createThumbnailAsync(const std::string& imagePath, const int maxDim, std::function<void(bool)> callback = nullptr);
+    void createAllThumbnailsAsync(const std::string& imagePath, std::function<void(bool)> callback = nullptr);
 
     bool createThumbnail(const std::string& imagePath, const int maxDim);
     bool deleteThumbnail(const std::string& imagePath, const int maxDim);
 
     void createThumbnails(const std::vector<std::string>& imagePaths, const int maxDim);
 
-    void createThumbnailIfNotExists(const std::string& imagePath, const int maxDim);
+    bool createThumbnailIfNotExists(const std::string& imagePath, const int maxDim);
     void createThumbnailsIfNotExists(const std::vector<std::string>& imagePaths, const int maxDim);
 
     void createAllThumbnail(const std::string& imagePath, const int maxDim);
@@ -154,10 +155,17 @@ class Data {
     Folders* findFolderByPath(Folders& root, const std::string& path);
 
     void addThread(std::function<void()> job);
+    void addThreadToFront(std::function<void()> job);
+
     void addHeavyThread(std::function<void()> job);
+    void addHeavyThreadToFront(std::function<void()> job);
+
     void stopAllThreads();
 
+    void checkThumbnailAndCorrect();
+
     void checkToUnloadImages(int center, int radius);
+    void checkToLoadImages(int center, int radius, int thumbnailSize = 0);
 
    private:
     ThreadManager manager;

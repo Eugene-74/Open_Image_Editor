@@ -40,5 +40,8 @@ class ThreadManager : public QObject {
     std::deque<std::function<void()>> taskQueue;
     std::deque<std::function<void()>> heavyTaskQueue;
 
+    std::mutex taskQueueMutex;
+    std::mutex heavyTaskQueueMutex;
+
     void processQueue();
 };

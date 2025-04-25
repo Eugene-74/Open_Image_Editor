@@ -32,6 +32,8 @@ const int PREVIEW_NBR = 3;
 const int PRE_LOAD_RADIUS = 5;  // on en precharge 2 de plus comme ça l'utilisateut ne vois meme pas les images charger
 const int TIME_BEFORE_FULL_QUALITY = 200;
 
+const int IMAGE_BOOTH_PRE_LOAD_RADIUS = 5;  // x pages d'image
+
 const int FREE_THREAD = 2;
 // const int TIME_BEFORE_FULL_QUALITY_IMAGE_BOOTH = 500;
 const int PRE_LOAD_RADIUS_IMAGE_BOOTH = 5;

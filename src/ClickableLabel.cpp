@@ -35,10 +35,8 @@ ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QString too
 
     QImage qImage;
 
-    if (isImage(imagePath.toStdString())) {
+    if (isImage(imagePath.toStdString()) || isVideo(imagePath.toStdString())) {
         qImage = data->loadImage(this, imagePath.toStdString(), *sizePtr, setSize, thumbnail, true, square, true, force);
-    } else if (isVideo(imagePath.toStdString())) {
-        qImage = data->loadImageFromVideo(imagePath.toStdString());
     } else {
         qImage = QImage();
     }
