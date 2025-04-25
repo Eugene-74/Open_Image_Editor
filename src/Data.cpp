@@ -351,13 +351,15 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
  */
 void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, bool force) {
     // TODO this function make the app crash
-    addThread([this, callback, imagePath, setSize, size, force]() {
-        loadInCache(imagePath, setSize, size, force);
-        if (callback) {
-            QMetaObject::invokeMethod(QApplication::instance(), callback,
-                                      Qt::QueuedConnection);
-        }
-    });
+    if (!isInCache(imagePath)) {
+        addThread([this, callback, imagePath, setSize, size, force]() {
+            loadInCache(imagePath, setSize, size, force);
+            if (callback) {
+                QMetaObject::invokeMethod(QApplication::instance(), callback,
+                                          Qt::QueuedConnection);
+            }
+        });
+    }
 }
 
 /**
