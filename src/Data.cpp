@@ -218,6 +218,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
             imagePath.insert(imagePath.find_first_of(':') + 1, "/0-0-0-255");
         }
     }
+
     auto it = imageCache->find(imagePath);
     if (it != imageCache->end()) {
         return it->second.image;
@@ -256,6 +257,10 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         }
 
     } else {
+        if (!fs::exists(imagePath)) {
+            qCritical() << "Error: The specified path does not exist: " << QString::fromStdString(imagePath);
+            return QImage();
+        }
         if (thumbnail == 16) {
             if (hasThumbnail(imagePath, 16)) {
                 imagePathbis = getThumbnailPath(imagePath, 16);
@@ -318,11 +323,11 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         }
     }
 
-    {
-        std::lock_guard<std::mutex> lock(imageCacheMutex);
-        (*imageCache)[imagePathbis].image = image;
-        (*imageCache)[imagePathbis].imagePath = imagePath;
-    }
+    // {
+    //     std::lock_guard<std::mutex> lock(imageCacheMutex);
+    //     (*imageCache)[imagePathbis].image = image;
+    //     (*imageCache)[imagePathbis].imagePath = imagePath;
+    // }
 
     size_t cacheSize = 0;
 
