@@ -157,6 +157,8 @@ class Data {
     void addHeavyThread(std::function<void()> job);
     void stopAllThreads();
 
+    void checkToUnloadImages(int center, int radius);
+
    private:
     ThreadManager manager;
 

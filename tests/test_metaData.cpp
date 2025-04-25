@@ -28,13 +28,13 @@ TEST_F(MetaDataTest, EqualityOperator) {
 }
 
 TEST_F(MetaDataTest, GetImageOrientation) {
-    metaData.modifyXmpValue("Exif.Image.Orientation", "5");
+    metaData.modifyExifValue("Exif.Image.Orientation", "5");
     EXPECT_EQ(metaData.getImageOrientation(), 5);
 }
 
 TEST_F(MetaDataTest, GetTimestamp) {
     metaData.modifyExifValue("Exif.Image.DateTime", "2023:10:10 10:10:10");
-    // EXPECT_GT(metaData.getTimestamp(), 0);
+    EXPECT_GT(metaData.getTimestamp(), 0);
 }
 
 TEST_F(MetaDataTest, ModifyExifValue) {

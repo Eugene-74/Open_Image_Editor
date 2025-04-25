@@ -184,10 +184,10 @@ void MetaData::setOrCreateExifData(std::string imagePath) {
     char dateTime[20];
     strftime(dateTime, sizeof(dateTime), "%Y:%m:%d %H:%M:%S", timeinfo);
 
-    modifyXmpValue("Exif.Image.DateTime", dateTime);
-    modifyXmpValue("Exif.Image.Make", "made by photo editor");
-    modifyXmpValue("Exif.Image.Model", "my model");
-    modifyXmpValue("Exif.Image.DateTime", dateTime);
+    modifyExifValue("Exif.Image.DateTime", dateTime);
+    modifyExifValue("Exif.Image.Make", "made by photo editor");
+    modifyExifValue("Exif.Image.Model", "my model");
+    modifyExifValue("Exif.Image.DateTime", dateTime);
 
     saveMetaData(imagePath);
 }
@@ -217,8 +217,8 @@ void MetaData::loadData(const std::string& imagePath) {
 
             dataLoaded = true;
 
-            auto pos = xmpMetaData.findKey(Exiv2::XmpKey("Exif.Image.DateTime"));
-            if (pos == xmpMetaData.end()) {
+            auto pos = exifMetaData.findKey(Exiv2::ExifKey("Exif.Image.DateTime"));
+            if (pos == exifMetaData.end()) {
                 qWarning() << "Erreur : 'Exif.Image.DateTime' n'existe pas dans les métadonnées.";
             }
         }

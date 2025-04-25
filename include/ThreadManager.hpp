@@ -37,8 +37,8 @@ class ThreadManager : public QObject {
    private:
        void startJob(std::function<void()> job);
     int maxThreads;
-    std::queue<std::function<void()>> taskQueue;
-    std::queue<std::function<void()>> heavyTaskQueue;
+    std::deque<std::function<void()>> taskQueue;
+    std::deque<std::function<void()>> heavyTaskQueue;
 
     void processQueue();
 };

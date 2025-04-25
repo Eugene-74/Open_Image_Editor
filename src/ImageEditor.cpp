@@ -893,7 +893,7 @@ MainImage* ImageEditor::createImageLabel() {
     std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
 
     ImageData* imageData = data->imagesData.getCurrentImageData();
-    displayXmpData(imageData->getMetaData().getXmpData());
+    // displayXmpData(imageData->getMetaData().getXmpData());
 
     auto it = data->imageCache->find(currentImagePath);
     if (it == data->imageCache->end()) {
@@ -1304,12 +1304,12 @@ void ImageEditor::validateMetadata() {
     MetaData* metaData = imageData->getMetaDataPtr();
 
     QString dateTimeStr = dateEdit->dateTime().toString("yyyy:MM:dd HH:mm:ss");
-    metaData->modifyXmpValue("Exif.Image.DateTime", dateTimeStr.toStdString());
+    metaData->modifyExifValue("Exif.Image.DateTime", dateTimeStr.toStdString());
 
     QStringList geoData = geoEdit->text().split(",");
     if (geoData.size() == 2) {
-        metaData->modifyXmpValue("Exif.GPSInfo.GPSLatitude", geoData[0].trimmed().toStdString());
-        metaData->modifyXmpValue("Exif.GPSInfo.GPSLongitude", geoData[1].trimmed().toStdString());
+        metaData->modifyExifValue("Exif.GPSInfo.GPSLatitude", geoData[0].trimmed().toStdString());
+        metaData->modifyExifValue("Exif.GPSInfo.GPSLongitude", geoData[1].trimmed().toStdString());
     }
     metaData->modifyExifValue("Exif.Image.ImageDescription", descriptionEdit->text().toStdString());
 
@@ -1367,28 +1367,31 @@ void ImageEditor::stopImageOpen() {
  * @details This function checks the loaded images in the cache and unloads any images that are not currently being used.
  */
 void ImageEditor::checkLoadedImage() {
-    std::unordered_set<std::string> loadedImages;
-    int currentImageNumber = data->getImagesData()->getImageNumber();
-    int lowerBound = currentImageNumber - PRE_LOAD_RADIUS;
-    int upperBound = currentImageNumber + PRE_LOAD_RADIUS;
+    data->checkToUnloadImages(data->getImagesData()->getImageNumber(), PRE_LOAD_RADIUS);
 
-    for (int i = lowerBound; i <= upperBound; ++i) {
-        if (i >= 0 && i < data->imagesData.getCurrent()->size()) {
-            loadedImages.insert(data->imagesData.getImageDataInCurrent(i)->getImagePath());
-        }
-    }
+    // std::unordered_set<std::string>
+    //     loadedImages;
+    // int currentImageNumber = data->getImagesData()->getImageNumber();
+    // int lowerBound = currentImageNumber - PRE_LOAD_RADIUS;
+    // int upperBound = currentImageNumber + PRE_LOAD_RADIUS;
 
-    std::vector<std::string> toUnload;
-    for (const auto& cache : *data->imageCache) {
-        const std::string& imagePath = cache.second.imagePath;
-        if (loadedImages.find(imagePath) == loadedImages.end()) {
-            toUnload.push_back(cache.first);
-        }
-    }
+    // for (int i = lowerBound; i <= upperBound; ++i) {
+    //     if (i >= 0 && i < data->imagesData.getCurrent()->size()) {
+    //         loadedImages.insert(data->imagesData.getImageDataInCurrent(i)->getImagePath());
+    //     }
+    // }
 
-    for (const auto& imagePath : toUnload) {
-        data->unloadFromCache(imagePath);
-    }
+    // std::vector<std::string> toUnload;
+    // for (const auto& cache : *data->imageCache) {
+    //     const std::string& imagePath = cache.second.imagePath;
+    //     if (loadedImages.find(imagePath) == loadedImages.end()) {
+    //         toUnload.push_back(cache.first);
+    //     }
+    // }
+
+    // for (const auto& imagePath : toUnload) {
+    //     data->unloadFromCache(imagePath);
+    // }
 }
 
 /**

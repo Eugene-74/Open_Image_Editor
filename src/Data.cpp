@@ -16,6 +16,7 @@
 #include <opencv2/core/ocl.hpp>
 #include <opencv2/opencv.hpp>
 #include <regex>
+#include <unordered_set>
 
 #include "Box.hpp"
 #include "Const.hpp"
@@ -1811,3 +1812,27 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
     return detectedObjects;
 }
 
+void Data::checkToUnloadImages(int center, int radius) {
+    std::unordered_set<std::string> loadedImages;
+
+    int lowerBound = center - radius;
+    int upperBound = center + radius;
+
+    for (int i = lowerBound; i <= upperBound; ++i) {
+        if (i >= 0 && i < imagesData.getCurrent()->size()) {
+            loadedImages.insert(imagesData.getImageDataInCurrent(i)->getImagePath());
+        }
+    }
+
+    std::vector<std::string> toUnload;
+    for (const auto& cache : *imageCache) {
+        const std::string& imagePath = cache.second.imagePath;
+        if (loadedImages.find(imagePath) == loadedImages.end()) {
+            toUnload.push_back(cache.first);
+        }
+    }
+
+    for (const auto& imagePath : toUnload) {
+        unloadFromCache(imagePath);
+    }
+}
