@@ -22,7 +22,7 @@
  * @param square If true, the label will be square
  * @param force If true, force the loading of the image
  */
-ClickableLabel::ClickableLabel(Data* data, const QString& imagePath, QString toolTip, QWidget* parent, QSize* sizePtr, bool setSize, int thumbnail, bool square, bool force)
+ClickableLabel::ClickableLabel(std::shared_ptr<Data> data, const QString& imagePath, QString toolTip, QWidget* parent, QSize* sizePtr, bool setSize, int thumbnail, bool square, bool force)
     : QLabel(parent), sizePtr(sizePtr) {
     initial_border_color = border_color;
     initial_hover_border_color = hover_border_color;

@@ -120,14 +120,15 @@ std::vector<std::string> loadClassNames(const std::string& filename) {
 }
 
 /**
- * @brief
- * @param data
- * @param imagePath
- * @param image
- * @param callback
+ * @brief Detect objects asynchronously
+ * @param data Pointer to the Data object
+ * @param imagePath Path to the image file
+ * @param image The image to process
+ * @param callback Callback function to call after detection
+ * @details This function runs the detection in a separate thread and calls the callback with the detected objects
  */
-void detectObjectsAsync(Data* data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback) {
-    data->addHeavyThread([=]() {
+void detectObjectsAsync(std::shared_ptr<Data> data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback) {
+    data->addHeavyThreadToFront([data, imagePath, image, callback]() {
         std::string modelName = data->model.getModelName();
         DetectedObjects detectedObjects = data->detect(imagePath, image, modelName);
 

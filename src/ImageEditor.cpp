@@ -1,5 +1,6 @@
 #include "ImageEditor.hpp"
 
+#include <QApplication>
 #include <QCalendarWidget>
 #include <QComboBox>
 #include <QDateTime>
@@ -35,7 +36,7 @@
  * @param dat Pointer to the Data object containing application data
  * @param parent Pointer to the parent QWidget (usually the main window)
  */
-ImageEditor::ImageEditor(Data* dat, QWidget* parent)
+ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_EDITOR_WINDOW_NAME);
 
@@ -887,17 +888,26 @@ MainImage* ImageEditor::createImageLabel() {
         return nullptr;
     }
 
-    MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), *mainImageSize, false);
-    imageLabelNew->personsEditor = personsEditor;
+    MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), *mainImageSize, false, personsEditor);
 
     std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
 
     ImageData* imageData = data->imagesData.getCurrentImageData();
 
+    connect(imageLabelNew, &MainImage::imageCropted, [this]() {
+        updatePreview();
+    });
+
     auto it = data->imageCache->find(currentImagePath);
     if (it == data->imageCache->end()) {
         return imageLabelNew;
     }
+
+    connect(imageLabelNew, &MainImage::leftClicked, [this]() {
+        if (!bigImage) {
+            openBigImageLabel();
+        }
+    });
 
     int imageNbr = data->imagesData.getImageNumber();
     if (imageData->isDetectionStatusNotLoaded()) {
@@ -932,16 +942,6 @@ MainImage* ImageEditor::createImageLabel() {
             }
         });
     }
-
-    connect(imageLabelNew, &MainImage::leftClicked, [this]() {
-        if (!bigImage) {
-            openBigImageLabel();
-        }
-    });
-
-    connect(imageLabelNew, &MainImage::imageCropted, [this]() {
-        updatePreview();
-    });
 
     return imageLabelNew;
 }

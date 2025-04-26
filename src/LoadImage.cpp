@@ -33,7 +33,7 @@ namespace fs = std::filesystem;
  * @param parent Pointer to the parent QWidget (usually the main window)
  * @details This function opens a file dialog to select a folder and adds all images from that folder and it's sub folders to the data structure.
  */
-void addImagesFromFolder(Data* data, QWidget* parent) {
+void addImagesFromFolder(std::shared_ptr<Data> data, QWidget* parent) {
     QProgressDialog progressDialog(parent);
     progressDialog.setWindowModality(Qt::ApplicationModal);
     progressDialog.setAutoClose(false);
@@ -67,7 +67,7 @@ void addImagesFromFolder(Data* data, QWidget* parent) {
  * @return true if files were added successfully, false otherwise
  * @details This function opens a file dialog to select files and adds them to the folders in the data structure.
  */
-bool addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& progressDialog) {
+bool addSelectedFilesToFolders(std::shared_ptr<Data> data, QWidget* parent, QProgressDialog& progressDialog) {
     fileSelector fileSelector;
     QStringList selectedFiles;
 
@@ -91,7 +91,7 @@ bool addSelectedFilesToFolders(Data* data, QWidget* parent, QProgressDialog& pro
  * @param progressDialog Reference to the QProgressDialog object
  * @return true if images were loaded successfully, false otherwise
  */
-bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string imagePaths, QProgressDialog& progressDialog) {
+bool startLoadingImagesFromFolder(QWidget* parent, std::shared_ptr<Data> data, const std::string imagePaths, QProgressDialog& progressDialog) {
     int nbrImage = 0;
 
     progressDialog.setLabelText("Scaning for images : ");
@@ -170,7 +170,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, Data* data, const std::string
  * @param progressDialog Reference to the QProgressDialog object
  * @return true if images were loaded successfully, false otherwise
  */
-bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
+bool loadImagesThumbnail(std::shared_ptr<Data> data, QProgressDialog& progressDialog) {
     int totalImages = data->getImagesData()->get()->size();
     int imagesPerThread = IMAGE_PER_THREAD;
     int thumbnailsCreated = 0;

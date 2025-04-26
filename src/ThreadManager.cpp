@@ -29,6 +29,17 @@ ThreadManager::~ThreadManager() {
 void Worker::run() {
     try {
         if (job) job();
+        // if (job) {
+        //     try {
+        //         job();
+        //     } catch (const std::exception& e) {
+        //         qCritical() << "Exception in Worker::run:" << e.what();
+        //     } catch (...) {
+        //         qCritical() << "Unknown exception in Worker::run";
+        //     }
+        // } else {
+        //     qCritical() << "Job is invalid in Worker::run";
+        // }
         if (process) process();
     } catch (const std::exception& e) {
         qCritical() << "Exception in Worker::run: " << e.what();
@@ -48,6 +59,35 @@ ThreadManager::ThreadManager(QObject* parent, int maxThreads)
 }
 
 /**
+ * @brief Add a thread to the thread pool queue
+ * @param job function for the thread
+ */
+void ThreadManager::addThread(std::function<void()> job) {
+    if (QThreadPool::globalInstance()->activeThreadCount() < maxThreads) {
+        startJob(std::move(job));
+
+        {
+            std::lock_guard<std::mutex> lock(taskQueueMutex);
+
+            if (taskQueue.size() > 100) {
+                qWarning() << "Thread queue" << taskQueue.size();
+            }
+        }
+    } else {
+        {
+            std::lock_guard<std::mutex> lock(taskQueueMutex);
+
+            if (taskQueue.size() < 1000) {
+                taskQueue.push_back(std::move(job));
+                qInfo() << "Job added to queue. Queue size: " << taskQueue.size();
+            } else {
+                qCritical() << "Thread queue is full. Job discarded.";
+            }
+        }
+    }
+}
+
+/**
  * @brief Add a heavy thread to the thread pool queue, so it will only be loaded if ther is a free thread and no thread in the queue
  * @param job function for the thread
  */
@@ -58,33 +98,9 @@ void ThreadManager::addHeavyThread(std::function<void()> job) {
         {
             std::lock_guard<std::mutex> lock(heavyTaskQueueMutex);
             heavyTaskQueue.push_back(std::move(job));
-        }
-        if (heavyTaskQueue.size() > 100) {
-            qWarning() << "Heavy thread queue" << heavyTaskQueue.size();
-        }
-    }
-}
-
-/**
- * @brief Add a thread to the thread pool queue
- * @param job function for the thread
- */
-void ThreadManager::addThread(std::function<void()> job) {
-    if (QThreadPool::globalInstance()->activeThreadCount() < maxThreads) {
-        startJob(std::move(job));
-
-        if (taskQueue.size() > 100) {
-            qWarning() << "Thread queue" << taskQueue.size();
-        }
-    } else {
-        if (taskQueue.size() < 1000) {
-            {
-                std::lock_guard<std::mutex> lock(taskQueueMutex);
-                taskQueue.push_back(std::move(job));
+            if (heavyTaskQueue.size() > 100) {
+                qWarning() << "Heavy thread queue" << heavyTaskQueue.size();
             }
-            qInfo() << "Job added to queue. Queue size: " << taskQueue.size();
-        } else {
-            qCritical() << "Thread queue is full. Job discarded.";
         }
     }
 }
@@ -94,15 +110,25 @@ void ThreadManager::addThread(std::function<void()> job) {
  * @param job function for the thread
  */
 void ThreadManager::addThreadToFront(std::function<void()> job) {
-    if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
+    if (QThreadPool::globalInstance()->activeThreadCount() < maxThreads) {
         startJob(std::move(job));
+
+        {
+            std::lock_guard<std::mutex> lock(taskQueueMutex);
+            if (taskQueue.size() > 100) {
+                qWarning() << "Thread queue" << taskQueue.size();
+            }
+        }
     } else {
         {
             std::lock_guard<std::mutex> lock(taskQueueMutex);
-            heavyTaskQueue.push_front(std::move(job));
-        }
-        if (heavyTaskQueue.size() > 100) {
-            qWarning() << "Heavy thread queue" << heavyTaskQueue.size();
+
+            if (taskQueue.size() < 1000) {
+                taskQueue.push_front(std::move(job));
+                qInfo() << "Job added to queue. Queue size: " << taskQueue.size();
+            } else {
+                qCritical() << "Thread queue is full. Job discarded.";
+            }
         }
     }
 }
@@ -112,21 +138,16 @@ void ThreadManager::addThreadToFront(std::function<void()> job) {
  * @param job function for the thread
  */
 void ThreadManager::addHeavyThreadToFront(std::function<void()> job) {
-    if (QThreadPool::globalInstance()->activeThreadCount() < maxThreads) {
+    if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
         startJob(std::move(job));
-
-        if (taskQueue.size() > 100) {
-            qWarning() << "Thread queue" << taskQueue.size();
-        }
     } else {
-        if (taskQueue.size() < 1000) {
-            {
-                std::lock_guard<std::mutex> lock(taskQueueMutex);
-                taskQueue.push_front(std::move(job));
+        {
+            std::lock_guard<std::mutex> lock(heavyTaskQueueMutex);
+
+            heavyTaskQueue.push_front(std::move(job));
+            if (heavyTaskQueue.size() > 100) {
+                qWarning() << "Heavy thread queue" << heavyTaskQueue.size();
             }
-            qInfo() << "Job added to queue. Queue size: " << taskQueue.size();
-        } else {
-            qCritical() << "Thread queue is full. Job discarded.";
         }
     }
 }
@@ -135,15 +156,17 @@ void ThreadManager::addHeavyThreadToFront(std::function<void()> job) {
  * @brief Strop all active threads
  */
 void ThreadManager::removeAllThreads() {
-    while (!taskQueue.empty()) {
-        {
-            std::lock_guard<std::mutex> lock(taskQueueMutex);
+    {
+        std::lock_guard<std::mutex> lock(taskQueueMutex);
+
+        while (!taskQueue.empty()) {
             taskQueue.clear();
         }
     }
-    while (!heavyTaskQueue.empty()) {
-        {
-            std::lock_guard<std::mutex> lock(heavyTaskQueueMutex);
+    {
+        std::lock_guard<std::mutex> lock(heavyTaskQueueMutex);
+
+        while (!heavyTaskQueue.empty()) {
             heavyTaskQueue.clear();
         }
     }
@@ -163,24 +186,29 @@ int ThreadManager::getThreadCount() const {
  * @brief Manage the thread queue when it's not empty
  */
 void ThreadManager::processQueue() {
-    if (!taskQueue.empty() && QThreadPool::globalInstance()->activeThreadCount() <= maxThreads) {
-        std::function<void()> job = std::move(taskQueue.front());
+    if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads) {
         {
             std::lock_guard<std::mutex> lock(taskQueueMutex);
-            taskQueue.pop_front();
-        }
-        if (job) {
-            startJob(std::move(job));
+
+            if (!taskQueue.empty()) {
+                std::function<void()> job = std::move(taskQueue.front());
+                taskQueue.pop_front();
+                if (job) {
+                    startJob(std::move(job));
+                }
+            }
         }
 
-    } else if (!heavyTaskQueue.empty() && (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD)) {
-        std::function<void()> job = std::move(heavyTaskQueue.front());
+    } else if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
         {
             std::lock_guard<std::mutex> lock(heavyTaskQueueMutex);
-            heavyTaskQueue.pop_front();
-        }
-        if (job) {
-            startJob(std::move(job));
+            if (!heavyTaskQueue.empty()) {
+                std::function<void()> job = std::move(heavyTaskQueue.front());
+                heavyTaskQueue.pop_front();
+                if (job) {
+                    startJob(std::move(job));
+                }
+            }
         }
     }
 }
@@ -210,7 +238,7 @@ void ThreadManager::startJob(std::function<void()> job) {
             // taskQueue.push_front(std::move(worker->job));  // Re-add the job to the front of the queue
             delete worker;
         } else {
-            qInfo() << "Thread started successfully. Active threads: " << getThreadCount();
+            // qInfo() << "Thread started successfully. Active threads: " << getThreadCount();
         }
     } catch (const std::exception& e) {
         qCritical() << "Exception in startJob: " << e.what();

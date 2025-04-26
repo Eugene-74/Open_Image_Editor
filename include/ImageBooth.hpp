@@ -18,7 +18,7 @@ class ImageBooth : public QMainWindow {
     Q_OBJECT
 
    public:
-    ImageBooth(Data* dat, QWidget* parent = nullptr);
+    ImageBooth(std::shared_ptr<Data> dat, QWidget* parent = nullptr);
     ~ImageBooth() {}
     void reload();
 
@@ -32,7 +32,7 @@ class ImageBooth : public QMainWindow {
     // QTimer* updateTimer;
     int imageShiftSelected = -1;
     bool imageShiftSelectedSelect;
-    Data* data;
+    std::shared_ptr<Data> data;
 
     int lastLineNbr = 0;
     int imageQuality = 16;

@@ -26,7 +26,7 @@ class ImageEditor : public QMainWindow {
     Q_OBJECT
 
    public:
-    ImageEditor(Data* dat, QWidget* parent = nullptr);
+    ImageEditor(std::shared_ptr<Data> dat, QWidget* parent = nullptr);
     ~ImageEditor() {}
 
     void clear();
@@ -99,7 +99,7 @@ class ImageEditor : public QMainWindow {
     bool exifEditor = false;
     bool personsEditor = false;
 
-    Data* data;
+    std::shared_ptr<Data> data;
 
     QLineEdit* nameEdit;
     QDateTimeEdit* dateEdit;

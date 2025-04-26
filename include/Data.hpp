@@ -6,6 +6,7 @@
 #include <QSize>
 #include <QWidget>
 #include <map>
+#include <memory>
 #include <mutex>
 #include <opencv2/face.hpp>
 #include <string>
@@ -38,7 +39,7 @@ class Actions {
     std::function<void()> reDo;
 };
 
-class Data {
+class Data : public std::enable_shared_from_this<Data> {
    public:
     DetectObjectsModel model;
     std::vector<std::string> classNames;
@@ -166,6 +167,7 @@ class Data {
 
     void checkToUnloadImages(int center, int radius);
     void checkToLoadImages(int center, int radius, int thumbnailSize = 0);
+    void CheckToDetectObjects();
 
    private:
     ThreadManager manager;

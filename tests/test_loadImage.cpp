@@ -5,7 +5,7 @@
 #include "LoadImage.hpp"
 
 TEST(LoadImageTest, startLoadingImagesFromFolder) {
-    // Data* data;
+    // std::shared_ptr<Data> data;
     // int argc = 1;
     // char* argv[1] = {(char*)"test"};
     // QApplication app(argc, argv);

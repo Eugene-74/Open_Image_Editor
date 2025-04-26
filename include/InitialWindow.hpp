@@ -21,19 +21,19 @@ class InitialWindow : public QMainWindow {
     Q_OBJECT
 
    public:
-    Data* data;
+    std::shared_ptr<Data> data;
 
     InitialWindow();
     qreal pixelRatio;
     QSize screenGeometry;
 
-    void createImageEditor(Data* data);
+    void createImageEditor(std::shared_ptr<Data> data);
     void clearImageEditor();
 
-    void createImageBooth(Data* data);
+    void createImageBooth(std::shared_ptr<Data> data);
     void clearImageBooth();
 
-    void createMainWindow(Data* data);
+    void createMainWindow(std::shared_ptr<Data> data);
     void clearMainWindow();
 
    private slots:

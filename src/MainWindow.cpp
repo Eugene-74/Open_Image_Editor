@@ -12,7 +12,7 @@
  * @param parent Pointer to the parent QWidget (usually the main window)
  * @details This constructor initializes the mainWindow of the application.
  */
-MainWindow::MainWindow(Data* dat, QWidget* parent)
+MainWindow::MainWindow(std::shared_ptr<Data> dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(MAIN_WINDOW_WINDOW_NAME);
 

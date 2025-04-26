@@ -57,7 +57,8 @@ InitialWindow::InitialWindow() {
 
     QTimer::singleShot(1, this, [this]() {
         qInfo() << "Application started";
-        data = new Data();
+        // data = new Data();
+        data = std::make_shared<Data>();
 
         QTranslator translator;
         QString locale = QLocale::system().name();
@@ -507,7 +508,7 @@ void InitialWindow::closeEvent(QCloseEvent* event) {
  * @param data Pointer to the Data object
  * @details This function creates the image editor widget and connects its signals to the appropriate slots.
  */
-void InitialWindow::createImageEditor(Data* data) {
+void InitialWindow::createImageEditor(std::shared_ptr<Data> data) {
     imageEditor = new ImageEditor(this->data, this);
 
     layout->addWidget(imageEditor);
@@ -540,7 +541,7 @@ void InitialWindow::createImageEditor(Data* data) {
  * @details This function creates the image booth widget and connects its signals to the appropriate slots.
  * @details It also sets the number of images per line based on the configuration options.
  */
-void InitialWindow::createImageBooth(Data* data) {
+void InitialWindow::createImageBooth(std::shared_ptr<Data> data) {
     qInfo() << "createImageBooth";
     data->sizes->imagesBoothSizes->imagesPerLine = std::stoi(data->options.at("Sizes::imageBooth::ImagesPerLine").value);
     data->sizes->update();
@@ -586,7 +587,7 @@ void InitialWindow::createImageBooth(Data* data) {
  * @param data Pointer to the Data object
  * @details This function creates the main window widget and connects its signals to the appropriate slots.
  */
-void InitialWindow::createMainWindow(Data* data) {
+void InitialWindow::createMainWindow(std::shared_ptr<Data> data) {
     mainWindow = new MainWindow(data, this);
 
     layout->addWidget(mainWindow);

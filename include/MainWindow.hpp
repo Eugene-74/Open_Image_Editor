@@ -12,10 +12,10 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
    public:
-    MainWindow(Data* dat, QWidget* parent = nullptr);
+    MainWindow(std::shared_ptr<Data> dat, QWidget* parent = nullptr);
     ~MainWindow() {}
 
-    Data* data;
+    std::shared_ptr<Data> data;
     QHBoxLayout* mainLayout;
     QHBoxLayout* switchLayout;
 

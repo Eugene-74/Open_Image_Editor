@@ -9,7 +9,7 @@ class Sizes {
     Sizes();
 
     // Sizes(Data* parent);
-    // Data* data;
+    // std::shared_ptr<Data> data;
     QScreen* screen;
     QRect screenR;
     QSize screenGeometry;

@@ -20,8 +20,8 @@
  * @param force Force the image to be loaded even if it is already in the cache
  * @details This constructor initializes the MainImage widget with the specified image and size.
  */
-MainImage::MainImage(Data* data, const QString& imagePath, QSize size, bool setSize, bool square, bool force)
-    : data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), square(square), force(force) {
+MainImage::MainImage(std::shared_ptr<Data> data, const QString& imagePath, QSize size, bool setSize, bool personsEditor, bool square, bool force)
+    : data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), personsEditor(personsEditor), square(square), force(force) {
     if (data->isInCache(data->getThumbnailPath(imagePath.toStdString(), 0))) {
         if (isImage(imagePath.toStdString()) || isVideo(imagePath.toStdString())) {
             qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, 0, true, square, true, force);
@@ -275,6 +275,7 @@ void MainImage::cropImage() {
  * @details It also draws detected objects if the personsEditor is enabled and there are detected objects in the image data.
  */
 void MainImage::paintEvent(QPaintEvent* event) {
+    qDebug() << "paintEvent " << personsEditor;
     QLabel::paintEvent(event);
 
     QPainter painter(this);
@@ -283,6 +284,7 @@ void MainImage::paintEvent(QPaintEvent* event) {
         painter.drawRect(QRect(cropStart, cropEnd));
     }
     if (personsEditor && !data->imagesData.getCurrentImageData()->getDetectedObjects().empty()) {
+        qDebug() << "Detected objects:";
         std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects = data->imagesData.getCurrentImageData()->getDetectedObjects();
 
         // Calculate the scale factors

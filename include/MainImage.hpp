@@ -11,54 +11,54 @@ class MainImage : public QLabel {
     Q_OBJECT
 
    public:
-   bool personsEditor = false;
+    bool personsEditor = false;
 
-   explicit MainImage(Data* data, const QString& i, QSize size = QSize(0, 0), bool setSize = true, bool square = false, bool force = false);
+    explicit MainImage(std::shared_ptr<Data> data, const QString& i, QSize size = QSize(0, 0), bool setSize = true, bool personsEditor = false, bool square = false, bool force = false);
 
-  signals:
-   void clicked();
-   void leftClicked();
-   void ctrlLeftClicked();
-   void imageCropted();
+   signals:
+    void clicked();
+    void leftClicked();
+    void ctrlLeftClicked();
+    void imageCropted();
 
-  protected:
-   void mousePressEvent(QMouseEvent* event) override;
-   void mouseReleaseEvent(QMouseEvent* event) override;
+   protected:
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
 
-   void mouseMoveEvent(QMouseEvent* event) override;
-   void paintEvent(QPaintEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void paintEvent(QPaintEvent* event) override;
 
-  private:
-   QString imagePath;
-   QSize mSize;
-   bool setSize;
-   int thumbnail;
-   bool square;
-   bool force;
+   private:
+    QString imagePath;
+    QSize mSize;
+    bool setSize;
+    int thumbnail;
+    bool square;
+    bool force;
 
-   Data* data;
+    std::shared_ptr<Data> data;
 
-   QPixmap defaultPixmap;
+    QPixmap defaultPixmap;
 
-   int border = 0;
-   int border_radius = 5;
+    int border = 0;
+    int border_radius = 5;
 
-   QImage qImage;
-   bool cropping;
-   bool drawingRectangle = false;
+    QImage qImage;
+    bool cropping;
+    bool drawingRectangle = false;
 
-   QPoint cropStart = QPoint(-1, -1);
-   QPoint cropEnd = QPoint(-1, -1);
+    QPoint cropStart = QPoint(-1, -1);
+    QPoint cropEnd = QPoint(-1, -1);
 
-   void cropImage();
-   std::vector<QPoint> adjustPointsForOrientation(const std::vector<QPoint>& points, int orientation, QSize imageSize);
+    void cropImage();
+    std::vector<QPoint> adjustPointsForOrientation(const std::vector<QPoint>& points, int orientation, QSize imageSize);
 
-  public:
-   void updateStyleSheet();
+   public:
+    void updateStyleSheet();
 
-   QString border_color = "transparent";
-   QString hover_border_color = "transparent";
+    QString border_color = "transparent";
+    QString hover_border_color = "transparent";
 
-   QString background_color = "transparent";
-   QString hover_background_color = "transparent";
+    QString background_color = "transparent";
+    QString hover_background_color = "transparent";
 };

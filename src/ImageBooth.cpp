@@ -22,7 +22,7 @@
  * @param dat Pointer to the Data object
  * @param parent Pointer to the parent widget
  */
-ImageBooth::ImageBooth(Data* dat, QWidget* parent)
+ImageBooth::ImageBooth(std::shared_ptr<Data> dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
 
@@ -169,6 +169,7 @@ void ImageBooth::openFolder(int index) {
     }
 
     data->checkThumbnailAndCorrect();
+    data->CheckToDetectObjects();
 
     int minTotalImagesHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesData()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
 
@@ -186,7 +187,6 @@ void ImageBooth::openFolder(int index) {
 
     data->addAction(
         [this, index]() {
-            
             // TODO adapter ne permet pas de faire autre chose que remonter dans les dossier
             openFolder(index);
         },
@@ -417,7 +417,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
             int start = std::min(imageShiftSelectedInCurrent, nbr);
             int end = std::max(imageShiftSelectedInCurrent, nbr);
-            
+
             for (int i = start; i <= end; ++i) {
                 int imageNumberInTotal = data->getImagesData()->getImageNumberInTotal(i);
                 auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNumberInTotal);
@@ -699,7 +699,7 @@ void ImageBooth::updateImages() {
         }
 
     } catch (const std::exception& e) {
-        qCritical() << "update : " << e.what() ;
+        qCritical() << "update : " << e.what();
     }
 }
 

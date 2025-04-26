@@ -208,7 +208,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
  */
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                              bool setSize, int thumbnail, bool force) {
-    qDebug() << "Loading image: " << QString::fromStdString(imagePath) << " with thumbnail: " << thumbnail;
+    // qDebug() << "Loading image: " << QString::fromStdString(imagePath) << " with thumbnail: " << thumbnail;
     if (imagePath.at(0) == ':') {
         if (darkMode) {
             imagePath.insert(imagePath.find_first_of(':') + 1, "/255-255-255-255");
@@ -235,7 +235,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 
                 it = imageCache->find(getThumbnailPath(imagePath, size));
                 if (it != imageCache->end()) {
-                    qInfo() << "Image found in cache " << size << ": " << QString::fromStdString(imagePath);
+                    // qInfo() << "Image found in cache " << size << ": " << QString::fromStdString(imagePath);
                     return it->second.image;
                 }
             }
@@ -271,14 +271,14 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     QImage image;
 
     if (imagePath.at(0) == ':') {
-        qInfo() << "Loading image from resource: " << QString::fromStdString(imagePath);
+        // qInfo() << "Loading image from resource: " << QString::fromStdString(imagePath);
         QResource ressource(QString::fromStdString(imagePath));
         if (ressource.isValid()) {
             image.load(QString::fromStdString(imagePath));
         }
 
     } else {
-        qInfo() << "Loading image from file: " << QString::fromStdString(imagePath);
+        // qInfo() << "Loading image from file: " << QString::fromStdString(imagePath);
         if (!fs::exists(imagePath)) {
             qCritical() << "Error: The specified path does not exist: " << QString::fromStdString(imagePath);
             image.load(IMAGE_PATH_ERROR);
@@ -335,13 +335,13 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         //     }
         // }
         if (isVideo(imagePath)) {
-            qInfo() << "Loading video: " << QString::fromStdString(imagePath);
+            // qInfo() << "Loading video: " << QString::fromStdString(imagePath);
             image = loadImageFromVideo(imagePath);
         } else {
-            qDebug() << "load image not video";
+            // qDebug() << "load image not video";
             if (isHeicOrHeif(imagePathbis)) {
                 if (thumbnail == 0) {
-                    qInfo() << "Loading HEIC/HEIF image: " << QString::fromStdString(imagePathbis);
+                    // qInfo() << "Loading HEIC/HEIF image: " << QString::fromStdString(imagePathbis);
                     image = readHeicAndHeif(imagePathbis);
                 } else {
                     qWarning() << "Thumbnail not supported for HEIC/HEIF images";
@@ -354,7 +354,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                     qWarning() << "Thumbnail not supported for RAW images";
                 }
             } else {
-                qInfo() << "Loading image: " << QString::fromStdString(imagePathbis);
+                // qInfo() << "Loading image: " << QString::fromStdString(imagePathbis);
                 image.load(QString::fromStdString(imagePathbis));
             }
         }
@@ -395,15 +395,17 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
  * @param force Force the image to be loaded
  */
 void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, int thumbnail, bool force) {
-    // TODO this function make the app crash
-    qDebug() << "loadInCacheAsync : " << QString::fromStdString(imagePath) << " setSize: " << setSize << " size: " << size.width() << "x" << size.height() << " force: " << force;
     if (!isInCache(imagePath)) {
-        addThreadToFront([this, callback, imagePath, setSize, size, force, thumbnail]() {
-            QImage image = loadImageNormal(nullptr, imagePath, size, setSize, thumbnail, force);
+        auto self = std::weak_ptr<Data>(shared_from_this());
+        addHeavyThreadToFront([self, callback, imagePath, setSize, size, force, thumbnail]() {
+            if (auto sharedSelf = self.lock()) {
+                QImage image = sharedSelf->loadImageNormal(nullptr, imagePath, size, setSize, thumbnail, force);
 
-            if (callback) {
-                QMetaObject::invokeMethod(QApplication::instance(), callback,
-                                          Qt::QueuedConnection);
+                if (callback) {
+                    QMetaObject::invokeMethod(QApplication::instance(), callback, Qt::QueuedConnection);
+                }
+            } else {
+                qWarning() << "Data object is no longer valid. Skipping loadInCacheAsync.";
             }
         });
     }
@@ -1782,23 +1784,20 @@ cv::dnn::Net load_net(std::string model) {
     bool is_cuda = false;
     if (cv::cuda::getCudaEnabledDeviceCount() > 0) {
         is_cuda = true;
-        std::cout << "CUDA is available and will be used.\n";
+        // std::cout << "CUDA is available and will be used.\n";
     } else {
-        std::cout << "CUDA is not available. Falling back to CPU.\n";
+        // std::cout << "CUDA is not available. Falling back to CPU.\n";
     }
 
     auto result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
 
     if (result.empty()) {
-        std::cerr << "Error loading network\n";
         return result;
     }
     if (is_cuda) {
-        std::cout << "Attempty to use CUDA\n";
         result.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
         result.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA_FP16);
     } else {
-        std::cout << "Running on CPU\n";
         result.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
         result.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
     }
@@ -1877,7 +1876,7 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
     net.forward(outputs, net.getUnconnectedOutLayersNames());
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> detectionTime = end - start;
-    qInfo() << "Detection time with " + model + " :" << detectionTime.count() << "seconds";
+    // qInfo() << "Detection time with " + model + " :" << detectionTime.count() << "seconds";
 
     float x_factor = input_image.cols / INPUT_WIDTH;
     float y_factor = input_image.rows / INPUT_HEIGHT;
@@ -2023,7 +2022,28 @@ void Data::checkThumbnailAndCorrect() {
                     }
                 });
             });
-            delay += 100;
+            delay += 1;
+        }
+    }
+}
+void Data::CheckToDetectObjects() {
+    static int delay = 0;
+    for (auto& imageData : *imagesData.getCurrent()) {
+        std::string imagePath = imageData->getImagePath();
+        if (imageData->isDetectionStatusNotLoaded()) {
+            QTimer::singleShot(delay, [this, imagePath, imageData]() {
+                addHeavyThread([this, imagePath, imageData]() {
+                    QImage image = this->loadImageNormal(nullptr, imagePath, QSize(0, 0), false, 0, true);
+                    image = rotateQImage(image, imageData);
+                    std::string modelName = this->model.getModelName();
+                    DetectedObjects detectedObjects = this->detect(imagePath, image, modelName);
+
+                    imageData->setDetectedObjects(detectedObjects.getDetectedObjects());
+                    imageData->setDetectionStatusLoaded();
+                    unloadFromCache(imagePath);
+                });
+            });
+            delay += 1;
         }
     }
 }

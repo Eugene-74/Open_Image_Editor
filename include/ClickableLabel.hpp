@@ -29,7 +29,7 @@ class ClickableLabel : public QLabel {
     void setLogoEnabled();
     void setLogoDisabled();
 
-    explicit ClickableLabel(Data* data, const QString& i, QString toolTip = "", QWidget* parent = nullptr, QSize* sizePtr = new QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
+    explicit ClickableLabel(std::shared_ptr<Data> data, const QString& i, QString toolTip = "", QWidget* parent = nullptr, QSize* sizePtr = new QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
 
    signals:
     void clicked();
