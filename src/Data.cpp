@@ -2022,7 +2022,7 @@ void Data::checkThumbnailAndCorrect() {
                     }
                 });
             });
-            delay += 1;
+            delay += 10;
         }
     }
 }
@@ -2043,7 +2043,7 @@ void Data::CheckToDetectObjects() {
                     unloadFromCache(imagePath);
                 });
             });
-            delay += 1;
+            delay += 100;
         }
     }
 }
