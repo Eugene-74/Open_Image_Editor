@@ -18,7 +18,7 @@
  * @param parent Parent widget
  * @param sizePtr Pointer to the size of the label
  * @param setSize If true, set the size of the label to the sizePtr
- * @param thumbnail Thumbnail size (16, 128, 256, 512 or 0 for full size)
+ * @param thumbnail Thumbnail size (0 for full size)
  * @param square If true, the label will be square
  * @param force If true, force the loading of the image
  */

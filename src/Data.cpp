@@ -152,7 +152,7 @@ QImage Data::loadImageFromVideo(std::string videoPath, int frameNumber) {
  * @param imagePath Path to the image
  * @param size Size of the image
  * @param setSize Set if the image should be resized
- * @param thumbnail Thumbnail size (16,128,256,512 or 0 for no thumbnail)
+ * @param thumbnail Thumbnail size (0 for no thumbnail)
  * @param rotation Set if the image should be rotated (according to metadata)
  * @param square Set if the image should be square
  * @param crop Set if the image should be cropped (according to crop information)
@@ -202,7 +202,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
  * @param imagePath Path to the image
  * @param size Size of the image
  * @param setSize Set if the image should be resized
- * @param thumbnail Thumbnail size (16,128,256,512 or 0 for no thumbnail)
+ * @param thumbnail Thumbnail size (0 for no thumbnail)
  * @param force Set if the image should be loaded even if it is already in the cache
  * @return QImage object containing the image data
  */
@@ -230,29 +230,39 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         // }
 
         if (!force) {
-            it = imageCache->find(getThumbnailPath(imagePath, 512));
-            if (it != imageCache->end()) {
-                qInfo() << "Image found in cache 512: " << QString::fromStdString(imagePath);
-                return it->second.image;
+            for (int i = THUMBNAIL_SIZES.size() - 1; i >= 0; --i) {
+                int size = THUMBNAIL_SIZES[i];
+
+                it = imageCache->find(getThumbnailPath(imagePath, size));
+                if (it != imageCache->end()) {
+                    qInfo() << "Image found in cache " << size << ": " << QString::fromStdString(imagePath);
+                    return it->second.image;
+                }
             }
 
-            it = imageCache->find(getThumbnailPath(imagePath, 256));
-            if (it != imageCache->end()) {
-                qInfo() << "Image found in cache 256: " << QString::fromStdString(imagePath);
-                return it->second.image;
-            }
+            // it = imageCache->find(getThumbnailPath(imagePath, 512));
+            // if (it != imageCache->end()) {
+            //     qInfo() << "Image found in cache 512: " << QString::fromStdString(imagePath);
+            //     return it->second.image;
+            // }
 
-            it = imageCache->find(getThumbnailPath(imagePath, 128));
-            if (it != imageCache->end()) {
-                qInfo() << "Image found in cache 128: " << QString::fromStdString(imagePath);
-                return it->second.image;
-            }
+            // it = imageCache->find(getThumbnailPath(imagePath, 256));
+            // if (it != imageCache->end()) {
+            //     qInfo() << "Image found in cache 256: " << QString::fromStdString(imagePath);
+            //     return it->second.image;
+            // }
 
-            it = imageCache->find(getThumbnailPath(imagePath, 16));
-            if (it != imageCache->end()) {
-                qInfo() << "Image found in cache 16: " << QString::fromStdString(imagePath);
-                return it->second.image;
-            }
+            // it = imageCache->find(getThumbnailPath(imagePath, 128));
+            // if (it != imageCache->end()) {
+            //     qInfo() << "Image found in cache 128: " << QString::fromStdString(imagePath);
+            //     return it->second.image;
+            // }
+
+            // it = imageCache->find(getThumbnailPath(imagePath, 16));
+            // if (it != imageCache->end()) {
+            //     qInfo() << "Image found in cache 16: " << QString::fromStdString(imagePath);
+            //     return it->second.image;
+            // }
         }
     }
 
@@ -275,43 +285,55 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
             return image;
         }
 
-        if (thumbnail == 16) {
-            if (hasThumbnail(imagePath, 16)) {
-                imagePathbis = getThumbnailPath(imagePath, 16);
-            } else {
-                createThumbnail(imagePath, 16);
-                createThumbnailIfNotExists(imagePath, 128);
-                createThumbnailIfNotExists(imagePath, 256);
-                createThumbnailIfNotExists(imagePath, 512);
-            }
-        } else if (thumbnail == 128) {
-            if (hasThumbnail(imagePath, 128)) {
-                imagePathbis = getThumbnailPath(imagePath, 128);
-            } else {
-                createThumbnailIfNotExists(imagePath, 16);
-                createThumbnail(imagePath, 128);
-                createThumbnailIfNotExists(imagePath, 256);
-                createThumbnailIfNotExists(imagePath, 512);
-            }
-        } else if (thumbnail == 256) {
-            if (hasThumbnail(imagePath, 256)) {
-                imagePathbis = getThumbnailPath(imagePath, 256);
-            } else {
-                createThumbnailIfNotExists(imagePath, 16);
-                createThumbnailIfNotExists(imagePath, 128);
-                createThumbnail(imagePath, 256);
-                createThumbnailIfNotExists(imagePath, 512);
-            }
-        } else if (thumbnail == 512) {
-            if (hasThumbnail(imagePath, 512)) {
-                imagePathbis = getThumbnailPath(imagePath, 512);
-            } else {
-                createThumbnailIfNotExists(imagePath, 16);
-                createThumbnailIfNotExists(imagePath, 128);
-                createThumbnailIfNotExists(imagePath, 256);
-                createThumbnail(imagePath, 512);
+        for (int size : THUMBNAIL_SIZES) {
+            if (thumbnail == size) {
+                if (hasThumbnail(imagePath, size)) {
+                    imagePathbis = getThumbnailPath(imagePath, size);
+                } else {
+                    for (int sizeBis : THUMBNAIL_SIZES) {
+                        createThumbnailIfNotExists(imagePath, sizeBis);
+                    }
+                }
             }
         }
+
+        // if (thumbnail == 16) {
+        //     if (hasThumbnail(imagePath, 16)) {
+        //         imagePathbis = getThumbnailPath(imagePath, 16);
+        //     } else {
+        //         createThumbnail(imagePath, 16);
+        //         createThumbnailIfNotExists(imagePath, 128);
+        //         createThumbnailIfNotExists(imagePath, 256);
+        //         createThumbnailIfNotExists(imagePath, 512);
+        //     }
+        // } else if (thumbnail == 128) {
+        //     if (hasThumbnail(imagePath, 128)) {
+        //         imagePathbis = getThumbnailPath(imagePath, 128);
+        //     } else {
+        //         createThumbnailIfNotExists(imagePath, 16);
+        //         createThumbnail(imagePath, 128);
+        //         createThumbnailIfNotExists(imagePath, 256);
+        //         createThumbnailIfNotExists(imagePath, 512);
+        //     }
+        // } else if (thumbnail == 256) {
+        //     if (hasThumbnail(imagePath, 256)) {
+        //         imagePathbis = getThumbnailPath(imagePath, 256);
+        //     } else {
+        //         createThumbnailIfNotExists(imagePath, 16);
+        //         createThumbnailIfNotExists(imagePath, 128);
+        //         createThumbnail(imagePath, 256);
+        //         createThumbnailIfNotExists(imagePath, 512);
+        //     }
+        // } else if (thumbnail == 512) {
+        //     if (hasThumbnail(imagePath, 512)) {
+        //         imagePathbis = getThumbnailPath(imagePath, 512);
+        //     } else {
+        //         createThumbnailIfNotExists(imagePath, 16);
+        //         createThumbnailIfNotExists(imagePath, 128);
+        //         createThumbnailIfNotExists(imagePath, 256);
+        //         createThumbnail(imagePath, 512);
+        //     }
+        // }
         if (isVideo(imagePath)) {
             qInfo() << "Loading video: " << QString::fromStdString(imagePath);
             image = loadImageFromVideo(imagePath);
@@ -592,18 +614,23 @@ bool Data::hasThumbnail(const std::string& imagePath, const int maxDim) {
  * @param size max size to load
  */
 void Data::createAllThumbnailIfNotExists(const std::string& imagePath, const int size) {
-    if (size > 16) {
-        createThumbnailIfNotExists(imagePath, 16);
+    for (int thumbnailSize : THUMBNAIL_SIZES) {
+        if (size > thumbnailSize) {
+            createThumbnailIfNotExists(imagePath, thumbnailSize);
+        }
     }
-    if (size > 128) {
-        createThumbnailIfNotExists(imagePath, 128);
-    }
-    if (size > 256) {
-        createThumbnailIfNotExists(imagePath, 256);
-    }
-    if (size > 512) {
-        createThumbnailIfNotExists(imagePath, 512);
-    }
+    // if (size > 16) {
+    //     createThumbnailIfNotExists(imagePath, 16);
+    // }
+    // if (size > 128) {
+    //     createThumbnailIfNotExists(imagePath, 128);
+    // }
+    // if (size > 256) {
+    //     createThumbnailIfNotExists(imagePath, 256);
+    // }
+    // if (size > 512) {
+    //     createThumbnailIfNotExists(imagePath, 512);
+    // }
 }
 
 /**
@@ -612,18 +639,23 @@ void Data::createAllThumbnailIfNotExists(const std::string& imagePath, const int
  * @param size max size to load
  */
 void Data::createAllThumbnail(const std::string& imagePath, const int size) {
-    if (size > 16) {
-        createThumbnail(imagePath, 16);
+    for (int thumbnailSize : THUMBNAIL_SIZES) {
+        if (size > thumbnailSize) {
+            createThumbnail(imagePath, thumbnailSize);
+        }
     }
-    if (size > 128) {
-        createThumbnail(imagePath, 128);
-    }
-    if (size > 256) {
-        createThumbnail(imagePath, 256);
-    }
-    if (size > 512) {
-        createThumbnail(imagePath, 512);
-    }
+    // if (size > 16) {
+    //     createThumbnail(imagePath, 16);
+    // }
+    // if (size > 128) {
+    //     createThumbnail(imagePath, 128);
+    // }
+    // if (size > 256) {
+    //     createThumbnail(imagePath, 256);
+    // }
+    // if (size > 512) {
+    //     createThumbnail(imagePath, 512);
+    // }
 }
 
 /**

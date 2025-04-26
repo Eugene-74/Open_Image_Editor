@@ -15,7 +15,6 @@ class DataTest : public ::testing::Test {
         TESTS_PATH.toStdString() + "/ressources/images/png.png",
         TESTS_PATH.toStdString() + "/ressources/images/tiff.tiff",
         TESTS_PATH.toStdString() + "/ressources/images/webp.webp"};
-    std::vector<int> thumbnailSizes = {16, 128, 256, 512};
     // TODO aucun ecran disponible
     // Data data;
 };

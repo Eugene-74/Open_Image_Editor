@@ -15,7 +15,7 @@
  * @param imagePath Path to the image file
  * @param size Size of the image to be displayed
  * @param setSize Set if the image should be resized
- * @param thumbnail Thumbnail size (16,128,256,512 or 0 for no thumbnail)
+ * @param thumbnail Thumbnail size (0 for no thumbnail)
  * @param square Set if the image should be displayed as a square
  * @param force Force the image to be loaded even if it is already in the cache
  * @details This constructor initializes the MainImage widget with the specified image and size.

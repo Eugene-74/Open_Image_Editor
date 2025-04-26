@@ -182,10 +182,12 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
         data->addThread([start, end, data]() {
             for (int i = start; i < end; ++i) {
                 ImageData* imageData = data->getImagesData()->get()->at(i);
-                data->createThumbnailIfNotExists(imageData->getImagePath(), 16);
-                data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
-                data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
-                data->createThumbnailIfNotExists(imageData->getImagePath(), 512);
+
+                data->createAllThumbnailIfNotExists(imageData->getImagePath(), 512);
+                // data->createThumbnailIfNotExists(imageData->getImagePath(), 16);
+                // data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
+                // data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
+                // data->createThumbnailIfNotExists(imageData->getImagePath(), 512);
 
                 try {
                     data->unloadFromCache(imageData->getImagePath());
@@ -205,11 +207,17 @@ bool loadImagesThumbnail(Data* data, QProgressDialog& progressDialog) {
         try {
             for (int index : imageIndices) {
                 ImageData* imageData = data->getImagesData()->getImageData(index);
-                data->hasThumbnail(imageData->getImagePath(), 128);
+                // data->hasThumbnail(imageData->getImagePath(), 128);
 
-                if (data->hasThumbnail(imageData->getImagePath(), 128) &&
-                    data->hasThumbnail(imageData->getImagePath(), 256) &&
-                    data->hasThumbnail(imageData->getImagePath(), 512)) {
+                bool allThumbnailsExist = true;
+                for (int thumbnailSize : THUMBNAIL_SIZES) {
+                    if (!data->hasThumbnail(imageData->getImagePath(), thumbnailSize)) {
+                        allThumbnailsExist = false;
+                        break;
+                    }
+                }
+
+                if (allThumbnailsExist) {
                     ++thumbnailsCreated;
 
                     imageIndices.erase(std::remove(imageIndices.begin(), imageIndices.end(), index), imageIndices.end());
