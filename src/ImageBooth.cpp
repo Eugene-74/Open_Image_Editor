@@ -71,8 +71,7 @@ ImageBooth::ImageBooth(Data* dat, QWidget* parent)
         }
     }
 
-    checkThumbnailAndCorrect();
-    // preLoadImages();
+    data->checkThumbnailAndCorrect();
 
     data->sortCurrentImagesData();
 
@@ -169,8 +168,7 @@ void ImageBooth::openFolder(int index) {
         data->currentFolder = allImagesFolder;
     }
 
-    checkThumbnailAndCorrect();
-    // preLoadImages();
+    data->checkThumbnailAndCorrect();
 
     int minTotalImagesHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesData()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
 
@@ -182,7 +180,6 @@ void ImageBooth::openFolder(int index) {
     data->getImagesData()->setImageNumber(0);
     data->clearCache();
 
-    preLoadImages();
     data->sortCurrentImagesData();
 
     reload();

@@ -151,7 +151,7 @@ void ImageEditor::previousImage(int nbr) {
  */
 void ImageEditor::reload() {
     if (bigImage) {
-        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, 0, false, true);
+        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, false, true);
 
         bigImageLabelNew->setFixedSize(data->sizes->imageEditorSizes->bigImage);
         bool oldExifEditor = exifEditor;
@@ -893,7 +893,6 @@ MainImage* ImageEditor::createImageLabel() {
     std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
 
     ImageData* imageData = data->imagesData.getCurrentImageData();
-    // displayXmpData(imageData->getMetaData().getXmpData());
 
     auto it = data->imageCache->find(currentImagePath);
     if (it == data->imageCache->end()) {
@@ -1329,18 +1328,20 @@ void ImageEditor::startImageOpen() {
         QPointer<ImageEditor> self = this;
         if (self && data != nullptr) {
             data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [self]() {
-                if (!self.isNull()) {
+                if (self) {
                     self->reloadImageLabel();
-                }
-            });
+                } }, false, QSize(0, 0), 0, true);
+
             imageOpenTimer->stop();
             for (int i = 0; i < PRE_LOAD_RADIUS; i++) {
                 if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() - (i + 1) >= 0) {
-                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr);
+                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr,
+                                           false, QSize(0, 0), 0, true);
                 }
 
                 if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() + (i + 1) >= 0) {
-                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr);
+                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr,
+                                           false, QSize(0, 0), 0, true);
                 }
             }
         }
@@ -1368,30 +1369,6 @@ void ImageEditor::stopImageOpen() {
  */
 void ImageEditor::checkLoadedImage() {
     data->checkToUnloadImages(data->getImagesData()->getImageNumber(), PRE_LOAD_RADIUS);
-
-    // std::unordered_set<std::string>
-    //     loadedImages;
-    // int currentImageNumber = data->getImagesData()->getImageNumber();
-    // int lowerBound = currentImageNumber - PRE_LOAD_RADIUS;
-    // int upperBound = currentImageNumber + PRE_LOAD_RADIUS;
-
-    // for (int i = lowerBound; i <= upperBound; ++i) {
-    //     if (i >= 0 && i < data->imagesData.getCurrent()->size()) {
-    //         loadedImages.insert(data->imagesData.getImageDataInCurrent(i)->getImagePath());
-    //     }
-    // }
-
-    // std::vector<std::string> toUnload;
-    // for (const auto& cache : *data->imageCache) {
-    //     const std::string& imagePath = cache.second.imagePath;
-    //     if (loadedImages.find(imagePath) == loadedImages.end()) {
-    //         toUnload.push_back(cache.first);
-    //     }
-    // }
-
-    // for (const auto& imagePath : toUnload) {
-    //     data->unloadFromCache(imagePath);
-    // }
 }
 
 /**
@@ -1468,7 +1445,7 @@ void ImageEditor::openBigImageLabel() {
     bigImage = true;
     hide();
 
-    bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, 0, false, true);
+    bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, false, true);
     bigImageLabel->setFixedSize(data->sizes->imageEditorSizes->bigImage);
 
     mainLayout->addWidget(bigImageLabel);

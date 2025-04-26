@@ -21,10 +21,10 @@ if(WIN32)
     set(CMAKE_PREFIX_PATH "C:/msys64/mingw64")
 
     if(NOT CMAKE_C_COMPILER)
-        set(CMAKE_C_COMPILER "C:/msys64/mingw64/bin/gcc.exe")
+        set(CMAKE_C_COMPILER "C:/msys64/mingw64/bin/clang.exe")
     endif()
     if(NOT CMAKE_CXX_COMPILER)
-        set(CMAKE_CXX_COMPILER "C:/msys64/mingw64/bin/g++.exe")
+        set(CMAKE_CXX_COMPILER "C:/msys64/mingw64/bin/clang++.exe")
     endif()
 
     include_directories("C:/msys64/mingw64/include")

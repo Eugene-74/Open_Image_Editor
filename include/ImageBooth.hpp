@@ -65,8 +65,6 @@ class ImageBooth : public QMainWindow {
     ClickableLabel* imageEditExif;
     ClickableLabel* imageConversion;
     ClickableLabel* editFilters;
-    // ClickableLabel* imageMore;
-    // ClickableLabel* imageLess;
 
     std::vector<QHBoxLayout*>
         lineLayouts;
@@ -74,8 +72,6 @@ class ImageBooth : public QMainWindow {
     void onScroll(int value);
 
     void updateImages();
-
-    void preLoadImages();
 
     ClickableLabel* getClickableLabelIfExist(int imageNbr);
     ClickableLabel* getClickableLabelIfExist(int imageNbr, QHBoxLayout*& lineLayout);
@@ -99,9 +95,6 @@ class ImageBooth : public QMainWindow {
     ClickableLabel* createImageConversion();
     ClickableLabel* createEditFilters();
 
-    // ClickableLabel* createImageMore();
-    // ClickableLabel* createImageLess();
-
     void openFiltersPopup();
 
     void openFolder(int index);
@@ -109,6 +102,7 @@ class ImageBooth : public QMainWindow {
     void createFirstImages();
     ClickableLabel* createImage(std::string imagePath, int nbr);
     void updateVisibleImages(bool force = false);
+
    signals:
     void switchToImageEditor();
     void switchToImageBooth();

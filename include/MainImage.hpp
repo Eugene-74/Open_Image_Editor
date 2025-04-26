@@ -13,7 +13,7 @@ class MainImage : public QLabel {
    public:
    bool personsEditor = false;
 
-   explicit MainImage(Data* data, const QString& i, QSize size = QSize(0, 0), bool setSize = true, int thumbnail = 0, bool square = false, bool force = false);
+   explicit MainImage(Data* data, const QString& i, QSize size = QSize(0, 0), bool setSize = true, bool square = false, bool force = false);
 
   signals:
    void clicked();

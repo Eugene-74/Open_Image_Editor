@@ -17,17 +17,24 @@
  * @details This function initializes the application, sets the window icon, and shows the initial window.
  */
 int main(int argc, char* argv[]) {
-    QApplication app(argc, argv);
+    try {
+        QApplication app(argc, argv);
 
-    app.setWindowIcon(QIcon(":/icons/icon.ico"));
+        app.setWindowIcon(QIcon(":/icons/icon.ico"));
 
-    InitialWindow window;
-    window.showMaximized();
-    QScreen* screen = QGuiApplication::primaryScreen();
+        InitialWindow window;
+        window.showMaximized();
+        QScreen* screen = QGuiApplication::primaryScreen();
 
-    QRect screenGeometry = screen->geometry();
-    window.setGeometry(0, 0, screenGeometry.width(), screenGeometry.height());
-    window.setMinimumSize(screenGeometry.width() / 3, screenGeometry.height() / 3);
+        QRect screenGeometry = screen->geometry();
+        window.setGeometry(0, 0, screenGeometry.width(), screenGeometry.height());
+        window.setMinimumSize(screenGeometry.width() / 3, screenGeometry.height() / 3);
 
-    return app.exec();
+        return app.exec();
+    } catch (const std::exception& e) {
+        qFatal() << "Exception caught:" << e.what();
+    } catch (...) {
+        qFatal() << "Unknown exception caught!";
+    }
+    return -1;
 }

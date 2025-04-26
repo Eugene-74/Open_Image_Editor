@@ -16,6 +16,10 @@ cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DC
 
 cmake --build .
 
-%APP_NAME%-%APP_VERSION%.exe 
+if "%1"=="gdb" (
+    gdb %APP_NAME%-%APP_VERSION%.exe
+)else (
+    %APP_NAME%-%APP_VERSION%.exe
+)
 
 endlocal

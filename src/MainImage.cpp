@@ -20,14 +20,16 @@
  * @param force Force the image to be loaded even if it is already in the cache
  * @details This constructor initializes the MainImage widget with the specified image and size.
  */
-MainImage::MainImage(Data* data, const QString& imagePath, QSize size, bool setSize, int thumbnail, bool square, bool force)
-    : data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), thumbnail(thumbnail), square(square), force(force) {
-    if (isImage(imagePath.toStdString())) {
-        qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, true, force);
-    } else if (isVideo(imagePath.toStdString())) {
-        qImage = data->loadImageFromVideo(imagePath.toStdString());
+MainImage::MainImage(Data* data, const QString& imagePath, QSize size, bool setSize, bool square, bool force)
+    : data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), square(square), force(force) {
+    if (data->isInCache(data->getThumbnailPath(imagePath.toStdString(), 0))) {
+        if (isImage(imagePath.toStdString()) || isVideo(imagePath.toStdString())) {
+            qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, 0, true, square, true, force);
+        } else {
+            qImage = QImage();
+        }
     } else {
-        qImage = QImage();
+        qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, 128, true, square, true, force);
     }
 
     if (!qImage.isNull()) {

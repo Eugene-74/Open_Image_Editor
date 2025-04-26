@@ -143,9 +143,6 @@ QImage Data::loadImageFromVideo(std::string videoPath, int frameNumber) {
 
     QImage image = CvMatToQImage(frame);
 
-    // (*imageCache)[videoPath].image = image;
-    // (*imageCache)[videoPath].imagePath = videoPath;
-
     return image;
 }
 
@@ -210,7 +207,8 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
  * @return QImage object containing the image data
  */
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
-                             bool setSize, int thumbnail, bool force, bool cache) {
+                             bool setSize, int thumbnail, bool force) {
+    qDebug() << "Loading image: " << QString::fromStdString(imagePath) << " with thumbnail: " << thumbnail;
     if (imagePath.at(0) == ':') {
         if (darkMode) {
             imagePath.insert(imagePath.find_first_of(':') + 1, "/255-255-255-255");
@@ -219,30 +217,42 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         }
     }
 
-    auto it = imageCache->find(imagePath);
-    if (it != imageCache->end()) {
-        return it->second.image;
-    }
-
-    if (!force) {
-        it = imageCache->find(getThumbnailPath(imagePath, 512));
+    {
+        std::lock_guard<std::mutex> lock(imageCacheMutex);
+        auto it = imageCache->find(imagePath);
         if (it != imageCache->end()) {
             return it->second.image;
         }
+        // auto it = imageCache->find(imagePath);
+        // if (it != imageCache->end()) {
+        //     qInfo() << "Image found in cache: " << QString::fromStdString(imagePath);
+        //     return it->second.image;
+        // }
 
-        it = imageCache->find(getThumbnailPath(imagePath, 256));
-        if (it != imageCache->end()) {
-            return it->second.image;
-        }
+        if (!force) {
+            it = imageCache->find(getThumbnailPath(imagePath, 512));
+            if (it != imageCache->end()) {
+                qInfo() << "Image found in cache 512: " << QString::fromStdString(imagePath);
+                return it->second.image;
+            }
 
-        it = imageCache->find(getThumbnailPath(imagePath, 128));
-        if (it != imageCache->end()) {
-            return it->second.image;
-        }
+            it = imageCache->find(getThumbnailPath(imagePath, 256));
+            if (it != imageCache->end()) {
+                qInfo() << "Image found in cache 256: " << QString::fromStdString(imagePath);
+                return it->second.image;
+            }
 
-        it = imageCache->find(getThumbnailPath(imagePath, 16));
-        if (it != imageCache->end()) {
-            return it->second.image;
+            it = imageCache->find(getThumbnailPath(imagePath, 128));
+            if (it != imageCache->end()) {
+                qInfo() << "Image found in cache 128: " << QString::fromStdString(imagePath);
+                return it->second.image;
+            }
+
+            it = imageCache->find(getThumbnailPath(imagePath, 16));
+            if (it != imageCache->end()) {
+                qInfo() << "Image found in cache 16: " << QString::fromStdString(imagePath);
+                return it->second.image;
+            }
         }
     }
 
@@ -251,12 +261,14 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
     QImage image;
 
     if (imagePath.at(0) == ':') {
+        qInfo() << "Loading image from resource: " << QString::fromStdString(imagePath);
         QResource ressource(QString::fromStdString(imagePath));
         if (ressource.isValid()) {
             image.load(QString::fromStdString(imagePath));
         }
 
     } else {
+        qInfo() << "Loading image from file: " << QString::fromStdString(imagePath);
         if (!fs::exists(imagePath)) {
             qCritical() << "Error: The specified path does not exist: " << QString::fromStdString(imagePath);
             image.load(IMAGE_PATH_ERROR);
@@ -300,47 +312,53 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                 createThumbnail(imagePath, 512);
             }
         }
-
-        if (isHeicOrHeif(imagePathbis)) {
-            if (thumbnail == 0) {
-                image = readHeicAndHeif(imagePathbis);
-            }
-
-        } else if (isRaw(imagePathbis)) {
-            if (thumbnail == 0) {
-                image = readRaw(imagePathbis);
-            }
-        }
         if (isVideo(imagePath)) {
+            qInfo() << "Loading video: " << QString::fromStdString(imagePath);
             image = loadImageFromVideo(imagePath);
         } else {
-            image.load(QString::fromStdString(imagePathbis));
+            qDebug() << "load image not video";
+            if (isHeicOrHeif(imagePathbis)) {
+                if (thumbnail == 0) {
+                    qInfo() << "Loading HEIC/HEIF image: " << QString::fromStdString(imagePathbis);
+                    image = readHeicAndHeif(imagePathbis);
+                } else {
+                    qWarning() << "Thumbnail not supported for HEIC/HEIF images";
+                }
+
+            } else if (isRaw(imagePathbis)) {
+                if (thumbnail == 0) {
+                    image = readRaw(imagePathbis);
+                } else {
+                    qWarning() << "Thumbnail not supported for RAW images";
+                }
+            } else {
+                qInfo() << "Loading image: " << QString::fromStdString(imagePathbis);
+                image.load(QString::fromStdString(imagePathbis));
+            }
         }
 
         if (image.isNull()) {
             qCritical() << "Could not open or find the image : " << imagePathbis;
-
-            return QImage();
+            image.load(IMAGE_PATH_ERROR);
+            return image;
         }
 
         if (setSize) {
             image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         }
     }
-
-    if (cache) {
+    {
         std::lock_guard<std::mutex> lock(imageCacheMutex);
         (*imageCache)[imagePathbis].image = image;
         (*imageCache)[imagePathbis].imagePath = imagePath;
-    }
+        size_t cacheSize = 0;
 
-    size_t cacheSize = 0;
-
-    for (const auto& pair : *imageCache) {
-        cacheSize += pair.second.image.sizeInBytes();
-    }
-    if (static_cast<double>(cacheSize) / (1024 * 1024) > 5000) {
-        qCritical() << "Image cache size: " << static_cast<double>(cacheSize) / (1024 * 1024) << " MB";
+        for (const auto& pair : *imageCache) {
+            cacheSize += pair.second.image.sizeInBytes();
+        }
+        if (static_cast<double>(cacheSize) / (1024 * 1024) > 5000) {
+            qCritical() << "Image cache size: " << static_cast<double>(cacheSize) / (1024 * 1024) << " MB";
+        }
     }
 
     return image;
@@ -356,6 +374,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
  */
 void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, int thumbnail, bool force) {
     // TODO this function make the app crash
+    qDebug() << "loadInCacheAsync : " << QString::fromStdString(imagePath) << " setSize: " << setSize << " size: " << size.width() << "x" << size.height() << " force: " << force;
     if (!isInCache(imagePath)) {
         addThreadToFront([this, callback, imagePath, setSize, size, force, thumbnail]() {
             QImage image = loadImageNormal(nullptr, imagePath, size, setSize, thumbnail, force);
@@ -397,7 +416,10 @@ bool Data::loadInCache(const std::string imagePath, bool setSize,
  * @return true if the image is in cache false otherwise
  */
 bool Data::isInCache(std::string imagePath) {
-    return imageCache->find(imagePath) != imageCache->end();
+    {
+        std::lock_guard<std::mutex> lock(imageCacheMutex);
+        return imageCache->find(imagePath) != imageCache->end();
+    }
 }
 
 /**
@@ -632,14 +654,14 @@ bool Data::unloadFromCache(std::string imagePath) {
         qWarning() << "imageCache is not initialized : " << imagePath;
         return false;
     }
-    auto it = imageCache->find(imagePath);
+    {
+        std::lock_guard<std::mutex> lock(imageCacheMutex);
+        auto it = imageCache->find(imagePath);
 
-    if (it != imageCache->end()) {
-        {
-            std::lock_guard<std::mutex> lock(imageCacheMutex);
+        if (it != imageCache->end()) {
             imageCache->erase(it);
+            return true;
         }
-        return true;
     }
     return false;
 }
@@ -1049,7 +1071,10 @@ void Data::sortCurrentImagesData() {
  * @details This will remove all images from the cache
  */
 void Data::clearCache() {
-    imageCache->clear();
+    {
+        std::lock_guard<std::mutex> lock(imageCacheMutex);
+        imageCache->clear();
+    }
 }
 
 /**
@@ -1668,7 +1693,10 @@ void Data::clear() {
     options.clear();
     lastActions.clear();
     lastActionsDone.clear();
-    imageCache->clear();
+    {
+        std::lock_guard<std::mutex> lock(imageCacheMutex);
+        imageCache->clear();
+    }
     saved = true;
 }
 
@@ -1894,10 +1922,13 @@ void Data::checkToUnloadImages(int center, int radius) {
     }
 
     std::vector<std::string> toUnload;
-    for (const auto& cache : *imageCache) {
-        const std::string& imagePath = cache.second.imagePath;
-        if (loadedImages.find(imagePath) == loadedImages.end()) {
-            toUnload.push_back(cache.first);
+    {
+        std::lock_guard<std::mutex> lock(imageCacheMutex);
+        for (const auto& cache : *imageCache) {
+            const std::string& imagePath = cache.second.imagePath;
+            if (loadedImages.find(imagePath) == loadedImages.end()) {
+                toUnload.push_back(cache.first);
+            }
         }
     }
 
@@ -1923,11 +1954,13 @@ void Data::checkToLoadImages(int center, int radius, int thumbnailSize) {
             loadedImages.insert(imagesData.getImageDataInCurrent(i)->getImagePath());
         }
     }
-
-    for (const auto& cache : *imageCache) {
-        const std::string& imagePath = cache.second.imagePath;
-        if (loadedImages.find(imagePath) == loadedImages.end()) {
-            loadInCacheAsync(imagePath, nullptr, false, QSize(0, 0), thumbnailSize);
+    {
+        std::lock_guard<std::mutex> lock(imageCacheMutex);
+        for (const auto& cache : *imageCache) {
+            const std::string& imagePath = cache.second.imagePath;
+            if (loadedImages.find(imagePath) == loadedImages.end()) {
+                loadInCacheAsync(imagePath, nullptr, false, QSize(0, 0), thumbnailSize);
+            }
         }
     }
 }
@@ -1936,12 +1969,21 @@ void Data::checkToLoadImages(int center, int radius, int thumbnailSize) {
  * @brief Check if the thumbnail exists and create it if not
  */
 void Data::checkThumbnailAndCorrect() {
-    auto currentImages = data->getImagesData()->getCurrent();
+    auto currentImages = getImagesData()->getCurrent();
     for (auto& imageData : *currentImages) {
         static int delay = 0;
-        if (!data->hasThumbnail(imageData->getImagePath(), imageQuality)) {
+        bool hasThumbnail = true;
+        int i = 0;
+        while (i < THUMBNAIL_SIZES.size() && hasThumbnail) {
+            if (!this->hasThumbnail(imageData->getImagePath(), THUMBNAIL_SIZES[i])) {
+                hasThumbnail = false;
+            }
+            i++;
+        }
+
+        if (!hasThumbnail) {
             QTimer::singleShot(delay, [this, imageData]() {
-                data->createAllThumbnailsAsync(imageData->getImagePath(), [this, imageData](bool success) {
+                createAllThumbnailsAsync(imageData->getImagePath(), [this, imageData](bool success) {
                     if (success) {
                         qDebug() << "Thumbnail created for image: " << QString::fromStdString(imageData->getImagePath());
                     } else {
