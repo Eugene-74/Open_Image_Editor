@@ -436,7 +436,7 @@ void Data::createThumbnailAsync(const std::string& imagePath, const int maxDim, 
  *                true if the thumbnails are created false otherwise
  */
 void Data::createAllThumbnailsAsync(const std::string& imagePath, std::function<void(bool)> callback) {
-    addHeavyThreadToFront([this, imagePath, callback]() {
+    addHeavyThread([this, imagePath, callback]() {
         bool success = true;
         for (auto size : Const::Thumbnail::THUMBNAIL_SIZES) {
             if (!createThumbnailIfNotExists(imagePath, size)) {
@@ -555,7 +555,7 @@ bool Data::hasThumbnail(const std::string& imagePath, const int maxDim) {
  */
 void Data::createAllThumbnailIfNotExists(const std::string& imagePath, const int size) {
     for (int thumbnailSize : Const::Thumbnail::THUMBNAIL_SIZES) {
-        if (size > thumbnailSize) {
+        if (size >= thumbnailSize) {
             createThumbnailIfNotExists(imagePath, thumbnailSize);
         }
     }
@@ -568,7 +568,7 @@ void Data::createAllThumbnailIfNotExists(const std::string& imagePath, const int
  */
 void Data::createAllThumbnail(const std::string& imagePath, const int size) {
     for (int thumbnailSize : Const::Thumbnail::THUMBNAIL_SIZES) {
-        if (size > thumbnailSize) {
+        if (size >= thumbnailSize) {
             createThumbnail(imagePath, thumbnailSize);
         }
     }
@@ -1913,10 +1913,10 @@ void Data::checkToLoadImages(int center, int radius, int thumbnailSize) {
 /**
  * @brief Check if the thumbnail exists and create it if not
  */
-void Data::checkThumbnailAndCorrect() {
-    auto currentImages = getImagesData()->getCurrent();
-    for (auto& imageData : *currentImages) {
-        static int delay = 0;
+void Data::checkThumbnailAndDetectObjects() {
+    auto images = getImagesData()->get();
+    static int delay = 0;
+    for (auto& imageData : *images) {
         bool hasThumbnail = true;
         int i = 0;
         while (i < Const::Thumbnail::THUMBNAIL_SIZES.size() && hasThumbnail) {
@@ -1939,10 +1939,7 @@ void Data::checkThumbnailAndCorrect() {
             delay += 10;
         }
     }
-}
-void Data::CheckToDetectObjects() {
-    static int delay = 0;
-    for (auto& imageData : *imagesData.getCurrent()) {
+    for (auto& imageData : *imagesData.get()) {
         std::string imagePath = imageData->getImagePath();
         if (imageData->isDetectionStatusNotLoaded()) {
             QTimer::singleShot(delay, [this, imagePath, imageData]() {
@@ -1955,6 +1952,7 @@ void Data::CheckToDetectObjects() {
                     imageData->setDetectedObjects(detectedObjects.getDetectedObjects());
                     imageData->setDetectionStatusLoaded();
                     unloadFromCache(imagePath);
+                    qDebug() << "Detection done for image: " << QString::fromStdString(imagePath);
                 });
             });
             delay += 100;

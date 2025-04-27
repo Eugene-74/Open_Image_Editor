@@ -11,6 +11,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <chrono>
 #include <cstring>
 #include <exiv2/exiv2.hpp>
 #include <filesystem>
@@ -110,6 +111,8 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
  * @return QImage object containing the image data
  */
 QImage readHeicAndHeif(const std::string& filePath) {
+    auto start = std::chrono::high_resolution_clock::now();  // Début du chronométrage
+
     struct heif_context* ctx = heif_context_alloc();
     struct heif_error err = heif_context_read_from_file(ctx, filePath.c_str(), nullptr);
 
@@ -150,6 +153,10 @@ QImage readHeicAndHeif(const std::string& filePath) {
     heif_image_release(img);
     heif_image_handle_release(handle);
     heif_context_free(ctx);
+
+    auto end = std::chrono::high_resolution_clock::now();  // Fin du chronométrage
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    qInfo() << "readHeicAndHeif executed in" << duration << "ms";
 
     return qImage;
 }

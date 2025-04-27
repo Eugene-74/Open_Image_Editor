@@ -198,15 +198,18 @@ void ThreadManager::processQueue() {
                 }
             }
         }
-
-    } else if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
+    }
+    if ((QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD)) {
         {
             std::lock_guard<std::mutex> lock(heavyTaskQueueMutex);
-            if (!heavyTaskQueue.empty()) {
-                std::function<void()> job = std::move(heavyTaskQueue.front());
-                heavyTaskQueue.pop_front();
-                if (job) {
-                    startJob(std::move(job));
+
+            if (taskQueue.empty()) {
+                if (!heavyTaskQueue.empty()) {
+                    std::function<void()> job = std::move(heavyTaskQueue.front());
+                    heavyTaskQueue.pop_front();
+                    if (job) {
+                        startJob(std::move(job));
+                    }
                 }
             }
         }

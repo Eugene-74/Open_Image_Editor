@@ -34,6 +34,8 @@ namespace fs = std::filesystem;
  * @details This function opens a file dialog to select a folder and adds all images from that folder and it's sub folders to the data structure.
  */
 void addImagesFromFolder(std::shared_ptr<Data> data, QWidget* parent) {
+    data->stopAllThreads();
+
     QProgressDialog progressDialog(parent);
     progressDialog.setWindowModality(Qt::ApplicationModal);
     progressDialog.setAutoClose(false);
@@ -57,6 +59,7 @@ void addImagesFromFolder(std::shared_ptr<Data> data, QWidget* parent) {
     data->loadData();
     qInfo() << "All loading done";
     qInfo() << "Opening folder, with " << data->getCurrentFolders()->getFilesPtr()->size() << " images" << " and " << data->getCurrentFolders()->getFolders()->size() << " folders";
+    data->checkThumbnailAndDetectObjects();
 }
 
 /**
@@ -110,18 +113,17 @@ bool startLoadingImagesFromFolder(QWidget* parent, std::shared_ptr<Data> data, c
 
     data->imagesData = *imagesData;
 
-    progressDialog.setValue(0);
-    progressDialog.setMaximum(data->getImagesData()->get()->size());
-    progressDialog.setLabelText("Loading images thumbnail ...");
-    progressDialog.show();
-    QApplication::processEvents();
+    // progressDialog.setValue(0);
+    // progressDialog.setMaximum(data->getImagesData()->get()->size());
+    // progressDialog.setLabelText("Loading images thumbnail ...");
+    // progressDialog.show();
+    // QApplication::processEvents();
 
+    // if (!loadImagesThumbnail(data, progressDialog)) {
+    //     return false;
+    // }
     if (data->imagesData.get()->size() <= 0) {
         qCritical() << "No images found in the selected folder";
-        return false;
-    }
-
-    if (!loadImagesThumbnail(data, progressDialog)) {
         return false;
     }
 
@@ -143,7 +145,10 @@ bool startLoadingImagesFromFolder(QWidget* parent, std::shared_ptr<Data> data, c
                 for (int i = start; i < end; ++i) {
                     ImageData* imageData = data->getImagesData()->get()->at(i);
                     if (imageData->isDetectionStatusNotLoaded()) {
-                        QImage qImage(QString::fromStdString(imageData->getImagePath()));
+                        // QImage qImage(QString::fromStdString(imageData->getImagePath()));
+                        QImage qImage = data->loadImageNormal(nullptr, imageData->getImagePath(), QSize(0, 0), false);
+                        qImage = data->rotateQImage(qImage, imageData);
+
                         auto detectedObjects = data->detect(imageData->getImagePath(), qImage, "yolov5n").getDetectedObjects();
                         imageData->setDetectedObjects(detectedObjects);
                         imageData->setDetectionStatusLoaded();
@@ -164,82 +169,85 @@ bool startLoadingImagesFromFolder(QWidget* parent, std::shared_ptr<Data> data, c
     return true;
 }
 
-/**
- * @brief Load images thumbnails in a separate thread
- * @param data Pointer to the Data object
- * @param progressDialog Reference to the QProgressDialog object
- * @return true if images were loaded successfully, false otherwise
- */
-bool loadImagesThumbnail(std::shared_ptr<Data> data, QProgressDialog& progressDialog) {
-    int totalImages = data->getImagesData()->get()->size();
-    int imagesPerThread = IMAGE_PER_THREAD;
-    int thumbnailsCreated = 0;
+// /**
+//  * @brief Load images thumbnails in a separate thread
+//  * @param data Pointer to the Data object
+//  * @param progressDialog Reference to the QProgressDialog object
+//  * @return true if images were loaded successfully, false otherwise
+//  */
+// bool loadImagesThumbnail(std::shared_ptr<Data> data, QProgressDialog& progressDialog) {
+//     int totalImages = data->getImagesData()->get()->size();
+//     int imagesPerThread = IMAGE_PER_THREAD;
+//     int thumbnailsCreated = 0;
 
-    std::mutex cacheMutex;
+//     std::mutex cacheMutex;
 
-    for (int start = 0; start < totalImages; start += imagesPerThread) {
-        int end = std::min(start + imagesPerThread, totalImages);
-        data->addThread([start, end, data]() {
-            for (int i = start; i < end; ++i) {
-                ImageData* imageData = data->getImagesData()->get()->at(i);
+//     for (int start = 0; start < totalImages; start += imagesPerThread) {
+//         int end = std::min(start + imagesPerThread, totalImages);
+//         data->addThread([start, end, data]() {
+//             for (int i = start; i < end; ++i) {
+//                 // data->createAllThumbnailIfNotExists(imageData->getImagePath(), Const::Thumbnail::HIGHT_QUALITY);
+//                 ImageData* imageData = data->getImagesData()->get()->at(i);
+//                 data->createThumbnailIfNotExists(imageData->getImagePath(), 16);
+//                 data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
+//                 data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
+//                 data->createThumbnailIfNotExists(imageData->getImagePath(), 512);
 
-                data->createAllThumbnailIfNotExists(imageData->getImagePath(), Const::Thumbnail::HIGHT_QUALITY);
+//                 try {
+//                     data->unloadFromCache(imageData->getImagePath());
+//                 } catch (const std::exception& e) {
+//                     qCritical() << "Exception during unloadFromCache: " << e.what();
+//                 }
+//             }
+//         });
+//     }
 
-                try {
-                    data->unloadFromCache(imageData->getImagePath());
-                } catch (const std::exception& e) {
-                    qCritical() << "Exception during unloadFromCache: " << e.what();
-                }
-            }
-        });
-    }
+//     std::vector<int> imageIndices(totalImages);
+//     std::iota(imageIndices.begin(), imageIndices.end(), 0);
 
-    std::vector<int> imageIndices(totalImages);
-    std::iota(imageIndices.begin(), imageIndices.end(), 0);
+//     QTimer timer;
+//     QObject::connect(&timer, &QTimer::timeout, [&]() {
+//         qInfo() << "starting count" << imageIndices.size();
+//         try {
+//             for (int index : imageIndices) {
+//                 ImageData* imageData = data->getImagesData()->getImageData(index);
 
-    QTimer timer;
-    QObject::connect(&timer, &QTimer::timeout, [&]() {
-        qInfo() << "starting count" << imageIndices.size();
-        try {
-            for (int index : imageIndices) {
-                ImageData* imageData = data->getImagesData()->getImageData(index);
+//                 bool allThumbnailsExist = true;
+//                 for (int thumbnailSize : Const::Thumbnail::THUMBNAIL_SIZES) {
+//                     if (!data->hasThumbnail(imageData->getImagePath(), thumbnailSize)) {
+//                         allThumbnailsExist = false;
+//                         break;
+//                     }
+//                 }
 
-                bool allThumbnailsExist = true;
-                for (int thumbnailSize : Const::Thumbnail::THUMBNAIL_SIZES) {
-                    if (!data->hasThumbnail(imageData->getImagePath(), thumbnailSize)) {
-                        allThumbnailsExist = false;
-                        break;
-                    }
-                }
+//                 if (allThumbnailsExist) {
+//                     ++thumbnailsCreated;
 
-                if (allThumbnailsExist) {
-                    ++thumbnailsCreated;
+//                     imageIndices.erase(std::remove(imageIndices.begin(), imageIndices.end(), index), imageIndices.end());
+//                 }
+//             }
+//         } catch (const std::exception& e) {
+//             qCritical() << e.what();
+//         }
+//         qInfo() << "ending count" << imageIndices.size();
 
-                    imageIndices.erase(std::remove(imageIndices.begin(), imageIndices.end(), index), imageIndices.end());
-                }
-            }
-        } catch (const std::exception& e) {
-            qCritical() << e.what();
-        }
-        qInfo() << "ending count" << imageIndices.size();
-
-        progressDialog.setValue(thumbnailsCreated);
-        qInfo() << "Number of thumbnails created: " << thumbnailsCreated << "/" << totalImages;
-        qInfo() << "Number of active thread: " << QThreadPool::globalInstance()->activeThreadCount();
-        if (QThreadPool::globalInstance()->activeThreadCount() > 0 && imageIndices.size() > 0) {
-            timer.start(1000);
-        }
-    });
-    timer.start(1000);
-    while (QThreadPool::globalInstance()->activeThreadCount() > 0) {
-        QCoreApplication::processEvents();
-        if (progressDialog.wasCanceled()) {
-            QThreadPool::globalInstance()->clear();
-            return false;
-        }
-    }
-    return true;
-}
+//         progressDialog.setValue(thumbnailsCreated);
+//         qInfo() << "Number of thumbnails created: " << thumbnailsCreated << "/" << totalImages;
+//         qInfo() << "Number of active thread: " << QThreadPool::globalInstance()->activeThreadCount();
+//         if (QThreadPool::globalInstance()->activeThreadCount() > 0 && imageIndices.size() > 0) {
+//             timer.start(1000);
+//         }
+//     });
+//     timer.start(1000);
+//     while (QThreadPool::globalInstance()->activeThreadCount() > 0) {
+//         QCoreApplication::processEvents();
+//         if (progressDialog.wasCanceled()) {
+//             QThreadPool::globalInstance()->clear();
+//             return false;
+//         }
+//     }
+//     return true;
+// }
 
 /**
  * @brief Add files to the tree structure (of folders)

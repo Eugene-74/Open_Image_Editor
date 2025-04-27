@@ -797,7 +797,10 @@ ClickableLabel* ImageEditor::createImagePersons() {
 
             ImageData* imageData = data->imagesData.getCurrentImageData();
             if (imageData) {
-                QImage qImage(QString::fromStdString(imageData->getImagePath()));
+                // QImage qImage(QString::fromStdString(imageData->getImagePath()));
+                QImage qImage = data->loadImageNormal(nullptr, imageData->getImagePath(), QSize(0, 0), false);
+                qImage = data->rotateQImage(qImage, imageData);
+
                 auto detectedObjects = data->detect(imageData->getImagePath(), qImage, data->model.getModelName()).getDetectedObjects();
                 imageData->setDetectedObjects(detectedObjects);
                 qDebug() << "Object detection re-run with model:" << QString::fromStdString(data->model.getModelName());

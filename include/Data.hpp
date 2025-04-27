@@ -163,11 +163,10 @@ class Data : public std::enable_shared_from_this<Data> {
 
     void stopAllThreads();
 
-    void checkThumbnailAndCorrect();
+    void checkThumbnailAndDetectObjects();
 
     void checkToUnloadImages(int center, int radius);
     void checkToLoadImages(int center, int radius, int thumbnailSize = 0);
-    void CheckToDetectObjects();
 
    private:
     ThreadManager manager;

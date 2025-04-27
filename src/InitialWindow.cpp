@@ -78,6 +78,7 @@ InitialWindow::InitialWindow() {
 
         try {
             data->loadData();
+            data->checkThumbnailAndDetectObjects();
         } catch (const std::exception& e) {
             qWarning() << "Error loading data: " << e.what();
             showErrorMessage(nullptr, "Error loading data: data corrupted");
@@ -620,7 +621,7 @@ void InitialWindow::createMainWindow(std::shared_ptr<Data> data) {
  * @details It also stops all threads associated with the data object.
  */
 void InitialWindow::clearImageEditor() {
-    data->stopAllThreads();
+    // data->stopAllThreads();
     layout->removeWidget(imageEditor);
     imageEditor->clear();
     imageEditor->deleteLater();
@@ -633,7 +634,7 @@ void InitialWindow::clearImageEditor() {
  * @details It also stops all threads associated with the data object.
  */
 void InitialWindow::clearImageBooth() {
-    data->stopAllThreads();
+    // data->stopAllThreads();
     layout->removeWidget(imageBooth);
     imageBooth->deleteLater();
     imageBooth = nullptr;
@@ -645,7 +646,7 @@ void InitialWindow::clearImageBooth() {
  * @details It also stops all threads associated with the data object.
  */
 void InitialWindow::clearMainWindow() {
-    data->stopAllThreads();
+    // data->stopAllThreads();
     layout->removeWidget(mainWindow);
     mainWindow->deleteLater();
     mainWindow = nullptr;

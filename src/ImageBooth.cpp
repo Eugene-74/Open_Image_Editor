@@ -71,8 +71,6 @@ ImageBooth::ImageBooth(std::shared_ptr<Data> dat, QWidget* parent)
         }
     }
 
-    data->checkThumbnailAndCorrect();
-
     data->sortCurrentImagesData();
 
     data->clearCache();
@@ -167,9 +165,6 @@ void ImageBooth::openFolder(int index) {
 
         data->currentFolder = allImagesFolder;
     }
-
-    data->checkThumbnailAndCorrect();
-    data->CheckToDetectObjects();
 
     int minTotalImagesHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesData()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
 
@@ -631,24 +626,25 @@ void ImageBooth::updateImages() {
                         int totalImages = 0;
                         auto* currentFolder = data->getCurrentFolders()->getFolder(folderNbr - 1);
                         if (currentFolder) {
-                            auto* files = currentFolder->getFilesPtr();
-                            for (const auto& file : *files) {
-                                ImageData* imageData = data->imagesData.getImageData(file);
-                                if (imageData && imageData->respectFilters(data->getImagesData()->getFilters())) {
-                                    totalImages++;
-                                }
-                            }
+                            // auto* files = currentFolder->getFilesPtr();
+                            // for (const auto& file : *files) {
+                            //     ImageData* imageData = data->imagesData.getImageData(file);
+                            //     if (imageData && imageData->respectFilters(data->getImagesData()->getFilters())) {
+                            //         totalImages++;
+                            //     }
+                            // }
 
-                            auto subFolders = currentFolder->getFoldersConst();
-                            for (const auto& subFolder : subFolders) {
-                                auto subFiles = subFolder.getFilesConst();
-                                for (const auto& subFile : subFiles) {
-                                    ImageData* subImageData = data->imagesData.getImageData(subFile);
-                                    if (subImageData && subImageData->respectFilters(data->getImagesData()->getFilters())) {
-                                        totalImages++;
-                                    }
-                                }
-                            }
+                            // auto subFolders = currentFolder->getFoldersConst();
+                            // for (const auto& subFolder : subFolders) {
+                            //     auto subFiles = subFolder.getFilesConst();
+                            //     for (const auto& subFile : subFiles) {
+                            //         ImageData* subImageData = data->imagesData.getImageData(subFile);
+                            //         if (subImageData && subImageData->respectFilters(data->getImagesData()->getFilters())) {
+                            //             totalImages++;
+                            //         }
+                            //     }
+                            // }
+                            countImagesInFolder(currentFolder, totalImages);
                         }
                         folderButton->addLogo("#00FF00", "FFFFFF", totalImages);
 
@@ -1313,4 +1309,24 @@ int ImageBooth::getCurrentFoldersSize() {
     }
     qCritical() << "getCurrentFoldersSize : Folder doesn't work";
     return 1;
+}
+
+/**
+ * @brief Get the number of images in the current folder and its subfolders
+ * @param currentFolder The current folder to count images in
+ * @return The number of images in the current folder and its subfolders
+ */
+void ImageBooth::countImagesInFolder(Folders* currentFolder, int& totalImages) {
+    auto* files = currentFolder->getFilesPtr();
+    for (const auto& file : *files) {
+        ImageData* imageData = data->imagesData.getImageData(file);
+        if (imageData && imageData->respectFilters(data->getImagesData()->getFilters())) {
+            totalImages++;
+        }
+    }
+
+    const auto& subFolders = currentFolder->getFolders();
+    for (auto it = subFolders->begin(); it != subFolders->end(); ++it) {
+        countImagesInFolder(&(*it), totalImages);
+    }
 }

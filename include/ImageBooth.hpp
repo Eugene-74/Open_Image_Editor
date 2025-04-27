@@ -103,8 +103,11 @@ class ImageBooth : public QMainWindow {
     ClickableLabel* createImage(std::string imagePath, int nbr);
     void updateVisibleImages(bool force = false);
 
+    void countImagesInFolder(Folders* currentFolder, int& totalImages);
+
    signals:
     void switchToImageEditor();
     void switchToImageBooth();
     void switchToMainWindow();
 };
+

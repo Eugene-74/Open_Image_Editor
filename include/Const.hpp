@@ -9,10 +9,10 @@
 
 const std::string APP_NAME = "OpenImageEditor";
 
-// const float INPUT_WIDTH = 640.0;
-// const float INPUT_HEIGHT = 640.0;
-// const float SCORE_THRESHOLD = 0.2;
-// const float CONFIDENCE_THRESHOLD = 0.4;
+const float INPUT_WIDTH = 640.0;
+const float INPUT_HEIGHT = 640.0;
+const float SCORE_THRESHOLD = 0.2;
+const float CONFIDENCE_THRESHOLD = 0.4;
 
 const int IMAGE_PER_THREAD = 20;
 
@@ -74,42 +74,6 @@ const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = 
 const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
 const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
 
-// const QString TOOL_TIP_DISCORD = "Open the app discord";
-// const QString TOOL_TIP_GITHUB = "Open the app github";
-// const QString TOOL_TIP_PARAMETER = "Open the parameters";
-
-// const QString TOOL_TIP_OPEN_IMAGE_BOOTH = "See all the images";
-// const QString TOOL_TIP_OPEN_IMAGE_EDITOR = "Edit image one by one";
-// const QString TOOL_TIP_ADD_IMAGES = "Add images to the app";
-
-// const QString TOOL_TIP_IMAGE_BOOTH_DELETE = "Delete the selected images";
-// const QString TOOL_TIP_IMAGE_BOOTH_SAVE = "Save modification";
-// const QString TOOL_TIP_IMAGE_BOOTH_EXPORT = "Export the selected images";
-// const QString TOOL_TIP_IMAGE_BOOTH_ROTATE_RIGHT = "Rotate to the right the selected images";
-// const QString TOOL_TIP_IMAGE_BOOTH_ROTATE_LEFT = "Rotate to the left the selected images";
-// const QString TOOL_TIP_IMAGE_BOOTH_MIRROR_UP_DOWN = "Mirror UP-DOWN the selected images";
-// const QString TOOL_TIP_IMAGE_BOOTH_MIRROR_LEFT_RIGHT = "Mirror LEFT-RIGHT the selected images";
-// const QString TOOL_TIP_IMAGE_BOOTH_CONVERSION = "Convert the selected images";
-
-// const QString TOOL_TIP_IMAGE_BOOTH_EDIT_EXIF = "Edit exif data of selected images";
-// const QString TOOL_TIP_IMAGE_BOOTH_EDIT_PERSONS = "Edit persons data of selected images";
-// const QString TOOL_TIP_IMAGE_BOOTH_EDIT_FILTERS = "Edit filters";
-
-// const QString TOOL_TIP_IMAGE_EDITOR_DELETE = "Delete the image";
-// const QString TOOL_TIP_IMAGE_EDITOR_SAVE = "Save modification";
-// const QString TOOL_TIP_IMAGE_EDITOR_EXPORT = "Export the images";
-// const QString TOOL_TIP_IMAGE_EDITOR_ROTATE_RIGHT = "Rotate to the right the image";
-// const QString TOOL_TIP_IMAGE_EDITOR_ROTATE_LEFT = "Rotate to the left the image";
-// const QString TOOL_TIP_IMAGE_EDITOR_MIRROR_UP_DOWN = "Mirror UP-DOWN the image";
-// const QString TOOL_TIP_IMAGE_EDITOR_MIRROR_LEFT_RIGHT = "Mirror LEFT-RIGHT the image";
-// const QString TOOL_TIP_IMAGE_EDITOR_EDIT_EXIF = "Edit exif data of the image";
-// const QString TOOL_TIP_IMAGE_EDITOR_EDIT_PERSONS = "Edit persons data of the image";
-
-// const QString TOOL_TIP_IMAGE_BOOTH_ALL_IMAGES = "Open all you images at once";
-// const QString TOOL_TIP_IMAGE_BOOTH_BACK = "Go to last folder";
-
-// const QString TOOL_TIP_IMAGE_EDITOR_CONVERSION = "Convert the image";
-
 class Const {
    public:
     class Orientation {
@@ -145,8 +109,8 @@ class Const {
     };
     class Yolo {
        public:
-        static constexpr int INPUT_WIDTH = 640;
-        static constexpr int INPUT_HEIGHT = 640;
+        static constexpr float INPUT_WIDTH = 640;
+        static constexpr float INPUT_HEIGHT = 640;
         static constexpr float SCORE_THRESHOLD = 0.2;
         static constexpr float CONFIDENCE_THRESHOLD = 0.4;
     };
