@@ -26,6 +26,7 @@ cd release
 set EXECUTABLE=%APP_NAME%-%APP_VERSION%.exe
 copy ..\..\install\start.bat .
 copy ..\..\install\icon.ico .
+copy ..\..\install\cacert.pem .
 copy ..\..\LICENSE .
 copy ..\..\README.md .
 copy ..\..\AppConfig.txt .

@@ -257,8 +257,17 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
     curl = curl_easy_init();
     if (curl) {
         std::string url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/releases";
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
+
+        // Desactive la validation SSL
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+        // end validation
+
+        // TODO reactiver la validation :
+        qDebug() << "path to .pem" << APP_FILES + "/cacert.pem";
+        // curl_easy_setopt(curl, CURLOPT_CAINFO, APP_FILES + "/cacert.pem");
+        // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+        // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
         curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3);
 
         // Set timeout time to avoir bug
@@ -283,6 +292,8 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
         }
         if (res != CURLE_OK) {
             qWarning() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
+            showWarningMessage(nullptr, "Something went wrong", "Checking for updates");
+
             curl_easy_cleanup(curl);
             return "";
         }
@@ -324,8 +335,13 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
 
     curl = curl_easy_init();
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
+        curl_easy_setopt(curl, CURLOPT_CAINFO, APP_FILES + "\\cacert.pem");
+
+        // TODO reactiver la validation :
+        // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+        // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
         curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3);
 
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
