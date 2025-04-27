@@ -35,7 +35,7 @@ class ImageBooth : public QMainWindow {
     std::shared_ptr<Data> data;
 
     int lastLineNbr = 0;
-    int imageQuality = 16;
+    int imageQuality = Const::Thumbnail::POOR_QUALITY;
     int maxVisibleLines = data->sizes->imagesBoothSizes->heightImageNumber + 2;
     std::vector<QLabel*> imageWidgets;
 

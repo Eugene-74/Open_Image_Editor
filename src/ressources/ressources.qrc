@@ -23,7 +23,6 @@
 
 
         <file>icons/imageBooth.png</file>
-        <file>icons/imageEditor.png</file>
         <file>icons/addImages.png</file>
 
 
@@ -62,7 +61,6 @@
 
 
         <file>255-255-255-255/icons/imageBooth.png</file>
-        <file>255-255-255-255/icons/imageEditor.png</file>
         <file>255-255-255-255/icons/addImages.png</file>
 
 
@@ -98,7 +96,6 @@
 
 
         <file>0-0-0-255/icons/imageBooth.png</file>
-        <file>0-0-0-255/icons/imageEditor.png</file>
         <file>0-0-0-255/icons/addImages.png</file>
 
 

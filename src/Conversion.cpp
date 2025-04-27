@@ -35,7 +35,7 @@ ConversionDialog::ConversionDialog(QWidget* parent)
 
     // Liste des formats de sortie possibles
     QStringList formats;
-    for (const auto& format : IMAGE_CONVERTION) {
+    for (const auto& format : Const::Extension::IMAGE_CONVERTION) {
         formats.append(QString::fromStdString(format));
     }
 

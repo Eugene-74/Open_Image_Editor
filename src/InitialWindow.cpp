@@ -688,7 +688,7 @@ void InitialWindow::showMainWindow() {
  * @details It also sets up a signal to handle the resize event and update the label accordingly.
  */
 ClickableLabel* InitialWindow::createImageDiscord() {
-    ClickableLabel* newImageDiscord = new ClickableLabel(data, ICON_PATH_DISCORD, TOOL_TIP_DISCORD, this, linkButton, false, 0, true);
+    ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Const::Tooltip::DISCORD, this, linkButton, false, 0, true);
     newImageDiscord->setInitialBackground("transparent", "#b3b3b3");
 
     connect(newImageDiscord, &ClickableLabel::clicked, [this]() {
@@ -712,7 +712,7 @@ ClickableLabel* InitialWindow::createImageDiscord() {
  * @details It also sets up a signal to handle the resize event and update the label accordingly.
  */
 ClickableLabel* InitialWindow::createImageGithub() {
-    ClickableLabel* newImageGithub = new ClickableLabel(data, ICON_PATH_GITHUB, TOOL_TIP_GITHUB, this, linkButton, false, 0, true);
+    ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Const::Tooltip::GITHUB, this, linkButton, false, 0, true);
     newImageGithub->setInitialBackground("transparent", "#b3b3b3");
 
     connect(newImageGithub, &ClickableLabel::clicked, [this]() {
@@ -729,7 +729,7 @@ ClickableLabel* InitialWindow::createImageGithub() {
     return newImageGithub;
 }
 ClickableLabel* InitialWindow::createImageOption() {
-    ClickableLabel* newImageOption = new ClickableLabel(data, ICON_PATH_OPTION, TOOL_TIP_PARAMETER, this, linkButton, false, 0, true);
+    ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Const::Tooltip::PARAMETER, this, linkButton, false, 0, true);
     newImageOption->setInitialBackground("transparent", "#b3b3b3");
 
     connect(newImageOption, &ClickableLabel::clicked, [this]() {

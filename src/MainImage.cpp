@@ -29,7 +29,7 @@ MainImage::MainImage(std::shared_ptr<Data> data, const QString& imagePath, QSize
             qImage = QImage();
         }
     } else {
-        qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, 128, true, square, true, force);
+        qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, Const::Thumbnail::NORMAL_QUALITY, true, square, true, force);
     }
 
     if (!qImage.isNull()) {

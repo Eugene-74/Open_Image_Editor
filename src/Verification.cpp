@@ -18,7 +18,7 @@ bool isImage(const std::string& path) {
     if (fs::path(path).filename().string().front() == '.') {
         return false;
     }
-    std::vector<std::string> extensionsImages = IMAGE_EXTENSIONS;
+    std::vector<std::string> extensionsImages = Const::Extension::IMAGE;
     std::string extension = fs::path(path).extension().string();
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
     return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
@@ -34,7 +34,7 @@ bool isVideo(const std::string& path) {
     if (fs::path(path).filename().string().front() == '.') {
         return false;
     }
-    std::vector<std::string> extensionsImages = VIDEO_EXTENSIONS;
+    std::vector<std::string> extensionsImages = Const::Extension::VIDEO;
     std::string extension = fs::path(path).extension().string();
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
     return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
@@ -57,7 +57,7 @@ bool isMedia(const std::string& path) {
  * @details This function checks the file extension against a list of known turnable image extensions.
  */
 bool isTurnable(const std::string& path) {
-    std::vector<std::string> extensionsImages = TURNABLE_IMAGE_EXTENSIONS;
+    std::vector<std::string> extensionsImages = Const::Extension::TURNABLE_IMAGE;
     std::string extension = fs::path(path).extension().string();
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
     return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
@@ -70,7 +70,7 @@ bool isTurnable(const std::string& path) {
  * @details This function checks the file extension against a list of known mirrorable image extensions.
  */
 bool isMirrorable(const std::string& path) {
-    std::vector<std::string> extensionsImages = MIRRORABLE_IMAGE_EXTENSIONS;
+    std::vector<std::string> extensionsImages = Const::Extension::MIRRORABLE_IMAGE;
     std::string extension = fs::path(path).extension().string();
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
     return std::find(extensionsImages.begin(), extensionsImages.end(), extension) != extensionsImages.end();
@@ -85,7 +85,7 @@ bool isMirrorable(const std::string& path) {
 bool isExif(const std::string& extension) {
     std::string ext = extension;
     std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-    return std::find(METADA_ACTION_IMAGE_EXTENSIONS.begin(), METADA_ACTION_IMAGE_EXTENSIONS.end(), ext) != METADA_ACTION_IMAGE_EXTENSIONS.end();
+    return std::find(Const::Extension::METADA_ACTION_IMAGE.begin(), Const::Extension::METADA_ACTION_IMAGE.end(), ext) != Const::Extension::METADA_ACTION_IMAGE.end();
 }
 
 /**
@@ -97,7 +97,7 @@ bool isExif(const std::string& extension) {
 bool isReal(const std::string& extension) {
     std::string ext = extension;
     std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-    return std::find(REAL_ACTION_IMAGE_EXTENSIONS.begin(), REAL_ACTION_IMAGE_EXTENSIONS.end(), ext) != REAL_ACTION_IMAGE_EXTENSIONS.end();
+    return std::find(Const::Extension::REAL_ACTION_IMAGE.begin(), Const::Extension::REAL_ACTION_IMAGE.end(), ext) != Const::Extension::REAL_ACTION_IMAGE.end();
 }
 
 /**

@@ -9,10 +9,10 @@
 
 const std::string APP_NAME = "OpenImageEditor";
 
-const float INPUT_WIDTH = 640.0;
-const float INPUT_HEIGHT = 640.0;
-const float SCORE_THRESHOLD = 0.2;
-const float CONFIDENCE_THRESHOLD = 0.4;
+// const float INPUT_WIDTH = 640.0;
+// const float INPUT_HEIGHT = 640.0;
+// const float SCORE_THRESHOLD = 0.2;
+// const float CONFIDENCE_THRESHOLD = 0.4;
 
 const int IMAGE_PER_THREAD = 20;
 
@@ -49,7 +49,7 @@ const QString IMAGE_EDITOR_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : 
 const QString IMAGE_BOOTH_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Booth Window";
 const QString MAIN_WINDOW_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Booth Window";
 
-const int IMAGE_BOOTH_IMAGE_QUALITY = 256;  // 128 or 256 or 512
+const int IMAGE_BOOTH_IMAGE_QUALITY = 256;
 const int IMAGE_BOOTH_IMAGE_POOR_QUALITY = 16;
 
 #ifdef _WIN32
@@ -64,17 +64,6 @@ const std::string IMAGESDATA_SAVE_DATA_PATH = SAVE_PATH + "/save." + APP_NAME;
 
 const std::map<std::string, Option> DEFAULT_OPTIONS = {
     {"Sizes::imageBooth::ImagesPerLine", Option("text", "10")}};
-const std::vector<std::string> IMAGE_CONVERTION = {"jpg", "jpeg", "png", "webp", "tiff", "bmp", "heic", "heif"};
-
-const std::vector<int> THUMBNAIL_SIZES = {16, 128, 256, 512};
-
-const std::vector<std::string> IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".svg", ".tiff", ".bmp"};
-const std::vector<std::string> VIDEO_EXTENSIONS = {".mp4"};
-
-const std::vector<std::string> TURNABLE_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".tiff", ".bmp"};
-const std::vector<std::string> MIRRORABLE_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif", ".tiff", ".bmp"};
-const std::vector<std::string> METADA_ACTION_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".heic", ".heif", ".webp", ".tiff"};
-const std::vector<std::string> REAL_ACTION_IMAGE_EXTENSIONS = {".png", ".bmp"};
 
 const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED = "red";
 const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED = "red";
@@ -85,73 +74,41 @@ const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = 
 const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
 const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
 
-const QString IMAGE_PATH_LOADING = ":/images/loading.png";
-const QString IMAGE_PATH_ERROR = ":/images/error.png";
+// const QString TOOL_TIP_DISCORD = "Open the app discord";
+// const QString TOOL_TIP_GITHUB = "Open the app github";
+// const QString TOOL_TIP_PARAMETER = "Open the parameters";
 
-const QString ICON_PATH_DELETE = ":/icons/delete.png";
-const QString ICON_PATH_SAVE = ":/icons/save.png";
-const QString ICON_PATH_EXPORT = ":/icons/export.png";
-const QString ICON_PATH_ROTATE_RIGHT = ":/icons/rotateRight.png";
-const QString ICON_PATH_ROTATE_LEFT = ":/icons/rotateLeft.png";
-const QString ICON_PATH_MIRROR_UP_DOWN = ":/icons/mirrorUpDown.png";
-const QString ICON_PATH_MIRROR_LEFT_RIGHT = ":/icons/mirrorLeftRight.png";
-const QString ICON_PATH_CONVERSION = ":/icons/conversion.png";
-const QString ICON_PATH_EDIT_EXIF = ":/icons/editExif.png";
-const QString ICON_PATH_EDIT_PERSONS = ":/icons/editPersons.png";
-const QString ICON_PATH_EDIT_FILTERS = ":/icons/editFilters.png";
+// const QString TOOL_TIP_OPEN_IMAGE_BOOTH = "See all the images";
+// const QString TOOL_TIP_OPEN_IMAGE_EDITOR = "Edit image one by one";
+// const QString TOOL_TIP_ADD_IMAGES = "Add images to the app";
 
-const QString ICON_PATH_FOLDER = ":/icons/folder.png";
-const QString ICON_PATH_ALL_IMAGES = ":/icons/allImages.png";
-const QString ICON_PATH_BACK = ":/icons/back.png";
+// const QString TOOL_TIP_IMAGE_BOOTH_DELETE = "Delete the selected images";
+// const QString TOOL_TIP_IMAGE_BOOTH_SAVE = "Save modification";
+// const QString TOOL_TIP_IMAGE_BOOTH_EXPORT = "Export the selected images";
+// const QString TOOL_TIP_IMAGE_BOOTH_ROTATE_RIGHT = "Rotate to the right the selected images";
+// const QString TOOL_TIP_IMAGE_BOOTH_ROTATE_LEFT = "Rotate to the left the selected images";
+// const QString TOOL_TIP_IMAGE_BOOTH_MIRROR_UP_DOWN = "Mirror UP-DOWN the selected images";
+// const QString TOOL_TIP_IMAGE_BOOTH_MIRROR_LEFT_RIGHT = "Mirror LEFT-RIGHT the selected images";
+// const QString TOOL_TIP_IMAGE_BOOTH_CONVERSION = "Convert the selected images";
 
-const QString ICON_PATH_BEFORE = ":/icons/before.png";
-const QString ICON_PATH_NEXT = ":/icons/next.png";
+// const QString TOOL_TIP_IMAGE_BOOTH_EDIT_EXIF = "Edit exif data of selected images";
+// const QString TOOL_TIP_IMAGE_BOOTH_EDIT_PERSONS = "Edit persons data of selected images";
+// const QString TOOL_TIP_IMAGE_BOOTH_EDIT_FILTERS = "Edit filters";
 
-const QString ICON_PATH_IMAGE_BOOTH = ":/icons/imageBooth.png";
-const QString ICON_PATH_IMAGE_EDITOR = ":/icons/imageEditor.png";
-const QString ICON_PATH_OPTION_ADD_IMAGES = ":/icons/addImages.png";
+// const QString TOOL_TIP_IMAGE_EDITOR_DELETE = "Delete the image";
+// const QString TOOL_TIP_IMAGE_EDITOR_SAVE = "Save modification";
+// const QString TOOL_TIP_IMAGE_EDITOR_EXPORT = "Export the images";
+// const QString TOOL_TIP_IMAGE_EDITOR_ROTATE_RIGHT = "Rotate to the right the image";
+// const QString TOOL_TIP_IMAGE_EDITOR_ROTATE_LEFT = "Rotate to the left the image";
+// const QString TOOL_TIP_IMAGE_EDITOR_MIRROR_UP_DOWN = "Mirror UP-DOWN the image";
+// const QString TOOL_TIP_IMAGE_EDITOR_MIRROR_LEFT_RIGHT = "Mirror LEFT-RIGHT the image";
+// const QString TOOL_TIP_IMAGE_EDITOR_EDIT_EXIF = "Edit exif data of the image";
+// const QString TOOL_TIP_IMAGE_EDITOR_EDIT_PERSONS = "Edit persons data of the image";
 
-const QString ICON_PATH_DISCORD = ":/icons/discord.png";
-const QString ICON_PATH_GITHUB = ":/icons/github.png";
-const QString ICON_PATH_OPTION = ":/icons/option.png";
-
-const QString TOOL_TIP_DISCORD = "Open the app discord";
-const QString TOOL_TIP_GITHUB = "Open the app github";
-const QString TOOL_TIP_PARAMETER = "Open the parameters";
-
-const QString TOOL_TIP_OPEN_IMAGE_BOOTH = "See all the images";
-const QString TOOL_TIP_OPEN_IMAGE_EDITOR = "Edit image one by one";
-const QString TOOL_TIP_ADD_IMAGES = "Add images to the app";
-
-const QString TOOL_TIP_IMAGE_BOOTH_DELETE = "Delete the selected images";
-const QString TOOL_TIP_IMAGE_BOOTH_SAVE = "Save modification";
-const QString TOOL_TIP_IMAGE_BOOTH_EXPORT = "Export the selected images";
-const QString TOOL_TIP_IMAGE_BOOTH_ROTATE_RIGHT = "Rotate to the right the selected images";
-const QString TOOL_TIP_IMAGE_BOOTH_ROTATE_LEFT = "Rotate to the left the selected images";
-const QString TOOL_TIP_IMAGE_BOOTH_MIRROR_UP_DOWN = "Mirror UP-DOWN the selected images";
-const QString TOOL_TIP_IMAGE_BOOTH_MIRROR_LEFT_RIGHT = "Mirror LEFT-RIGHT the selected images";
-const QString TOOL_TIP_IMAGE_BOOTH_CONVERSION = "Convert the selected images";
-
-const QString TOOL_TIP_IMAGE_BOOTH_EDIT_EXIF = "Edit exif data of selected images";
-const QString TOOL_TIP_IMAGE_BOOTH_EDIT_PERSONS = "Edit persons data of selected images";
-const QString TOOL_TIP_IMAGE_BOOTH_EDIT_FILTERS = "Edit filters";
-
-const QString TOOL_TIP_IMAGE_EDITOR_DELETE = "Delete the image";
-const QString TOOL_TIP_IMAGE_EDITOR_SAVE = "Save modification";
-const QString TOOL_TIP_IMAGE_EDITOR_EXPORT = "Export the images";
-const QString TOOL_TIP_IMAGE_EDITOR_ROTATE_RIGHT = "Rotate to the right the image";
-const QString TOOL_TIP_IMAGE_EDITOR_ROTATE_LEFT = "Rotate to the left the image";
-const QString TOOL_TIP_IMAGE_EDITOR_MIRROR_UP_DOWN = "Mirror UP-DOWN the image";
-const QString TOOL_TIP_IMAGE_EDITOR_MIRROR_LEFT_RIGHT = "Mirror LEFT-RIGHT the image";
-const QString TOOL_TIP_IMAGE_EDITOR_EDIT_EXIF = "Edit exif data of the image";
-const QString TOOL_TIP_IMAGE_EDITOR_EDIT_PERSONS = "Edit persons data of the image";
-
-const QString TOOL_TIP_IMAGE_BOOTH_ALL_IMAGES = "Open all you images at once";
-const QString TOOL_TIP_IMAGE_BOOTH_BACK = "Go to last folder";
+// const QString TOOL_TIP_IMAGE_BOOTH_ALL_IMAGES = "Open all you images at once";
+// const QString TOOL_TIP_IMAGE_BOOTH_BACK = "Go to last folder";
 
 // const QString TOOL_TIP_IMAGE_EDITOR_CONVERSION = "Convert the image";
-#include <QObject>
-const QString TOOL_TIP_IMAGE_EDITOR_CONVERSION = QObject::tr("Convert the image");
 
 class Const {
    public:
@@ -172,5 +129,123 @@ class Const {
         static const int LEFT = -90;
         static const int RIGHT = 90;
         static const int UP_SIDE_DOWN = 180;
+    };
+
+    class Thread {
+       public:
+        static const int MAX_IN_QUEUE = 1000;
+    };
+    class Thumbnail {
+       public:
+        static constexpr int POOR_QUALITY = 16;
+        static constexpr int NORMAL_QUALITY = 128;
+        static constexpr int GOOD_QUALITY = 256;
+        static constexpr int HIGHT_QUALITY = 512;
+        static constexpr std::array<int, 4> THUMBNAIL_SIZES = {16, 128, 256, 512};
+    };
+    class Yolo {
+       public:
+        static constexpr int INPUT_WIDTH = 640;
+        static constexpr int INPUT_HEIGHT = 640;
+        static constexpr float SCORE_THRESHOLD = 0.2;
+        static constexpr float CONFIDENCE_THRESHOLD = 0.4;
+    };
+    class ImageBooth {
+       public:
+        static const int IMAGE_QUALITY = Const::Thumbnail::GOOD_QUALITY;
+        static const int IMAGE_POOR_QUALITY = Const::Thumbnail::POOR_QUALITY;
+    };
+    class ImageEditor {
+       public:
+        static const int IMAGE_QUALITY = Const::Thumbnail::HIGHT_QUALITY;
+        static const int IMAGE_POOR_QUALITY = Const::Thumbnail::POOR_QUALITY;
+    };
+    class Extension {
+       public:
+        static const std::vector<std::string> IMAGE;
+        static const std::vector<std::string> VIDEO;
+        static const std::vector<std::string> IMAGE_CONVERTION;
+
+        static const std::vector<std::string> TURNABLE_IMAGE;
+        static const std::vector<std::string> MIRRORABLE_IMAGE;
+        static const std::vector<std::string> METADA_ACTION_IMAGE;
+        static const std::vector<std::string> REAL_ACTION_IMAGE;
+    };
+
+    class ImagePath {
+       public:
+        static const QString LOADING;
+        static const QString ERROR_PATH;  // can't use ERROR because windows use it
+    };
+    class IconPath {
+       public:
+        static const QString DELETE_ICON;  // can't use DELETE because windows use it
+        static const QString SAVE;
+        static const QString EXPORT;
+        static const QString ROTATE_RIGHT;
+        static const QString ROTATE_LEFT;
+        static const QString MIRROR_UP_DOWN;
+        static const QString MIRROR_LEFT_RIGHT;
+        static const QString CONVERSION;
+        static const QString EDIT_EXIF;
+        static const QString EDIT_PERSONS;
+        static const QString EDIT_FILTERS;
+
+        static const QString FOLDER;
+        static const QString ALL_IMAGES;
+        static const QString BACK;
+
+        static const QString BEFORE;
+        static const QString NEXT;
+
+        static const QString IMAGE_BOOTH;
+        static const QString ADD_IMAGES;
+
+        static const QString DISCORD;
+        static const QString GITHUB;
+        static const QString OPTION;
+    };
+    class Tooltip {
+       public:
+        static const QString DISCORD;
+        static const QString GITHUB;
+        static const QString PARAMETER;
+
+        static const QString OPEN_IMAGE_BOOTH;
+        static const QString OPEN_IMAGE_EDITOR;
+        static const QString ADD_IMAGES;
+
+        static const QString BACK;
+
+        class ImageBooth {
+           public:
+            static const QString DELETE_TIP;  // can't use DELETE because windows use it
+            static const QString SAVE;
+            static const QString EXPORT;
+            static const QString ROTATE_RIGHT;
+            static const QString ROTATE_LEFT;
+            static const QString MIRROR_UP_DOWN;
+            static const QString MIRROR_LEFT_RIGHT;
+            static const QString CONVERSION;
+
+            static const QString EDIT_EXIF;
+            static const QString EDIT_PERSONS;
+            static const QString EDIT_FILTERS;
+
+            static const QString ALL_IMAGES;
+        };
+        class ImageEditor {
+           public:
+            static const QString DELETE_TIP;  // can't use DELETE because windows use it
+            static const QString SAVE;
+            static const QString EXPORT;
+            static const QString ROTATE_RIGHT;
+            static const QString ROTATE_LEFT;
+            static const QString MIRROR_UP_DOWN;
+            static const QString MIRROR_LEFT_RIGHT;
+            static const QString EDIT_EXIF;
+            static const QString EDIT_PERSONS;
+            static const QString CONVERSION;
+        };
     };
 };

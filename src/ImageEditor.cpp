@@ -199,7 +199,7 @@ void ImageEditor::createPreview() {
     }
 
     for (int i = 0; i < PREVIEW_NBR * 2 + 1; ++i) {
-        ClickableLabel* previewButton = createImagePreview(IMAGE_PATH_LOADING.toStdString(), 0);
+        ClickableLabel* previewButton = createImagePreview(Const::ImagePath::LOADING.toStdString(), 0);
         previewButtonLayout->addWidget(previewButton);
         previewButtons.push_back(previewButton);
     }
@@ -515,7 +515,7 @@ ClickableLabel* ImageEditor::createImageDelete() {
         return nullptr;
     }
 
-    ClickableLabel* imageDeleteNew = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_TIP_IMAGE_EDITOR_DELETE, this, actionSize);
+    ClickableLabel* imageDeleteNew = new ClickableLabel(data, Const::IconPath::DELETE_ICON, Const::Tooltip::ImageEditor::DELETE_TIP, this, actionSize);
     imageDeleteNew->setInitialBackground("transparent", "#b3b3b3");
 
     if (data->isDeleted(data->imagesData.getImageNumberInTotal())) {
@@ -537,7 +537,7 @@ ClickableLabel* ImageEditor::createImageSave() {
         return nullptr;
     }
 
-    ClickableLabel* imageSaveNew = new ClickableLabel(data, ICON_PATH_SAVE, TOOL_TIP_IMAGE_EDITOR_SAVE, this, actionSize);
+    ClickableLabel* imageSaveNew = new ClickableLabel(data, Const::IconPath::SAVE, Const::Tooltip::ImageEditor::SAVE, this, actionSize);
     imageSaveNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() {
@@ -556,7 +556,7 @@ ClickableLabel* ImageEditor::createImageExport() {
         return nullptr;
     }
 
-    ClickableLabel* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, TOOL_TIP_IMAGE_EDITOR_EXPORT, this, actionSize);
+    ClickableLabel* imageExportNew = new ClickableLabel(data, Const::IconPath::EXPORT, Const::Tooltip::ImageEditor::EXPORT, this, actionSize);
     imageExportNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
@@ -571,7 +571,7 @@ ClickableLabel* ImageEditor::createImageExport() {
  * @return A pointer to the ClickableLabel object representing the rotate right button
  */
 ClickableLabel* ImageEditor::createImageRotateRight() {
-    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_TIP_IMAGE_EDITOR_ROTATE_RIGHT, this, actionSize);
+    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, Const::IconPath::ROTATE_RIGHT, Const::Tooltip::ImageEditor::ROTATE_RIGHT, this, actionSize);
     imageRotateRightNew->setInitialBackground("transparent", "#b3b3b3");
 
     if (!isTurnable(data->getImagesData()->getCurrentImageData()->getImagePath())) {
@@ -595,7 +595,7 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, TOOL_TIP_IMAGE_EDITOR_ROTATE_LEFT, this, actionSize);
+    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, Const::IconPath::ROTATE_LEFT, Const::Tooltip::ImageEditor::ROTATE_LEFT, this, actionSize);
     imageRotateLeftNew->setInitialBackground("transparent", "#b3b3b3");
 
     if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
@@ -619,7 +619,7 @@ ClickableLabel* ImageEditor::createImageMirrorUpDown() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, TOOL_TIP_IMAGE_EDITOR_MIRROR_UP_DOWN, this, actionSize);
+    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, Const::IconPath::MIRROR_UP_DOWN, Const::Tooltip::ImageEditor::MIRROR_UP_DOWN, this, actionSize);
     imageMirrorUpDownNew->setInitialBackground("transparent", "#b3b3b3");
 
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
@@ -643,7 +643,7 @@ ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, TOOL_TIP_IMAGE_EDITOR_MIRROR_LEFT_RIGHT, this, actionSize);
+    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, Const::IconPath::MIRROR_LEFT_RIGHT, Const::Tooltip::ImageEditor::MIRROR_LEFT_RIGHT, this, actionSize);
     imageMirrorLeftRightNew->setInitialBackground("transparent", "#b3b3b3");
 
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
@@ -668,7 +668,7 @@ ClickableLabel* ImageEditor::createImageEditExif() {
         return nullptr;
     }
 
-    ClickableLabel* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, TOOL_TIP_IMAGE_EDITOR_EDIT_EXIF, this, actionSize);
+    ClickableLabel* imageEditExifNew = new ClickableLabel(data, Const::IconPath::EDIT_EXIF, Const::Tooltip::ImageEditor::EDIT_EXIF, this, actionSize);
     imageEditExifNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
@@ -698,7 +698,7 @@ ClickableLabel* ImageEditor::createImageConversion() {
         return nullptr;
     }
 
-    ClickableLabel* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, TOOL_TIP_IMAGE_EDITOR_CONVERSION, this, actionSize);
+    ClickableLabel* imageConversionNew = new ClickableLabel(data, Const::IconPath::CONVERSION, Const::Tooltip::ImageEditor::CONVERSION, this, actionSize);
     imageConversionNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
@@ -717,7 +717,7 @@ ClickableLabel* ImageEditor::createImagePersons() {
         return nullptr;
     }
 
-    ClickableLabel* imagePersonsNew = new ClickableLabel(data, ICON_PATH_EDIT_PERSONS, TOOL_TIP_IMAGE_EDITOR_EDIT_PERSONS, this, actionSize);
+    ClickableLabel* imagePersonsNew = new ClickableLabel(data, Const::IconPath::EDIT_PERSONS, Const::Tooltip::ImageEditor::EDIT_PERSONS, this, actionSize);
     imagePersonsNew->setInitialBackground("transparent", "#b3b3b3");
     imagePersonsNew->addLogo("#700c13", "#ffffff");
 
@@ -819,7 +819,7 @@ ClickableLabel* ImageEditor::createImageBefore() {
         return nullptr;
     }
 
-    ClickableLabel* buttonImageBeforeNew = new ClickableLabel(data, ICON_PATH_BEFORE, "", this, actionSize);
+    ClickableLabel* buttonImageBeforeNew = new ClickableLabel(data, Const::IconPath::BEFORE, "", this, actionSize);
     buttonImageBeforeNew->setInitialBackground("transparent", "#b3b3b3");
 
     // buttonImageBeforeNew->setFixedSize(&actionSize);
@@ -843,7 +843,7 @@ ClickableLabel* ImageEditor::createImageNext() {
         return nullptr;
     }
 
-    ClickableLabel* buttonImageNextNew = new ClickableLabel(data, ICON_PATH_NEXT, "", this, actionSize);
+    ClickableLabel* buttonImageNextNew = new ClickableLabel(data, Const::IconPath::NEXT, "", this, actionSize);
     buttonImageNextNew->setInitialBackground("transparent", "#b3b3b3");
 
     if (data->imagesData.getImageNumber() == data->imagesData.getCurrent()->size() - 1) {
@@ -868,7 +868,7 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
         return nullptr;
     }
 
-    ClickableLabel* previewButton = new ClickableLabel(data, QString::fromStdString(imagePath), "", this, previewSize, false, 128, false);
+    ClickableLabel* previewButton = new ClickableLabel(data, QString::fromStdString(imagePath), "", this, previewSize, false, Const::Thumbnail::NORMAL_QUALITY, false);
     previewButton->setInitialBorder("transparent", "#b3b3b3");
 
     connect(previewButton, &ClickableLabel::leftClicked, [this, imageNbr]() {

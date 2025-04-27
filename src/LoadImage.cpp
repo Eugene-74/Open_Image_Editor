@@ -183,11 +183,7 @@ bool loadImagesThumbnail(std::shared_ptr<Data> data, QProgressDialog& progressDi
             for (int i = start; i < end; ++i) {
                 ImageData* imageData = data->getImagesData()->get()->at(i);
 
-                data->createAllThumbnailIfNotExists(imageData->getImagePath(), 512);
-                // data->createThumbnailIfNotExists(imageData->getImagePath(), 16);
-                // data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
-                // data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
-                // data->createThumbnailIfNotExists(imageData->getImagePath(), 512);
+                data->createAllThumbnailIfNotExists(imageData->getImagePath(), Const::Thumbnail::HIGHT_QUALITY);
 
                 try {
                     data->unloadFromCache(imageData->getImagePath());
@@ -207,10 +203,9 @@ bool loadImagesThumbnail(std::shared_ptr<Data> data, QProgressDialog& progressDi
         try {
             for (int index : imageIndices) {
                 ImageData* imageData = data->getImagesData()->getImageData(index);
-                // data->hasThumbnail(imageData->getImagePath(), 128);
 
                 bool allThumbnailsExist = true;
-                for (int thumbnailSize : THUMBNAIL_SIZES) {
+                for (int thumbnailSize : Const::Thumbnail::THUMBNAIL_SIZES) {
                     if (!data->hasThumbnail(imageData->getImagePath(), thumbnailSize)) {
                         allThumbnailsExist = false;
                         break;

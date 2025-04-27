@@ -230,8 +230,8 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         // }
 
         if (!force) {
-            for (int i = THUMBNAIL_SIZES.size() - 1; i >= 0; --i) {
-                int size = THUMBNAIL_SIZES[i];
+            for (int i = Const::Thumbnail::THUMBNAIL_SIZES.size() - 1; i >= 0; --i) {
+                int size = Const::Thumbnail::THUMBNAIL_SIZES[i];
 
                 it = imageCache->find(getThumbnailPath(imagePath, size));
                 if (it != imageCache->end()) {
@@ -239,30 +239,6 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                     return it->second.image;
                 }
             }
-
-            // it = imageCache->find(getThumbnailPath(imagePath, 512));
-            // if (it != imageCache->end()) {
-            //     qInfo() << "Image found in cache 512: " << QString::fromStdString(imagePath);
-            //     return it->second.image;
-            // }
-
-            // it = imageCache->find(getThumbnailPath(imagePath, 256));
-            // if (it != imageCache->end()) {
-            //     qInfo() << "Image found in cache 256: " << QString::fromStdString(imagePath);
-            //     return it->second.image;
-            // }
-
-            // it = imageCache->find(getThumbnailPath(imagePath, 128));
-            // if (it != imageCache->end()) {
-            //     qInfo() << "Image found in cache 128: " << QString::fromStdString(imagePath);
-            //     return it->second.image;
-            // }
-
-            // it = imageCache->find(getThumbnailPath(imagePath, 16));
-            // if (it != imageCache->end()) {
-            //     qInfo() << "Image found in cache 16: " << QString::fromStdString(imagePath);
-            //     return it->second.image;
-            // }
         }
     }
 
@@ -281,59 +257,21 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         // qInfo() << "Loading image from file: " << QString::fromStdString(imagePath);
         if (!fs::exists(imagePath)) {
             qCritical() << "Error: The specified path does not exist: " << QString::fromStdString(imagePath);
-            image.load(IMAGE_PATH_ERROR);
+            image.load(Const::ImagePath::ERROR_PATH);
             return image;
         }
 
-        for (int size : THUMBNAIL_SIZES) {
+        for (int size : Const::Thumbnail::THUMBNAIL_SIZES) {
             if (thumbnail == size) {
                 if (hasThumbnail(imagePath, size)) {
                     imagePathbis = getThumbnailPath(imagePath, size);
                 } else {
-                    for (int sizeBis : THUMBNAIL_SIZES) {
+                    for (int sizeBis : Const::Thumbnail::THUMBNAIL_SIZES) {
                         createThumbnailIfNotExists(imagePath, sizeBis);
                     }
                 }
             }
         }
-
-        // if (thumbnail == 16) {
-        //     if (hasThumbnail(imagePath, 16)) {
-        //         imagePathbis = getThumbnailPath(imagePath, 16);
-        //     } else {
-        //         createThumbnail(imagePath, 16);
-        //         createThumbnailIfNotExists(imagePath, 128);
-        //         createThumbnailIfNotExists(imagePath, 256);
-        //         createThumbnailIfNotExists(imagePath, 512);
-        //     }
-        // } else if (thumbnail == 128) {
-        //     if (hasThumbnail(imagePath, 128)) {
-        //         imagePathbis = getThumbnailPath(imagePath, 128);
-        //     } else {
-        //         createThumbnailIfNotExists(imagePath, 16);
-        //         createThumbnail(imagePath, 128);
-        //         createThumbnailIfNotExists(imagePath, 256);
-        //         createThumbnailIfNotExists(imagePath, 512);
-        //     }
-        // } else if (thumbnail == 256) {
-        //     if (hasThumbnail(imagePath, 256)) {
-        //         imagePathbis = getThumbnailPath(imagePath, 256);
-        //     } else {
-        //         createThumbnailIfNotExists(imagePath, 16);
-        //         createThumbnailIfNotExists(imagePath, 128);
-        //         createThumbnail(imagePath, 256);
-        //         createThumbnailIfNotExists(imagePath, 512);
-        //     }
-        // } else if (thumbnail == 512) {
-        //     if (hasThumbnail(imagePath, 512)) {
-        //         imagePathbis = getThumbnailPath(imagePath, 512);
-        //     } else {
-        //         createThumbnailIfNotExists(imagePath, 16);
-        //         createThumbnailIfNotExists(imagePath, 128);
-        //         createThumbnailIfNotExists(imagePath, 256);
-        //         createThumbnail(imagePath, 512);
-        //     }
-        // }
         if (isVideo(imagePath)) {
             // qInfo() << "Loading video: " << QString::fromStdString(imagePath);
             image = loadImageFromVideo(imagePath);
@@ -361,7 +299,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 
         if (image.isNull()) {
             qCritical() << "Could not open or find the image : " << imagePathbis;
-            image.load(IMAGE_PATH_ERROR);
+            image.load(Const::ImagePath::ERROR_PATH);
             return image;
         }
 
@@ -500,7 +438,7 @@ void Data::createThumbnailAsync(const std::string& imagePath, const int maxDim, 
 void Data::createAllThumbnailsAsync(const std::string& imagePath, std::function<void(bool)> callback) {
     addHeavyThreadToFront([this, imagePath, callback]() {
         bool success = true;
-        for (auto size : THUMBNAIL_SIZES) {
+        for (auto size : Const::Thumbnail::THUMBNAIL_SIZES) {
             if (!createThumbnailIfNotExists(imagePath, size)) {
                 success = false;
                 qCritical() << "Error: Could not create thumbnail for image: " << QString::fromStdString(imagePath) << " size: " << size;
@@ -616,23 +554,11 @@ bool Data::hasThumbnail(const std::string& imagePath, const int maxDim) {
  * @param size max size to load
  */
 void Data::createAllThumbnailIfNotExists(const std::string& imagePath, const int size) {
-    for (int thumbnailSize : THUMBNAIL_SIZES) {
+    for (int thumbnailSize : Const::Thumbnail::THUMBNAIL_SIZES) {
         if (size > thumbnailSize) {
             createThumbnailIfNotExists(imagePath, thumbnailSize);
         }
     }
-    // if (size > 16) {
-    //     createThumbnailIfNotExists(imagePath, 16);
-    // }
-    // if (size > 128) {
-    //     createThumbnailIfNotExists(imagePath, 128);
-    // }
-    // if (size > 256) {
-    //     createThumbnailIfNotExists(imagePath, 256);
-    // }
-    // if (size > 512) {
-    //     createThumbnailIfNotExists(imagePath, 512);
-    // }
 }
 
 /**
@@ -641,23 +567,11 @@ void Data::createAllThumbnailIfNotExists(const std::string& imagePath, const int
  * @param size max size to load
  */
 void Data::createAllThumbnail(const std::string& imagePath, const int size) {
-    for (int thumbnailSize : THUMBNAIL_SIZES) {
+    for (int thumbnailSize : Const::Thumbnail::THUMBNAIL_SIZES) {
         if (size > thumbnailSize) {
             createThumbnail(imagePath, thumbnailSize);
         }
     }
-    // if (size > 16) {
-    //     createThumbnail(imagePath, 16);
-    // }
-    // if (size > 128) {
-    //     createThumbnail(imagePath, 128);
-    // }
-    // if (size > 256) {
-    //     createThumbnail(imagePath, 256);
-    // }
-    // if (size > 512) {
-    //     createThumbnail(imagePath, 512);
-    // }
 }
 
 /**
@@ -1257,7 +1171,7 @@ void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
     }
     unloadFromCache(imagesData.getImageData(nbr)->getImagePath());
     loadInCache(imagesData.getImageData(nbr)->getImagePath());
-    createAllThumbnail(imagesData.getImageData(nbr)->getImagePath(), 512);
+    createAllThumbnail(imagesData.getImageData(nbr)->getImagePath(), Const::Thumbnail::HIGHT_QUALITY);
     reload();
 }
 
@@ -1578,7 +1492,7 @@ void Data::realMirror(int nbr, bool UpDown, std::function<void()> reload) {
     }
     unloadFromCache(imagesData.getCurrentImageData()->getImagePathConst());
     loadInCache(imagesData.getCurrentImageData()->getImagePathConst());
-    createAllThumbnail(imagesData.getCurrentImageData()->getImagePathConst(), 512);
+    createAllThumbnail(imagesData.getCurrentImageData()->getImagePathConst(), Const::Thumbnail::HIGHT_QUALITY);
     reload();
 }
 
@@ -1868,7 +1782,7 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
 
     auto input_image = format_yolov5(mat);
 
-    cv::dnn::blobFromImage(input_image, blob, 1. / 255., cv::Size(INPUT_WIDTH, INPUT_HEIGHT), cv::Scalar(), true, false);
+    cv::dnn::blobFromImage(input_image, blob, 1. / 255., cv::Size(Const::Yolo::INPUT_WIDTH, Const::Yolo::INPUT_HEIGHT), cv::Scalar(), true, false);
     net.setInput(blob);
     std::vector<cv::Mat> outputs;
 
@@ -1878,8 +1792,8 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
     std::chrono::duration<double> detectionTime = end - start;
     // qInfo() << "Detection time with " + model + " :" << detectionTime.count() << "seconds";
 
-    float x_factor = input_image.cols / INPUT_WIDTH;
-    float y_factor = input_image.rows / INPUT_HEIGHT;
+    float x_factor = input_image.cols / Const::Yolo::INPUT_WIDTH;
+    float y_factor = input_image.rows / Const::Yolo::INPUT_HEIGHT;
 
     float* data = (float*)outputs[0].data;
 
@@ -1898,7 +1812,7 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
             cv::Point class_id;
             double max_class_score;
             minMaxLoc(scores, 0, &max_class_score, 0, &class_id);
-            if (max_class_score > SCORE_THRESHOLD) {
+            if (max_class_score > Const::Yolo::SCORE_THRESHOLD) {
                 confidences.push_back(confidence);
 
                 class_ids.push_back(class_id.x);
@@ -1921,7 +1835,7 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
     std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjectsMap;
 
     std::vector<int> nms_result;
-    cv::dnn::NMSBoxes(boxes, confidences, SCORE_THRESHOLD, this->model.getConfidence(), nms_result);
+    cv::dnn::NMSBoxes(boxes, confidences, Const::Yolo::SCORE_THRESHOLD, this->model.getConfidence(), nms_result);
 
     for (int i = 0; i < nms_result.size(); i++) {
         int idx = nms_result[i];
@@ -2005,8 +1919,8 @@ void Data::checkThumbnailAndCorrect() {
         static int delay = 0;
         bool hasThumbnail = true;
         int i = 0;
-        while (i < THUMBNAIL_SIZES.size() && hasThumbnail) {
-            if (!this->hasThumbnail(imageData->getImagePath(), THUMBNAIL_SIZES[i])) {
+        while (i < Const::Thumbnail::THUMBNAIL_SIZES.size() && hasThumbnail) {
+            if (!this->hasThumbnail(imageData->getImagePath(), Const::Thumbnail::THUMBNAIL_SIZES[i])) {
                 hasThumbnail = false;
             }
             i++;

@@ -77,7 +77,7 @@ void ThreadManager::addThread(std::function<void()> job) {
         {
             std::lock_guard<std::mutex> lock(taskQueueMutex);
 
-            if (taskQueue.size() < 1000) {
+            if (taskQueue.size() < Const::Thread::MAX_IN_QUEUE) {
                 taskQueue.push_back(std::move(job));
                 qInfo() << "Job added to queue. Queue size: " << taskQueue.size();
             } else {
@@ -123,7 +123,7 @@ void ThreadManager::addThreadToFront(std::function<void()> job) {
         {
             std::lock_guard<std::mutex> lock(taskQueueMutex);
 
-            if (taskQueue.size() < 1000) {
+            if (taskQueue.size() < Const::Thread::MAX_IN_QUEUE) {
                 taskQueue.push_front(std::move(job));
                 qInfo() << "Job added to queue. Queue size: " << taskQueue.size();
             } else {

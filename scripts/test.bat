@@ -14,7 +14,7 @@ cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Test -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCM
 
 cmake --build .
 
-ctest --output-on-failure
+ctest --output-on-failure --verbose
 if %errorlevel% neq 0 (
     echo Tests failed, aborting execution.
     exit /b %errorlevel%

@@ -27,9 +27,9 @@ MainWindow::MainWindow(std::shared_ptr<Data> dat, QWidget* parent)
 
     switchLayout = new QHBoxLayout();
 
-    ClickableLabel* switchToBooth = new ClickableLabel(data, ICON_PATH_IMAGE_BOOTH, TOOL_TIP_OPEN_IMAGE_BOOTH, this, actionSize, false, 0, true);
+    ClickableLabel* switchToBooth = new ClickableLabel(data, Const::IconPath::IMAGE_BOOTH, Const::Tooltip::OPEN_IMAGE_BOOTH, this, actionSize, false, 0, true);
     switchToBooth->setInitialBackground("transparent", "#b3b3b3");
-    ClickableLabel* addImages = new ClickableLabel(data, ICON_PATH_OPTION_ADD_IMAGES, TOOL_TIP_ADD_IMAGES, this, actionSize, false, 0, true);
+    ClickableLabel* addImages = new ClickableLabel(data, Const::IconPath::ADD_IMAGES, Const::Tooltip::ADD_IMAGES, this, actionSize, false, 0, true);
     addImages->setInitialBackground("transparent", "#b3b3b3");
 
     connect(switchToBooth, &ClickableLabel::clicked, this, [this]() {

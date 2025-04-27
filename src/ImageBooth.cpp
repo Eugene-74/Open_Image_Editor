@@ -28,13 +28,13 @@ ImageBooth::ImageBooth(std::shared_ptr<Data> dat, QWidget* parent)
 
     data->getImagesData()->getCurrent()->clear();
 
-    imageQuality = 16;
-    if (imageSize->height() + imageSize->width() >= 256) {
-        imageQuality = 512;
-    } else if (imageSize->height() + imageSize->width() >= 128) {
-        imageQuality = 256;
-    } else if (imageSize->height() + imageSize->width() >= 16) {
-        imageQuality = 128;
+    imageQuality = Const::Thumbnail::POOR_QUALITY;
+    int i = Const::Thumbnail::THUMBNAIL_SIZES.size() - 2;
+    while (i > 0 && imageQuality == Const::Thumbnail::POOR_QUALITY) {
+        if (imageSize->height() + imageSize->width() >= Const::Thumbnail::THUMBNAIL_SIZES[i]) {
+            imageQuality = Const::Thumbnail::THUMBNAIL_SIZES[i + 1];
+        }
+        i--;
     }
 
     if (data->getCurrentFolders()->getName() == "*") {
@@ -257,7 +257,7 @@ void ImageBooth::createFirstImages() {
         int folderNumber = (line * imagePerLine) + nbrInLine;
 
         for (int i = 0; i < imagePerLine; i++) {
-            auto* imageButton = new ClickableLabel(data, ICON_PATH_FOLDER,
+            auto* imageButton = new ClickableLabel(data, Const::IconPath::FOLDER,
                                                    "", this, imageSize, false, 0, true);
             imageButton->hide();
             lineLayout->addWidget(imageButton);
@@ -296,7 +296,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                                          "", this, imageSize, false, imageQuality, true);
     } else {
         qWarning() << "no thumbnail found, creating it for : " << imagePath;
-        imageButton = new ClickableLabel(data, IMAGE_PATH_LOADING,
+        imageButton = new ClickableLabel(data, Const::ImagePath::LOADING,
                                          "", this, imageSize, false, 0, true);
         QPointer<ImageBooth> self = this;
         data->createAllThumbnailsAsync(imagePath, [self, imagePath, nbr](bool result) {
@@ -602,13 +602,13 @@ void ImageBooth::updateImages() {
 
                         ClickableLabel* folderButton;
                         if (data->getCurrentFolders()->getName() == firstFolderName) {
-                            folderButton = new ClickableLabel(data, ICON_PATH_ALL_IMAGES,
-                                                              TOOL_TIP_IMAGE_BOOTH_ALL_IMAGES,
+                            folderButton = new ClickableLabel(data, Const::IconPath::ALL_IMAGES,
+                                                              Const::Tooltip::ImageBooth::ALL_IMAGES,
                                                               this, imageSize, false, 0, true);
                             folderButton->addLogo("#00FF00", "FFFFFF", data->getImagesData()->get()->size());
                         } else {
-                            folderButton = new ClickableLabel(data, ICON_PATH_BACK,
-                                                              TOOL_TIP_IMAGE_BOOTH_BACK + " : " + QString::fromStdString(data->getCurrentFolders()->getParent()->getName()),
+                            folderButton = new ClickableLabel(data, Const::IconPath::BACK,
+                                                              Const::Tooltip::BACK + " : " + QString::fromStdString(data->getCurrentFolders()->getParent()->getName()),
                                                               this, imageSize, false, 0, true);
                         }
 
@@ -624,7 +624,7 @@ void ImageBooth::updateImages() {
                         lineLayout->replaceWidget(lastFolderButton, folderButton);
                         lastFolderButton->deleteLater();
                     } else {
-                        auto* folderButton = new ClickableLabel(data, ICON_PATH_FOLDER,
+                        auto* folderButton = new ClickableLabel(data, Const::IconPath::FOLDER,
                                                                 QString::fromStdString(data->getCurrentFolders()->getFolder(folderNbr - 1)->getName()),
                                                                 this, imageSize, false, 0, true);
 
@@ -678,7 +678,7 @@ void ImageBooth::updateImages() {
                         imagePath = data->imagesData.getImageDataInCurrent(imageNbr)->getImagePath();
                         imageButton = createImage(imagePath, imageNbr);
                     } else {
-                        imageButton = new ClickableLabel(data, IMAGE_PATH_ERROR,
+                        imageButton = new ClickableLabel(data, Const::ImagePath::ERROR_PATH,
                                                          "", this, imageSize, false, 0, true);
                     }
 
@@ -773,7 +773,7 @@ ClickableLabel* ImageBooth::createImageDelete() {
         return nullptr;
     }
 
-    ClickableLabel* imageDeleteNew = new ClickableLabel(data, ICON_PATH_DELETE, TOOL_TIP_IMAGE_BOOTH_DELETE, this, actionSize);
+    ClickableLabel* imageDeleteNew = new ClickableLabel(data, Const::IconPath::DELETE_ICON, Const::Tooltip::ImageBooth::DELETE_TIP, this, actionSize);
     imageDeleteNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageDeleteNew, &ClickableLabel::clicked, [this]() {
@@ -853,7 +853,7 @@ ClickableLabel* ImageBooth::createImageSave() {
         return nullptr;
     }
 
-    ClickableLabel* imageSaveNew = new ClickableLabel(data, ICON_PATH_SAVE, TOOL_TIP_IMAGE_BOOTH_SAVE, this, actionSize);
+    ClickableLabel* imageSaveNew = new ClickableLabel(data, Const::IconPath::SAVE, Const::Tooltip::ImageBooth::SAVE, this, actionSize);
     imageSaveNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() {
@@ -886,7 +886,7 @@ ClickableLabel* ImageBooth::createImageExport() {
         return nullptr;
     }
 
-    auto* imageExportNew = new ClickableLabel(data, ICON_PATH_EXPORT, TOOL_TIP_IMAGE_BOOTH_EXPORT, this, actionSize);
+    auto* imageExportNew = new ClickableLabel(data, Const::IconPath::EXPORT, Const::Tooltip::ImageBooth::EXPORT, this, actionSize);
     imageExportNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
@@ -906,7 +906,7 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
         return nullptr;
     }
 
-    auto* imageRotateRightNew = new ClickableLabel(data, ICON_PATH_ROTATE_RIGHT, TOOL_TIP_IMAGE_BOOTH_ROTATE_RIGHT, this, actionSize);
+    auto* imageRotateRightNew = new ClickableLabel(data, Const::IconPath::ROTATE_RIGHT, Const::Tooltip::ImageBooth::ROTATE_RIGHT, this, actionSize);
     imageRotateRightNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() {
@@ -959,7 +959,7 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
         return nullptr;
     }
 
-    auto* imageRotateLeftNew = new ClickableLabel(data, ICON_PATH_ROTATE_LEFT, TOOL_TIP_IMAGE_BOOTH_ROTATE_LEFT, this, actionSize);
+    auto* imageRotateLeftNew = new ClickableLabel(data, Const::IconPath::ROTATE_LEFT, Const::Tooltip::ImageBooth::ROTATE_LEFT, this, actionSize);
     imageRotateLeftNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() {
@@ -1012,7 +1012,7 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
         return nullptr;
     }
 
-    auto* imageMirrorUpDownNew = new ClickableLabel(data, ICON_PATH_MIRROR_UP_DOWN, TOOL_TIP_IMAGE_BOOTH_MIRROR_UP_DOWN, this, actionSize);
+    auto* imageMirrorUpDownNew = new ClickableLabel(data, Const::IconPath::MIRROR_UP_DOWN, Const::Tooltip::ImageBooth::MIRROR_UP_DOWN, this, actionSize);
     imageMirrorUpDownNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageMirrorUpDownNew, &ClickableLabel::clicked, [this]() {
@@ -1066,7 +1066,7 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
         return nullptr;
     }
 
-    auto* imageMirrorLeftRightNew = new ClickableLabel(data, ICON_PATH_MIRROR_LEFT_RIGHT, TOOL_TIP_IMAGE_BOOTH_MIRROR_LEFT_RIGHT, this, actionSize);
+    auto* imageMirrorLeftRightNew = new ClickableLabel(data, Const::IconPath::MIRROR_LEFT_RIGHT, Const::Tooltip::ImageBooth::MIRROR_LEFT_RIGHT, this, actionSize);
     imageMirrorLeftRightNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageMirrorLeftRightNew, &ClickableLabel::clicked, [this]() {
@@ -1119,7 +1119,7 @@ ClickableLabel* ImageBooth::createImageEditExif() {
         return nullptr;
     }
 
-    auto* imageEditExifNew = new ClickableLabel(data, ICON_PATH_EDIT_EXIF, TOOL_TIP_IMAGE_BOOTH_EDIT_EXIF, this, actionSize);
+    auto* imageEditExifNew = new ClickableLabel(data, Const::IconPath::EDIT_EXIF, Const::Tooltip::ImageBooth::EDIT_EXIF, this, actionSize);
     imageEditExifNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
@@ -1139,7 +1139,7 @@ ClickableLabel* ImageBooth::createImageConversion() {
         return nullptr;
     }
 
-    auto* imageConversionNew = new ClickableLabel(data, ICON_PATH_CONVERSION, TOOL_TIP_IMAGE_BOOTH_CONVERSION, this, actionSize);
+    auto* imageConversionNew = new ClickableLabel(data, Const::IconPath::CONVERSION, Const::Tooltip::ImageBooth::CONVERSION, this, actionSize);
     imageConversionNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
@@ -1179,7 +1179,7 @@ ClickableLabel* ImageBooth::createEditFilters() {
         return nullptr;
     }
 
-    auto* editFiltersNew = new ClickableLabel(data, ICON_PATH_EDIT_FILTERS, TOOL_TIP_IMAGE_BOOTH_EDIT_FILTERS, this, actionSize);
+    auto* editFiltersNew = new ClickableLabel(data, Const::IconPath::EDIT_FILTERS, Const::Tooltip::ImageBooth::EDIT_FILTERS, this, actionSize);
     editFiltersNew->setInitialBackground("transparent", "#b3b3b3");
     int activeFiltersCount = 0;
     for (const auto& filter : data->getImagesData()->getFilters()) {
