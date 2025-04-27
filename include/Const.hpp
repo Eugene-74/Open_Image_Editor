@@ -97,7 +97,7 @@ class Const {
 
     class Thread {
        public:
-        static const int MAX_IN_QUEUE = 1000;
+        static const int MAX_IN_QUEUE = 100000;
     };
     class Thumbnail {
        public:

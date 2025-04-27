@@ -97,9 +97,14 @@ void ThreadManager::addHeavyThread(std::function<void()> job) {
     } else {
         {
             std::lock_guard<std::mutex> lock(heavyTaskQueueMutex);
-            heavyTaskQueue.push_back(std::move(job));
-            if (heavyTaskQueue.size() > 100) {
-                qWarning() << "Heavy thread queue" << heavyTaskQueue.size();
+
+            if (taskQueue.size() < Const::Thread::MAX_IN_QUEUE) {
+                heavyTaskQueue.push_back(std::move(job));
+                if (heavyTaskQueue.size() > 100) {
+                    qWarning() << "Heavy thread queue" << heavyTaskQueue.size();
+                }
+            } else {
+                qCritical() << "Heavy thread queue is full. Job discarded.";
             }
         }
     }
@@ -125,7 +130,7 @@ void ThreadManager::addThreadToFront(std::function<void()> job) {
 
             if (taskQueue.size() < Const::Thread::MAX_IN_QUEUE) {
                 taskQueue.push_front(std::move(job));
-                qInfo() << "Job added to queue. Queue size: " << taskQueue.size();
+                // qInfo() << "Job added to queue. Queue size: " << taskQueue.size();
             } else {
                 qCritical() << "Thread queue is full. Job discarded.";
             }
