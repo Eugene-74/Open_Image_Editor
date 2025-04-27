@@ -310,7 +310,9 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
                 addSubfolders(*subFolder, imagesData, entry.path().string(), nbrImage, progressDialog);
             }
         } else {
-            if (isImage(entry.path().filename().string()) || isVideo(entry.path().filename().string())) {
+            if (isImage(entry.path().filename().string())
+                // || isVideo(entry.path().filename().string())
+            ) {
                 std::string imagePath = entry.path().string();
                 std::replace(imagePath.begin(), imagePath.end(), '\\', '/');
                 if (imagesData->getImageData(imagePath) == nullptr) {
