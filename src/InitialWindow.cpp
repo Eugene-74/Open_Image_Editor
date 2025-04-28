@@ -140,40 +140,15 @@ InitialWindow::InitialWindow() {
                 progressDialog.setValue(0);
                 progressDialog.show();
 
-                if (!downloadFile("https://drive.google.com/drive/folders/17rQYK6WM739D2gh1Uhicd5uhc5rw4z8r?usp=sharing/" + file, filePath, &progressDialog)) {
+                // TODO adapter si pas yolov5
+                std::string downloadUrl = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/yolov5/" + std::string(file);
+
+                if (!downloadFile(downloadUrl, filePath, &progressDialog)) {
                     qDebug() << "Failed to download file:" << QString::fromStdString(file);
                 }
             }
         }
     });
-}
-
-/**
- * @brief Check for files to download
- * @details This function checks if the files to download are present in the application directory.
- * @details If not, it downloads them from the specified URL and saves them in the application directory.
- * @details It uses a progress dialog to show the download progress.
- */
-void checkForFilesToDownload() {
-    QProgressDialog progressDialog("Downloading ", nullptr, 0, 100, nullptr);
-    progressDialog.setWindowModality(Qt::ApplicationModal);
-    progressDialog.setCancelButton(nullptr);
-    progressDialog.setAutoClose(false);
-    for (std::string file : filesToDownload) {
-        std::string filePath = APP_FILES.toStdString() + "/" + file;
-        if (!fs::exists(filePath)) {
-            progressDialog.show();
-            QApplication::processEvents();
-
-            progressDialog.setObjectName("Downloading " + file);
-            progressDialog.setValue(0);
-
-            if (!downloadFile("https://github.com/Eugene-74/Open_Image_Editor/raw/refs/heads/files/" + file, filePath, &progressDialog)) {
-                qDebug() << "Failed to download file:" << QString::fromStdString(file);
-            }
-        }
-    }
-    progressDialog.close();
 }
 
 /**
