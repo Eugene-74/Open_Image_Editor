@@ -20,6 +20,7 @@
 #include "ClickableLabel.hpp"
 #include "Const.hpp"
 #include "Data.hpp"
+#include "Download.hpp"
 #include "ImageBooth.hpp"
 #include "ImageEditor.hpp"
 #include "MainWindow.hpp"
@@ -131,217 +132,7 @@ InitialWindow::InitialWindow() {
         checkForUpdate(&progressDialog);
         progressDialog.close();
 
-        for (std::string file : filesToDownload) {
-            std::string filePath = APP_FILES.toStdString() + "/" + file;
-            if (!fs::exists(filePath)) {
-                QProgressDialog progressDialog("Downloading " + QString::fromStdString(file), nullptr, 0, 100, this);
-                progressDialog.setWindowModality(Qt::ApplicationModal);
-                progressDialog.setCancelButton(nullptr);
-                progressDialog.setValue(0);
-                progressDialog.show();
-
-                // TODO adapter si pas yolov5
-                std::string downloadUrl = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/yolov5/" + std::string(file);
-
-                if (!downloadFile(downloadUrl, filePath, &progressDialog)) {
-                    qDebug() << "Failed to download file:" << QString::fromStdString(file);
-                }
-            }
-        }
     });
-}
-
-/**
- * @brief Callback function for writing data received from the server
- * @param contents Pointer to the data received from the server
- * @param size Size of each data element
- * @param nmemb Number of data elements
- * @param userp Pointer to the user-defined data (in this case, a string)
- * @return The size of the data written
- */
-size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    return size * nmemb;
-}
-
-/**
- * @brief Callback function for writing data received from the server and saving it to a file
- * @param contents Pointer to the data received from the server
- * @param size Size of each data element
- * @param nmemb Number of data elements
- * @param userp Pointer to the user-defined data (in this case, an ofstream object)
- * @return The size of the data written
- */
-size_t WriteCallbackAndSave(void* contents, size_t size, size_t nmemb, void* userp) {
-    std::ofstream* out = static_cast<std::ofstream*>(userp);
-    size_t totalSize = size * nmemb;
-    out->write(static_cast<char*>(contents), totalSize);
-    return totalSize;
-}
-
-/**
- * @brief Callback function for progress updates during file download (shows the progress)
- * @param ptr Pointer to the user-defined data (in this case, a QProgressDialog object)
- * @param totalToDownload Total size of the data to be downloaded
- * @param nowDownloaded Size of the data downloaded so far
- * @param totalToUpload Total size of the data to be uploaded (not used in this case)
- * @param nowUploaded Size of the data uploaded so far (not used in this case)
- * @return 0 to continue, non-zero to abort the operation
- * @details This function is used to update the progress dialog during the download process.
- */
-int progressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded) {
-    QProgressDialog* progressDialog = static_cast<QProgressDialog*>(ptr);
-    QApplication::processEvents();
-    if (totalToDownload > 0) {
-        double progress = (nowDownloaded / (double)totalToDownload) * 100.0;
-        progressDialog->setValue((int)progress);
-    }
-    return 0;
-}
-
-/**
- * @brief Callback function for progress updates during file download (alternative version (dosn't shows the progress))
- * @param ptr Pointer to the user-defined data (in this case, a QProgressDialog object)
- * @param totalToDownload Total size of the data to be downloaded
- * @param nowDownloaded Size of the data downloaded so far
- * @param totalToUpload Total size of the data to be uploaded (not used in this case)
- * @param nowUploaded Size of the data uploaded so far (not used in this case)
- * @return 0 to continue, non-zero to abort the operation
- * @details This function is used to update the progress dialog during the download process.
- */
-int progressCallbackBis(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded) {
-    QProgressDialog* progressDialog = static_cast<QProgressDialog*>(ptr);
-    QApplication::processEvents();
-    return 0;
-}
-
-/**
- * @brief Get the latest GitHub tag from the repository (without pre-release)
- * @param progressDialog Pointer to the progress dialog for showing download progress
- * @return The latest GitHub tag as a string
- * @details This function uses the GitHub API to get the latest release tag from the specified repository.
- */
-std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
-    CURL* curl;
-    CURLcode res;
-    std::string readBuffer;
-
-    const std::string& repoOwner = REPO_OWNER;
-    const std::string& repoName = REPO_NAME;
-
-    curl = curl_easy_init();
-    if (curl) {
-        std::string url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/releases";
-
-        // Desactive la validation SSL
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-        // end validation
-
-        // TODO reactiver la validation :
-        qDebug() << "path to .pem" << APP_FILES + "/cacert.pem";
-        // curl_easy_setopt(curl, CURLOPT_CAINFO, APP_FILES + "/cacert.pem");
-        // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
-        // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
-        curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3);
-
-        // Set timeout time to avoir bug
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10L);
-
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
-
-        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progressCallbackBis);
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-        curl_easy_setopt(curl, CURLOPT_XFERINFODATA, progressDialog);
-
-        res = curl_easy_perform(curl);
-        if (res == CURLE_OPERATION_TIMEDOUT) {
-            showWarningMessage(nullptr, "Could not check for update (low connexion)", "Checking for updates");
-            qWarning() << "Error : Could not check for update (low connexion) : " << curl_easy_strerror(res);
-            curl_easy_cleanup(curl);
-            return "";
-        }
-        if (res != CURLE_OK) {
-            qWarning() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
-            showWarningMessage(nullptr, "Something went wrong", "Checking for updates");
-
-            curl_easy_cleanup(curl);
-            return "";
-        }
-        curl_easy_cleanup(curl);
-    }
-
-    // Parse JSON response
-    Json::CharReaderBuilder readerBuilder;
-    Json::Value root;
-    std::string errs;
-
-    std::istringstream s(readBuffer);
-    if (Json::parseFromStream(readerBuilder, s, &root, &errs)) {
-        if (!root.empty() && root.isArray()) {
-            for (const auto& release : root) {
-                if (!release["prerelease"].asBool()) {
-                    return release["tag_name"].asString();
-                }
-            }
-        }
-    } else {
-        qWarning() << "Failed to parse JSON: " << errs;
-    }
-
-    return "";
-}
-
-/**
- * @brief Download a file from the specified URL and save it to the specified output path
- * @param url The URL of the file to download
- * @param outputPath The path where the downloaded file will be saved
- * @param progressDialog Pointer to the progress dialog for showing download progress
- * @return true if the download was successful, false otherwise
- */
-bool downloadFile(const std::string& url, const std::string& outputPath, QProgressDialog* progressDialog) {
-    qInfo() << "Downloading file from URL: " << QString::fromStdString(url) << " to path: " << QString::fromStdString(outputPath);
-    CURL* curl;
-    CURLcode res;
-    std::ofstream outFile(outputPath, std::ios::binary);
-
-    curl = curl_easy_init();
-    if (curl) {
-        // curl_easy_setopt(curl, CURLOPT_CAINFO, APP_FILES + "\\cacert.pem");
-
-        // TODO reactiver la validation :
-        // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
-        // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3);
-
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
-
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallbackAndSave);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outFile);
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-
-        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progressCallback);
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-        curl_easy_setopt(curl, CURLOPT_XFERINFODATA, progressDialog);
-
-        res = curl_easy_perform(curl);
-        if (res != CURLE_OK) {
-            qWarning() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
-        }
-        curl_easy_cleanup(curl);
-    }
-
-    outFile.close();
-
-    return res == CURLE_OK;
 }
 
 /**
@@ -644,165 +435,165 @@ void InitialWindow::clearMainWindow() {
     mainWindow = nullptr;
 }
 
-/**
- * @brief Show the imageEditor widget
- * @details This function clears the existing windows and creates a new imageEditor widget.
- */
-void InitialWindow::showImageEditor() {
-    qInfo() << "showImageEditor";
-    clearWindows();
-    createImageEditor(data);
-}
-
-/**
- * @brief Show the imageBooth widget
- * @details This function clears the existing windows and creates a new imageBooth widget.
- */
-void InitialWindow::showImageBooth() {
-    qInfo() << "showImageBooth";
-    clearWindows();
-    createImageBooth(data);
-}
-
-/**
- * @brief Show the mainWindow widget
- * @details This function clears the existing windows and creates a new mainWindow widget.
- */
-void InitialWindow::showMainWindow() {
-    qInfo() << "showMainWindow";
-    clearWindows();
-    createMainWindow(data);
-}
-
-/**
- * @brief Create the Discord image label
- * @return ClickableLabel* Pointer to the created ClickableLabel object
- * @details This function creates a clickable label to open the Discord server link.
- * @details It also sets up a signal to handle the resize event and update the label accordingly.
- */
-ClickableLabel* InitialWindow::createImageDiscord() {
-    ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Const::Tooltip::DISCORD, this, linkButton, false, 0, true);
-    newImageDiscord->setInitialBackground("transparent", "#b3b3b3");
-
-    connect(newImageDiscord, &ClickableLabel::clicked, [this]() {
-        QDesktopServices::openUrl(QUrl("https://discord.gg/Q2HhZucmxU"));
-    });
-
-    connect(this, &InitialWindow::resize, newImageDiscord, [this]() {
-        ClickableLabel* newImageDiscord = createImageDiscord();
-        linkLayout->replaceWidget(imageDiscord, newImageDiscord);
-        imageDiscord->deleteLater();
-        imageDiscord = newImageDiscord;
-    });
-
-    return newImageDiscord;
-}
-
-/**
- * @brief Create the GitHub image label
- * @return ClickableLabel* Pointer to the created ClickableLabel object
- * @details This function creates a clickable label to open the GitHub repository link.
- * @details It also sets up a signal to handle the resize event and update the label accordingly.
- */
-ClickableLabel* InitialWindow::createImageGithub() {
-    ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Const::Tooltip::GITHUB, this, linkButton, false, 0, true);
-    newImageGithub->setInitialBackground("transparent", "#b3b3b3");
-
-    connect(newImageGithub, &ClickableLabel::clicked, [this]() {
-        QDesktopServices::openUrl(QUrl("https://github.com/Eugene-74/Open_Image_Editor"));
-    });
-
-    connect(this, &InitialWindow::resize, newImageGithub, [this]() {
-        ClickableLabel* newImageGithub = createImageGithub();
-        linkLayout->replaceWidget(imageGithub, newImageGithub);
-        imageGithub->deleteLater();
-        imageGithub = newImageGithub;
-    });
-
-    return newImageGithub;
-}
-ClickableLabel* InitialWindow::createImageOption() {
-    ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Const::Tooltip::PARAMETER, this, linkButton, false, 0, true);
-    newImageOption->setInitialBackground("transparent", "#b3b3b3");
-
-    connect(newImageOption, &ClickableLabel::clicked, [this]() {
-        openOption();
-    });
-
-    connect(this, &InitialWindow::resize, newImageOption, [this]() {
-        ClickableLabel* newImageOption = createImageOption();
-        linkLayout->replaceWidget(imageOption, newImageOption);
-        imageOption->deleteLater();
-        imageOption = newImageOption;
-    });
-
-    return newImageOption;
-}
-
-/**
- * @brief Open the options dialog and update the options
- * @details This function opens the options dialog and allows the user to modify the application options.
- */
-void InitialWindow::openOption() {
-    if (data->options.size() == 0) {
-        data->options = DEFAULT_OPTIONS;
+    /**
+     * @brief Show the imageEditor widget
+     * @details This function clears the existing windows and creates a new imageEditor widget.
+     */
+    void InitialWindow::showImageEditor() {
+        qInfo() << "showImageEditor";
+        clearWindows();
+        createImageEditor(data);
     }
 
-    std::map<std::string, std::string> options = showOptionsDialog(this, "Options", data->options);
-
-    for (const auto& [key, value] : options) {
-        data->options[key].value = value;
+    /**
+     * @brief Show the imageBooth widget
+     * @details This function clears the existing windows and creates a new imageBooth widget.
+     */
+    void InitialWindow::showImageBooth() {
+        qInfo() << "showImageBooth";
+        clearWindows();
+        createImageBooth(data);
     }
 
-    // Reload the window
-    if (imageBooth) {
-        showImageBooth();
+    /**
+     * @brief Show the mainWindow widget
+     * @details This function clears the existing windows and creates a new mainWindow widget.
+     */
+    void InitialWindow::showMainWindow() {
+        qInfo() << "showMainWindow";
+        clearWindows();
+        createMainWindow(data);
     }
-}
 
-/**
- * @brief Check if the system is in dark mode
- * @return true if the system is in dark mode, false otherwise
- */
-bool isDarkMode() {
-    HKEY hKey;
-    DWORD value = 0;
-    DWORD valueSize = sizeof(value);
-    LONG result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", 0, KEY_READ, &hKey);
-    if (result == ERROR_SUCCESS) {
-        result = RegQueryValueExW(hKey, L"AppsUseLightTheme", nullptr, nullptr, reinterpret_cast<LPBYTE>(&value), &valueSize);
-        RegCloseKey(hKey);
+    /**
+     * @brief Create the Discord image label
+     * @return ClickableLabel* Pointer to the created ClickableLabel object
+     * @details This function creates a clickable label to open the Discord server link.
+     * @details It also sets up a signal to handle the resize event and update the label accordingly.
+     */
+    ClickableLabel* InitialWindow::createImageDiscord() {
+        ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Const::Tooltip::DISCORD, this, linkButton, false, 0, true);
+        newImageDiscord->setInitialBackground("transparent", "#b3b3b3");
+
+        connect(newImageDiscord, &ClickableLabel::clicked, [this]() {
+            QDesktopServices::openUrl(QUrl("https://discord.gg/Q2HhZucmxU"));
+        });
+
+        connect(this, &InitialWindow::resize, newImageDiscord, [this]() {
+            ClickableLabel* newImageDiscord = createImageDiscord();
+            linkLayout->replaceWidget(imageDiscord, newImageDiscord);
+            imageDiscord->deleteLater();
+            imageDiscord = newImageDiscord;
+        });
+
+        return newImageDiscord;
     }
-    return (result == ERROR_SUCCESS) && (value == 0);
-}
 
-/**
- * @brief Handle the resize event of the window
- * @param event Pointer to the resize event
- * @details This function is called when the window is resized. It starts a timer to delay the resize event handling.
- */
-void InitialWindow::resizeEvent(QResizeEvent* event) {
-    QWidget* widget = QApplication::activeWindow();
-    if (dynamic_cast<QMainWindow*>(widget)) {
-        if (resizeTimer->isActive()) {
-            resizeTimer->stop();
+    /**
+     * @brief Create the GitHub image label
+     * @return ClickableLabel* Pointer to the created ClickableLabel object
+     * @details This function creates a clickable label to open the GitHub repository link.
+     * @details It also sets up a signal to handle the resize event and update the label accordingly.
+     */
+    ClickableLabel* InitialWindow::createImageGithub() {
+        ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Const::Tooltip::GITHUB, this, linkButton, false, 0, true);
+        newImageGithub->setInitialBackground("transparent", "#b3b3b3");
+
+        connect(newImageGithub, &ClickableLabel::clicked, [this]() {
+            QDesktopServices::openUrl(QUrl("https://github.com/Eugene-74/Open_Image_Editor"));
+        });
+
+        connect(this, &InitialWindow::resize, newImageGithub, [this]() {
+            ClickableLabel* newImageGithub = createImageGithub();
+            linkLayout->replaceWidget(imageGithub, newImageGithub);
+            imageGithub->deleteLater();
+            imageGithub = newImageGithub;
+        });
+
+        return newImageGithub;
+    }
+    ClickableLabel* InitialWindow::createImageOption() {
+        ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Const::Tooltip::PARAMETER, this, linkButton, false, 0, true);
+        newImageOption->setInitialBackground("transparent", "#b3b3b3");
+
+        connect(newImageOption, &ClickableLabel::clicked, [this]() {
+            openOption();
+        });
+
+        connect(this, &InitialWindow::resize, newImageOption, [this]() {
+            ClickableLabel* newImageOption = createImageOption();
+            linkLayout->replaceWidget(imageOption, newImageOption);
+            imageOption->deleteLater();
+            imageOption = newImageOption;
+        });
+
+        return newImageOption;
+    }
+
+    /**
+     * @brief Open the options dialog and update the options
+     * @details This function opens the options dialog and allows the user to modify the application options.
+     */
+    void InitialWindow::openOption() {
+        if (data->options.size() == 0) {
+            data->options = DEFAULT_OPTIONS;
         }
-        resizeTimer->start();
-    }
-    QMainWindow::resizeEvent(event);
-}
 
-/**
- * @brief Clear all windows (imageEditor, imageBooth, mainWindow)
- */
-void InitialWindow::clearWindows() {
-    if (imageEditor != nullptr) {
-        clearImageEditor();
+        std::map<std::string, std::string> options = showOptionsDialog(this, "Options", data->options);
+
+        for (const auto& [key, value] : options) {
+            data->options[key].value = value;
+        }
+
+        // Reload the window
+        if (imageBooth) {
+            showImageBooth();
+        }
     }
-    if (imageBooth != nullptr) {
-        clearImageBooth();
+
+    /**
+     * @brief Check if the system is in dark mode
+     * @return true if the system is in dark mode, false otherwise
+     */
+    bool isDarkMode() {
+        HKEY hKey;
+        DWORD value = 0;
+        DWORD valueSize = sizeof(value);
+        LONG result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", 0, KEY_READ, &hKey);
+        if (result == ERROR_SUCCESS) {
+            result = RegQueryValueExW(hKey, L"AppsUseLightTheme", nullptr, nullptr, reinterpret_cast<LPBYTE>(&value), &valueSize);
+            RegCloseKey(hKey);
+        }
+        return (result == ERROR_SUCCESS) && (value == 0);
     }
-    if (mainWindow != nullptr) {
-        clearMainWindow();
+
+    /**
+     * @brief Handle the resize event of the window
+     * @param event Pointer to the resize event
+     * @details This function is called when the window is resized. It starts a timer to delay the resize event handling.
+     */
+    void InitialWindow::resizeEvent(QResizeEvent* event) {
+        QWidget* widget = QApplication::activeWindow();
+        if (dynamic_cast<QMainWindow*>(widget)) {
+            if (resizeTimer->isActive()) {
+                resizeTimer->stop();
+            }
+            resizeTimer->start();
+        }
+        QMainWindow::resizeEvent(event);
     }
-}
+
+    /**
+     * @brief Clear all windows (imageEditor, imageBooth, mainWindow)
+     */
+    void InitialWindow::clearWindows() {
+        if (imageEditor != nullptr) {
+            clearImageEditor();
+        }
+        if (imageBooth != nullptr) {
+            clearImageBooth();
+        }
+        if (mainWindow != nullptr) {
+            clearMainWindow();
+        }
+    }

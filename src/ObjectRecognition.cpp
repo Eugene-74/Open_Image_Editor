@@ -1,3 +1,5 @@
+#include "ObjectRecognition.hpp"
+
 #include <QDebug>
 #include <QFile>
 #include <QImage>
@@ -5,7 +7,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "Data.hpp"
-#include "ObjectRecognition.hpp"
+#include "Download.hpp"
 
 /**
  * @brief Save the detected objects to a file
@@ -99,24 +101,6 @@ QImage CvMatToQImage(const cv::Mat& inImage) {
             break;
     }
     return QImage();
-}
-
-/**
- * @brief Load class names from a file
- * @param filename Path to the file containing class names
- * @return A vector of class names
- */
-std::vector<std::string> loadClassNames(const std::string& filename) {
-    std::vector<std::string> classNames;
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        throw std::runtime_error("Could not open file: " + filename);
-    }
-    std::string line;
-    while (std::getline(file, line)) {
-        classNames.push_back(line);
-    }
-    return classNames;
 }
 
 /**

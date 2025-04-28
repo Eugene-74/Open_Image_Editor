@@ -1,5 +1,6 @@
 #pragma once
 #include <QDialog>
+#include <QProgressDialog>
 
 // Forward declarations
 class QComboBox;
@@ -20,8 +21,8 @@ class ConversionDialog : public QDialog {
 
 void launchConversionDialogAndConvert(const QString& inputImagePath);
 QString launchConversionDialog();
-void convertion(const QString& inputImagePath, const QString& selectedFormat);
-bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath);
+void convertion(const QString& inputImagePath, const QString& selectedFormat, QProgressDialog* progressDialog = nullptr);
+bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath, QProgressDialog* progressDialog = nullptr);
 
 QImage readHeicAndHeif(const std::string& filePath);
 bool writeHeicAndHeif(const QImage& image, const std::string& imagePath);

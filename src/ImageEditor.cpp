@@ -26,6 +26,7 @@
 #include "ClickableLabel.hpp"
 #include "Const.hpp"
 #include "Conversion.hpp"
+#include "Download.hpp"
 #include "LoadImage.hpp"
 #include "MainImage.hpp"
 #include "ObjectRecognition.hpp"
@@ -152,7 +153,7 @@ void ImageEditor::previousImage(int nbr) {
  */
 void ImageEditor::reload() {
     if (bigImage) {
-        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, false, true);
+        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, personsEditor);
 
         bigImageLabelNew->setFixedSize(data->sizes->imageEditorSizes->bigImage);
         bool oldExifEditor = exifEditor;
@@ -791,9 +792,11 @@ ClickableLabel* ImageEditor::createImagePersons() {
         if (dialog.exec() == QDialog::Accepted) {
             QString selectedModel = modelComboBox->currentText();
             selectedModel = selectedModel.remove(QRegularExpression("<[^>]*>"));  // Remove HTML tags
-            qDebug() << "Selected YOLO Model:" << selectedModel;
+            qInfo() << "Selected YOLO Model:" << selectedModel;
 
-            data->model.setModelName(selectedModel.split(" - ").first().toStdString());
+            const std::string modelName = selectedModel.split(" - ").first().toStdString();
+            data->model.setModelName(modelName);
+            downloadModelIfNotExists(modelName + ".onnx");
 
             ImageData* imageData = data->imagesData.getCurrentImageData();
             if (imageData) {

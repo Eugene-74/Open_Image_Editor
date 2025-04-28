@@ -6,6 +6,7 @@
 #include <QKeyEvent>
 #include <QMetaObject>
 #include <QPointer>
+#include <QProgressDialog>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QScrollBar>
@@ -1146,12 +1147,25 @@ ClickableLabel* ImageBooth::createImageConversion() {
         if (data->imagesSelected.size() > 0) {
             QString selectedFormat = launchConversionDialog();
             if (selectedFormat != nullptr) {
+                QProgressDialog* progressDialog = new QProgressDialog(QString("Converting images : "), QString("Cancel"), 0, 3);
+                progressDialog->setWindowModality(Qt::WindowModal);
+                progressDialog->setAutoClose(false);
+                progressDialog->show();
+
                 for (int i = 0; i < data->imagesSelected.size(); i++) {
                     QString inputImagePath = QString::fromStdString(data->imagesData.getImageData(data->imagesSelected.at(i))->getImagePath());
-                    convertion(inputImagePath, selectedFormat);
+                    if (progressDialog->wasCanceled()) {
+                        break;
+                    }
+                    convertion(inputImagePath, selectedFormat, progressDialog);
+                    progressDialog->setLabelText(QString("Converting image %1/%2").arg(i + 1).arg(data->imagesSelected.size()));
                 }
+                progressDialog->close();
+                delete progressDialog;
+
                 data->imagesSelected.clear();
                 reload();
+
             }
         }
         data->addAction(

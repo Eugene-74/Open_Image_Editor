@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QProgressDialog>
 #include <QResource>
+#include <QString>
 #include <QThreadPool>
 #include <QTimer>
 #include <QWidget>
@@ -22,6 +23,7 @@
 #include "Const.hpp"
 #include "Conversion.hpp"
 #include "Data.hpp"
+#include "Download.hpp"
 #include "ObjectRecognition.hpp"
 #include "Verification.hpp"
 
@@ -1703,7 +1705,24 @@ cv::dnn::Net load_net(std::string model) {
         // std::cout << "CUDA is not available. Falling back to CPU.\n";
     }
 
-    auto result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
+    cv::dnn::Net result;
+    try {
+        result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
+    } catch (const cv::Exception& e) {
+        qWarning() << "Error loading model:" << QString::fromStdString(model) << " - " << e.what();
+        showWarningMessage(nullptr, "Error with the model", "Error loading model\nThe model will be downloaded again.");
+        if (!downloadModel(model + ".onnx")) {
+            qWarning() << "Failed to download model: " << QString::fromStdString(model);
+            showErrorMessage(nullptr, "Error with the model", "Error downloading model\nThe model could not be downloaded.");
+        }
+
+        try {
+            result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
+        } catch (const cv::Exception& e) {
+            qFatal() << "Error loading model:" << QString::fromStdString(model) << " - " << e.what();
+            showErrorMessage(nullptr, "Error with the model", "Error loading model\nThe model is broken.");
+        }
+    }
 
     if (result.empty()) {
         return result;
@@ -1724,6 +1743,7 @@ cv::dnn::Net load_net(std::string model) {
  */
 std::vector<std::string> load_class_list() {
     std::vector<std::string> class_list;
+    downloadModelIfNotExists("coco.names");
     std::ifstream ifs(APP_FILES.toStdString() + "/coco.names");
     std::string line;
     while (getline(ifs, line)) {

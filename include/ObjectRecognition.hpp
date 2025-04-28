@@ -25,6 +25,5 @@ class DetectedObjects {
 bool isCudaAvailable();
 void detectObjectsAsync(std::shared_ptr<Data> data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback);
 void computeFaces(std::shared_ptr<Data> data, std::string imagePath);
-std::vector<std::string> loadClassNames(const std::string& filename);
 cv::Mat QImageToCvMat(const QImage& inImage);
 QImage CvMatToQImage(const cv::Mat& inImage);
