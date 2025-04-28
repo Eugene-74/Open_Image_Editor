@@ -329,13 +329,14 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
  * @return true if the download was successful, false otherwise
  */
 bool downloadFile(const std::string& url, const std::string& outputPath, QProgressDialog* progressDialog) {
+    qInfo() << "Downloading file from URL: " << QString::fromStdString(url) << " to path: " << QString::fromStdString(outputPath);
     CURL* curl;
     CURLcode res;
     std::ofstream outFile(outputPath, std::ios::binary);
 
     curl = curl_easy_init();
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_CAINFO, APP_FILES + "\\cacert.pem");
+        // curl_easy_setopt(curl, CURLOPT_CAINFO, APP_FILES + "\\cacert.pem");
 
         // TODO reactiver la validation :
         // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
