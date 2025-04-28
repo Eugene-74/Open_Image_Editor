@@ -140,7 +140,7 @@ InitialWindow::InitialWindow() {
                 progressDialog.setValue(0);
                 progressDialog.show();
 
-                if (!downloadFile("https://github.com/Eugene-74/Open_Image_Editor/raw/refs/heads/files/" + file, filePath, &progressDialog)) {
+                if (!downloadFile("https://drive.google.com/drive/folders/17rQYK6WM739D2gh1Uhicd5uhc5rw4z8r?usp=sharing/" + file, filePath, &progressDialog)) {
                     qDebug() << "Failed to download file:" << QString::fromStdString(file);
                 }
             }
