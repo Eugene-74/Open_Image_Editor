@@ -1512,6 +1512,12 @@ void ImageEditor::enterEvent(QEnterEvent* event) {
     QMainWindow::enterEvent(event);
 }
 
+/**
+ * @brief Handle the leave event for the imageEditor. (it avoid key problems with exif editor)
+ * @param obj The object that triggered the leave event
+ * @param event The leave event to handle
+ * @return true if the event was handled, false otherwise
+ */
 bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::MouseButtonPress) {
         if (exifEditor) {
