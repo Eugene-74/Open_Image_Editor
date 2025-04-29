@@ -215,8 +215,9 @@ void ImageBooth::updateVisibleImages(bool force) {
     linesLayout->invalidate();
     lastLineNbr = lineNbr;
 
-    data->checkToUnloadImages(imageNumber, IMAGE_BOOTH_PRE_LOAD_RADIUS * maxVisibleLines * data->sizes->imagesBoothSizes->imagesPerLine);
-    data->checkToLoadImages(imageNumber, IMAGE_BOOTH_PRE_LOAD_RADIUS * maxVisibleLines * data->sizes->imagesBoothSizes->imagesPerLine);
+    // TODO fait crash
+    // data->checkToUnloadImages(imageNumber, IMAGE_BOOTH_PRE_LOAD_RADIUS * maxVisibleLines * data->sizes->imagesBoothSizes->imagesPerLine);
+    // data->checkToLoadImages(imageNumber, IMAGE_BOOTH_PRE_LOAD_RADIUS * maxVisibleLines * data->sizes->imagesBoothSizes->imagesPerLine);
 }
 
 /**
@@ -311,8 +312,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                         } }, Qt::QueuedConnection);
                     }
                 }
-            }
-        });
+            } }, true);
     }
     imageButton->setInitialBorder("transparent", "#b3b3b3");
 

@@ -337,7 +337,7 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, int thumbnail, bool force) {
     if (!isInCache(imagePath)) {
         auto self = std::weak_ptr<Data>(shared_from_this());
-        addHeavyThreadToFront([self, callback, imagePath, setSize, size, force, thumbnail]() {
+        addThreadToFront([self, callback, imagePath, setSize, size, force, thumbnail]() {
             if (auto sharedSelf = self.lock()) {
                 QImage image = sharedSelf->loadImageNormal(nullptr, imagePath, size, setSize, thumbnail, force);
 
@@ -437,21 +437,38 @@ void Data::createThumbnailAsync(const std::string& imagePath, const int maxDim, 
  * @param callback Callback function to call after creating thumbnails it give you a boolean
  *                true if the thumbnails are created false otherwise
  */
-void Data::createAllThumbnailsAsync(const std::string& imagePath, std::function<void(bool)> callback) {
-    addHeavyThread([this, imagePath, callback]() {
-        bool success = true;
-        for (auto size : Const::Thumbnail::THUMBNAIL_SIZES) {
-            if (!createThumbnailIfNotExists(imagePath, size)) {
-                success = false;
-                qCritical() << "Error: Could not create thumbnail for image: " << QString::fromStdString(imagePath) << " size: " << size;
+void Data::createAllThumbnailsAsync(const std::string& imagePath, std::function<void(bool)> callback, bool toFront) {
+    if (toFront) {
+        addHeavyThreadToFront([this, imagePath, callback]() {
+            bool success = true;
+            for (auto size : Const::Thumbnail::THUMBNAIL_SIZES) {
+                if (!createThumbnailIfNotExists(imagePath, size)) {
+                    success = false;
+                    qCritical() << "Error: Could not create thumbnail for image: " << QString::fromStdString(imagePath) << " size: " << size;
+                }
             }
-        }
-        unloadFromCache(imagePath);
+            unloadFromCache(imagePath);
 
-        if (callback) {
-            callback(success);
-        }
-    });
+            if (callback) {
+                callback(success);
+            }
+        });
+    } else {
+        addHeavyThread([this, imagePath, callback]() {
+            bool success = true;
+            for (auto size : Const::Thumbnail::THUMBNAIL_SIZES) {
+                if (!createThumbnailIfNotExists(imagePath, size)) {
+                    success = false;
+                    qCritical() << "Error: Could not create thumbnail for image: " << QString::fromStdString(imagePath) << " size: " << size;
+                }
+            }
+            unloadFromCache(imagePath);
+
+            if (callback) {
+                callback(success);
+            }
+        });
+    }
 }
 
 /**
@@ -1953,10 +1970,9 @@ void Data::checkThumbnailAndDetectObjects() {
                         qDebug() << "Thumbnail created for image: " << QString::fromStdString(imageData->getImagePath());
                     } else {
                         qCritical() << "Error creating thumbnail for image: " << QString::fromStdString(imageData->getImagePath());
-                    }
-                });
+                    } }, false);
             });
-            delay += 10;
+            delay += 100;
         }
     }
     for (auto& imageData : *imagesData.get()) {
@@ -1975,7 +1991,7 @@ void Data::checkThumbnailAndDetectObjects() {
                     qDebug() << "Detection done for image: " << QString::fromStdString(imagePath);
                 });
             });
-            delay += 100;
+            delay += 500;
         }
     }
 }

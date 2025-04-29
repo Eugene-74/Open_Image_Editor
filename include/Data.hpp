@@ -98,7 +98,7 @@ class Data : public std::enable_shared_from_this<Data> {
     bool getLoadedImage(std::string imagePath, QImage& image);
 
     void createThumbnailAsync(const std::string& imagePath, const int maxDim, std::function<void(bool)> callback = nullptr);
-    void createAllThumbnailsAsync(const std::string& imagePath, std::function<void(bool)> callback = nullptr);
+    void createAllThumbnailsAsync(const std::string& imagePath, std::function<void(bool)> callback = nullptr, bool toFront = false);
 
     bool createThumbnail(const std::string& imagePath, const int maxDim);
     bool deleteThumbnail(const std::string& imagePath, const int maxDim);
