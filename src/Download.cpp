@@ -241,8 +241,9 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
     if (Json::parseFromStream(readerBuilder, s, &root, &errs)) {
         if (!root.empty() && root.isArray()) {
             for (const auto& release : root) {
-                if (!release["prerelease"].asBool()) {
-                    return release["tag_name"].asString();
+                const std::string tagName = release["tag_name"].asString();
+                if (!release["prerelease"].asBool() && tagName.rfind("v", 0) == 0 && std::count(tagName.begin(), tagName.end(), '.') == 2) {
+                    return tagName;
                 }
             }
         }
