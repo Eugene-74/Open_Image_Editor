@@ -37,6 +37,7 @@ class ImageEditor : public QMainWindow {
     void keyReleaseEvent(QKeyEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
     void enterEvent(QEnterEvent* event) override;
+    bool eventFilter(QObject* obj, QEvent* event) override;
 
    private:
     void hide();
@@ -146,6 +147,7 @@ class ImageEditor : public QMainWindow {
     QTimer* imageOpenTimer = new QTimer(this);
 
     bool bigImage = false;
+
    signals:
     void switchToImageBooth();
     void switchToMainWindow();

@@ -39,6 +39,7 @@
  */
 ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
+    this->installEventFilter(this);
     parent->setWindowTitle(IMAGE_EDITOR_WINDOW_NAME);
 
     QWidget* centralWidget = new QWidget(parent);
@@ -973,9 +974,10 @@ void ImageEditor::reloadImageLabel() {
  * @param event The key event to handle
  */
 void ImageEditor::keyPressEvent(QKeyEvent* event) {
-    if (exifEditor) {
+    if (nameEdit->hasFocus() || dateEdit->hasFocus() || geoEdit->hasFocus() || descriptionEdit->hasFocus()) {
         return;
     }
+
     switch (event->key()) {
         case Qt::Key_Left:
             if (event->modifiers() & Qt::ControlModifier) {
@@ -1038,9 +1040,10 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
  * @param event The key event to handle
  */
 void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
-    if (exifEditor) {
+    if (nameEdit->hasFocus() || dateEdit->hasFocus() || geoEdit->hasFocus() || descriptionEdit->hasFocus()) {
         return;
     }
+
     switch (event->key()) {
         case Qt::Key_Left:
             if (event->modifiers() & Qt::ControlModifier) {
@@ -1507,4 +1510,37 @@ void ImageEditor::closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEdito
 void ImageEditor::enterEvent(QEnterEvent* event) {
     this->setFocus();
     QMainWindow::enterEvent(event);
+}
+
+bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        if (exifEditor) {
+            if (nameEdit->hasFocus()) {
+                QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+                if (!nameEdit->geometry().contains(mouseEvent->pos())) {
+                    nameEdit->clearFocus();
+                    this->setFocus();
+                }
+            } else if (dateEdit->hasFocus()) {
+                QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+                if (!dateEdit->geometry().contains(mouseEvent->pos())) {
+                    dateEdit->clearFocus();
+                    this->setFocus();
+                }
+            } else if (geoEdit->hasFocus()) {
+                QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+                if (!geoEdit->geometry().contains(mouseEvent->pos())) {
+                    geoEdit->clearFocus();
+                    this->setFocus();
+                }
+            } else if (descriptionEdit->hasFocus()) {
+                QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+                if (!descriptionEdit->geometry().contains(mouseEvent->pos())) {
+                    descriptionEdit->clearFocus();
+                    this->setFocus();
+                }
+            }
+        }
+    }
+    return QMainWindow::eventFilter(obj, event);
 }
