@@ -222,6 +222,46 @@ void ImageData::loadData() {
             setOrientation(metaData.getImageOrientation());
             setDate(metaData.getTimestamp());
 
+            // TODO add get set
+            auto exifData = metaData.getExifData();
+            if (exifData.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSLatitude")) != exifData.end() &&
+                exifData.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSLongitude")) != exifData.end()) {
+                auto convertGpsCoordinate = [](const std::string& coordinate) -> double {
+                    std::istringstream iss(coordinate);
+                    std::string degrees, minutes, seconds;
+
+                    // Lire les parties de la chaîne (degrés, minutes, secondes)
+                    std::getline(iss, degrees, ' ');
+                    std::getline(iss, minutes, ' ');
+                    std::getline(iss, seconds, ' ');
+
+                    // Convertir chaque partie en double
+                    auto parseFraction = [](const std::string& fraction) -> double {
+                        size_t slashPos = fraction.find('/');
+                        if (slashPos != std::string::npos) {
+                            double numerator = std::stod(fraction.substr(0, slashPos));
+                            double denominator = std::stod(fraction.substr(slashPos + 1));
+                            return numerator / denominator;
+                        }
+                        return std::stod(fraction);
+                    };
+
+                    double deg = parseFraction(degrees);
+                    double min = parseFraction(minutes);
+                    double sec = parseFraction(seconds);
+
+                    // Calculer la valeur finale en degrés décimaux
+                    return deg + (min / 60.0) + (sec / 3600.0);
+                };
+
+                latitude = convertGpsCoordinate(exifData["Exif.GPSInfo.GPSLatitude"].toString());
+                longitude = convertGpsCoordinate(exifData["Exif.GPSInfo.GPSLongitude"].toString());
+                qInfo() << "Latitude:" << latitude
+                        << "Longitude:" << longitude;
+            } else {
+                qWarning() << "GPS data not found in metadata.";
+            }
+
             metaData.dataLoaded = true;
         }
     } catch (const Exiv2::Error& e) {
@@ -292,6 +332,8 @@ void ImageData::clearDetectedObjects() {
 void ImageData::save(std::ofstream& out) const {
     out.write(reinterpret_cast<const char*>(&orientation), sizeof(orientation));
     out.write(reinterpret_cast<const char*>(&date), sizeof(date));
+    out.write(reinterpret_cast<const char*>(&latitude), sizeof(latitude));
+    out.write(reinterpret_cast<const char*>(&longitude), sizeof(longitude));
 
     folders.save(out);
 
@@ -315,6 +357,8 @@ void ImageData::save(std::ofstream& out) const {
 void ImageData::load(std::ifstream& in) {
     in.read(reinterpret_cast<char*>(&orientation), sizeof(orientation));
     in.read(reinterpret_cast<char*>(&date), sizeof(date));
+    in.read(reinterpret_cast<char*>(&latitude), sizeof(latitude));
+    in.read(reinterpret_cast<char*>(&longitude), sizeof(longitude));
 
     folders.load(in);
 
@@ -463,4 +507,18 @@ void ImageData::setOrientation(int orientation) {
  */
 int ImageData::getOrientation() const {
     return orientation;
+}
+
+/**
+ * @brief Get the latitude for the image
+ */
+double ImageData::getLatitude() const {
+    return latitude;
+}
+
+/**
+ * @brief Get the longitude for the image
+ */
+double ImageData::getLongitude() const {
+    return longitude;
 }

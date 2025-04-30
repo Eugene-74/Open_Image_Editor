@@ -28,6 +28,8 @@ class ImageData {
     std::vector<std::vector<QPoint>> cropSizes;
     int orientation;
     long date = 0;
+    double latitude = 0.0;
+    double longitude = 0.0;
 
    public:
     ImageData();
@@ -55,6 +57,9 @@ class ImageData {
     
     void setOrientation(int orientation);
     int getOrientation() const;
+
+    double getLatitude() const;
+    double getLongitude() const;
 
     // DetectionStatus getDetectionStatus() const;
     void setDetectionStatus(DetectionStatus detectionStatus);

@@ -97,6 +97,8 @@ class ImageEditor : public QMainWindow {
     void openBigImageLabel();
     void closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEditor);
 
+    void showMapDialog();
+
     bool exifEditor = false;
     bool personsEditor = false;
 
@@ -151,4 +153,69 @@ class ImageEditor : public QMainWindow {
    signals:
     void switchToImageBooth();
     void switchToMainWindow();
+};
+
+#include <QDialog>
+#include <QGeoCoordinate>
+#include <QQmlComponent>
+#include <QQuickItem>
+#include <QQuickWidget>
+#include <QVBoxLayout>
+#include <QVariant>
+
+class MapDialog : public QDialog {
+    Q_OBJECT
+   public:
+    MapDialog(QWidget* parent = nullptr) : QDialog(parent) {
+        setWindowTitle("Carte");
+        resize(600, 400);
+
+        QVBoxLayout* layout = new QVBoxLayout(this);
+
+        quickWidget = new QQuickWidget(this);
+        quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
+        quickWidget->setSource(QUrl(QStringLiteral("qrc:/MapView.qml")));
+
+        layout->addWidget(quickWidget);
+
+        // Enregistrement du type QGeoCoordinate
+        qRegisterMetaType<QGeoCoordinate>("QGeoCoordinate");
+    }
+
+    void setMapCenter(double latitude, double longitude) {
+        if (!quickWidget)
+            return;
+
+        QQuickItem* rootItem = quickWidget->rootObject();
+        if (!rootItem)
+            return;
+
+        QQuickItem* mapItem = rootItem->findChild<QQuickItem*>("mapView");
+        if (!mapItem)
+            return;
+
+        QGeoCoordinate newCenter(latitude, longitude);
+        mapItem->setProperty("center", QVariant::fromValue(newCenter));
+    }
+
+    void addMapPoint(double latitude, double longitude) {
+        if (!quickWidget)
+            return;
+
+        QQuickItem* rootItem = quickWidget->rootObject();
+        if (!rootItem)
+            return;
+
+        QQuickItem* mapItem = rootItem->findChild<QQuickItem*>("mapView");
+        if (!mapItem)
+            return;
+
+        QVariantList point;
+        point << latitude << longitude;
+
+        QMetaObject::invokeMethod(mapItem, "addPoint", Q_ARG(QVariant, QVariant::fromValue(point)));
+    }
+
+   private:
+    QQuickWidget* quickWidget;
 };

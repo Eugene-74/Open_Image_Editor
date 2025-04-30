@@ -113,4 +113,8 @@
         <file>255-255-255-255/images/error.png</file>
 
     </qresource>
+    <qresource prefix="">
+        <file>MapView.qml</file>
+
+    </qresource>
 </RCC>

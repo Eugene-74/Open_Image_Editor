@@ -677,6 +677,7 @@ ClickableLabel* ImageEditor::createImageEditExif() {
         if (exifEditor) {
             exifEditor = false;
         } else {
+
             exifEditor = true;
             for (int i = 0; i < infoLayout->count(); ++i) {
                 QWidget* widget = infoLayout->itemAt(i)->widget();
@@ -1276,6 +1277,8 @@ void ImageEditor::deleteImage() {
  * @details This function retrieves the metadata from the current image and populates the corresponding fields in the UI.
  */
 void ImageEditor::populateMetadataFields() {
+    showMapDialog();
+
     ImagesData* imagesData = &data->imagesData;
     ImageData* imageData = imagesData->getCurrentImageData();
     Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
@@ -1549,4 +1552,15 @@ bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
         }
     }
     return QMainWindow::eventFilter(obj, event);
+}
+
+void ImageEditor::showMapDialog() {
+    ImageData* imageData = data.get()->getImagesData()->getCurrentImageData();
+    if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
+        MapDialog* dialog = new MapDialog(this);
+        qInfo() << "GPS data available for this image. Centering map on GPS coordinates.";
+        dialog->setMapCenter(imageData->getLatitude(), imageData->getLongitude());
+        dialog->addMapPoint(imageData->getLatitude(), imageData->getLongitude());
+        dialog->exec();
+    }
 }

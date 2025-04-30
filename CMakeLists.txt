@@ -43,7 +43,7 @@ if(WIN32)
 
     set(ENV{QTFRAMEWORK_BYPASS_LICENSE_CHECK} "1")
 
-    find_package(Qt6 COMPONENTS Core Gui Widgets Multimedia LinguistTools REQUIRED)
+    find_package(Qt6 COMPONENTS Core Gui Widgets Multimedia Location Positioning QuickWidgets REQUIRED)
     find_package(OpenCV REQUIRED)
     find_package(CURL REQUIRED)
     find_package(jsoncpp REQUIRED)
@@ -59,9 +59,13 @@ if(WIN32)
     include_directories(${HEIF_INCLUDE_DIRS})
     include_directories(${Qt6Core_INCLUDE_DIRS})
     include_directories(${Qt6Multimedia_INCLUDE_DIRS})
-    # include_directories(${Qt6MultimediaWidgets_INCLUDE_DIRS})
     include_directories(${Qt6Gui_INCLUDE_DIRS})
     include_directories(${Qt6Widgets_INCLUDE_DIRS})
+    include_directories(${Qt6Location_INCLUDE_DIRS})
+    include_directories(${Qt6Positioning_INCLUDE_DIRS})
+    include_directories(${Qt6QuickWidgets_INCLUDE_DIRS})
+
+
 
 
     configure_file(
@@ -94,34 +98,36 @@ if(WIN32)
 
     qt6_wrap_cpp(MOC_SOURCES ${INCLUDE_HEADERS})
 
-    set(TS_FILES
+    # set(TS_FILES
         # src/ressources/translations/open_image_editor_en.ts
         # src/ressources/translations/open_image_editor_fr.ts
-    )
-    qt6_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+    # )
+    # qt6_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 
     
-    add_custom_target(update_translations
-    COMMAND lupdate-qt6 ${SOURCES} -ts ${TS_FILES}
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMENT "Updating translations"
-    )
+    # add_custom_target(update_translations
+    # COMMAND lupdate-qt6 ${SOURCES} -ts ${TS_FILES}
+    # WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    # COMMENT "Updating translations"
+    # )
     
-    add_custom_target(release_translations
-    COMMAND lrelease-qt6 ${TS_FILES}
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMENT "Releasing translations"
-    )
+    # add_custom_target(release_translations
+    # COMMAND lrelease-qt6 ${TS_FILES}
+    # WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    # COMMENT "Releasing translations"
+    # )
     
     add_library(OpenImageEditorLib ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
     
     target_link_libraries(OpenImageEditorLib 
         PRIVATE
         Qt6::Multimedia
-        # Qt6::MultimediaWidgets
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets
+        Qt6::Location
+        Qt6::Positioning
+        Qt6::QuickWidgets
         CURL::libcurl 
         jsoncpp_lib
         ${OpenCV_LIBS}
