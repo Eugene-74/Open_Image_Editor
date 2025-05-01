@@ -2,6 +2,7 @@
 
 #include <QDialog>
 #include <QGeoCoordinate>
+#include <QLabel>
 #include <QQmlComponent>
 #include <QQuickItem>
 #include <QQuickWidget>
@@ -10,14 +11,15 @@
 
 #include "ImageData.hpp"
 
-class MapDialog : public QDialog {
+class MapWidget : public QDialog {
     Q_OBJECT
    public:
-    MapDialog(QWidget* parent, ImageData* imageData);
+    MapWidget(QWidget* parent, ImageData* imageData);
 
     void setMapCenter(double latitude, double longitude);
 
     void moveMapPoint(double latitude, double longitude);
+    void removeMapPoint();
 
    private slots:
     void onCoordinateValidated(double latitude, double longitude);

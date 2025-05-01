@@ -101,6 +101,17 @@ Item {
             validateButton.visible = true;
             cancelButton.visible = true;
         }
+
+        function removePoint() {
+            console.log("Removing point");
+
+            if (currentMarker) {
+                map.removeMapItem(currentMarker);
+                currentMarker.destroy();
+            }
+            validateButton.visible = false;
+            cancelButton.visible = false;
+        }
     }
 
     Button {

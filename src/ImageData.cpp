@@ -515,8 +515,6 @@ int ImageData::getOrientation() const {
  */
 void ImageData::setLatitude(double latitude) {
     this->latitude = latitude;
-    metaData.setLatitude(latitude);
-    saveMetaData();
 }
 
 /**
@@ -531,8 +529,6 @@ double ImageData::getLatitude() const {
  */
 void ImageData::setLongitude(double longitude) {
     this->longitude = longitude;
-    metaData.setLongitude(longitude);
-    saveMetaData();
 }
 
 /**

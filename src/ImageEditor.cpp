@@ -29,7 +29,6 @@
 #include "Download.hpp"
 #include "LoadImage.hpp"
 #include "MainImage.hpp"
-#include "MapDialog.hpp"
 #include "ObjectRecognition.hpp"
 #include "Verification.hpp"
 
@@ -100,11 +99,8 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     calendarWidget->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
     calendarWidget->setNavigationBarVisible(true);
 
-    editGeoButton = new QPushButton("Edit Geo", this);
-    connect(editGeoButton, &QPushButton::clicked, [this]() {
-        showMapDialog();
-    });
-    infoLayout->addWidget(editGeoButton);
+    editGeo = showMapWidget();
+
     descriptionEdit = new QLineEdit(this);
     validateButton = new QPushButton("Valider", this);
     connect(validateButton, &QPushButton::clicked, this, &ImageEditor::validateMetadata);
@@ -114,7 +110,7 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     infoLayout->addWidget(new QLabel("Date:", this));
     infoLayout->addWidget(dateEdit);
     infoLayout->addWidget(new QLabel("Géolocalisation:", this));
-    infoLayout->addWidget(editGeoButton);
+    infoLayout->addWidget(editGeo);
 
     infoLayout->addWidget(new QLabel("Description:", this));
     infoLayout->addWidget(descriptionEdit);
@@ -937,7 +933,7 @@ MainImage* ImageEditor::createImageLabel() {
                 ImageData* imageData = self->data->getImagesData()->getImageData(currentImagePath);
 
                 if (imageData) {
-                    qInfo() << "face recognition done";
+                    qInfo() << "recognition done";
                     imageData->setDetectedObjects(detectedObject.getDetectedObjects());
                     imageData->setDetectionStatusLoaded();
                 }
@@ -1291,12 +1287,22 @@ void ImageEditor::populateMetadataFields() {
     descriptionEdit->clear();
 
     nameEdit->setText(QString::fromStdString(imageData->getImageName()));
-
     if (exifData["Exif.Image.DateTime"].count() != 0) {
         QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
         QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
         dateEdit->setDateTime(dateTime);
     }
+    double latitude = imageData->getLatitude();
+    double longitude = imageData->getLongitude();
+    if (latitude == 0 && longitude == 0) {
+        latitude = 46.6034;  // Default latitude (France)
+        longitude = 1.8883;  // Default longitude (France)
+        editGeo->removeMapPoint();
+    } else {
+        editGeo->moveMapPoint(latitude, longitude);
+    }
+    editGeo->setMapCenter(latitude, longitude);
+
     if (exifData["Exif.Image.ImageDescription"].count() != 0) {
         descriptionEdit->setText(QString::fromStdString(exifData["Exif.Image.ImageDescription"].toString()));
     }
@@ -1372,7 +1378,7 @@ void ImageEditor::stopImageOpen() {
  * @details This function checks the loaded images in the cache and unloads any images that are not currently being used.
  */
 void ImageEditor::checkLoadedImage() {
-    data->checkToUnloadImages(data->getImagesData()->getImageNumber(), PRE_LOAD_RADIUS);
+    // data->checkToUnloadImages(data->getImagesData()->getImageNumber(), PRE_LOAD_RADIUS);
 }
 
 /**
@@ -1540,13 +1546,13 @@ bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
     return QMainWindow::eventFilter(obj, event);
 }
 
-void ImageEditor::showMapDialog() {
+MapWidget* ImageEditor::showMapWidget() {
     ImageData* imageData = data.get()->getImagesData()->getCurrentImageData();
-    if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
-        MapDialog* dialog = new MapDialog(this, imageData);
-        dialog->setMapCenter(imageData->getLatitude(), imageData->getLongitude());
-        dialog->moveMapPoint(imageData->getLatitude(), imageData->getLongitude());
 
-        dialog->exec();
+    MapWidget* mapWidget = new MapWidget(this, imageData);
+    if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
+        mapWidget->setMapCenter(imageData->getLatitude(), imageData->getLongitude());
+        mapWidget->moveMapPoint(imageData->getLatitude(), imageData->getLongitude());
     }
+    return mapWidget;
 }

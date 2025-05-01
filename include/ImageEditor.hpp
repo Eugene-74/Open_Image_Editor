@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "Data.hpp"
+#include "MapWidget.hpp"
 
 // Forward declaration
 class ClickableLabel;
@@ -97,7 +98,7 @@ class ImageEditor : public QMainWindow {
     void openBigImageLabel();
     void closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEditor);
 
-    void showMapDialog();
+    MapWidget* showMapWidget();
 
     bool exifEditor = false;
     bool personsEditor = false;
@@ -106,7 +107,7 @@ class ImageEditor : public QMainWindow {
 
     QLineEdit* nameEdit;
     QDateTimeEdit* dateEdit;
-    QPushButton* editGeoButton;
+    MapWidget* editGeo;
     QLineEdit* descriptionEdit;
     QPushButton* validateButton;
 
