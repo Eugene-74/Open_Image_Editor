@@ -18,6 +18,7 @@
 #include <QRegularExpression>
 #include <QSize>
 #include <QSlider>
+#include <QString>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -171,24 +172,24 @@ void ImageEditor::reload() {
 
         updateButtons();
 
-        updatePreview();
+        // updatePreview();
 
-        if (exifEditor) {
-            imagesData->getCurrentImageData()->loadData();
-            populateMetadataFields();
-        } else {
-            for (int i = 0; i < infoLayout->count(); ++i) {
-                QWidget* widget = infoLayout->itemAt(i)->widget();
-                if (widget) {
-                    widget->hide();
-                }
-            }
-        }
+        // if (exifEditor) {
+        //     imagesData->getCurrentImageData()->loadData();
+        //     populateMetadataFields();
+        // } else {
+        //     for (int i = 0; i < infoLayout->count(); ++i) {
+        //         QWidget* widget = infoLayout->itemAt(i)->widget();
+        //         if (widget) {
+        //             widget->hide();
+        //         }
+        //     }
+        // }
 
-        if (imagesData->get()->size() <= 0) {
-            addImagesFromFolder(data, this);
-            return;
-        }
+        // if (imagesData->get()->size() <= 0) {
+        //     addImagesFromFolder(data, this);
+        //     return;
+        // }
     }
 }
 
@@ -907,8 +908,7 @@ MainImage* ImageEditor::createImageLabel() {
         updatePreview();
     });
 
-    auto it = data->imageCache->find(currentImagePath);
-    if (it == data->imageCache->end()) {
+    if (!data->isInCache(currentImagePath)) {
         return imageLabelNew;
     }
 
@@ -922,7 +922,8 @@ MainImage* ImageEditor::createImageLabel() {
     if (imageData->isDetectionStatusNotLoaded()) {
         imageData->setDetectionStatusLoading();
         qInfo() << "starting face recognition";
-        QImage image = data->imageCache->at(currentImagePath).image;
+        QImage image = data->loadImageNormal(nullptr, data->imagesData.getCurrentImageData()->getImagePath(), QSize(0, 0), false);
+        // QImage image = data->imageCache->at(currentImagePath).image;
 
         image = data->rotateQImage(image, imageData);
 
@@ -1345,13 +1346,13 @@ void ImageEditor::startImageOpen() {
             imageOpenTimer->stop();
             for (int i = 0; i < PRE_LOAD_RADIUS; i++) {
                 if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() - (i + 1) >= 0) {
-                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr,
-                                           false, QSize(0, 0), 0, true);
+                    // data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr,
+                    //                        false, QSize(0, 0), 0, true);
                 }
 
                 if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() + (i + 1) >= 0) {
-                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr,
-                                           false, QSize(0, 0), 0, true);
+                    // data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr,
+                    //                        false, QSize(0, 0), 0, true);
                 }
             }
         }
@@ -1455,7 +1456,7 @@ void ImageEditor::openBigImageLabel() {
     bigImage = true;
     hide();
 
-    bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, false, true);
+    bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, personsEditor);
     bigImageLabel->setFixedSize(data->sizes->imageEditorSizes->bigImage);
 
     mainLayout->addWidget(bigImageLabel);

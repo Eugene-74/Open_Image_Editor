@@ -120,6 +120,7 @@ void ThreadManager::addThreadToFront(std::function<void()> job) {
 
         {
             std::lock_guard<std::mutex> lock(taskQueueMutex);
+
             if (taskQueue.size() > 100) {
                 qWarning() << "Thread queue" << taskQueue.size();
             }
@@ -231,10 +232,11 @@ void ThreadManager::startJob(std::function<void()> job) {
         if (activeThreads >= maxThreads) {
             qWarning() << "Cannot start job. Active threads: " << activeThreads << ", Max threads: " << maxThreads;
 
-            {
-                std::lock_guard<std::mutex> lock(taskQueueMutex);
-                taskQueue.push_back(std::move(job));
-            }
+            // {
+            //     std::lock_guard<std::mutex> lock(taskQueueMutex);
+
+            //     taskQueue.push_back(std::move(job));
+            // }
 
             return;
         }

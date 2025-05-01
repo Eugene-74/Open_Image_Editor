@@ -225,11 +225,6 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
         if (it != imageCache->end()) {
             return it->second.image;
         }
-        // auto it = imageCache->find(imagePath);
-        // if (it != imageCache->end()) {
-        //     qInfo() << "Image found in cache: " << QString::fromStdString(imagePath);
-        //     return it->second.image;
-        // }
 
         if (!force) {
             for (int i = Const::Thumbnail::THUMBNAIL_SIZES.size() - 1; i >= 0; --i) {
@@ -339,11 +334,11 @@ void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callbac
         auto self = std::weak_ptr<Data>(shared_from_this());
         addThreadToFront([self, callback, imagePath, setSize, size, force, thumbnail]() {
             if (auto sharedSelf = self.lock()) {
-                QImage image = sharedSelf->loadImageNormal(nullptr, imagePath, size, setSize, thumbnail, force);
+                // QImage image = sharedSelf->loadImageNormal(nullptr, imagePath, size, setSize, thumbnail, force);
 
-                if (callback) {
-                    QMetaObject::invokeMethod(QApplication::instance(), callback, Qt::QueuedConnection);
-                }
+                // if (callback) {
+                //     QMetaObject::invokeMethod(QApplication::instance(), callback, Qt::QueuedConnection);
+                // }
             } else {
                 qWarning() << "Data object is no longer valid. Skipping loadInCacheAsync.";
             }
@@ -380,10 +375,13 @@ bool Data::loadInCache(const std::string imagePath, bool setSize,
  * @return true if the image is in cache false otherwise
  */
 bool Data::isInCache(std::string imagePath) {
+    std::unordered_map<std::string, QImageAndPath>::iterator it;
     {
         std::lock_guard<std::mutex> lock(imageCacheMutex);
-        return imageCache->find(imagePath) != imageCache->end();
+
+        it = imageCache->find(imagePath);
     }
+    return it != imageCache->end();
 }
 
 /**
@@ -393,12 +391,16 @@ bool Data::isInCache(std::string imagePath) {
  * @return true if the image is in the cache false otherwise
  */
 bool Data::getLoadedImage(std::string imagePath, QImage& image) {
-    auto it = imageCache->find(imagePath);
-    if (it != imageCache->end()) {
-        image = it->second.image;
-        return true;
+    {
+        std::lock_guard<std::mutex> lock(imageCacheMutex);
+
+        auto it = imageCache->find(imagePath);
+        if (it != imageCache->end()) {
+            image = it->second.image;
+            return true;
+        }
+        return false;
     }
-    return false;
 }
 
 /**
@@ -617,12 +619,14 @@ std::string Data::getThumbnailPath(const std::string& imagePath,
  * @return true if the image is unloaded from the cache false otherwise
  */
 bool Data::unloadFromCache(std::string imagePath) {
-    if (!imageCache) {
-        qWarning() << "imageCache is not initialized : " << imagePath;
-        return false;
-    }
     {
         std::lock_guard<std::mutex> lock(imageCacheMutex);
+
+        if (!imageCache) {
+            qWarning() << "imageCache is not initialized : " << imagePath;
+            return false;
+        }
+
         auto it = imageCache->find(imagePath);
 
         if (it != imageCache->end()) {
@@ -1906,6 +1910,7 @@ void Data::checkToUnloadImages(int center, int radius) {
     std::vector<std::string> toUnload;
     {
         std::lock_guard<std::mutex> lock(imageCacheMutex);
+
         for (const auto& cache : *imageCache) {
             const std::string& imagePath = cache.second.imagePath;
             if (loadedImages.find(imagePath) == loadedImages.end()) {
