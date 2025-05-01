@@ -29,6 +29,7 @@
 #include "Download.hpp"
 #include "LoadImage.hpp"
 #include "MainImage.hpp"
+#include "MapDialog.hpp"
 #include "ObjectRecognition.hpp"
 #include "Verification.hpp"
 
@@ -99,7 +100,11 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     calendarWidget->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
     calendarWidget->setNavigationBarVisible(true);
 
-    geoEdit = new QLineEdit(this);
+    editGeoButton = new QPushButton("Edit Geo", this);
+    connect(editGeoButton, &QPushButton::clicked, [this]() {
+        showMapDialog();
+    });
+    infoLayout->addWidget(editGeoButton);
     descriptionEdit = new QLineEdit(this);
     validateButton = new QPushButton("Valider", this);
     connect(validateButton, &QPushButton::clicked, this, &ImageEditor::validateMetadata);
@@ -109,7 +114,8 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     infoLayout->addWidget(new QLabel("Date:", this));
     infoLayout->addWidget(dateEdit);
     infoLayout->addWidget(new QLabel("Géolocalisation:", this));
-    infoLayout->addWidget(geoEdit);
+    infoLayout->addWidget(editGeoButton);
+
     infoLayout->addWidget(new QLabel("Description:", this));
     infoLayout->addWidget(descriptionEdit);
     infoLayout->addWidget(validateButton);
@@ -677,7 +683,6 @@ ClickableLabel* ImageEditor::createImageEditExif() {
         if (exifEditor) {
             exifEditor = false;
         } else {
-
             exifEditor = true;
             for (int i = 0; i < infoLayout->count(); ++i) {
                 QWidget* widget = infoLayout->itemAt(i)->widget();
@@ -975,7 +980,7 @@ void ImageEditor::reloadImageLabel() {
  * @param event The key event to handle
  */
 void ImageEditor::keyPressEvent(QKeyEvent* event) {
-    if (nameEdit->hasFocus() || dateEdit->hasFocus() || geoEdit->hasFocus() || descriptionEdit->hasFocus()) {
+    if (nameEdit->hasFocus() || dateEdit->hasFocus() || descriptionEdit->hasFocus()) {
         return;
     }
 
@@ -1041,7 +1046,7 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
  * @param event The key event to handle
  */
 void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
-    if (nameEdit->hasFocus() || dateEdit->hasFocus() || geoEdit->hasFocus() || descriptionEdit->hasFocus()) {
+    if (nameEdit->hasFocus() || dateEdit->hasFocus() || descriptionEdit->hasFocus()) {
         return;
     }
 
@@ -1277,15 +1282,12 @@ void ImageEditor::deleteImage() {
  * @details This function retrieves the metadata from the current image and populates the corresponding fields in the UI.
  */
 void ImageEditor::populateMetadataFields() {
-    showMapDialog();
-
     ImagesData* imagesData = &data->imagesData;
     ImageData* imageData = imagesData->getCurrentImageData();
     Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
 
     nameEdit->clear();
     dateEdit->setDateTime(QDateTime::currentDateTime());
-    geoEdit->clear();
     descriptionEdit->clear();
 
     nameEdit->setText(QString::fromStdString(imageData->getImageName()));
@@ -1294,11 +1296,6 @@ void ImageEditor::populateMetadataFields() {
         QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
         QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
         dateEdit->setDateTime(dateTime);
-    }
-    if (exifData["Exif.GPSInfo.GPSLatitude"].count() != 0 && exifData["Exif.GPSInfo.GPSLongitude"].count() != 0) {
-        geoEdit->setText(QString::fromStdString(
-            exifData["Exif.GPSInfo.GPSLatitude"].toString() + ", " +
-            exifData["Exif.GPSInfo.GPSLongitude"].toString()));
     }
     if (exifData["Exif.Image.ImageDescription"].count() != 0) {
         descriptionEdit->setText(QString::fromStdString(exifData["Exif.Image.ImageDescription"].toString()));
@@ -1317,11 +1314,6 @@ void ImageEditor::validateMetadata() {
     QString dateTimeStr = dateEdit->dateTime().toString("yyyy:MM:dd HH:mm:ss");
     metaData->modifyExifValue("Exif.Image.DateTime", dateTimeStr.toStdString());
 
-    QStringList geoData = geoEdit->text().split(",");
-    if (geoData.size() == 2) {
-        metaData->modifyExifValue("Exif.GPSInfo.GPSLatitude", geoData[0].trimmed().toStdString());
-        metaData->modifyExifValue("Exif.GPSInfo.GPSLongitude", geoData[1].trimmed().toStdString());
-    }
     metaData->modifyExifValue("Exif.Image.ImageDescription", descriptionEdit->text().toStdString());
 
     imageData->saveMetaData();
@@ -1536,12 +1528,6 @@ bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
                     dateEdit->clearFocus();
                     this->setFocus();
                 }
-            } else if (geoEdit->hasFocus()) {
-                QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-                if (!geoEdit->geometry().contains(mouseEvent->pos())) {
-                    geoEdit->clearFocus();
-                    this->setFocus();
-                }
             } else if (descriptionEdit->hasFocus()) {
                 QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
                 if (!descriptionEdit->geometry().contains(mouseEvent->pos())) {
@@ -1557,10 +1543,10 @@ bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
 void ImageEditor::showMapDialog() {
     ImageData* imageData = data.get()->getImagesData()->getCurrentImageData();
     if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
-        MapDialog* dialog = new MapDialog(this);
-        qInfo() << "GPS data available for this image. Centering map on GPS coordinates.";
+        MapDialog* dialog = new MapDialog(this, imageData);
         dialog->setMapCenter(imageData->getLatitude(), imageData->getLongitude());
-        dialog->addMapPoint(imageData->getLatitude(), imageData->getLongitude());
+        dialog->moveMapPoint(imageData->getLatitude(), imageData->getLongitude());
+
         dialog->exec();
     }
 }

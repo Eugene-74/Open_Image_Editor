@@ -433,3 +433,87 @@ void MetaData::clear() {
     xmpMetaData.clear();
     iptcMetaData.clear();
 }
+
+/**
+ * @brief Set the latitude in the metadata
+ * @param latitude The latitude in degrees
+ */
+void MetaData::setLatitude(double latitude) {
+    auto convertDecimalToGpsCoordinate = [](double decimal) -> std::string {
+        int degrees = static_cast<int>(decimal);
+        double fractional = (decimal - degrees) * 60.0;
+        int minutes = static_cast<int>(fractional);
+        double seconds = (fractional - minutes) * 60.0;
+
+        auto formatFraction = [](double value) -> std::string {
+            int numerator = static_cast<int>(value * 10000);  // Adjust precision as needed
+            int denominator = 10000;
+            return std::to_string(numerator) + "/" + std::to_string(denominator);
+        };
+
+        std::string degreesStr = std::to_string(degrees) + "/1";
+        std::string minutesStr = std::to_string(minutes) + "/1";
+        std::string secondsStr = formatFraction(seconds);
+
+        return degreesStr + " " + minutesStr + " " + secondsStr;
+    };
+
+    std::string gpsCoordinate = convertDecimalToGpsCoordinate(latitude);
+    qDebug() << "gpsCoordinate : " << QString::fromStdString(gpsCoordinate);
+    modifyExifValue("Exif.GPSInfo.GPSLatitude", gpsCoordinate);
+}
+
+/**
+ * @brief Get the latitude from the metadata
+ * @return The latitude in degrees
+ */
+double MetaData::getLatitude() const {
+    for (auto& entry : exifMetaData) {
+        if (entry.key() == "Exif.GPSInfo.GPSLatitude") {
+            return entry.toFloat();
+        }
+    }
+    return -1;
+}
+
+/**
+ * @brief Set the longitude in the metadata
+ * @param longitude The longitude in degrees
+ */
+void MetaData::setLongitude(double longitude) {
+    auto convertDecimalToGpsCoordinate = [](double decimal) -> std::string {
+        int degrees = static_cast<int>(decimal);
+        double fractional = (decimal - degrees) * 60.0;
+        int minutes = static_cast<int>(fractional);
+        double seconds = (fractional - minutes) * 60.0;
+
+        auto formatFraction = [](double value) -> std::string {
+            int numerator = static_cast<int>(value * 10000);  // Adjust precision as needed
+            int denominator = 10000;
+            return std::to_string(numerator) + "/" + std::to_string(denominator);
+        };
+
+        std::string degreesStr = std::to_string(degrees) + "/1";
+        std::string minutesStr = std::to_string(minutes) + "/1";
+        std::string secondsStr = formatFraction(seconds);
+
+        return degreesStr + " " + minutesStr + " " + secondsStr;
+    };
+
+    std::string gpsCoordinate = convertDecimalToGpsCoordinate(longitude);
+    qDebug() << "gpsCoordinate : " << QString::fromStdString(gpsCoordinate);
+    modifyExifValue("Exif.GPSInfo.GPSLongitude", gpsCoordinate);
+}
+
+/**
+ * @brief Get the longitude from the metadata
+ * @return The longitude in degrees
+ */
+double MetaData::getLongitude() const {
+    for (auto& entry : exifMetaData) {
+        if (entry.key() == "Exif.GPSInfo.GPSLongitude") {
+            return entry.toFloat();
+        }
+    }
+    return -1;
+}

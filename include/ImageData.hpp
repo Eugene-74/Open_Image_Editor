@@ -58,7 +58,10 @@ class ImageData {
     void setOrientation(int orientation);
     int getOrientation() const;
 
+    void setLatitude(double latitude);
     double getLatitude() const;
+
+    void setLongitude(double longitude);
     double getLongitude() const;
 
     // DetectionStatus getDetectionStatus() const;

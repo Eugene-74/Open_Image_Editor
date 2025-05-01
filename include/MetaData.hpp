@@ -34,6 +34,12 @@ class MetaData {
     int getImageOrientation();
     long getTimestamp();
 
+    void setLatitude(double latitude);
+    double getLatitude() const;
+
+    void setLongitude(double longitude);
+    double getLongitude() const;
+
     bool modifyExifValue(const std::string& key, const std::string& newValue);
     bool modifyXmpValue(const std::string& key, const std::string& newValue);
     bool modifyIptcValue(const std::string& key, const std::string& newValue);

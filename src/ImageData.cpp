@@ -296,6 +296,7 @@ int ImageData::getImageOrientation() {
 void ImageData::turnImage(int rotation) {
     this->orientation = rotation;
     metaData.modifyExifValue("Exif.Image.Orientation", std::to_string(rotation));
+    saveMetaData();
 }
 
 /**
@@ -510,10 +511,28 @@ int ImageData::getOrientation() const {
 }
 
 /**
+ * @brief Set the latitude for the image
+ */
+void ImageData::setLatitude(double latitude) {
+    this->latitude = latitude;
+    metaData.setLatitude(latitude);
+    saveMetaData();
+}
+
+/**
  * @brief Get the latitude for the image
  */
 double ImageData::getLatitude() const {
     return latitude;
+}
+
+/**
+ * @brief Set the longitude for the image
+ */
+void ImageData::setLongitude(double longitude) {
+    this->longitude = longitude;
+    metaData.setLongitude(longitude);
+    saveMetaData();
 }
 
 /**
