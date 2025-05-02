@@ -275,7 +275,6 @@ void MainImage::cropImage() {
  * @details It also draws detected objects if the personsEditor is enabled and there are detected objects in the image data.
  */
 void MainImage::paintEvent(QPaintEvent* event) {
-    qDebug() << "paintEvent " << personsEditor;
     QLabel::paintEvent(event);
 
     QPainter painter(this);

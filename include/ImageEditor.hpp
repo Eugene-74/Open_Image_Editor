@@ -98,7 +98,7 @@ class ImageEditor : public QMainWindow {
     void openBigImageLabel();
     void closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEditor);
 
-    MapWidget* showMapWidget();
+    MapWidget* createMapWidget();
 
     bool exifEditor = false;
     bool personsEditor = false;

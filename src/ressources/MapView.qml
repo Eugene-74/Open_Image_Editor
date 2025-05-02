@@ -11,11 +11,14 @@ Item {
 
     Plugin {
         id: mapPlugin
-        name: "osm" // Utilise OpenStreetMap
+        name: "osm" // OpenStreetMap
     }
 
     property var currentMarker: null
     property var currentCoordinate: null
+
+    property var lastCoordinate: null
+
 
     Map {
         id: map
@@ -24,7 +27,7 @@ Item {
         plugin: mapPlugin
 
         zoomLevel: 14
-        center: QtPositioning.coordinate(48.8566, 2.3522) // Coordonnées de Paris
+        center: QtPositioning.coordinate(48.8566, 2.3522) //    Paris
 
         MouseArea {
             anchors.fill: parent
@@ -46,9 +49,10 @@ Item {
             function handleMouseReleased(mouse) {
                 isDragging = false;
                 if (!mouseMoved) {
-                    // Si la souris n'a pas bougé, c'est un clic simple
                     var coord = map.toCoordinate(Qt.point(mouse.x, mouse.y));
-                    console.log("Mouse clicked at:", mouse.x, mouse.y, "Converted to coordinate:", coord);
+        
+                    validateButton.visible = true;
+                    cancelButton.visible = true;
                     map.addPoint(coord);
                 }
             }
@@ -58,14 +62,12 @@ Item {
                     var dx = mouse.x - lastMousePosition.x;
                     var dy = mouse.y - lastMousePosition.y;
 
-                    // Si la souris bouge, marquez comme "mouseMoved"
                     if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
                         mouseMoved = true;
                     }
 
                     lastMousePosition = Qt.point(mouse.x, mouse.y);
 
-                    // Déplace la carte en fonction du déplacement de la souris
                     var newCenter = map.toCoordinate(Qt.point(width / 2 - dx, height / 2 - dy));
                     map.center = newCenter;
                 }
@@ -83,11 +85,12 @@ Item {
         }
 
         function addPoint(coordinate) {
-            console.log("Adding point at:", coordinate.latitude, coordinate.longitude);
-
             if (currentMarker) {
                 map.removeMapItem(currentMarker);
                 currentMarker.destroy();
+            }
+            if (!lastCoordinate) {
+                lastCoordinate = coordinate;
             }
 
             currentMarker = Qt.createQmlObject(
@@ -98,8 +101,15 @@ Item {
 
             currentCoordinate = coordinate;
 
-            validateButton.visible = true;
-            cancelButton.visible = true;
+            
+        }
+
+        function addPointForOthers(coordinate) {
+            var marker = Qt.createQmlObject(
+                'import QtQuick; import QtLocation ; import QtPositioning; MapQuickItem { coordinate: QtPositioning.coordinate(' + coordinate.latitude + ', ' + coordinate.longitude + '); anchorPoint.x: 24; anchorPoint.y: 48; sourceItem: Image { source: "qrc:/images/otherPin.png"; width: 48; height: 48; } }',
+                map
+            );
+            map.addMapItem(marker);
         }
 
         function removePoint() {
@@ -130,6 +140,12 @@ Item {
             currentCoordinate = null;
             validateButton.visible = false;
             cancelButton.visible = false;
+            if(lastCoordinate){
+                map.addPoint(lastCoordinate);
+                map.center(lastCoordinate);
+            }
+
+
         }
     }
 
@@ -141,7 +157,6 @@ Item {
         anchors.right: cancelButton.left
         anchors.margins: 10
         onClicked: {
-            console.log("Point validé:", currentCoordinate.latitude, currentCoordinate.longitude);
             coordinateValidated(currentCoordinate.latitude, currentCoordinate.longitude);
             validateButton.visible = false;
             cancelButton.visible = false;

@@ -63,6 +63,7 @@ ThreadManager::ThreadManager(QObject* parent, int maxThreads)
  * @param job function for the thread
  */
 void ThreadManager::addThread(std::function<void()> job) {
+    qDebug() << "start";
     if (QThreadPool::globalInstance()->activeThreadCount() < maxThreads) {
         startJob(std::move(job));
 
@@ -92,6 +93,7 @@ void ThreadManager::addThread(std::function<void()> job) {
  * @param job function for the thread
  */
 void ThreadManager::addHeavyThread(std::function<void()> job) {
+    qDebug() << "start heavy";
     if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
         startJob(std::move(job));
     } else {
@@ -115,6 +117,7 @@ void ThreadManager::addHeavyThread(std::function<void()> job) {
  * @param job function for the thread
  */
 void ThreadManager::addThreadToFront(std::function<void()> job) {
+    qDebug() << "start F";
     if (QThreadPool::globalInstance()->activeThreadCount() < maxThreads) {
         startJob(std::move(job));
 
@@ -144,6 +147,7 @@ void ThreadManager::addThreadToFront(std::function<void()> job) {
  * @param job function for the thread
  */
 void ThreadManager::addHeavyThreadToFront(std::function<void()> job) {
+    qDebug() << "start heavy F";
     if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
         startJob(std::move(job));
     } else {
@@ -157,7 +161,6 @@ void ThreadManager::addHeavyThreadToFront(std::function<void()> job) {
         }
     }
 }
-
 /**
  * @brief Strop all active threads
  */
@@ -180,23 +183,22 @@ void ThreadManager::removeAllThreads() {
     qInfo() << "All threads stopped";
 }
 
-/**
- * @brief Give you the number of active thread in the thread pool
- * @return number of active thread
- */
-int ThreadManager::getThreadCount() const {
-    return QThreadPool::globalInstance()->activeThreadCount();
-}
+    /**
+     * @brief Give you the number of active thread in the thread pool
+     * @return number of active thread
+     */
+    int ThreadManager::getThreadCount() const {
+        return QThreadPool::globalInstance()->activeThreadCount();
+    }
 
-/**
- * @brief Manage the thread queue when it's not empty
- */
-void ThreadManager::processQueue() {
-    if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads) {
+    /**
+     * @brief Manage the thread queue when it's not empty
+     */
+    void ThreadManager::processQueue() {
         {
             std::lock_guard<std::mutex> lock(taskQueueMutex);
 
-            if (!taskQueue.empty()) {
+            while (!taskQueue.empty() && QThreadPool::globalInstance()->activeThreadCount() <= maxThreads) {
                 std::function<void()> job = std::move(taskQueue.front());
                 taskQueue.pop_front();
                 if (job) {
@@ -204,23 +206,17 @@ void ThreadManager::processQueue() {
                 }
             }
         }
-    }
-    if ((QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD)) {
         {
             std::lock_guard<std::mutex> lock(heavyTaskQueueMutex);
-
-            if (taskQueue.empty()) {
-                if (!heavyTaskQueue.empty()) {
-                    std::function<void()> job = std::move(heavyTaskQueue.front());
-                    heavyTaskQueue.pop_front();
-                    if (job) {
-                        startJob(std::move(job));
-                    }
+            while (!heavyTaskQueue.empty() && QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
+                std::function<void()> job = std::move(heavyTaskQueue.front());
+                heavyTaskQueue.pop_front();
+                if (job) {
+                    startJob(std::move(job));
                 }
             }
         }
     }
-}
 
 /**
  * @brief Start a job in the thread pool
@@ -232,6 +228,7 @@ void ThreadManager::startJob(std::function<void()> job) {
         if (activeThreads >= maxThreads) {
             qWarning() << "Cannot start job. Active threads: " << activeThreads << ", Max threads: " << maxThreads;
 
+            // TODO fait crash (je crois)
             // {
             //     std::lock_guard<std::mutex> lock(taskQueueMutex);
 

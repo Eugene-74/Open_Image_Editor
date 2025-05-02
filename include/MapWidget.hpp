@@ -21,6 +21,10 @@ class MapWidget : public QDialog {
     void moveMapPoint(double latitude, double longitude);
     void removeMapPoint();
 
+    void addMapPointForOthers(double latitude, double longitude);
+
+    void setImageData(ImageData* imageData);
+
    private slots:
     void onCoordinateValidated(double latitude, double longitude);
 

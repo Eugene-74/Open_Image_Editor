@@ -69,6 +69,9 @@ void MapWidget::moveMapPoint(double latitude, double longitude) {
     QMetaObject::invokeMethod(mapItem, "addPoint", Q_ARG(QVariant, QVariant::fromValue(pointCoordinate)));
 }
 
+/**
+ * @brief Remove the map point
+ */
 void MapWidget::removeMapPoint() {
     if (!quickWidget)
         return;
@@ -84,13 +87,42 @@ void MapWidget::removeMapPoint() {
     QMetaObject::invokeMethod(mapItem, "removePoint");
 }
 
+void MapWidget::addMapPointForOthers(double latitude, double longitude) {
+    if (!quickWidget)
+        return;
+
+    QQuickItem* rootItem = quickWidget->rootObject();
+    if (!rootItem)
+        return;
+
+    QQuickItem* mapItem = rootItem->findChild<QQuickItem*>("mapView");
+    if (!mapItem)
+        return;
+
+    QVariantList point;
+    point << latitude << longitude;
+
+    QGeoCoordinate pointCoordinate(latitude, longitude);
+
+    QMetaObject::invokeMethod(mapItem, "addPointForOthers", Q_ARG(QVariant, QVariant::fromValue(pointCoordinate)));
+}
+
 /**
  * @brief Slot to handle coordinate validation
  * @param latitude Latitude of the validated point
  * @param longitude Longitude of the validated point
  */
 void MapWidget::onCoordinateValidated(double latitude, double longitude) {
-    imageData->getMetaData().setLatitude(latitude);
-    imageData->getMetaData().setLongitude(longitude);
+    imageData->setLatitude(latitude);
+    imageData->setLongitude(longitude);
+
     imageData->saveMetaData();
+    qDebug() << "Coordinate validated:" << imageData->getLatitude() << imageData->getLongitude();
+}
+/**
+ * @brief Set the image data for the map widget
+ * @param imageData Pointer to the ImageData object containing image metadata
+ */
+void MapWidget::setImageData(ImageData* imageData) {
+    this->imageData = imageData;
 }

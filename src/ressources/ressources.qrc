@@ -116,6 +116,8 @@
     <qresource prefix="">
         <file>MapView.qml</file>
         <file>images/pin.png</file>
+        <file>images/otherPin.png</file>
+
 
     </qresource>
 </RCC>

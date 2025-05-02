@@ -100,7 +100,7 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     calendarWidget->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
     calendarWidget->setNavigationBarVisible(true);
 
-    editGeo = showMapWidget();
+    editGeo = createMapWidget();
 
     descriptionEdit = new QLineEdit(this);
     validateButton = new QPushButton("Valider", this);
@@ -172,24 +172,24 @@ void ImageEditor::reload() {
 
         updateButtons();
 
-        // updatePreview();
+        updatePreview();
 
-        // if (exifEditor) {
-        //     imagesData->getCurrentImageData()->loadData();
-        //     populateMetadataFields();
-        // } else {
-        //     for (int i = 0; i < infoLayout->count(); ++i) {
-        //         QWidget* widget = infoLayout->itemAt(i)->widget();
-        //         if (widget) {
-        //             widget->hide();
-        //         }
-        //     }
-        // }
+        if (exifEditor) {
+            imagesData->getCurrentImageData()->loadData();
+            populateMetadataFields();
+        } else {
+            for (int i = 0; i < infoLayout->count(); ++i) {
+                QWidget* widget = infoLayout->itemAt(i)->widget();
+                if (widget) {
+                    widget->hide();
+                }
+            }
+        }
 
-        // if (imagesData->get()->size() <= 0) {
-        //     addImagesFromFolder(data, this);
-        //     return;
-        // }
+        if (imagesData->get()->size() <= 0) {
+            addImagesFromFolder(data, this);
+            return;
+        }
     }
 }
 
@@ -923,7 +923,6 @@ MainImage* ImageEditor::createImageLabel() {
         imageData->setDetectionStatusLoading();
         qInfo() << "starting face recognition";
         QImage image = data->loadImageNormal(nullptr, data->imagesData.getCurrentImageData()->getImagePath(), QSize(0, 0), false);
-        // QImage image = data->imageCache->at(currentImagePath).image;
 
         image = data->rotateQImage(image, imageData);
 
@@ -1295,14 +1294,13 @@ void ImageEditor::populateMetadataFields() {
     }
     double latitude = imageData->getLatitude();
     double longitude = imageData->getLongitude();
+    editGeo->setImageData(imageData);
     if (latitude == 0 && longitude == 0) {
-        latitude = 46.6034;  // Default latitude (France)
-        longitude = 1.8883;  // Default longitude (France)
         editGeo->removeMapPoint();
     } else {
         editGeo->moveMapPoint(latitude, longitude);
+        editGeo->setMapCenter(latitude, longitude);
     }
-    editGeo->setMapCenter(latitude, longitude);
 
     if (exifData["Exif.Image.ImageDescription"].count() != 0) {
         descriptionEdit->setText(QString::fromStdString(exifData["Exif.Image.ImageDescription"].toString()));
@@ -1346,13 +1344,13 @@ void ImageEditor::startImageOpen() {
             imageOpenTimer->stop();
             for (int i = 0; i < PRE_LOAD_RADIUS; i++) {
                 if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() - (i + 1) >= 0) {
-                    // data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr,
-                    //                        false, QSize(0, 0), 0, true);
+                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr,
+                                           false, QSize(0, 0), 0, true);
                 }
 
                 if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() + (i + 1) >= 0) {
-                    // data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr,
-                    //                        false, QSize(0, 0), 0, true);
+                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr,
+                                           false, QSize(0, 0), 0, true);
                 }
             }
         }
@@ -1547,7 +1545,7 @@ bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
     return QMainWindow::eventFilter(obj, event);
 }
 
-MapWidget* ImageEditor::showMapWidget() {
+MapWidget* ImageEditor::createMapWidget() {
     ImageData* imageData = data.get()->getImagesData()->getCurrentImageData();
 
     MapWidget* mapWidget = new MapWidget(this, imageData);
@@ -1555,5 +1553,14 @@ MapWidget* ImageEditor::showMapWidget() {
         mapWidget->setMapCenter(imageData->getLatitude(), imageData->getLongitude());
         mapWidget->moveMapPoint(imageData->getLatitude(), imageData->getLongitude());
     }
+    data->addThreadToFront([this, mapWidget]() {
+        for (ImageData* imageData : data->getImagesData()->getConst()) {
+            if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
+                qDebug() << "Adding point for others:" << imageData->getLatitude() << imageData->getLongitude();
+                mapWidget->addMapPointForOthers(imageData->getLatitude(), imageData->getLongitude());
+            }
+        }
+    });
+
     return mapWidget;
 }

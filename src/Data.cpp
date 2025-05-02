@@ -332,13 +332,13 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
 void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, int thumbnail, bool force) {
     if (!isInCache(imagePath)) {
         auto self = std::weak_ptr<Data>(shared_from_this());
-        addThreadToFront([self, callback, imagePath, setSize, size, force, thumbnail]() {
+        addHeavyThreadToFront([self, callback, imagePath, setSize, size, force, thumbnail]() {
             if (auto sharedSelf = self.lock()) {
-                // QImage image = sharedSelf->loadImageNormal(nullptr, imagePath, size, setSize, thumbnail, force);
+                QImage image = sharedSelf->loadImageNormal(nullptr, imagePath, size, setSize, thumbnail, force);
 
-                // if (callback) {
-                //     QMetaObject::invokeMethod(QApplication::instance(), callback, Qt::QueuedConnection);
-                // }
+                if (callback) {
+                    QMetaObject::invokeMethod(QApplication::instance(), callback, Qt::QueuedConnection);
+                }
             } else {
                 qWarning() << "Data object is no longer valid. Skipping loadInCacheAsync.";
             }
@@ -1956,47 +1956,64 @@ void Data::checkToLoadImages(int center, int radius, int thumbnailSize) {
  * @brief Check if the thumbnail exists and create it if not
  */
 void Data::checkThumbnailAndDetectObjects() {
-    // auto images = getImagesData()->get();
-    // static int delay = 0;
-    // for (auto& imageData : *images) {
-    //     bool hasThumbnail = true;
-    //     int i = 0;
-    //     while (i < Const::Thumbnail::THUMBNAIL_SIZES.size() && hasThumbnail) {
-    //         if (!this->hasThumbnail(imageData->getImagePath(), Const::Thumbnail::THUMBNAIL_SIZES[i])) {
-    //             hasThumbnail = false;
-    //         }
-    //         i++;
-    //     }
+    auto images = getImagesData()->get();
+    static int delay = 0;
+    // TODO do better
+    const int max = 1000;
+    int count = 0;
 
-    //     if (!hasThumbnail) {
-    //         QTimer::singleShot(delay, [this, imageData]() {
-    //             createAllThumbnailsAsync(imageData->getImagePath(), [this, imageData](bool success) {
-    //                 if (success) {
-    //                     qDebug() << "Thumbnail created for image: " << QString::fromStdString(imageData->getImagePath());
-    //                 } else {
-    //                     qCritical() << "Error creating thumbnail for image: " << QString::fromStdString(imageData->getImagePath());
-    //                 } }, false);
-    //         });
-    //         delay += 100;
-    //     }
-    // }
-    // for (auto& imageData : *imagesData.get()) {
-    //     std::string imagePath = imageData->getImagePath();
-    //     if (imageData->isDetectionStatusNotLoaded()) {
-    //         QTimer::singleShot(delay, [this, imagePath, imageData]() {
-    //             addHeavyThread([this, imagePath, imageData]() {
-    //                 QImage image = this->loadImageNormal(nullptr, imagePath, QSize(0, 0), false, 0, true);
-    //                 image = rotateQImage(image, imageData);
-    //                 std::string modelName = this->model.getModelName();
-    //                 DetectedObjects detectedObjects = this->detect(imagePath, image, modelName);
+    for (auto& imageData : *images) {
+        // TODO do better
+        if (count > max) {
+            break;
+        }
+        count++;
 
-    //                 imageData->setDetectedObjects(detectedObjects.getDetectedObjects());
-    //                 imageData->setDetectionStatusLoaded();
-    //                 unloadFromCache(imagePath);
-    //                 qDebug() << "Detection done for image: " << QString::fromStdString(imagePath);
-    //             });
-    //         });
-    //         delay += 500;
-    //     }
-    // }
+        bool hasThumbnail = true;
+        int i = 0;
+        while (i < Const::Thumbnail::THUMBNAIL_SIZES.size() && hasThumbnail) {
+            if (!this->hasThumbnail(imageData->getImagePath(), Const::Thumbnail::THUMBNAIL_SIZES[i])) {
+                hasThumbnail = false;
+            }
+            i++;
+        }
+
+        if (!hasThumbnail) {
+            QTimer::singleShot(delay, [this, imageData]() {
+                createAllThumbnailsAsync(imageData->getImagePath(), [this, imageData](bool success) {
+                    if (success) {
+                        qDebug() << "Thumbnail created for image: " << QString::fromStdString(imageData->getImagePath());
+                    } else {
+                        qCritical() << "Error creating thumbnail for image: " << QString::fromStdString(imageData->getImagePath());
+                    } }, false);
+            });
+            delay += 100;
+        }
+    }
+    for (auto& imageData : *imagesData.get()) {
+        // TODO do better
+        if (count > max) {
+            break;
+        }
+        count++;
+        std::string imagePath = imageData->getImagePath();
+        if (imageData->isDetectionStatusNotLoaded()) {
+            QTimer::singleShot(delay, [this, imagePath, imageData]() {
+                addHeavyThread([this, imagePath, imageData]() {
+                    QImage image = this->loadImageNormal(nullptr, imagePath, QSize(0, 0), false, 0, true);
+                    image = rotateQImage(image, imageData);
+                    // std::string modelName = this->model.getModelName();
+                    std::string modelName = "yolov5n";
+
+                    DetectedObjects detectedObjects = this->detect(imagePath, image, modelName);
+
+                    imageData->setDetectedObjects(detectedObjects.getDetectedObjects());
+                    imageData->setDetectionStatusLoaded();
+                    unloadFromCache(imagePath);
+                    qDebug() << "Detection done for image: " << QString::fromStdString(imagePath);
+                });
+            });
+            delay += 500;
+        }
+    }
 }
