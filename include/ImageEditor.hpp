@@ -96,7 +96,7 @@ class ImageEditor : public QMainWindow {
     MainImage* createImageLabel();
 
     void openBigImageLabel();
-    void closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEditor);
+    void closeBigImageLabel(MainImage* bigImageLabel);
 
     MapWidget* createMapWidget();
 

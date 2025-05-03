@@ -217,7 +217,7 @@ void ImageBooth::updateVisibleImages(bool force) {
 
     // TODO fait crash
     // data->checkToUnloadImages(imageNumber, IMAGE_BOOTH_PRE_LOAD_RADIUS * maxVisibleLines * data->sizes->imagesBoothSizes->imagesPerLine);
-    // data->checkToLoadImages(imageNumber, IMAGE_BOOTH_PRE_LOAD_RADIUS * maxVisibleLines * data->sizes->imagesBoothSizes->imagesPerLine);
+    // data->checkToLoadImages(imageNumber, IMAGE_BOOTH_PRE_LOAD_RADIUS * maxVisibleLines * data->sizes->imagesBoothSizes->imagesPerLine, imageQuality);
 }
 
 /**
@@ -627,24 +627,6 @@ void ImageBooth::updateImages() {
                         int totalImages = 0;
                         auto* currentFolder = data->getCurrentFolders()->getFolder(folderNbr - 1);
                         if (currentFolder) {
-                            // auto* files = currentFolder->getFilesPtr();
-                            // for (const auto& file : *files) {
-                            //     ImageData* imageData = data->imagesData.getImageData(file);
-                            //     if (imageData && imageData->respectFilters(data->getImagesData()->getFilters())) {
-                            //         totalImages++;
-                            //     }
-                            // }
-
-                            // auto subFolders = currentFolder->getFoldersConst();
-                            // for (const auto& subFolder : subFolders) {
-                            //     auto subFiles = subFolder.getFilesConst();
-                            //     for (const auto& subFile : subFiles) {
-                            //         ImageData* subImageData = data->imagesData.getImageData(subFile);
-                            //         if (subImageData && subImageData->respectFilters(data->getImagesData()->getFilters())) {
-                            //             totalImages++;
-                            //         }
-                            //     }
-                            // }
                             countImagesInFolder(currentFolder, totalImages);
                         }
                         folderButton->addLogo("#00FF00", "FFFFFF", totalImages);

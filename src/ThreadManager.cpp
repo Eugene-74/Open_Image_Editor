@@ -63,7 +63,7 @@ ThreadManager::ThreadManager(QObject* parent, int maxThreads)
  * @param job function for the thread
  */
 void ThreadManager::addThread(std::function<void()> job) {
-    qDebug() << "start";
+    // qDebug() << "start";
     if (QThreadPool::globalInstance()->activeThreadCount() < maxThreads) {
         startJob(std::move(job));
 
@@ -93,7 +93,7 @@ void ThreadManager::addThread(std::function<void()> job) {
  * @param job function for the thread
  */
 void ThreadManager::addHeavyThread(std::function<void()> job) {
-    qDebug() << "start heavy";
+    // qDebug() << "start heavy";
     if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
         startJob(std::move(job));
     } else {
@@ -117,7 +117,7 @@ void ThreadManager::addHeavyThread(std::function<void()> job) {
  * @param job function for the thread
  */
 void ThreadManager::addThreadToFront(std::function<void()> job) {
-    qDebug() << "start F";
+    // qDebug() << "start F";
     if (QThreadPool::globalInstance()->activeThreadCount() < maxThreads) {
         startJob(std::move(job));
 
@@ -147,7 +147,7 @@ void ThreadManager::addThreadToFront(std::function<void()> job) {
  * @param job function for the thread
  */
 void ThreadManager::addHeavyThreadToFront(std::function<void()> job) {
-    qDebug() << "start heavy F";
+    // qDebug() << "start heavy F";
     if (QThreadPool::globalInstance()->activeThreadCount() <= maxThreads - FREE_THREAD) {
         startJob(std::move(job));
     } else {
@@ -155,9 +155,9 @@ void ThreadManager::addHeavyThreadToFront(std::function<void()> job) {
             std::lock_guard<std::mutex> lock(heavyTaskQueueMutex);
 
             heavyTaskQueue.push_front(std::move(job));
-            if (heavyTaskQueue.size() > 100) {
-                qWarning() << "Heavy thread queue" << heavyTaskQueue.size();
-            }
+            // if (heavyTaskQueue.size() > 100) {
+            //     qWarning() << "Heavy thread queue" << heavyTaskQueue.size();
+            // }
         }
     }
 }

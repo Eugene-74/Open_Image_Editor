@@ -116,7 +116,7 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     infoLayout->addWidget(new QLabel("Description:", this));
     infoLayout->addWidget(descriptionEdit);
     infoLayout->addWidget(validateButton);
-    if (exifEditor) {
+    if (exifEditor && !bigImage) {
         populateMetadataFields();
     } else {
         for (int i = 0; i < infoLayout->count(); ++i) {
@@ -156,13 +156,14 @@ void ImageEditor::previousImage(int nbr) {
  * @brief Reload imageEditor window
  */
 void ImageEditor::reload() {
+    checkCache();
+
     if (bigImage) {
         MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, personsEditor);
 
         bigImageLabelNew->setFixedSize(data->sizes->imageEditorSizes->bigImage);
-        bool oldExifEditor = exifEditor;
-        connect(bigImageLabelNew, &MainImage::leftClicked, [this, oldExifEditor]() {
-            closeBigImageLabel(bigImageLabel, oldExifEditor);
+        connect(bigImageLabelNew, &MainImage::leftClicked, [this]() {
+            closeBigImageLabel(bigImageLabel);
         });
         mainLayout->replaceWidget(bigImageLabel, bigImageLabelNew);
         bigImageLabel->deleteLater();
@@ -174,7 +175,7 @@ void ImageEditor::reload() {
 
         updatePreview();
 
-        if (exifEditor) {
+        if (exifEditor && !bigImage) {
             imagesData->getCurrentImageData()->loadData();
             populateMetadataFields();
         } else {
@@ -380,7 +381,6 @@ void ImageEditor::updateButtons() {
     }
 
     reloadImageLabel();
-    checkCache();
 
     if (buttonImageNext) {
         if (data->imagesData.getImageNumber() == data->imagesData.getCurrent()->size() - 1) {
@@ -1377,7 +1377,7 @@ void ImageEditor::stopImageOpen() {
  * @details This function checks the loaded images in the cache and unloads any images that are not currently being used.
  */
 void ImageEditor::checkLoadedImage() {
-    // data->checkToUnloadImages(data->getImagesData()->getImageNumber(), PRE_LOAD_RADIUS);
+    data->checkToUnloadImages(data->getImagesData()->getImageNumber(), PRE_LOAD_RADIUS);
 }
 
 /**
@@ -1459,9 +1459,6 @@ void ImageEditor::openBigImageLabel() {
 
     mainLayout->addWidget(bigImageLabel);
 
-    bool oldExifEditor = exifEditor;
-
-    exifEditor = false;
     for (int i = 0; i < infoLayout->count(); ++i) {
         QWidget* widget = infoLayout->itemAt(i)->widget();
         if (widget) {
@@ -1469,19 +1466,18 @@ void ImageEditor::openBigImageLabel() {
         }
     }
 
-    connect(bigImageLabel, &MainImage::leftClicked, [this, oldExifEditor]() {
-        closeBigImageLabel(bigImageLabel, oldExifEditor);
+    connect(bigImageLabel, &MainImage::leftClicked, [this]() {
+        closeBigImageLabel(bigImageLabel);
     });
 }
 
 /**
  * @brief Close the large image label and restore the original image editor state
  * @param bigImageLabel The MainImage object representing the large image label
- * @param oldExifEditor The previous state of the exif editor
  * @details This function removes the large image label from the layout and restores the original image editor state.
  * @details It also unhides the metadata fields and reloads the image label.
  */
-void ImageEditor::closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEditor) {
+void ImageEditor::closeBigImageLabel(MainImage* bigImageLabel) {
     bigImage = false;
 
     mainLayout->removeWidget(bigImageLabel);
@@ -1491,7 +1487,6 @@ void ImageEditor::closeBigImageLabel(MainImage* bigImageLabel, bool oldExifEdito
 
     unHide();
 
-    exifEditor = oldExifEditor;
     for (int i = 0; i < infoLayout->count(); ++i) {
         QWidget* widget = infoLayout->itemAt(i)->widget();
         if (widget) {
@@ -1520,7 +1515,7 @@ void ImageEditor::enterEvent(QEnterEvent* event) {
  */
 bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::MouseButtonPress) {
-        if (exifEditor) {
+        if (exifEditor && !bigImage) {
             if (nameEdit->hasFocus()) {
                 QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
                 if (!nameEdit->geometry().contains(mouseEvent->pos())) {
@@ -1556,7 +1551,7 @@ MapWidget* ImageEditor::createMapWidget() {
     data->addThreadToFront([this, mapWidget]() {
         for (ImageData* imageData : data->getImagesData()->getConst()) {
             if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
-                qDebug() << "Adding point for others:" << imageData->getLatitude() << imageData->getLongitude();
+                // qDebug() << "Adding point for others:" << imageData->getLatitude() << imageData->getLongitude();
                 mapWidget->addMapPointForOthers(imageData->getLatitude(), imageData->getLongitude());
             }
         }

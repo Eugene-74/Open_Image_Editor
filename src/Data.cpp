@@ -1931,24 +1931,18 @@ void Data::checkToUnloadImages(int center, int radius) {
  * @param thumbnailSize Size of the thumbnail to load
  */
 void Data::checkToLoadImages(int center, int radius, int thumbnailSize) {
+    if (getImagesData()->getCurrent()->size() == 0) {
+        return;
+    }
+
     std::unordered_set<std::string> loadedImages;
 
-    int lowerBound = center - radius;
-    int upperBound = center + radius;
+    int lowerBound = std::max(center - radius, 0);
+    int upperBound = std::min(center + radius, static_cast<int>(getImagesData()->getCurrent()->size() - 1));
 
     for (int i = lowerBound; i <= upperBound; ++i) {
-        if (i >= 0 && i < imagesData.getCurrent()->size()) {
-            loadedImages.insert(imagesData.getImageDataInCurrent(i)->getImagePath());
-        }
-    }
-    {
-        std::lock_guard<std::mutex> lock(imageCacheMutex);
-        for (const auto& cache : *imageCache) {
-            const std::string& imagePath = cache.second.imagePath;
-            if (loadedImages.find(imagePath) == loadedImages.end()) {
-                loadInCacheAsync(imagePath, nullptr, false, QSize(0, 0), thumbnailSize);
-            }
-        }
+        // qDebug() << "PRE Loading image: " << QString::fromStdString(getImagesData()->getImageDataInCurrent(i)->getImagePath());
+        loadInCacheAsync(getImagesData()->getImageDataInCurrent(i)->getImagePath(), nullptr, false, QSize(0, 0), thumbnailSize);
     }
 }
 
