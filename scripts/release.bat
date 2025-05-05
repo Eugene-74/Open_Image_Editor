@@ -39,18 +39,18 @@ cd bin
 
 copy ..\..\%EXECUTABLE% .
 
-windeployqt6.exe %EXECUTABLE%
+windeployqt6.exe --qmldir ..\..\..\src\ressources %EXECUTABLE%
 
 C:\mingw-bundledlls\mingw-bundledlls C:\Users\eugen\Documents\MesDocuments\git\Open_Image_Editor\build\release\bin\%EXECUTABLE% > dependencies.txt
 
 :copy_dependencies
 for /f "tokens=*" %%i in ('type dependencies.txt') do (
-    echo Copying %%i
+    @REM echo Copying %%i
     xcopy /Y "%%i" .
     C:\mingw-bundledlls\mingw-bundledlls %%i > temp_dependencies.txt
     for /f "tokens=*" %%j in (temp_dependencies.txt) do (
         if not exist "%%j" (
-            echo Copying sub-dependency %%j
+            @REM echo Copying sub-dependency %%j
             xcopy /Y "%%j" .
         )
     )
