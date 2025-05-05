@@ -763,22 +763,22 @@ QImage Data::rotateQImage(QImage image, ImageData* imageData) {
 
         switch (orientation) {
             case Const::Orientation::FLIP_HORIZONTAL:
-                image = image.mirrored(true, false);
+                image = image.flipped(Qt::Horizontal);
                 break;
             case Const::Orientation::ROTATE_180:
                 image = image.transformed(QTransform().rotate(Const::Rotation::UP_SIDE_DOWN));
                 break;
             case Const::Orientation::FLIP_VERTICAL:
-                image = image.mirrored(false, true);
+                image = image.flipped(Qt::Vertical);
                 break;
             case Const::Orientation::TRANSPOSE:
-                image = image.mirrored(true, false).transformed(QTransform().rotate(-90));
+                image = image.flipped(Qt::Horizontal).transformed(QTransform().rotate(-90));
                 break;
             case Const::Orientation::ROTATE_90:
                 image = image.transformed(QTransform().rotate(90));
                 break;
             case Const::Orientation::TRANSVERSE:
-                image = image.mirrored(true, false).transformed(QTransform().rotate(90));
+                image = image.flipped(Qt::Horizontal).transformed(QTransform().rotate(90));
                 break;
             case Const::Orientation::ROTATE_270:
                 image = image.transformed(QTransform().rotate(-90));
@@ -1506,9 +1506,9 @@ void Data::realMirror(int nbr, bool UpDown, std::function<void()> reload) {
     QString outputPath = QString::fromStdString(imagesData.getCurrentImageData()->getImagePathConst());
     QImage image = loadImage(nullptr, imagesData.getCurrentImageData()->getImagePathConst(), QSize(0, 0), false);
     if (UpDown) {
-        image = image.mirrored(false, true);
+        image = image.flipped(Qt::Vertical);
     } else {
-        image = image.mirrored(true, false);
+        image = image.flipped(Qt::Horizontal);
     }
     if (!image.save(outputPath)) {
         qWarning() << "Erreur lors de la sauvegarde de l'image : " << outputPath;
