@@ -105,10 +105,8 @@ class ImageEditor : public QMainWindow {
 
     std::shared_ptr<Data> data;
 
-    QLineEdit* nameEdit;
     QDateTimeEdit* dateEdit;
     MapWidget* editGeo;
-    QLineEdit* descriptionEdit;
     QPushButton* validateButton;
 
     MainImage* imageLabel;

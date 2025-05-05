@@ -88,8 +88,6 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     createPreview();
     updatePreview();
 
-    nameEdit = new QLineEdit(this);
-
     dateEdit = new QDateTimeEdit(this);
     dateEdit->setDisplayFormat("dd/MM/yyyy, HH:mm");
     dateEdit->setCalendarPopup(true);
@@ -102,19 +100,14 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
 
     editGeo = createMapWidget();
 
-    descriptionEdit = new QLineEdit(this);
     validateButton = new QPushButton("Valider", this);
     connect(validateButton, &QPushButton::clicked, this, &ImageEditor::validateMetadata);
 
-    infoLayout->addWidget(new QLabel("Name:", this));
-    infoLayout->addWidget(nameEdit);
     infoLayout->addWidget(new QLabel("Date:", this));
     infoLayout->addWidget(dateEdit);
     infoLayout->addWidget(new QLabel("Géolocalisation:", this));
     infoLayout->addWidget(editGeo);
 
-    infoLayout->addWidget(new QLabel("Description:", this));
-    infoLayout->addWidget(descriptionEdit);
     infoLayout->addWidget(validateButton);
     if (exifEditor && !bigImage) {
         populateMetadataFields();
@@ -976,7 +969,7 @@ void ImageEditor::reloadImageLabel() {
  * @param event The key event to handle
  */
 void ImageEditor::keyPressEvent(QKeyEvent* event) {
-    if (nameEdit->hasFocus() || dateEdit->hasFocus() || descriptionEdit->hasFocus()) {
+    if (dateEdit->hasFocus()) {
         return;
     }
 
@@ -1042,7 +1035,7 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
  * @param event The key event to handle
  */
 void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
-    if (nameEdit->hasFocus() || dateEdit->hasFocus() || descriptionEdit->hasFocus()) {
+    if (dateEdit->hasFocus()) {
         return;
     }
 
@@ -1282,11 +1275,8 @@ void ImageEditor::populateMetadataFields() {
     ImageData* imageData = imagesData->getCurrentImageData();
     Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
 
-    nameEdit->clear();
     dateEdit->setDateTime(QDateTime::currentDateTime());
-    descriptionEdit->clear();
 
-    nameEdit->setText(QString::fromStdString(imageData->getImageName()));
     if (exifData["Exif.Image.DateTime"].count() != 0) {
         QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
         QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
@@ -1301,10 +1291,6 @@ void ImageEditor::populateMetadataFields() {
         editGeo->moveMapPoint(latitude, longitude);
         editGeo->setMapCenter(latitude, longitude);
     }
-
-    if (exifData["Exif.Image.ImageDescription"].count() != 0) {
-        descriptionEdit->setText(QString::fromStdString(exifData["Exif.Image.ImageDescription"].toString()));
-    }
 }
 
 /**
@@ -1318,8 +1304,6 @@ void ImageEditor::validateMetadata() {
 
     QString dateTimeStr = dateEdit->dateTime().toString("yyyy:MM:dd HH:mm:ss");
     metaData->modifyExifValue("Exif.Image.DateTime", dateTimeStr.toStdString());
-
-    metaData->modifyExifValue("Exif.Image.ImageDescription", descriptionEdit->text().toStdString());
 
     imageData->saveMetaData();
 }
@@ -1516,22 +1500,10 @@ void ImageEditor::enterEvent(QEnterEvent* event) {
 bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::MouseButtonPress) {
         if (exifEditor && !bigImage) {
-            if (nameEdit->hasFocus()) {
-                QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-                if (!nameEdit->geometry().contains(mouseEvent->pos())) {
-                    nameEdit->clearFocus();
-                    this->setFocus();
-                }
-            } else if (dateEdit->hasFocus()) {
+            if (dateEdit->hasFocus()) {
                 QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
                 if (!dateEdit->geometry().contains(mouseEvent->pos())) {
                     dateEdit->clearFocus();
-                    this->setFocus();
-                }
-            } else if (descriptionEdit->hasFocus()) {
-                QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-                if (!descriptionEdit->geometry().contains(mouseEvent->pos())) {
-                    descriptionEdit->clearFocus();
                     this->setFocus();
                 }
             }
