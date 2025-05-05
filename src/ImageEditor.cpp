@@ -58,6 +58,36 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     fixedFrameLayout->setAlignment(Qt::AlignCenter);
     fixedFrame->setLayout(fixedFrameLayout);
 
+    nameAndDateLayout = new QHBoxLayout();
+    nameAndDateLayout->setAlignment(Qt::AlignCenter);
+    QWidget* nameAndDateWidget = new QWidget(this);
+    nameAndDateWidget->setLayout(nameAndDateLayout);
+    nameAndDateWidget->setFixedWidth(fixedFrame->width());
+
+    QLabel* nameLabel = new QLabel("Nom:", this);
+    nameEdit = new QLabel("", this);
+    nameAndDateLayout->addWidget(nameLabel);
+    nameAndDateLayout->addWidget(nameEdit);
+
+    nameAndDateLayout->addStretch();
+
+        QLabel* dateLabel = new QLabel("Date:", this);
+    dateEdit = new QDateTimeEdit(this);
+    dateEdit->setCalendarPopup(true);
+    nameAndDateLayout->addWidget(dateLabel);
+    nameAndDateLayout->addWidget(dateEdit);
+
+    QCalendarWidget* calendarWidget = dateEdit->calendarWidget();
+    calendarWidget->setGridVisible(true);
+    calendarWidget->setFirstDayOfWeek(Qt::Monday);
+    calendarWidget->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
+    calendarWidget->setNavigationBarVisible(true);
+
+    validateButton = new QPushButton("Valider", this);
+    connect(validateButton, &QPushButton::clicked, this, &ImageEditor::validateMetadata);
+
+    nameAndDateLayout->addWidget(validateButton);
+
     imageLabelLayout = new QVBoxLayout();
     imageLabelLayout->setAlignment(Qt::AlignCenter);
 
@@ -69,8 +99,16 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     actionButtonLayout = new QHBoxLayout();
     actionButtonLayout->setAlignment(Qt::AlignCenter);
 
-    buttonLayout = new QHBoxLayout();
+    imageLayout = new QHBoxLayout();
+    imageLayout->setAlignment(Qt::AlignCenter);
+
+    buttonLayout = new QVBoxLayout();
     buttonLayout->setAlignment(Qt::AlignCenter);
+
+    // buttonLayout->addLayout(nameAndDateLayout);
+    buttonLayout->addWidget(nameAndDateWidget);
+
+    buttonLayout->addLayout(imageLayout);
 
     previewButtonLayout = new QHBoxLayout();
     previewButtonLayout->setAlignment(Qt::AlignCenter);
@@ -80,35 +118,22 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
 
     mainLayout->addLayout(editionLayout);
     editionLayout->addLayout(actionButtonLayout);
+    // editionLayout->addLayout(nameAndDateLayout);
     editionLayout->addLayout(buttonLayout);
     editionLayout->addLayout(previewButtonLayout);
     mainLayout->addLayout(infoLayout);
 
     createButtons();
+    updateButtons();
+
     createPreview();
     updatePreview();
 
-    dateEdit = new QDateTimeEdit(this);
-    dateEdit->setDisplayFormat("dd/MM/yyyy, HH:mm");
-    dateEdit->setCalendarPopup(true);
-
-    QCalendarWidget* calendarWidget = dateEdit->calendarWidget();
-    calendarWidget->setGridVisible(true);
-    calendarWidget->setFirstDayOfWeek(Qt::Monday);
-    calendarWidget->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
-    calendarWidget->setNavigationBarVisible(true);
-
     editGeo = createMapWidget();
 
-    validateButton = new QPushButton("Valider", this);
-    connect(validateButton, &QPushButton::clicked, this, &ImageEditor::validateMetadata);
-
-    infoLayout->addWidget(new QLabel("Date:", this));
-    infoLayout->addWidget(dateEdit);
     infoLayout->addWidget(new QLabel("Géolocalisation:", this));
     infoLayout->addWidget(editGeo);
 
-    infoLayout->addWidget(validateButton);
     if (exifEditor && !bigImage) {
         populateMetadataFields();
     } else {
@@ -309,10 +334,10 @@ void ImageEditor::createButtons() {
 
     checkCache();
 
-    buttonLayout->addWidget(buttonImageBefore);
-    buttonLayout->addLayout(imageLabelLayout);
-    buttonLayout->addWidget(buttonImageNext);
-    buttonLayout->setAlignment(Qt::AlignCenter);
+    imageLayout->addWidget(buttonImageBefore);
+    imageLayout->addLayout(imageLabelLayout);
+    imageLayout->addWidget(buttonImageNext);
+    imageLayout->setAlignment(Qt::AlignCenter);
 }
 
 /**
@@ -323,6 +348,26 @@ void ImageEditor::updateButtons() {
         return;
     } else if (bigImage) {
         return;
+    }
+
+    if (nameEdit) {
+        nameEdit->setText(QString::fromStdString(data->imagesData.getCurrentImageData()->getImageName()));
+    }
+
+    if (dateEdit) {
+        ImagesData* imagesData = &data->imagesData;
+        ImageData* imageData = imagesData->getCurrentImageData();
+        Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
+
+        if (exifData["Exif.Image.DateTime"].count() != 0) {
+            qDebug() << "Exif date found : " << exifData["Exif.Image.DateTime"].toString().c_str();
+            QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
+            QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
+            dateEdit->setDateTime(dateTime);
+        } else {
+            qDebug() << "Exif date not found, using current date";
+            dateEdit->setDateTime(QDateTime::currentDateTime());
+        }
     }
 
     if (imageRotateRight) {
@@ -1282,6 +1327,7 @@ void ImageEditor::populateMetadataFields() {
         QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
         dateEdit->setDateTime(dateTime);
     }
+
     double latitude = imageData->getLatitude();
     double longitude = imageData->getLongitude();
     editGeo->setImageData(imageData);

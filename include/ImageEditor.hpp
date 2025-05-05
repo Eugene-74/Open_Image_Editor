@@ -107,6 +107,8 @@ class ImageEditor : public QMainWindow {
 
     QDateTimeEdit* dateEdit;
     MapWidget* editGeo;
+    QLabel* nameEdit;
+
     QPushButton* validateButton;
 
     MainImage* imageLabel;
@@ -115,9 +117,11 @@ class ImageEditor : public QMainWindow {
     QFrame* fixedFrame;
     QLayout* imageLabelLayout;
     QHBoxLayout* mainLayout;
+    QHBoxLayout* nameAndDateLayout;
     QHBoxLayout* previewButtonLayout;
     QHBoxLayout* actionButtonLayout;
-    QHBoxLayout* buttonLayout;
+    QHBoxLayout* imageLayout;
+    QVBoxLayout* buttonLayout;
     QVBoxLayout* infoLayout;
     QVBoxLayout* editionLayout;
 

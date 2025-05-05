@@ -123,6 +123,7 @@ class Const {
        public:
         static const int IMAGE_QUALITY = Const::Thumbnail::HIGHT_QUALITY;
         static const int IMAGE_POOR_QUALITY = Const::Thumbnail::POOR_QUALITY;
+        static const int MAX_NAME_LENGTH = 50;
     };
     class Extension {
        public:
