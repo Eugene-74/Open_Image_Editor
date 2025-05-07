@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QQmlComponent>
 #include <QQuickItem>
-#include <QQuickWidget>
+#include <QQuickView>
 #include <QVBoxLayout>
 #include <QVariant>
 
@@ -25,10 +25,14 @@ class MapWidget : public QDialog {
 
     void setImageData(ImageData* imageData);
 
+   private:
+    // QQuickWidget* quickWidget;
+    QQuickView* quickView;
+    ImageData* imageData;
+
    private slots:
     void onCoordinateValidated(double latitude, double longitude);
 
-   private:
-    QQuickWidget* quickWidget;
-    ImageData* imageData;
+   protected:
+    void reject() override;
 };

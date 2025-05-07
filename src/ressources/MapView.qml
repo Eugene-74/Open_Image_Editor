@@ -4,9 +4,6 @@ import QtLocation
 import QtPositioning
 
 Item {
-    width: 800
-    height: 600
-
     signal coordinateValidated(double latitude, double longitude)
 
     Plugin {

@@ -1,20 +1,32 @@
 #include "MapWidget.hpp"
 
+#include <QGeoCoordinate>
+#include <QQuickItem>
+#include <QQuickView>
+#include <QUrl>
+#include <QVBoxLayout>
+#include <QWidget>
+
 /**
  * @brief Constructor for the MapWidget class
  * @param parent Pointer to the parent QWidget (usually the main window)
  * @param imageData Pointer to the ImageData object containing image metadata
  */
-MapWidget::MapWidget(QWidget* parent, ImageData* imageData) : QDialog(parent), imageData(imageData) {
+MapWidget::MapWidget(QWidget* parent, ImageData* imageData)
+    : QDialog(parent), imageData(imageData) {
     QVBoxLayout* layout = new QVBoxLayout(this);
 
-    quickWidget = new QQuickWidget(this);
-    quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
-    quickWidget->setSource(QUrl(QStringLiteral("qrc:/MapView.qml")));
+    quickView = new QQuickView();
+    quickView->setResizeMode(QQuickView::SizeRootObjectToView);
+    quickView->setSource(QUrl(QStringLiteral("qrc:/MapView.qml")));
 
-    layout->addWidget(quickWidget);
+    QWidget* container = QWidget::createWindowContainer(quickView, this);
+    container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    container->setMinimumSize(0, 0);
 
-    QQuickItem* rootItem = quickWidget->rootObject();
+    layout->addWidget(container);
+
+    QQuickItem* rootItem = quickView->rootObject();
     if (rootItem) {
         QObject::connect(rootItem, SIGNAL(coordinateValidated(double, double)),
                          this, SLOT(onCoordinateValidated(double, double)));
@@ -27,10 +39,10 @@ MapWidget::MapWidget(QWidget* parent, ImageData* imageData) : QDialog(parent), i
  * @param longitude Longitude of the center point
  */
 void MapWidget::setMapCenter(double latitude, double longitude) {
-    if (!quickWidget)
+    if (!quickView)
         return;
 
-    QQuickItem* rootItem = quickWidget->rootObject();
+    QQuickItem* rootItem = quickView->rootObject();
     if (!rootItem)
         return;
 
@@ -48,19 +60,16 @@ void MapWidget::setMapCenter(double latitude, double longitude) {
  * @param longitude Longitude of the new point
  */
 void MapWidget::moveMapPoint(double latitude, double longitude) {
-    if (!quickWidget)
+    if (!quickView)
         return;
 
-    QQuickItem* rootItem = quickWidget->rootObject();
+    QQuickItem* rootItem = quickView->rootObject();
     if (!rootItem)
         return;
 
     QQuickItem* mapItem = rootItem->findChild<QQuickItem*>("mapView");
     if (!mapItem)
         return;
-
-    QVariantList point;
-    point << latitude << longitude;
 
     QGeoCoordinate pointCoordinate(latitude, longitude);
 
@@ -71,10 +80,10 @@ void MapWidget::moveMapPoint(double latitude, double longitude) {
  * @brief Remove the map point
  */
 void MapWidget::removeMapPoint() {
-    if (!quickWidget)
+    if (!quickView)
         return;
 
-    QQuickItem* rootItem = quickWidget->rootObject();
+    QQuickItem* rootItem = quickView->rootObject();
     if (!rootItem)
         return;
 
@@ -86,19 +95,16 @@ void MapWidget::removeMapPoint() {
 }
 
 void MapWidget::addMapPointForOthers(double latitude, double longitude) {
-    if (!quickWidget)
+    if (!quickView)
         return;
 
-    QQuickItem* rootItem = quickWidget->rootObject();
+    QQuickItem* rootItem = quickView->rootObject();
     if (!rootItem)
         return;
 
     QQuickItem* mapItem = rootItem->findChild<QQuickItem*>("mapView");
     if (!mapItem)
         return;
-
-    QVariantList point;
-    point << latitude << longitude;
 
     QGeoCoordinate pointCoordinate(latitude, longitude);
 
@@ -113,13 +119,17 @@ void MapWidget::addMapPointForOthers(double latitude, double longitude) {
 void MapWidget::onCoordinateValidated(double latitude, double longitude) {
     imageData->setLatitude(latitude);
     imageData->setLongitude(longitude);
-
     imageData->saveMetaData();
 }
+
 /**
  * @brief Set the image data for the map widget
  * @param imageData Pointer to the ImageData object containing image metadata
  */
 void MapWidget::setImageData(ImageData* imageData) {
     this->imageData = imageData;
+}
+
+void MapWidget::reject() {
+    // Do nothing (normal)
 }
