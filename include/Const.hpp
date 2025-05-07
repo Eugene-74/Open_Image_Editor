@@ -152,7 +152,7 @@ class Const {
         static const QString MIRROR_UP_DOWN;
         static const QString MIRROR_LEFT_RIGHT;
         static const QString CONVERSION;
-        static const QString EDIT_EXIF;
+        static const QString MAP;
         static const QString EDIT_PERSONS;
         static const QString EDIT_FILTERS;
 
@@ -193,7 +193,7 @@ class Const {
             static const QString MIRROR_LEFT_RIGHT;
             static const QString CONVERSION;
 
-            static const QString EDIT_EXIF;
+            static const QString MAP;
             static const QString EDIT_PERSONS;
             static const QString EDIT_FILTERS;
 
@@ -208,7 +208,7 @@ class Const {
             static const QString ROTATE_LEFT;
             static const QString MIRROR_UP_DOWN;
             static const QString MIRROR_LEFT_RIGHT;
-            static const QString EDIT_EXIF;
+            static const QString MAP;
             static const QString EDIT_PERSONS;
             static const QString CONVERSION;
         };

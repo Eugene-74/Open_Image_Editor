@@ -283,7 +283,6 @@ void MainImage::paintEvent(QPaintEvent* event) {
         painter.drawRect(QRect(cropStart, cropEnd));
     }
     if (personsEditor && !data->imagesData.getCurrentImageData()->getDetectedObjects().empty()) {
-        qDebug() << "Detected objects:";
         std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects = data->imagesData.getCurrentImageData()->getDetectedObjects();
 
         // Calculate the scale factors

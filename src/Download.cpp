@@ -196,7 +196,7 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
         // end validation
 
         // TODO reactiver la validation :
-        qDebug() << "path to .pem" << APP_FILES + "/cacert.pem";
+        // qDebug() << "path to .pem" << APP_FILES + "/cacert.pem";
         // curl_easy_setopt(curl, CURLOPT_CAINFO, APP_FILES + "/cacert.pem");
         // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
         // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);

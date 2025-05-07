@@ -100,7 +100,7 @@ class ImageEditor : public QMainWindow {
 
     MapWidget* createMapWidget();
 
-    bool exifEditor = false;
+    bool mapEditor = false;
     bool personsEditor = false;
 
     std::shared_ptr<Data> data;

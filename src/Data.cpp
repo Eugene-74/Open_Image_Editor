@@ -210,7 +210,6 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
  */
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                              bool setSize, int thumbnail, bool force) {
-    // qDebug() << "Loading image: " << QString::fromStdString(imagePath) << " with thumbnail: " << thumbnail;
     if (imagePath.at(0) == ':') {
         if (darkMode) {
             imagePath.insert(imagePath.find_first_of(':') + 1, "/255-255-255-255");
@@ -273,7 +272,6 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
             // qInfo() << "Loading video: " << QString::fromStdString(imagePath);
             image = loadImageFromVideo(imagePath);
         } else {
-            // qDebug() << "load image not video";
             if (isHeicOrHeif(imagePathbis)) {
                 if (thumbnail == 0) {
                     // qInfo() << "Loading HEIC/HEIF image: " << QString::fromStdString(imagePathbis);
@@ -1004,7 +1002,6 @@ void Data::unDoAction() {
  * @brief Sort the current images data by date
  */
 void Data::sortCurrentImagesData() {
-    qDebug() << "Sorting images data ...";
     QElapsedTimer timer;
     timer.start();
 
@@ -1941,7 +1938,6 @@ void Data::checkToLoadImages(int center, int radius, int thumbnailSize) {
     int upperBound = std::min(center + radius, static_cast<int>(getImagesData()->getCurrent()->size() - 1));
 
     for (int i = lowerBound; i <= upperBound; ++i) {
-        // qDebug() << "PRE Loading image: " << QString::fromStdString(getImagesData()->getImageDataInCurrent(i)->getImagePath());
         loadInCacheAsync(getImagesData()->getImageDataInCurrent(i)->getImagePath(), nullptr, false, QSize(0, 0), thumbnailSize);
     }
 }
@@ -1974,12 +1970,7 @@ void Data::checkThumbnailAndDetectObjects() {
 
         if (!hasThumbnail) {
             QTimer::singleShot(delay, [this, imageData]() {
-                createAllThumbnailsAsync(imageData->getImagePath(), [this, imageData](bool success) {
-                    if (success) {
-                        qDebug() << "Thumbnail created for image: " << QString::fromStdString(imageData->getImagePath());
-                    } else {
-                        qCritical() << "Error creating thumbnail for image: " << QString::fromStdString(imageData->getImagePath());
-                    } }, false);
+                createAllThumbnailsAsync(imageData->getImagePath(), nullptr, false);
             });
             delay += 100;
         }

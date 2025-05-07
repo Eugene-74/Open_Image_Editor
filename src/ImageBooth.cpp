@@ -1098,7 +1098,7 @@ ClickableLabel* ImageBooth::createImageEditExif() {
         return nullptr;
     }
 
-    auto* imageEditExifNew = new ClickableLabel(data, Const::IconPath::EDIT_EXIF, Const::Tooltip::ImageBooth::EDIT_EXIF, this, actionSize);
+    auto* imageEditExifNew = new ClickableLabel(data, Const::IconPath::MAP, Const::Tooltip::ImageBooth::MAP, this, actionSize);
     imageEditExifNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {

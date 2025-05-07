@@ -69,9 +69,8 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     nameAndDateLayout->addWidget(nameLabel);
     nameAndDateLayout->addWidget(nameEdit);
 
-    nameAndDateLayout->addStretch();
-
-        QLabel* dateLabel = new QLabel("Date:", this);
+    // TODO faire miex que "     "
+    QLabel* dateLabel = new QLabel("     Date:", this);
     dateEdit = new QDateTimeEdit(this);
     dateEdit->setCalendarPopup(true);
     nameAndDateLayout->addWidget(dateLabel);
@@ -105,7 +104,6 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     buttonLayout = new QVBoxLayout();
     buttonLayout->setAlignment(Qt::AlignCenter);
 
-    // buttonLayout->addLayout(nameAndDateLayout);
     buttonLayout->addWidget(nameAndDateWidget);
 
     buttonLayout->addLayout(imageLayout);
@@ -118,7 +116,6 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
 
     mainLayout->addLayout(editionLayout);
     editionLayout->addLayout(actionButtonLayout);
-    // editionLayout->addLayout(nameAndDateLayout);
     editionLayout->addLayout(buttonLayout);
     editionLayout->addLayout(previewButtonLayout);
     mainLayout->addLayout(infoLayout);
@@ -134,7 +131,7 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     infoLayout->addWidget(new QLabel("Géolocalisation:", this));
     infoLayout->addWidget(editGeo);
 
-    if (exifEditor && !bigImage) {
+    if (mapEditor && !bigImage) {
         populateMetadataFields();
     } else {
         for (int i = 0; i < infoLayout->count(); ++i) {
@@ -190,10 +187,9 @@ void ImageEditor::reload() {
         ImagesData* imagesData = &data->imagesData;
 
         updateButtons();
-
         updatePreview();
 
-        if (exifEditor && !bigImage) {
+        if (mapEditor && !bigImage) {
             imagesData->getCurrentImageData()->loadData();
             populateMetadataFields();
         } else {
@@ -360,12 +356,10 @@ void ImageEditor::updateButtons() {
         Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
 
         if (exifData["Exif.Image.DateTime"].count() != 0) {
-            qDebug() << "Exif date found : " << exifData["Exif.Image.DateTime"].toString().c_str();
             QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
             QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
             dateEdit->setDateTime(dateTime);
         } else {
-            qDebug() << "Exif date not found, using current date";
             dateEdit->setDateTime(QDateTime::currentDateTime());
         }
     }
@@ -429,13 +423,9 @@ void ImageEditor::updateButtons() {
     }
 
     if (imagePersons) {
-        qDebug() << "Image persons : " << data->imagesData.getCurrentImageData()->getDetectedObjects()["person"].size();
         if (data->imagesData.getCurrentImageData()->isDetectionStatusLoaded()) {
-            qDebug() << "Image persons : loaded";
             imagePersons->setLogoNumber(data->imagesData.getCurrentImageData()->getDetectedObjects()["person"].size());
         } else {
-            qDebug() << "Image persons not : loaded";
-
             imagePersons->setLogoNumber(-1);
         }
     }
@@ -711,14 +701,14 @@ ClickableLabel* ImageEditor::createImageEditExif() {
         return nullptr;
     }
 
-    ClickableLabel* imageEditExifNew = new ClickableLabel(data, Const::IconPath::EDIT_EXIF, Const::Tooltip::ImageEditor::EDIT_EXIF, this, actionSize);
+    ClickableLabel* imageEditExifNew = new ClickableLabel(data, Const::IconPath::MAP, Const::Tooltip::ImageEditor::MAP, this, actionSize);
     imageEditExifNew->setInitialBackground("transparent", "#b3b3b3");
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
-        if (exifEditor) {
-            exifEditor = false;
+        if (mapEditor) {
+            mapEditor = false;
         } else {
-            exifEditor = true;
+            mapEditor = true;
             for (int i = 0; i < infoLayout->count(); ++i) {
                 QWidget* widget = infoLayout->itemAt(i)->widget();
                 if (widget) {
@@ -819,7 +809,6 @@ ClickableLabel* ImageEditor::createImagePersons() {
             float confidence = value / 100.0f;  // Convert slider value to float
             confidenceLabel->setText(QString("Confidence: %1%").arg(value));
             data->model.setConfidence(confidence);  // Update confidence in the model
-            qDebug() << "Confidence updated to:" << confidence;
         });
 
         dialogLayout->addWidget(confidenceLabel);
@@ -848,7 +837,7 @@ ClickableLabel* ImageEditor::createImagePersons() {
 
                 auto detectedObjects = data->detect(imageData->getImagePath(), qImage, data->model.getModelName()).getDetectedObjects();
                 imageData->setDetectedObjects(detectedObjects);
-                qDebug() << "Object detection re-run with model:" << QString::fromStdString(data->model.getModelName());
+                qInfo() << "Object detection re-run with model:" << QString::fromStdString(data->model.getModelName());
             }
 
             reload();
@@ -1545,7 +1534,7 @@ void ImageEditor::enterEvent(QEnterEvent* event) {
  */
 bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::MouseButtonPress) {
-        if (exifEditor && !bigImage) {
+        if (mapEditor && !bigImage) {
             if (dateEdit->hasFocus()) {
                 QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
                 if (!dateEdit->geometry().contains(mouseEvent->pos())) {
@@ -1558,6 +1547,7 @@ bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
     return QMainWindow::eventFilter(obj, event);
 }
 
+// TODO doc
 MapWidget* ImageEditor::createMapWidget() {
     ImageData* imageData = data.get()->getImagesData()->getCurrentImageData();
 
@@ -1569,7 +1559,6 @@ MapWidget* ImageEditor::createMapWidget() {
     data->addThreadToFront([this, mapWidget]() {
         for (ImageData* imageData : data->getImagesData()->getConst()) {
             if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
-                // qDebug() << "Adding point for others:" << imageData->getLatitude() << imageData->getLongitude();
                 mapWidget->addMapPointForOthers(imageData->getLatitude(), imageData->getLongitude());
             }
         }

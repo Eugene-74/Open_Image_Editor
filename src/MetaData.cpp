@@ -459,7 +459,6 @@ void MetaData::setLatitude(double latitude) {
     };
 
     std::string gpsCoordinate = convertDecimalToGpsCoordinate(latitude);
-    qDebug() << "gpsCoordinate : " << QString::fromStdString(gpsCoordinate);
     modifyExifValue("Exif.GPSInfo.GPSLatitude", gpsCoordinate);
 }
 
@@ -501,7 +500,6 @@ void MetaData::setLongitude(double longitude) {
     };
 
     std::string gpsCoordinate = convertDecimalToGpsCoordinate(longitude);
-    qDebug() << "gpsCoordinate : " << QString::fromStdString(gpsCoordinate);
     modifyExifValue("Exif.GPSInfo.GPSLongitude", gpsCoordinate);
 }
 

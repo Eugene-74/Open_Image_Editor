@@ -14,8 +14,6 @@ MapWidget::MapWidget(QWidget* parent, ImageData* imageData) : QDialog(parent), i
 
     layout->addWidget(quickWidget);
 
-    qRegisterMetaType<QGeoCoordinate>("QGeoCoordinate");
-
     QQuickItem* rootItem = quickWidget->rootObject();
     if (rootItem) {
         QObject::connect(rootItem, SIGNAL(coordinateValidated(double, double)),
@@ -117,7 +115,6 @@ void MapWidget::onCoordinateValidated(double latitude, double longitude) {
     imageData->setLongitude(longitude);
 
     imageData->saveMetaData();
-    qDebug() << "Coordinate validated:" << imageData->getLatitude() << imageData->getLongitude();
 }
 /**
  * @brief Set the image data for the map widget
