@@ -471,6 +471,15 @@ void ImageEditor::hide() {
         }
     }
 
+    if (imageLayout) {
+        for (int i = 0; i < imageLayout->count(); ++i) {
+            QLayoutItem* item = imageLayout->itemAt(i);
+            if (item && item->widget()) {
+                item->widget()->hide();
+            }
+        }
+    }
+
     if (buttonLayout) {
         for (int i = 0; i < buttonLayout->count(); ++i) {
             QLayoutItem* item = buttonLayout->itemAt(i);
@@ -514,6 +523,15 @@ void ImageEditor::unHide() {
     if (previewButtonLayout) {
         for (int i = 0; i < previewButtonLayout->count(); ++i) {
             QLayoutItem* item = previewButtonLayout->itemAt(i);
+            if (item && item->widget()) {
+                item->widget()->show();
+            }
+        }
+    }
+
+    if (imageLayout) {
+        for (int i = 0; i < imageLayout->count(); ++i) {
+            QLayoutItem* item = imageLayout->itemAt(i);
             if (item && item->widget()) {
                 item->widget()->show();
             }
@@ -859,14 +877,11 @@ ClickableLabel* ImageEditor::createImageBefore() {
     ClickableLabel* buttonImageBeforeNew = new ClickableLabel(data, Const::IconPath::BEFORE, "", this, actionSize);
     buttonImageBeforeNew->setInitialBackground("transparent", "#b3b3b3");
 
-    // buttonImageBeforeNew->setFixedSize(&actionSize);
-
     if (data->imagesData.getImageNumber() == 0) {
         buttonImageBeforeNew->setDisabled(true);
     }
 
     connect(buttonImageBeforeNew, &ClickableLabel::clicked, [this]() { this->previousImage(); });
-    // buttonImageBeforeNew->setFixedSize(&actionSize);
 
     return buttonImageBeforeNew;
 }

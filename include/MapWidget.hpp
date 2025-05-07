@@ -26,7 +26,6 @@ class MapWidget : public QDialog {
     void setImageData(ImageData* imageData);
 
    private:
-    // QQuickWidget* quickWidget;
     QQuickView* quickView;
     ImageData* imageData;
 
