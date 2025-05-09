@@ -3,6 +3,8 @@ import QtQuick.Controls
 import QtLocation
 import QtPositioning
 
+
+
 Item {
     signal coordinateValidated(double latitude, double longitude)
 

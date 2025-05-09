@@ -24,7 +24,7 @@ mkdir release
 cd release
 
 set EXECUTABLE=%APP_NAME%-%APP_VERSION%.exe
-copy ..\..\install\start.bat .
+@REM copy ..\..\install\start.bat .
 copy ..\..\install\icon.ico .
 copy ..\..\install\cacert.pem .
 copy ..\..\LICENSE .
@@ -39,22 +39,20 @@ cd bin
 
 copy ..\..\%EXECUTABLE% .
 
-windeployqt6.exe --qmldir ..\..\..\src\ressources %EXECUTABLE%
+windeployqt6.exe --release --qmldir ..\..\..\src\ressources %EXECUTABLE%
 
 C:\mingw-bundledlls\mingw-bundledlls C:\Users\eugen\Documents\MesDocuments\git\Open_Image_Editor\build\release\bin\%EXECUTABLE% > dependencies.txt
 
 :copy_dependencies
 for /f "tokens=*" %%i in ('type dependencies.txt') do (
-    @REM echo Copying %%i
     xcopy /Y "%%i" .
     C:\mingw-bundledlls\mingw-bundledlls %%i > temp_dependencies.txt
     for /f "tokens=*" %%j in (temp_dependencies.txt) do (
         if not exist "%%j" (
-            @REM echo Copying sub-dependency %%j
             xcopy /Y "%%j" .
         )
     )
-)
+)   
 del dependencies.txt
 del temp_dependencies.txt
 

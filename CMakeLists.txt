@@ -43,7 +43,7 @@ if(WIN32)
 
     set(ENV{QTFRAMEWORK_BYPASS_LICENSE_CHECK} "1")
 
-    find_package(Qt6 COMPONENTS Core Gui Widgets Multimedia Location Positioning QuickWidgets REQUIRED)
+    find_package(Qt6 COMPONENTS Core Gui Widgets Multimedia Location Positioning Quick QuickControls2 REQUIRED)
     find_package(OpenCV REQUIRED)
     find_package(CURL REQUIRED)
     find_package(jsoncpp REQUIRED)
@@ -63,7 +63,8 @@ if(WIN32)
     include_directories(${Qt6Widgets_INCLUDE_DIRS})
     include_directories(${Qt6Location_INCLUDE_DIRS})
     include_directories(${Qt6Positioning_INCLUDE_DIRS})
-    include_directories(${Qt6QuickWidgets_INCLUDE_DIRS})
+    include_directories(${Qt6Quick_INCLUDE_DIRS})
+    include_directories(${Qt6QuickControls2_INCLUDE_DIRS})
 
 
 
@@ -91,8 +92,8 @@ if(WIN32)
     file(GLOB_RECURSE SOURCES "src/*.cpp")
     file(GLOB_RECURSE INCLUDE_HEADERS "include/*.hpp")
     
+    
     set(RESOURCE_FILES src/ressources/ressources.qrc)
-
 
     qt6_add_resources(QRC_SOURCES ${RESOURCE_FILES})
 
@@ -125,9 +126,10 @@ if(WIN32)
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets
+        Qt6::Quick
+        Qt6::QuickControls2
         Qt6::Location
         Qt6::Positioning
-        Qt6::QuickWidgets
         CURL::libcurl 
         jsoncpp_lib
         ${OpenCV_LIBS}
