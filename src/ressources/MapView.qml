@@ -81,15 +81,14 @@ Item {
             }
         }
 
+        
+
         function addPoint(coordinate) {
             if (currentMarker) {
                 map.removeMapItem(currentMarker);
                 currentMarker.destroy();
             }
-            if (!lastCoordinate) {
-                lastCoordinate = coordinate;
-            }
-
+            
             currentMarker = Qt.createQmlObject(
                 'import QtQuick; import QtLocation ; import QtPositioning; MapQuickItem { coordinate: QtPositioning.coordinate(' + coordinate.latitude + ', ' + coordinate.longitude + '); anchorPoint.x: 24; anchorPoint.y: 48; sourceItem: Image { source: "qrc:/images/pin.png"; width: 48; height: 48; } }',
                 map
@@ -99,6 +98,12 @@ Item {
             currentCoordinate = coordinate;
 
             
+        }
+
+        function setInitialPoint(coordinate) {
+            lastCoordinate = coordinate;
+            addPoint(coordinate)
+
         }
 
         function addPointForOthers(coordinate) {

@@ -73,7 +73,7 @@ void MapWidget::moveMapPoint(double latitude, double longitude) {
 
     QGeoCoordinate pointCoordinate(latitude, longitude);
 
-    QMetaObject::invokeMethod(mapItem, "addPoint", Q_ARG(QVariant, QVariant::fromValue(pointCoordinate)));
+    QMetaObject::invokeMethod(mapItem, "setInitialPoint", Q_ARG(QVariant, QVariant::fromValue(pointCoordinate)));
 }
 
 /**
