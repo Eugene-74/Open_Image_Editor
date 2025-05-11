@@ -485,7 +485,7 @@ void InitialWindow::showMainWindow() {
  */
 ClickableLabel* InitialWindow::createImageDiscord() {
     ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Const::Tooltip::DISCORD, this, linkButton, false, 0, true);
-    newImageDiscord->setInitialBackground("transparent", "#b3b3b3");
+    newImageDiscord->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(newImageDiscord, &ClickableLabel::clicked, [this]() {
         QDesktopServices::openUrl(QUrl("https://discord.gg/Q2HhZucmxU"));
@@ -509,7 +509,7 @@ ClickableLabel* InitialWindow::createImageDiscord() {
  */
 ClickableLabel* InitialWindow::createImageGithub() {
     ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Const::Tooltip::GITHUB, this, linkButton, false, 0, true);
-    newImageGithub->setInitialBackground("transparent", "#b3b3b3");
+    newImageGithub->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(newImageGithub, &ClickableLabel::clicked, [this]() {
         QDesktopServices::openUrl(QUrl("https://github.com/Eugene-74/Open_Image_Editor"));
@@ -526,7 +526,7 @@ ClickableLabel* InitialWindow::createImageGithub() {
 }
 ClickableLabel* InitialWindow::createImageOption() {
     ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Const::Tooltip::PARAMETER, this, linkButton, false, 0, true);
-    newImageOption->setInitialBackground("transparent", "#b3b3b3");
+    newImageOption->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(newImageOption, &ClickableLabel::clicked, [this]() {
         openOption();

@@ -3,6 +3,8 @@
 #include <QLabel>
 #include <QSize>
 
+#include "Const.hpp"
+
 // Forward declaration
 class QMouseEvent;
 class Data;
@@ -56,9 +58,9 @@ class MainImage : public QLabel {
    public:
     void updateStyleSheet();
 
-    QString border_color = "transparent";
-    QString hover_border_color = "transparent";
+    QString border_color = QString::fromStdString(Const::StyleSheet::Color::TRANSPARENT1);
+    QString hover_border_color = QString::fromStdString(Const::StyleSheet::Color::TRANSPARENT1);
 
-    QString background_color = "transparent";
-    QString hover_background_color = "transparent";
+    QString background_color = QString::fromStdString(Const::StyleSheet::Color::TRANSPARENT1);
+    QString hover_background_color = QString::fromStdString(Const::StyleSheet::Color::TRANSPARENT1);
 };

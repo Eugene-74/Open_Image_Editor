@@ -6,6 +6,7 @@
 #include <QString>
 #include <string>
 
+#include "Const.hpp"
 // Forward declarations
 class Data;
 
@@ -56,17 +57,17 @@ class ClickableLabel : public QLabel {
     std::string disabled_border_color = "#b3b3b3";
     std::string disabled_background_color = "#b3b3b3";
 
-    std::string border_color = "transparent";
-    std::string hover_border_color = "transparent";
+    std::string border_color = Const::StyleSheet::Color::TRANSPARENT1;
+    std::string hover_border_color = Const::StyleSheet::Color::TRANSPARENT1;
 
-    std::string background_color = "transparent";
-    std::string hover_background_color = "transparent";
+    std::string background_color = Const::StyleSheet::Color::TRANSPARENT1;
+    std::string hover_background_color = Const::StyleSheet::Color::TRANSPARENT1;
 
-    std::string initial_border_color = "transparent";
-    std::string initial_hover_border_color = "transparent";
+    std::string initial_border_color = Const::StyleSheet::Color::TRANSPARENT1;
+    std::string initial_hover_border_color = Const::StyleSheet::Color::TRANSPARENT1;
 
-    std::string initial_background_color = "transparent";
-    std::string initial_hover_background_color = "transparent";
+    std::string initial_background_color = Const::StyleSheet::Color::TRANSPARENT1;
+    std::string initial_hover_background_color = Const::StyleSheet::Color::TRANSPARENT1;
 
     void updateStyleSheet();
 

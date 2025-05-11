@@ -74,143 +74,136 @@ const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = 
 const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
 const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
 
-class Const {
-   public:
-    class Orientation {
-       public:
-        static const int UNDEFINED = 0;
-        static const int NORMAL = 1;
-        static const int FLIP_HORIZONTAL = 2;
-        static const int ROTATE_180 = 3;
-        static const int FLIP_VERTICAL = 4;
-        static const int TRANSPOSE = 5;
-        static const int ROTATE_90 = 6;
-        static const int TRANSVERSE = 7;
-        static const int ROTATE_270 = 8;
-    };
-    class Rotation {
-       public:
-        static const int LEFT = -90;
-        static const int RIGHT = 90;
-        static const int UP_SIDE_DOWN = 180;
-    };
+namespace Const {
+namespace Orientation {
+static const int UNDEFINED = 0;
+static const int NORMAL = 1;
+static const int FLIP_HORIZONTAL = 2;
+static const int ROTATE_180 = 3;
+static const int FLIP_VERTICAL = 4;
+static const int TRANSPOSE = 5;
+static const int ROTATE_90 = 6;
+static const int TRANSVERSE = 7;
+static const int ROTATE_270 = 8;
+};  // namespace Orientation
+namespace Rotation {
+static const int LEFT = -90;
+static const int RIGHT = 90;
+static const int UP_SIDE_DOWN = 180;
+};  // namespace Rotation
 
-    class Thread {
-       public:
-        static const int MAX_IN_QUEUE = 100000;
-    };
-    class Thumbnail {
-       public:
-        static constexpr int POOR_QUALITY = 16;
-        static constexpr int NORMAL_QUALITY = 128;
-        static constexpr int GOOD_QUALITY = 256;
-        static constexpr int HIGHT_QUALITY = 512;
-        static constexpr std::array<int, 4> THUMBNAIL_SIZES = {16, 128, 256, 512};
-    };
-    class Yolo {
-       public:
-        static constexpr float INPUT_WIDTH = 640;
-        static constexpr float INPUT_HEIGHT = 640;
-        static constexpr float SCORE_THRESHOLD = 0.2;
-        static constexpr float CONFIDENCE_THRESHOLD = 0.4;
-    };
-    class ImageBooth {
-       public:
-        static const int IMAGE_QUALITY = Const::Thumbnail::GOOD_QUALITY;
-        static const int IMAGE_POOR_QUALITY = Const::Thumbnail::POOR_QUALITY;
-    };
-    class ImageEditor {
-       public:
-        static const int IMAGE_QUALITY = Const::Thumbnail::HIGHT_QUALITY;
-        static const int IMAGE_POOR_QUALITY = Const::Thumbnail::POOR_QUALITY;
-        static const int MAX_NAME_LENGTH = 50;
-    };
-    class Extension {
-       public:
-        static const std::vector<std::string> IMAGE;
-        static const std::vector<std::string> VIDEO;
-        static const std::vector<std::string> IMAGE_CONVERTION;
-
-        static const std::vector<std::string> TURNABLE_IMAGE;
-        static const std::vector<std::string> MIRRORABLE_IMAGE;
-        static const std::vector<std::string> METADA_ACTION_IMAGE;
-        static const std::vector<std::string> REAL_ACTION_IMAGE;
-    };
-
-    class ImagePath {
-       public:
-        static const QString LOADING;
-        static const QString ERROR_PATH;  // can't use ERROR because windows use it
-    };
-    class IconPath {
-       public:
-        static const QString DELETE_ICON;  // can't use DELETE because windows use it
-        static const QString SAVE;
-        static const QString EXPORT;
-        static const QString ROTATE_RIGHT;
-        static const QString ROTATE_LEFT;
-        static const QString MIRROR_UP_DOWN;
-        static const QString MIRROR_LEFT_RIGHT;
-        static const QString CONVERSION;
-        static const QString MAP;
-        static const QString EDIT_PERSONS;
-        static const QString EDIT_FILTERS;
-
-        static const QString FOLDER;
-        static const QString ALL_IMAGES;
-        static const QString BACK;
-
-        static const QString BEFORE;
-        static const QString NEXT;
-
-        static const QString IMAGE_BOOTH;
-        static const QString ADD_IMAGES;
-
-        static const QString DISCORD;
-        static const QString GITHUB;
-        static const QString OPTION;
-    };
-    class Tooltip {
-       public:
-        static const QString DISCORD;
-        static const QString GITHUB;
-        static const QString PARAMETER;
-
-        static const QString OPEN_IMAGE_BOOTH;
-        static const QString OPEN_IMAGE_EDITOR;
-        static const QString ADD_IMAGES;
-
-        static const QString BACK;
-
-        class ImageBooth {
-           public:
-            static const QString DELETE_TIP;  // can't use DELETE because windows use it
-            static const QString SAVE;
-            static const QString EXPORT;
-            static const QString ROTATE_RIGHT;
-            static const QString ROTATE_LEFT;
-            static const QString MIRROR_UP_DOWN;
-            static const QString MIRROR_LEFT_RIGHT;
-            static const QString CONVERSION;
-
-            static const QString MAP;
-            static const QString EDIT_PERSONS;
-            static const QString EDIT_FILTERS;
-
-            static const QString ALL_IMAGES;
-        };
-        class ImageEditor {
-           public:
-            static const QString DELETE_TIP;  // can't use DELETE because windows use it
-            static const QString SAVE;
-            static const QString EXPORT;
-            static const QString ROTATE_RIGHT;
-            static const QString ROTATE_LEFT;
-            static const QString MIRROR_UP_DOWN;
-            static const QString MIRROR_LEFT_RIGHT;
-            static const QString MAP;
-            static const QString EDIT_PERSONS;
-            static const QString CONVERSION;
-        };
-    };
+namespace Thread {
+static const int MAX_IN_QUEUE = 100000;
 };
+namespace Thumbnail {
+static constexpr int POOR_QUALITY = 16;
+static constexpr int NORMAL_QUALITY = 128;
+static constexpr int GOOD_QUALITY = 256;
+static constexpr int HIGHT_QUALITY = 512;
+static constexpr std::array<int, 4> THUMBNAIL_SIZES = {16, 128, 256, 512};
+};  // namespace Thumbnail
+namespace Yolo {
+static constexpr float INPUT_WIDTH = 640;
+static constexpr float INPUT_HEIGHT = 640;
+static constexpr float SCORE_THRESHOLD = 0.2;
+static constexpr float CONFIDENCE_THRESHOLD = 0.4;
+};  // namespace Yolo
+namespace ImageBooth {
+static const int IMAGE_QUALITY = Const::Thumbnail::GOOD_QUALITY;
+static const int IMAGE_POOR_QUALITY = Const::Thumbnail::POOR_QUALITY;
+};  // namespace ImageBooth
+namespace ImageEditor {
+
+static const int IMAGE_QUALITY = Const::Thumbnail::HIGHT_QUALITY;
+static const int IMAGE_POOR_QUALITY = Const::Thumbnail::POOR_QUALITY;
+static const int MAX_NAME_LENGTH = 50;
+};  // namespace ImageEditor
+namespace Extension {
+
+static const std::vector<std::string> IMAGE = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".svg", ".tiff", ".bmp"};
+static const std::vector<std::string> VIDEO = {".mp4"};
+static const std::vector<std::string> IMAGE_CONVERTION = {"jpg", "jpeg", "png", "webp", "tiff", "bmp", "heic", "heif"};
+
+static const std::vector<std::string> TURNABLE_IMAGE = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".tiff", ".bmp"};
+static const std::vector<std::string> MIRRORABLE_IMAGE = {".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif", ".tiff", ".bmp"};
+static const std::vector<std::string> METADA_ACTION_IMAGE = {".jpg", ".jpeg", ".heic", ".heif", ".webp", ".tiff"};
+static const std::vector<std::string> REAL_ACTION_IMAGE = {".png", ".bmp"};
+};  // namespace Extension
+
+namespace ImagePath {
+static const QString LOADING = ":/images/loading.png";
+static const QString ERROR_PATH = ":/images/error.png";  // can't use ERROR because windows use it
+};  // namespace ImagePath
+namespace IconPath {
+static const QString DELETE_ICON = ":/icons/delete.png";  // can't use DELETE because windows use it
+static const QString SAVE = ":/icons/save.png";
+static const QString EXPORT = ":/icons/export.png";
+static const QString ROTATE_RIGHT = ":/icons/rotateRight.png";
+static const QString ROTATE_LEFT = ":/icons/rotateLeft.png";
+static const QString MIRROR_UP_DOWN = ":/icons/mirrorUpDown.png";
+static const QString MIRROR_LEFT_RIGHT = ":/icons/mirrorLeftRight.png";
+static const QString CONVERSION = ":/icons/conversion.png";
+static const QString MAP = ":/icons/map.png";
+static const QString EDIT_PERSONS = ":/icons/editPersons.png";
+static const QString EDIT_FILTERS = ":/icons/editFilters.png";
+
+static const QString FOLDER = ":/icons/folder.png";
+static const QString ALL_IMAGES = ":/icons/allImages.png";
+static const QString BACK = ":/icons/back.png";
+
+static const QString BEFORE = ":/icons/before.png";
+static const QString NEXT = ":/icons/next.png";
+
+static const QString IMAGE_BOOTH = ":/icons/imageBooth.png";
+static const QString ADD_IMAGES = ":/icons/addImages.png";
+
+static const QString DISCORD = ":/icons/discord.png";
+static const QString GITHUB = ":/icons/github.png";
+static const QString OPTION = ":/icons/option.png";
+};  // namespace IconPath
+namespace Tooltip {
+static const QString DISCORD = "Open the app discord";
+static const QString GITHUB = "Open the app github";
+static const QString PARAMETER = "Open the parameters";
+
+static const QString OPEN_IMAGE_BOOTH = "See all the images";
+static const QString OPEN_IMAGE_EDITOR = "Edit image one by one";
+static const QString ADD_IMAGES = "Add images to the app";
+
+static const QString BACK = "Go to last folder";
+
+namespace ImageBooth {
+static const QString DELETE_TIP = "Delete the selected images";  // can't use DELETE because windows use it
+static const QString SAVE = "Save modification";
+static const QString EXPORT = "Export the selected images";
+static const QString ROTATE_RIGHT = "Rotate to the right the selected images";
+static const QString ROTATE_LEFT = "Rotate to the left the selected images";
+static const QString MIRROR_UP_DOWN = "Mirror UP-DOWN the selected images";
+static const QString MIRROR_LEFT_RIGHT = "Mirror LEFT-RIGHT the selected images";
+static const QString CONVERSION = "Convert the selected images";
+
+static const QString MAP = "Edit map data of selected images";
+static const QString EDIT_PERSONS = "Edit persons data of selected images";
+static const QString EDIT_FILTERS = "Edit filters";
+
+static const QString ALL_IMAGES = "Open all you images at once";
+};  // namespace ImageBooth
+namespace ImageEditor {
+static const QString DELETE_TIP = "Delete the image";  // can't use DELETE because windows use it
+static const QString SAVE = "Save modification";
+static const QString EXPORT = "Export the images";
+static const QString ROTATE_RIGHT = "Rotate to the right the image";
+static const QString ROTATE_LEFT = "Rotate to the left the image";
+static const QString MIRROR_UP_DOWN = "Mirror UP-DOWN the image";
+static const QString MIRROR_LEFT_RIGHT = "Mirror LEFT-RIGHT the image";
+static const QString MAP = "Edit map data of the image";
+static const QString EDIT_PERSONS = "Edit persons data of the image";
+static const QString CONVERSION = "Convert the image";
+};  // namespace ImageEditor
+};  // namespace Tooltip
+namespace StyleSheet {
+namespace Color {
+static const std::string TRANSPARENT1 = "transparent";
+};
+};  // namespace StyleSheet
+};  // namespace Const

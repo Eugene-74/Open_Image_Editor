@@ -31,6 +31,7 @@
 #include "LoadImage.hpp"
 #include "MainImage.hpp"
 #include "ObjectRecognition.hpp"
+#include "Text.hpp"
 #include "Verification.hpp"
 
 /**
@@ -83,7 +84,7 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     calendarWidget->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
     calendarWidget->setNavigationBarVisible(true);
 
-    validateButton = new QPushButton("Valider", this);
+    validateButton = new QPushButton(Text::VALIDATE, this);
     connect(validateButton, &QPushButton::clicked, this, &ImageEditor::validateMetadata);
 
     buttonLayout = new QVBoxLayout();
@@ -592,7 +593,7 @@ ClickableLabel* ImageEditor::createImageDelete() {
     }
 
     ClickableLabel* imageDeleteNew = new ClickableLabel(data, Const::IconPath::DELETE_ICON, Const::Tooltip::ImageEditor::DELETE_TIP, this, actionSize);
-    imageDeleteNew->setInitialBackground("transparent", "#b3b3b3");
+    imageDeleteNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     if (data->isDeleted(data->imagesData.getImageNumberInTotal())) {
         imageDeleteNew->setBackground("#700c13", "#F00c13");
@@ -614,7 +615,7 @@ ClickableLabel* ImageEditor::createImageSave() {
     }
 
     ClickableLabel* imageSaveNew = new ClickableLabel(data, Const::IconPath::SAVE, Const::Tooltip::ImageEditor::SAVE, this, actionSize);
-    imageSaveNew->setInitialBackground("transparent", "#b3b3b3");
+    imageSaveNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() {
         this->saveImage();
@@ -633,7 +634,7 @@ ClickableLabel* ImageEditor::createImageExport() {
     }
 
     ClickableLabel* imageExportNew = new ClickableLabel(data, Const::IconPath::EXPORT, Const::Tooltip::ImageEditor::EXPORT, this, actionSize);
-    imageExportNew->setInitialBackground("transparent", "#b3b3b3");
+    imageExportNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
         this->exportImage();
@@ -648,7 +649,7 @@ ClickableLabel* ImageEditor::createImageExport() {
  */
 ClickableLabel* ImageEditor::createImageRotateRight() {
     ClickableLabel* imageRotateRightNew = new ClickableLabel(data, Const::IconPath::ROTATE_RIGHT, Const::Tooltip::ImageEditor::ROTATE_RIGHT, this, actionSize);
-    imageRotateRightNew->setInitialBackground("transparent", "#b3b3b3");
+    imageRotateRightNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     if (!isTurnable(data->getImagesData()->getCurrentImageData()->getImagePath())) {
         imageRotateRightNew->setDisabled(true);
@@ -672,7 +673,7 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
     }
 
     ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, Const::IconPath::ROTATE_LEFT, Const::Tooltip::ImageEditor::ROTATE_LEFT, this, actionSize);
-    imageRotateLeftNew->setInitialBackground("transparent", "#b3b3b3");
+    imageRotateLeftNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageRotateLeftNew->setDisabled(true);
@@ -696,7 +697,7 @@ ClickableLabel* ImageEditor::createImageMirrorUpDown() {
     }
 
     ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, Const::IconPath::MIRROR_UP_DOWN, Const::Tooltip::ImageEditor::MIRROR_UP_DOWN, this, actionSize);
-    imageMirrorUpDownNew->setInitialBackground("transparent", "#b3b3b3");
+    imageMirrorUpDownNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageMirrorUpDownNew->setDisabled(true);
@@ -720,7 +721,7 @@ ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
     }
 
     ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, Const::IconPath::MIRROR_LEFT_RIGHT, Const::Tooltip::ImageEditor::MIRROR_LEFT_RIGHT, this, actionSize);
-    imageMirrorLeftRightNew->setInitialBackground("transparent", "#b3b3b3");
+    imageMirrorLeftRightNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
         imageMirrorLeftRightNew->setDisabled(true);
@@ -745,7 +746,7 @@ ClickableLabel* ImageEditor::createImageEditExif() {
     }
 
     ClickableLabel* imageEditExifNew = new ClickableLabel(data, Const::IconPath::MAP, Const::Tooltip::ImageEditor::MAP, this, actionSize);
-    imageEditExifNew->setInitialBackground("transparent", "#b3b3b3");
+    imageEditExifNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
         if (mapEditor) {
@@ -775,7 +776,7 @@ ClickableLabel* ImageEditor::createImageConversion() {
     }
 
     ClickableLabel* imageConversionNew = new ClickableLabel(data, Const::IconPath::CONVERSION, Const::Tooltip::ImageEditor::CONVERSION, this, actionSize);
-    imageConversionNew->setInitialBackground("transparent", "#b3b3b3");
+    imageConversionNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
         launchConversionDialogAndConvert(QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()));
@@ -794,7 +795,7 @@ ClickableLabel* ImageEditor::createImagePersons() {
     }
 
     ClickableLabel* imagePersonsNew = new ClickableLabel(data, Const::IconPath::EDIT_PERSONS, Const::Tooltip::ImageEditor::EDIT_PERSONS, this, actionSize);
-    imagePersonsNew->setInitialBackground("transparent", "#b3b3b3");
+    imagePersonsNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
     imagePersonsNew->addLogo("#700c13", "#ffffff");
 
     if (data->imagesData.getCurrentImageData()->isDetectionStatusLoaded()) {
@@ -902,7 +903,7 @@ ClickableLabel* ImageEditor::createImageBefore() {
     }
 
     ClickableLabel* buttonImageBeforeNew = new ClickableLabel(data, Const::IconPath::BEFORE, "", this, actionSize);
-    buttonImageBeforeNew->setInitialBackground("transparent", "#b3b3b3");
+    buttonImageBeforeNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     if (data->imagesData.getImageNumber() == 0) {
         buttonImageBeforeNew->setDisabled(true);
@@ -923,7 +924,7 @@ ClickableLabel* ImageEditor::createImageNext() {
     }
 
     ClickableLabel* buttonImageNextNew = new ClickableLabel(data, Const::IconPath::NEXT, "", this, actionSize);
-    buttonImageNextNew->setInitialBackground("transparent", "#b3b3b3");
+    buttonImageNextNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     if (data->imagesData.getImageNumber() == data->imagesData.getCurrent()->size() - 1) {
         buttonImageNextNew->setDisabled(true);
@@ -948,8 +949,7 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
     }
 
     ClickableLabel* previewButton = new ClickableLabel(data, QString::fromStdString(imagePath), "", this, previewSize, false, Const::Thumbnail::NORMAL_QUALITY, false);
-    previewButton->setInitialBorder("transparent", "#b3b3b3");
-
+    previewButton->setInitialBorder(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
     connect(previewButton, &ClickableLabel::leftClicked, [this, imageNbr]() {
         data->imagesData.setImageNumber(imageNbr);
         reload();

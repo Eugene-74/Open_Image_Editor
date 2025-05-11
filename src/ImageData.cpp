@@ -256,8 +256,8 @@ void ImageData::loadData() {
 
                 latitude = convertGpsCoordinate(exifData["Exif.GPSInfo.GPSLatitude"].toString());
                 longitude = convertGpsCoordinate(exifData["Exif.GPSInfo.GPSLongitude"].toString());
-                qInfo() << "Latitude:" << latitude
-                        << "Longitude:" << longitude;
+                // qInfo() << "Latitude:" << latitude
+                //         << "Longitude:" << longitude;
             } else {
                 qWarning() << "GPS data not found in metadata.";
             }

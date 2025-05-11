@@ -314,7 +314,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                 }
             } }, true);
     }
-    imageButton->setInitialBorder("transparent", "#b3b3b3");
+    imageButton->setInitialBorder(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     int imageNumberInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
 
@@ -753,7 +753,7 @@ ClickableLabel* ImageBooth::createImageDelete() {
     }
 
     ClickableLabel* imageDeleteNew = new ClickableLabel(data, Const::IconPath::DELETE_ICON, Const::Tooltip::ImageBooth::DELETE_TIP, this, actionSize);
-    imageDeleteNew->setInitialBackground("transparent", "#b3b3b3");
+    imageDeleteNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageDeleteNew, &ClickableLabel::clicked, [this]() {
         if (data->imagesSelected.empty()) {
@@ -833,7 +833,7 @@ ClickableLabel* ImageBooth::createImageSave() {
     }
 
     ClickableLabel* imageSaveNew = new ClickableLabel(data, Const::IconPath::SAVE, Const::Tooltip::ImageBooth::SAVE, this, actionSize);
-    imageSaveNew->setInitialBackground("transparent", "#b3b3b3");
+    imageSaveNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() {
         // TODO mettre en fonction
@@ -866,7 +866,7 @@ ClickableLabel* ImageBooth::createImageExport() {
     }
 
     auto* imageExportNew = new ClickableLabel(data, Const::IconPath::EXPORT, Const::Tooltip::ImageBooth::EXPORT, this, actionSize);
-    imageExportNew->setInitialBackground("transparent", "#b3b3b3");
+    imageExportNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
     });
@@ -886,7 +886,7 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
     }
 
     auto* imageRotateRightNew = new ClickableLabel(data, Const::IconPath::ROTATE_RIGHT, Const::Tooltip::ImageBooth::ROTATE_RIGHT, this, actionSize);
-    imageRotateRightNew->setInitialBackground("transparent", "#b3b3b3");
+    imageRotateRightNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() {
         if (data->imagesSelected.empty()) {
@@ -939,7 +939,7 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
     }
 
     auto* imageRotateLeftNew = new ClickableLabel(data, Const::IconPath::ROTATE_LEFT, Const::Tooltip::ImageBooth::ROTATE_LEFT, this, actionSize);
-    imageRotateLeftNew->setInitialBackground("transparent", "#b3b3b3");
+    imageRotateLeftNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() {
         if (data->imagesSelected.empty()) {
@@ -992,7 +992,7 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
     }
 
     auto* imageMirrorUpDownNew = new ClickableLabel(data, Const::IconPath::MIRROR_UP_DOWN, Const::Tooltip::ImageBooth::MIRROR_UP_DOWN, this, actionSize);
-    imageMirrorUpDownNew->setInitialBackground("transparent", "#b3b3b3");
+    imageMirrorUpDownNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageMirrorUpDownNew, &ClickableLabel::clicked, [this]() {
         if (data->imagesSelected.empty()) {
@@ -1046,7 +1046,7 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
     }
 
     auto* imageMirrorLeftRightNew = new ClickableLabel(data, Const::IconPath::MIRROR_LEFT_RIGHT, Const::Tooltip::ImageBooth::MIRROR_LEFT_RIGHT, this, actionSize);
-    imageMirrorLeftRightNew->setInitialBackground("transparent", "#b3b3b3");
+    imageMirrorLeftRightNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageMirrorLeftRightNew, &ClickableLabel::clicked, [this]() {
         if (data->imagesSelected.empty()) {
@@ -1099,7 +1099,7 @@ ClickableLabel* ImageBooth::createImageEditExif() {
     }
 
     auto* imageEditExifNew = new ClickableLabel(data, Const::IconPath::MAP, Const::Tooltip::ImageBooth::MAP, this, actionSize);
-    imageEditExifNew->setInitialBackground("transparent", "#b3b3b3");
+    imageEditExifNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
     });
@@ -1119,7 +1119,7 @@ ClickableLabel* ImageBooth::createImageConversion() {
     }
 
     auto* imageConversionNew = new ClickableLabel(data, Const::IconPath::CONVERSION, Const::Tooltip::ImageBooth::CONVERSION, this, actionSize);
-    imageConversionNew->setInitialBackground("transparent", "#b3b3b3");
+    imageConversionNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
         if (data->imagesSelected.empty()) {
@@ -1172,7 +1172,7 @@ ClickableLabel* ImageBooth::createEditFilters() {
     }
 
     auto* editFiltersNew = new ClickableLabel(data, Const::IconPath::EDIT_FILTERS, Const::Tooltip::ImageBooth::EDIT_FILTERS, this, actionSize);
-    editFiltersNew->setInitialBackground("transparent", "#b3b3b3");
+    editFiltersNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
     int activeFiltersCount = 0;
     for (const auto& filter : data->getImagesData()->getFilters()) {
         if (filter.first != "image" && filter.first != "video") {
