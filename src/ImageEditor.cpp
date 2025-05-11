@@ -64,14 +64,15 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     nameAndDateWidget->setLayout(nameAndDateLayout);
     nameAndDateWidget->setFixedWidth(fixedFrame->width());
 
+    // TODO faire miex que "     "
     QLabel* nameLabel = new QLabel("Nom:", this);
     nameEdit = new QLabel("", this);
+    dateEdit = new QDateTimeEdit(this);
+    QLabel* dateLabel = new QLabel("     Date:", this);
+
     nameAndDateLayout->addWidget(nameLabel);
     nameAndDateLayout->addWidget(nameEdit);
 
-    // TODO faire miex que "     "
-    QLabel* dateLabel = new QLabel("     Date:", this);
-    dateEdit = new QDateTimeEdit(this);
     dateEdit->setCalendarPopup(true);
     nameAndDateLayout->addWidget(dateLabel);
     nameAndDateLayout->addWidget(dateEdit);
@@ -85,7 +86,11 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     validateButton = new QPushButton("Valider", this);
     connect(validateButton, &QPushButton::clicked, this, &ImageEditor::validateMetadata);
 
+    buttonLayout = new QVBoxLayout();
+    buttonLayout->setAlignment(Qt::AlignCenter);
+
     if (data.get()->sizes->fontSize <= 5) {
+        qInfo() << "text size is too small : " << data.get()->sizes->fontSize;
         nameLabel->hide();
         nameEdit->hide();
         dateLabel->hide();
@@ -107,9 +112,10 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
         font = dateEdit->font();
         font.setPointSize(data.get()->sizes->fontSize);
         dateEdit->setFont(font);
-    }
 
-    nameAndDateLayout->addWidget(validateButton);
+        nameAndDateLayout->addWidget(validateButton);
+        buttonLayout->addWidget(nameAndDateWidget);
+    }
 
     imageLabelLayout = new QVBoxLayout();
     imageLabelLayout->setAlignment(Qt::AlignCenter);
@@ -124,11 +130,6 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
 
     imageLayout = new QHBoxLayout();
     imageLayout->setAlignment(Qt::AlignCenter);
-
-    buttonLayout = new QVBoxLayout();
-    buttonLayout->setAlignment(Qt::AlignCenter);
-
-    buttonLayout->addWidget(nameAndDateWidget);
 
     buttonLayout->addLayout(imageLayout);
 
