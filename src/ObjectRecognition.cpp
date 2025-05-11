@@ -114,12 +114,13 @@ QImage CvMatToQImage(const cv::Mat& inImage) {
 void detectObjectsAsync(std::shared_ptr<Data> data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback) {
     data->addHeavyThreadToFront([data, imagePath, image, callback]() {
         std::string modelName = data->model.getModelName();
-        DetectedObjects detectedObjects = data->detect(imagePath, image, modelName);
-
-        try {
-            callback(detectedObjects);
-        } catch (const std::exception& e) {
-            qCritical() << e.what();
+        DetectedObjects* detectedObjects = data->detect(imagePath, image, modelName);
+        if (detectedObjects) {
+            try {
+                callback(*detectedObjects);
+            } catch (const std::exception& e) {
+                qCritical() << e.what();
+            }
         }
     });
 }

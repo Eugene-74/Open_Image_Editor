@@ -83,7 +83,7 @@ class Data : public std::enable_shared_from_this<Data> {
 
     QImage loadImageFromVideo(std::string videoPath, int frameNumber = 1);
 
-    DetectedObjects detect(std::string imagePath, QImage image, std::string model);
+    DetectedObjects* detect(std::string imagePath, QImage image, std::string model);
 
     QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool rotation = true, bool square = false, bool crop = true, bool force = false);
     QImage loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool force = false);
@@ -168,13 +168,20 @@ class Data : public std::enable_shared_from_this<Data> {
     void checkToUnloadImages(int center, int radius);
     void checkToLoadImages(int center, int radius, int thumbnailSize = 0);
 
+    void setCenterTextLabel(QLabel* centerTextLabel);
+    void setCenterText(std::string text);
+
    private:
     ThreadManager manager;
+    QLabel* centerTextLabel;
 
-    Folders* findFirstFolderWithAllImagesSub(Folders* currentFolder);
+    Folders*
+    findFirstFolderWithAllImagesSub(Folders* currentFolder);
     std::vector<Actions> lastActions = {};
     std::vector<Actions> lastActionsDone = {};
 
     void createFolders(Folders* currentFolders, std::string path);
     void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
 };
+
+cv::dnn::Net* load_net(std::string model);

@@ -853,8 +853,10 @@ ClickableLabel* ImageEditor::createImagePersons() {
                 QImage qImage = data->loadImageNormal(nullptr, imageData->getImagePath(), QSize(0, 0), false);
                 qImage = data->rotateQImage(qImage, imageData);
 
-                auto detectedObjects = data->detect(imageData->getImagePath(), qImage, data->model.getModelName()).getDetectedObjects();
-                imageData->setDetectedObjects(detectedObjects);
+                DetectedObjects* detectedObjects = data->detect(imageData->getImagePath(), qImage, data->model.getModelName());
+                if (detectedObjects) {
+                    imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
+                }
                 qInfo() << "Object detection re-run with model:" << QString::fromStdString(data->model.getModelName());
             }
 

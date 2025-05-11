@@ -24,6 +24,7 @@
 #include "Conversion.hpp"
 #include "Data.hpp"
 #include "Download.hpp"
+#include "Network.hpp"
 #include "ObjectRecognition.hpp"
 #include "Verification.hpp"
 
@@ -1714,43 +1715,42 @@ void Data::stopAllThreads() {
  * @param model The name of the model file (without extension)
  * @return The loaded network
  */
-cv::dnn::Net load_net(std::string model) {
+cv::dnn::Net* load_net(std::string model) {
     bool is_cuda = false;
     if (cv::cuda::getCudaEnabledDeviceCount() > 0) {
         is_cuda = true;
-        // std::cout << "CUDA is available and will be used.\n";
-    } else {
-        // std::cout << "CUDA is not available. Falling back to CPU.\n";
     }
 
-    cv::dnn::Net result;
+    cv::dnn::Net* result = new cv::dnn::Net();
     try {
-        result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
+        *result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
     } catch (const cv::Exception& e) {
         qWarning() << "Error loading model:" << QString::fromStdString(model) << " - " << e.what();
-        showWarningMessage(nullptr, "Error with the model", "Error loading model\nThe model will be downloaded again.");
+
+        // showWarningMessage(nullptr, "Error with the model", "Error loading model\nThe model will be downloaded again.");
         if (!downloadModel(model + ".onnx")) {
             qWarning() << "Failed to download model: " << QString::fromStdString(model);
-            showErrorMessage(nullptr, "Error with the model", "Error downloading model\nThe model could not be downloaded.");
+            // showErrorMessage(nullptr, "Error with the model", "Error downloading model\nThe model could not be downloaded.");
         }
 
         try {
-            result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
+            *result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
         } catch (const cv::Exception& e) {
-            qFatal() << "Error loading model:" << QString::fromStdString(model) << " - " << e.what();
-            showErrorMessage(nullptr, "Error with the model", "Error loading model\nThe model is broken.");
+            qWarning() << "Error loading model:" << QString::fromStdString(model) << " - " << e.what();
+            // showErrorMessage(nullptr, "Error with the model", "Error loading model\nThe model is broken.");
         }
     }
 
-    if (result.empty()) {
-        return result;
+    if (result->empty()) {
+        return nullptr;
     }
+
     if (is_cuda) {
-        result.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
-        result.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA_FP16);
+        result->setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
+        result->setPreferableTarget(cv::dnn::DNN_TARGET_CUDA_FP16);
     } else {
-        result.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
-        result.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
+        result->setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
+        result->setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
     }
     return result;
 }
@@ -1801,15 +1801,18 @@ cv::Mat format_yolov5(const cv::Mat& source) {
  * @param model The name of the model file (without extension)
  * @return A DetectedObjects object containing the detected objects
  */
-DetectedObjects Data::detect(std::string imagePath, QImage image, std::string model) {
+DetectedObjects* Data::detect(std::string imagePath, QImage image, std::string model) {
     cv::Mat mat = QImageToCvMat(image);
     if (mat.empty()) {
         qWarning() << "Image is empty. Check the file path or loading process.";
-        return DetectedObjects();  // Ou une autre gestion d'erreur appropriée.
+        return nullptr;
     }
 
-    // Net is not saved beause other whise it cause bugs
-    cv::dnn::Net net = load_net(model);
+    cv::dnn::Net* net = load_net(model);
+    if (!net) {
+        qWarning() << "Failed to load the model.";
+        return nullptr;
+    }
 
     if (this->model.getClassNames().empty()) {
         this->model.setClassNames(load_class_list());
@@ -1821,14 +1824,14 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
     auto input_image = format_yolov5(mat);
 
     cv::dnn::blobFromImage(input_image, blob, 1. / 255., cv::Size(Const::Yolo::INPUT_WIDTH, Const::Yolo::INPUT_HEIGHT), cv::Scalar(), true, false);
-    net.setInput(blob);
+    net->setInput(blob);
     std::vector<cv::Mat> outputs;
 
     auto start = std::chrono::high_resolution_clock::now();
-    net.forward(outputs, net.getUnconnectedOutLayersNames());
+    net->forward(outputs, net->getUnconnectedOutLayersNames());
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> detectionTime = end - start;
-    // qInfo() << "Detection time with " + model + " :" << detectionTime.count() << "seconds";
+    qInfo() << "Detection time with " + model + " :" << detectionTime.count() << "seconds";
 
     float x_factor = input_image.cols / Const::Yolo::INPUT_WIDTH;
     float y_factor = input_image.rows / Const::Yolo::INPUT_HEIGHT;
@@ -1869,7 +1872,7 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
 
         data += 85;
     }
-    DetectedObjects detectedObjects;
+    DetectedObjects* detectedObjects = new DetectedObjects();
     std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjectsMap;
 
     std::vector<int> nms_result;
@@ -1883,7 +1886,7 @@ DetectedObjects Data::detect(std::string imagePath, QImage image, std::string mo
         }
         detectedObjectsMap[class_name].emplace_back(boxes[idx], confidences[idx]);
     }
-    detectedObjects.setDetectedObjects(detectedObjectsMap);
+    detectedObjects->setDetectedObjects(detectedObjectsMap);
     return detectedObjects;
 }
 
@@ -1943,6 +1946,22 @@ void Data::checkToLoadImages(int center, int radius, int thumbnailSize) {
 }
 
 /**
+ * @brief Set the center text label
+ * @param centerTextLabel QLabel to set the center text
+ */
+void Data::setCenterTextLabel(QLabel* centerTextLabel) {
+    this->centerTextLabel = centerTextLabel;
+}
+
+/**
+ * @brief Set the center text
+ * @param text Text to set in the center
+ */
+void Data::setCenterText(std::string text) {
+    this->centerTextLabel->setText(QString::fromStdString(text));
+}
+
+/**
  * @brief Check if the thumbnail exists and create it if not
  */
 void Data::checkThumbnailAndDetectObjects() {
@@ -1975,30 +1994,36 @@ void Data::checkThumbnailAndDetectObjects() {
             delay += 100;
         }
     }
-    for (auto& imageData : *imagesData.get()) {
-        // TODO do better
-        if (count > max) {
-            break;
-        }
-        count++;
-        std::string imagePath = imageData->getImagePath();
-        if (imageData->isDetectionStatusNotLoaded()) {
-            QTimer::singleShot(delay, [this, imagePath, imageData]() {
-                addHeavyThread([this, imagePath, imageData]() {
-                    QImage image = this->loadImageNormal(nullptr, imagePath, QSize(0, 0), false, 0, true);
-                    image = rotateQImage(image, imageData);
-                    // std::string modelName = this->model.getModelName();
-                    std::string modelName = "yolov5n";
+    if (hasConnection()) {
+        for (auto& imageData : *imagesData.get()) {
+            // TODO do better
+            if (count > max) {
+                break;
+            }
+            count++;
+            std::string imagePath = imageData->getImagePath();
+            if (imageData->isDetectionStatusNotLoaded()) {
+                QTimer::singleShot(delay, [this, imagePath, imageData]() {
+                    addHeavyThread([this, imagePath, imageData]() {
+                        QImage image = this->loadImageNormal(nullptr, imagePath, QSize(0, 0), false, 0, true);
+                        image = rotateQImage(image, imageData);
+                        // std::string modelName = this->model.getModelName();
+                        std::string modelName = "yolov5n";
 
-                    DetectedObjects detectedObjects = this->detect(imagePath, image, modelName);
-
-                    imageData->setDetectedObjects(detectedObjects.getDetectedObjects());
-                    imageData->setDetectionStatusLoaded();
-                    unloadFromCache(imagePath);
-                    qDebug() << "Detection done for image: " << QString::fromStdString(imagePath);
+                        DetectedObjects* detectedObjects = this->detect(imagePath, image, modelName);
+                        if (detectedObjects) {
+                            imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
+                            imageData->setDetectionStatusLoaded();
+                        } else {
+                            imageData->setDetectionStatusNotLoaded();
+                        }
+                        unloadFromCache(imagePath);
+                        qDebug() << "Detection done for image: " << QString::fromStdString(imagePath);
+                    });
                 });
-            });
-            delay += 500;
+                delay += 500;
+            }
         }
     }
 }
+

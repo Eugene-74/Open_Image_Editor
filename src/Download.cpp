@@ -8,6 +8,8 @@
 
 #include "AppConfig.hpp"
 #include "Const.hpp"
+#include "Network.hpp"
+
 namespace fs = std::filesystem;
 
 /**
@@ -80,6 +82,10 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
  * @return true if the download was successful, false otherwise
  */
 bool downloadModelIfNotExists(const std::string& modelName) {
+    if (!hasConnection()) {
+        return false;
+    }
+
     const std::string modeloutputPath = APP_FILES.toStdString() + "/" + modelName;
     if (fs::exists(modeloutputPath)) {
         qInfo() << "Model already exists: " << QString::fromStdString(modeloutputPath);
@@ -95,17 +101,24 @@ bool downloadModelIfNotExists(const std::string& modelName) {
  * @return true if the download was successful, false otherwise
  */
 bool downloadModel(const std::string& modelName) {
-    const std::string url = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/yolov5/" + std::string(modelName);
-    const std::string modeloutputPath = APP_FILES.toStdString() + "/" + modelName;
+    if (!hasConnection()) {
+        return false;
+    }
 
-    QProgressDialog* progressDialog = new QProgressDialog("Downloading " + QString::fromStdString(modelName), nullptr, 0, 100);
-    progressDialog->setWindowModality(Qt::ApplicationModal);
-    progressDialog->setCancelButton(nullptr);
-    progressDialog->setValue(0);
-    progressDialog->show();
-    QApplication::processEvents();
+    bool result = false;
+    QMetaObject::invokeMethod(QApplication::instance(), [&]() {
+        const std::string url = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/yolov5/" + std::string(modelName);
+        qInfo() << "Downloading model from URL: " << QString::fromStdString(url) << " to path: " << QString::fromStdString(modelName);
+        const std::string modeloutputPath = APP_FILES.toStdString() + "/" + modelName;
 
-    return downloadFile(url, modeloutputPath, progressDialog);
+        QProgressDialog progressDialog("Downloading " + QString::fromStdString(modelName), nullptr, 0, 100);
+        progressDialog.setWindowModality(Qt::ApplicationModal);
+        progressDialog.setCancelButton(nullptr);
+        progressDialog.setValue(0);
+        progressDialog.show();
+        QApplication::processEvents();
+        result = downloadFile(url, modeloutputPath, &progressDialog); }, Qt::BlockingQueuedConnection);
+    return result;
 }
 
 /**
@@ -116,6 +129,10 @@ bool downloadModel(const std::string& modelName) {
  * @return true if the download was successful, false otherwise
  */
 bool downloadFileIfNotExists(const std::string& url, const std::string& outputPath, QProgressDialog* progressDialog) {
+    if (!hasConnection()) {
+        return false;
+    }
+
     if (fs::exists(outputPath)) {
         qInfo() << "File already exists: " << QString::fromStdString(outputPath);
         return true;
@@ -132,6 +149,10 @@ bool downloadFileIfNotExists(const std::string& url, const std::string& outputPa
  * @return true if the download was successful, false otherwise
  */
 bool downloadFile(const std::string& url, const std::string& outputPath, QProgressDialog* progressDialog) {
+    if (!hasConnection()) {
+        return false;
+    }
+
     qInfo() << "Downloading file from URL: " << QString::fromStdString(url) << " to path: " << QString::fromStdString(outputPath);
     CURL* curl;
     CURLcode res;
@@ -161,6 +182,12 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
         curl_easy_setopt(curl, CURLOPT_XFERINFODATA, progressDialog);
 
         res = curl_easy_perform(curl);
+        if (res == CURLE_COULDNT_RESOLVE_HOST || res == CURLE_COULDNT_CONNECT) {
+            showWarningMessage(nullptr, "Pas de connexion Internet", "Téléchargement");
+            curl_easy_cleanup(curl);
+            outFile.close();
+            return false;
+        }
         if (res != CURLE_OK) {
             qWarning() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
         }
@@ -179,6 +206,9 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
  * @details This function uses the GitHub API to get the latest release tag from the specified repository.
  */
 std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
+    if (!hasConnection()) {
+        return "0.0.0";
+    }
     CURL* curl;
     CURLcode res;
     std::string readBuffer;

@@ -43,7 +43,7 @@ if(WIN32)
 
     set(ENV{QTFRAMEWORK_BYPASS_LICENSE_CHECK} "1")
 
-    find_package(Qt6 COMPONENTS Core Gui Widgets Multimedia Location Positioning Quick QuickControls2 REQUIRED)
+    find_package(Qt6 COMPONENTS Core Gui Widgets Multimedia Location Positioning Quick QuickControls2 Network REQUIRED)
     find_package(OpenCV REQUIRED)
     find_package(CURL REQUIRED)
     find_package(jsoncpp REQUIRED)
@@ -65,6 +65,10 @@ if(WIN32)
     include_directories(${Qt6Positioning_INCLUDE_DIRS})
     include_directories(${Qt6Quick_INCLUDE_DIRS})
     include_directories(${Qt6QuickControls2_INCLUDE_DIRS})
+    include_directories(${Qt6Network_INCLUDE_DIRS})
+
+    
+
 
 
 
@@ -130,6 +134,7 @@ if(WIN32)
         Qt6::QuickControls2
         Qt6::Location
         Qt6::Positioning
+        Qt6::Network
         CURL::libcurl 
         jsoncpp_lib
         ${OpenCV_LIBS}

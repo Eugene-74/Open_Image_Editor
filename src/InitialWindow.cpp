@@ -24,6 +24,7 @@
 #include "ImageBooth.hpp"
 #include "ImageEditor.hpp"
 #include "MainWindow.hpp"
+#include "Network.hpp"
 
 namespace fs = std::filesystem;
 
@@ -58,17 +59,7 @@ InitialWindow::InitialWindow() {
 
     QTimer::singleShot(1, this, [this]() {
         qInfo() << "Application started";
-        // data = new Data();
         data = std::make_shared<Data>();
-
-        QTranslator translator;
-        QString locale = QLocale::system().name();
-        QString language = locale.section('_', 0, 0);
-        if (translator.load(":/translations/open_image_editor_" + language + ".qm")) {
-            // app.installTranslator(&translator);
-        } else {
-            qWarning() << "Translation file not found for language:" << language;
-        }
 
         ImagesData imagesData(std::vector<ImageData*>{});
         ImagesData deletedImagesData(std::vector<ImageData*>{});
@@ -79,11 +70,13 @@ InitialWindow::InitialWindow() {
 
         try {
             data->loadData();
-            data->checkThumbnailAndDetectObjects();
         } catch (const std::exception& e) {
             qWarning() << "Error loading data: " << e.what();
             showErrorMessage(nullptr, "Error loading data: data corrupted");
         }
+
+        data->checkThumbnailAndDetectObjects();
+
         if (!data->currentFolder) {
             data->currentFolder = data->findFirstFolderWithAllImages();
         }
@@ -98,7 +91,7 @@ InitialWindow::InitialWindow() {
 
         screenGeometry = screenR.size() / pixelRatio;
 
-        setWindowTitle("EasyImageEditor : Initial Window");
+        setWindowTitle("OpenImageEditor : Initial Window");
 
         QVBoxLayout* windowLayout = new QVBoxLayout();
 
@@ -109,17 +102,22 @@ InitialWindow::InitialWindow() {
         layout = new QVBoxLayout;
         windowLayout->addLayout(layout);
 
-        linkLayout = new QHBoxLayout();
-
         linkButton = &data->sizes->linkButton;
         imageDiscord = createImageDiscord();
         imageGithub = createImageGithub();
         imageOption = createImageOption();
 
+        QLabel* centerText = new QLabel("Welcome to OpenImageEditor", this);
+        centerText->setAlignment(Qt::AlignCenter);
+        data->setCenterTextLabel(centerText);
+
+        linkLayout = new QHBoxLayout();
         linkLayout->addWidget(imageDiscord);
         linkLayout->addWidget(imageGithub);
         linkLayout->addWidget(imageOption);
-        linkLayout->setAlignment(Qt::AlignBottom | Qt::AlignRight);
+        linkLayout->setAlignment(Qt::AlignRight);
+
+        windowLayout->addWidget(centerText);
         windowLayout->addLayout(linkLayout);
 
         createMainWindow(data);
@@ -129,9 +127,12 @@ InitialWindow::InitialWindow() {
         progressDialog.show();
         progressDialog.move(0, 0);
         QApplication::processEvents();
-        checkForUpdate(&progressDialog);
+        if (hasConnection()) {
+            checkForUpdate(&progressDialog);
+        } else {
+            data->setCenterText("No internet connection, could not check for updates");
+        }
         progressDialog.close();
-
     });
 }
 
@@ -142,6 +143,9 @@ InitialWindow::InitialWindow() {
  * @details This function checks for the latest version of the application on GitHub and compares it with the current version.
  */
 bool checkForUpdate(QProgressDialog* progressDialog) {
+    if (!hasConnection()) {
+        return false;
+    }
     if (!fs::exists(SAVE_PATH)) {
         fs::create_directories(SAVE_PATH);
     }
@@ -435,165 +439,166 @@ void InitialWindow::clearMainWindow() {
     mainWindow = nullptr;
 }
 
-    /**
-     * @brief Show the imageEditor widget
-     * @details This function clears the existing windows and creates a new imageEditor widget.
-     */
-    void InitialWindow::showImageEditor() {
-        qInfo() << "showImageEditor";
-        clearWindows();
-        createImageEditor(data);
+/**
+ * @brief Show the imageEditor widget
+ * @details This function clears the existing windows and creates a new imageEditor widget.
+ */
+void InitialWindow::showImageEditor() {
+    qInfo() << "showImageEditor";
+    clearWindows();
+    createImageEditor(data);
+}
+
+/**
+ * @brief Show the imageBooth widget
+ * @details This function clears the existing windows and creates a new imageBooth widget.
+ */
+void InitialWindow::showImageBooth() {
+    qInfo() << "showImageBooth";
+    clearWindows();
+    createImageBooth(data);
+}
+
+/**
+ * @brief Show the mainWindow widget
+ * @details This function clears the existing windows and creates a new mainWindow widget.
+ */
+void InitialWindow::showMainWindow() {
+    qInfo() << "showMainWindow";
+    clearWindows();
+    createMainWindow(data);
+}
+
+/**
+ * @brief Create the Discord image label
+ * @return ClickableLabel* Pointer to the created ClickableLabel object
+ * @details This function creates a clickable label to open the Discord server link.
+ * @details It also sets up a signal to handle the resize event and update the label accordingly.
+ */
+ClickableLabel* InitialWindow::createImageDiscord() {
+    ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Const::Tooltip::DISCORD, this, linkButton, false, 0, true);
+    newImageDiscord->setInitialBackground("transparent", "#b3b3b3");
+
+    connect(newImageDiscord, &ClickableLabel::clicked, [this]() {
+        QDesktopServices::openUrl(QUrl("https://discord.gg/Q2HhZucmxU"));
+    });
+
+    connect(this, &InitialWindow::resize, newImageDiscord, [this]() {
+        ClickableLabel* newImageDiscord = createImageDiscord();
+        linkLayout->replaceWidget(imageDiscord, newImageDiscord);
+        imageDiscord->deleteLater();
+        imageDiscord = newImageDiscord;
+    });
+
+    return newImageDiscord;
+}
+
+/**
+ * @brief Create the GitHub image label
+ * @return ClickableLabel* Pointer to the created ClickableLabel object
+ * @details This function creates a clickable label to open the GitHub repository link.
+ * @details It also sets up a signal to handle the resize event and update the label accordingly.
+ */
+ClickableLabel* InitialWindow::createImageGithub() {
+    ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Const::Tooltip::GITHUB, this, linkButton, false, 0, true);
+    newImageGithub->setInitialBackground("transparent", "#b3b3b3");
+
+    connect(newImageGithub, &ClickableLabel::clicked, [this]() {
+        QDesktopServices::openUrl(QUrl("https://github.com/Eugene-74/Open_Image_Editor"));
+    });
+
+    connect(this, &InitialWindow::resize, newImageGithub, [this]() {
+        ClickableLabel* newImageGithub = createImageGithub();
+        linkLayout->replaceWidget(imageGithub, newImageGithub);
+        imageGithub->deleteLater();
+        imageGithub = newImageGithub;
+    });
+
+    return newImageGithub;
+}
+ClickableLabel* InitialWindow::createImageOption() {
+    ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Const::Tooltip::PARAMETER, this, linkButton, false, 0, true);
+    newImageOption->setInitialBackground("transparent", "#b3b3b3");
+
+    connect(newImageOption, &ClickableLabel::clicked, [this]() {
+        openOption();
+    });
+
+    connect(this, &InitialWindow::resize, newImageOption, [this]() {
+        ClickableLabel* newnewImageOption = createImageOption();
+        linkLayout->replaceWidget(imageOption, newnewImageOption);
+        imageOption->deleteLater();
+        imageOption = newnewImageOption;
+    });
+
+    return newImageOption;
+}
+
+/**
+ * @brief Open the options dialog and update the options
+ * @details This function opens the options dialog and allows the user to modify the application options.
+ */
+void InitialWindow::openOption() {
+    if (data->options.size() == 0) {
+        data->options = DEFAULT_OPTIONS;
     }
 
-    /**
-     * @brief Show the imageBooth widget
-     * @details This function clears the existing windows and creates a new imageBooth widget.
-     */
-    void InitialWindow::showImageBooth() {
-        qInfo() << "showImageBooth";
-        clearWindows();
-        createImageBooth(data);
+    std::map<std::string, std::string> options = showOptionsDialog(this, "Options", data->options);
+
+    for (const auto& [key, value] : options) {
+        data->options[key].value = value;
     }
 
-    /**
-     * @brief Show the mainWindow widget
-     * @details This function clears the existing windows and creates a new mainWindow widget.
-     */
-    void InitialWindow::showMainWindow() {
-        qInfo() << "showMainWindow";
-        clearWindows();
-        createMainWindow(data);
+    // Reload the window
+    if (imageBooth) {
+        showImageBooth();
     }
+}
 
-    /**
-     * @brief Create the Discord image label
-     * @return ClickableLabel* Pointer to the created ClickableLabel object
-     * @details This function creates a clickable label to open the Discord server link.
-     * @details It also sets up a signal to handle the resize event and update the label accordingly.
-     */
-    ClickableLabel* InitialWindow::createImageDiscord() {
-        ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Const::Tooltip::DISCORD, this, linkButton, false, 0, true);
-        newImageDiscord->setInitialBackground("transparent", "#b3b3b3");
-
-        connect(newImageDiscord, &ClickableLabel::clicked, [this]() {
-            QDesktopServices::openUrl(QUrl("https://discord.gg/Q2HhZucmxU"));
-        });
-
-        connect(this, &InitialWindow::resize, newImageDiscord, [this]() {
-            ClickableLabel* newImageDiscord = createImageDiscord();
-            linkLayout->replaceWidget(imageDiscord, newImageDiscord);
-            imageDiscord->deleteLater();
-            imageDiscord = newImageDiscord;
-        });
-
-        return newImageDiscord;
+/**
+ * @brief Check if the system is in dark mode
+ * @return true if the system is in dark mode, false otherwise
+ */
+bool isDarkMode() {
+    HKEY hKey;
+    DWORD value = 0;
+    DWORD valueSize = sizeof(value);
+    LONG result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", 0, KEY_READ, &hKey);
+    if (result == ERROR_SUCCESS) {
+        result = RegQueryValueExW(hKey, L"AppsUseLightTheme", nullptr, nullptr, reinterpret_cast<LPBYTE>(&value), &valueSize);
+        RegCloseKey(hKey);
     }
+    return (result == ERROR_SUCCESS) && (value == 0);
+}
 
-    /**
-     * @brief Create the GitHub image label
-     * @return ClickableLabel* Pointer to the created ClickableLabel object
-     * @details This function creates a clickable label to open the GitHub repository link.
-     * @details It also sets up a signal to handle the resize event and update the label accordingly.
-     */
-    ClickableLabel* InitialWindow::createImageGithub() {
-        ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Const::Tooltip::GITHUB, this, linkButton, false, 0, true);
-        newImageGithub->setInitialBackground("transparent", "#b3b3b3");
-
-        connect(newImageGithub, &ClickableLabel::clicked, [this]() {
-            QDesktopServices::openUrl(QUrl("https://github.com/Eugene-74/Open_Image_Editor"));
-        });
-
-        connect(this, &InitialWindow::resize, newImageGithub, [this]() {
-            ClickableLabel* newImageGithub = createImageGithub();
-            linkLayout->replaceWidget(imageGithub, newImageGithub);
-            imageGithub->deleteLater();
-            imageGithub = newImageGithub;
-        });
-
-        return newImageGithub;
-    }
-    ClickableLabel* InitialWindow::createImageOption() {
-        ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Const::Tooltip::PARAMETER, this, linkButton, false, 0, true);
-        newImageOption->setInitialBackground("transparent", "#b3b3b3");
-
-        connect(newImageOption, &ClickableLabel::clicked, [this]() {
-            openOption();
-        });
-
-        connect(this, &InitialWindow::resize, newImageOption, [this]() {
-            ClickableLabel* newImageOption = createImageOption();
-            linkLayout->replaceWidget(imageOption, newImageOption);
-            imageOption->deleteLater();
-            imageOption = newImageOption;
-        });
-
-        return newImageOption;
-    }
-
-    /**
-     * @brief Open the options dialog and update the options
-     * @details This function opens the options dialog and allows the user to modify the application options.
-     */
-    void InitialWindow::openOption() {
-        if (data->options.size() == 0) {
-            data->options = DEFAULT_OPTIONS;
+/**
+ * @brief Handle the resize event of the window
+ * @param event Pointer to the resize event
+ * @details This function is called when the window is resized. It starts a timer to delay the resize event handling.
+ */
+void InitialWindow::resizeEvent(QResizeEvent* event) {
+    QWidget* widget = QApplication::activeWindow();
+    if (dynamic_cast<QMainWindow*>(widget)) {
+        if (resizeTimer->isActive()) {
+            resizeTimer->stop();
         }
-
-        std::map<std::string, std::string> options = showOptionsDialog(this, "Options", data->options);
-
-        for (const auto& [key, value] : options) {
-            data->options[key].value = value;
-        }
-
-        // Reload the window
-        if (imageBooth) {
-            showImageBooth();
-        }
+        resizeTimer->start();
     }
 
-    /**
-     * @brief Check if the system is in dark mode
-     * @return true if the system is in dark mode, false otherwise
-     */
-    bool isDarkMode() {
-        HKEY hKey;
-        DWORD value = 0;
-        DWORD valueSize = sizeof(value);
-        LONG result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", 0, KEY_READ, &hKey);
-        if (result == ERROR_SUCCESS) {
-            result = RegQueryValueExW(hKey, L"AppsUseLightTheme", nullptr, nullptr, reinterpret_cast<LPBYTE>(&value), &valueSize);
-            RegCloseKey(hKey);
-        }
-        return (result == ERROR_SUCCESS) && (value == 0);
-    }
+    QMainWindow::resizeEvent(event);
+}
 
-    /**
-     * @brief Handle the resize event of the window
-     * @param event Pointer to the resize event
-     * @details This function is called when the window is resized. It starts a timer to delay the resize event handling.
-     */
-    void InitialWindow::resizeEvent(QResizeEvent* event) {
-        QWidget* widget = QApplication::activeWindow();
-        if (dynamic_cast<QMainWindow*>(widget)) {
-            if (resizeTimer->isActive()) {
-                resizeTimer->stop();
-            }
-            resizeTimer->start();
-        }
-        QMainWindow::resizeEvent(event);
+/**
+ * @brief Clear all windows (imageEditor, imageBooth, mainWindow)
+ */
+void InitialWindow::clearWindows() {
+    if (imageEditor != nullptr) {
+        clearImageEditor();
     }
-
-    /**
-     * @brief Clear all windows (imageEditor, imageBooth, mainWindow)
-     */
-    void InitialWindow::clearWindows() {
-        if (imageEditor != nullptr) {
-            clearImageEditor();
-        }
-        if (imageBooth != nullptr) {
-            clearImageBooth();
-        }
-        if (mainWindow != nullptr) {
-            clearMainWindow();
-        }
+    if (imageBooth != nullptr) {
+        clearImageBooth();
     }
+    if (mainWindow != nullptr) {
+        clearMainWindow();
+    }
+}

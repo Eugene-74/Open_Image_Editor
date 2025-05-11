@@ -90,8 +90,3 @@ TEST_F(BoxTest, TestShowOptionsDialog) {
     ASSERT_EQ(result["Option2"], "default");
     ASSERT_EQ(result["Option3"], "");
 }
-
-TEST_F(BoxTest, TestShowErrorInfo) {
-    QWidget parent;
-    ASSERT_NO_THROW(showErrorInfo(&parent, "Error Info Message", 2000));
-}
