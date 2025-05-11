@@ -17,6 +17,7 @@ class Sizes {
     QSize linkButton;
 
     int pixelRatio;
+    int fontSize;
 
     class ImageEditorSizes;
     class ImagesBoothSizes;

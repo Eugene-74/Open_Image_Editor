@@ -85,6 +85,30 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     validateButton = new QPushButton("Valider", this);
     connect(validateButton, &QPushButton::clicked, this, &ImageEditor::validateMetadata);
 
+    if (data.get()->sizes->fontSize <= 5) {
+        nameLabel->hide();
+        nameEdit->hide();
+        dateLabel->hide();
+        dateEdit->hide();
+        validateButton->hide();
+    } else {
+        QFont font = nameLabel->font();
+        font.setPointSize(data.get()->sizes->fontSize);
+        nameLabel->setFont(font);
+
+        font = nameEdit->font();
+        font.setPointSize(data.get()->sizes->fontSize);
+        nameEdit->setFont(font);
+
+        font = dateLabel->font();
+        font.setPointSize(data.get()->sizes->fontSize);
+        dateLabel->setFont(font);
+
+        font = dateEdit->font();
+        font.setPointSize(data.get()->sizes->fontSize);
+        dateEdit->setFont(font);
+    }
+
     nameAndDateLayout->addWidget(validateButton);
 
     imageLabelLayout = new QVBoxLayout();

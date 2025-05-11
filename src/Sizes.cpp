@@ -43,6 +43,8 @@ void Sizes::update() {
         linkButton = QSize(screenGeometry.height() * 1 / 20, screenGeometry.height() * 1 / 20);
     }
 
+    fontSize = (screenGeometry.height()) / 100;
+
     imageEditorSizes->update();
     imagesBoothSizes->update();
     mainWindowSizes->update();

@@ -109,6 +109,14 @@ InitialWindow::InitialWindow() {
 
         QLabel* centerText = new QLabel("Welcome to OpenImageEditor", this);
         centerText->setAlignment(Qt::AlignCenter);
+        connect(this, &InitialWindow::resize, centerText, [this, centerText]() {
+            QFont font = centerText->font();
+            font.setPointSize(data.get()->sizes->fontSize);
+            centerText->setFont(font);
+        });
+        QFont font = centerText->font();
+        font.setPointSize(data.get()->sizes->fontSize);
+        centerText->setFont(font);
         data->setCenterTextLabel(centerText);
 
         linkLayout = new QHBoxLayout();
