@@ -1,9 +1,12 @@
 #pragma once
 
 #include <QString>
+#include <map>
 
+#include "Translation.hpp"
 namespace Text {
-static const QString VALIDATE = "Validate";
+extern TranslationManager translationManager;
+static const QString VALIDATE = translationManager.translateQ("Text.VALIDATE");
 namespace Tooltip {
 static const QString DISCORD = "Open the app discord";
 static const QString GITHUB = "Open the app github";
@@ -45,5 +48,3 @@ static const QString CONVERSION = "Convert the image";
 };  // namespace ImageEditor
 };  // namespace Tooltip
 };  // namespace Text
-
-std::map<std::string, std::string> openTranslation(const std::string& filePath);

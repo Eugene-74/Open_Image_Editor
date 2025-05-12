@@ -8,6 +8,7 @@
 #include <QScreen>
 
 #include "InitialWindow.hpp"
+#include "Text.hpp"
 
 /**
  * @brief Main function of the application

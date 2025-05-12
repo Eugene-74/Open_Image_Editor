@@ -24,9 +24,6 @@ bool hasConnection() {
     }
 
     reply->deleteLater();
-    qDebug() << "hasConnection:" << connected;
-
-    // return true;
 
     return connected;
 }

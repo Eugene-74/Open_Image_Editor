@@ -31,14 +31,12 @@
         <file>icons/option.png</file>
         <file>icons/icon.ico</file>
     </qresource>
+    
     <qresource prefix="">
         <file>images/loading.png</file>
         <file>images/error.png</file>
     </qresource>
-    <qresource prefix="">
-        <file>translations/open_image_editor_en.qm</file>
-        <file>translations/open_image_editor_fr.qm</file>
-    </qresource>
+
 
     <qresource prefix="">
         <file>255-255-255-255/icons/before.png</file>
@@ -117,15 +115,10 @@
         <file>MapView.qml</file>
         <file>images/pin.png</file>
         <file>images/otherPin.png</file>
-
-
     </qresource>
 
-    </qresource>
     <qresource prefix="">
         <file>translations/en.csv</file>
         <file>translations/fr.csv</file>
-
-
     </qresource>
 </RCC>
