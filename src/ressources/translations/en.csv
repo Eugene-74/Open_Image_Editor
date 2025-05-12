@@ -1,1 +1,30 @@
 Text.VALIDATE:Validate
+Text.Tooltip.DISCORD:Open the app discord
+Text.Tooltip.GITHUB:Open the app github
+Text.Tooltip.PARAMETER:Open the parameters
+Text.Tooltip.OPEN_IMAGE_BOOTH:See all the images
+Text.Tooltip.OPEN_IMAGE_EDITOR:Edit image one by one
+Text.Tooltip.ADD_IMAGES:Add images to the app
+Text.Tooltip.BACK:Go to last folder
+Text.Tooltip.ImageBooth.DELETE_TIP:Delete the selected images
+Text.Tooltip.ImageBooth.SAVE:Save modification
+Text.Tooltip.ImageBooth.EXPORT:Export the selected images
+Text.Tooltip.ImageBooth.ROTATE_RIGHT:Rotate to the right the selected images
+Text.Tooltip.ImageBooth.ROTATE_LEFT:Rotate to the left the selected images
+Text.Tooltip.ImageBooth.MIRROR_UP_DOWN:Mirror UP-DOWN the selected images
+Text.Tooltip.ImageBooth.MIRROR_LEFT_RIGHT:Mirror LEFT-RIGHT the selected images
+Text.Tooltip.ImageBooth.CONVERSION:Convert the selected images
+Text.Tooltip.ImageBooth.MAP:Edit map data of selected images
+Text.Tooltip.ImageBooth.EDIT_PERSONS:Edit persons data of selected images
+Text.Tooltip.ImageBooth.EDIT_FILTERS:Edit filters
+Text.Tooltip.ImageBooth.ALL_IMAGES:Open all you images at once
+Text.Tooltip.ImageEditor.DELETE_TIP:Delete the image
+Text.Tooltip.ImageEditor.SAVE:Save modification
+Text.Tooltip.ImageEditor.EXPORT:Export the images
+Text.Tooltip.ImageEditor.ROTATE_RIGHT:Rotate to the right the image
+Text.Tooltip.ImageEditor.ROTATE_LEFT:Rotate to the left the image
+Text.Tooltip.ImageEditor.MIRROR_UP_DOWN:Mirror UP-DOWN the image
+Text.Tooltip.ImageEditor.MIRROR_LEFT_RIGHT:Mirror LEFT-RIGHT the image
+Text.Tooltip.ImageEditor.MAP:Edit map data of the image
+Text.Tooltip.ImageEditor.EDIT_PERSONS:Edit persons data of the image
+Text.Tooltip.ImageEditor.CONVERSION:Convert the image

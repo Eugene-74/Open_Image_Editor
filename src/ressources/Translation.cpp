@@ -57,7 +57,11 @@ std::string getTranslation(const std::map<std::string, std::string>& translation
                            const std::string& key) {
     auto it = translations.find(key);
     if (it != translations.end()) {
-        return it->second;
+        if (it->second.empty()) {
+            qWarning() << "Translation is empty for key:" << QString::fromStdString(key);
+        } else {
+            return it->second;
+        }
     }
 
     auto defaultIt = defaultTranslations.find(key);
