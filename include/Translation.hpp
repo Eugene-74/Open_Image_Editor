@@ -10,15 +10,15 @@ std::string getTranslation(const std::map<std::string, std::string>& translation
                            const std::string& key);
 
 class TranslationManager {
-   public:
+    public:
     TranslationManager();
-
+    
     void setLanguage(const std::string& language);
     std::string getLanguage() const;
-
+    
     std::string translate(const std::string& key) const;
     QString translateQ(const std::string& key) const;
-
+    
    private:
     std::map<std::string, std::string> translations;
     std::map<std::string, std::string> defaultTranslations;

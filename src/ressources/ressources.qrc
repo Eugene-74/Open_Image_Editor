@@ -30,6 +30,11 @@
         <file>icons/github.png</file>
         <file>icons/option.png</file>
         <file>icons/icon.ico</file>
+
+        <file>icons/fr.png</file>
+        <file>icons/en.png</file>
+        <file>icons/es.png</file>
+
     </qresource>
     
     <qresource prefix="">

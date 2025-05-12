@@ -66,10 +66,10 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     nameAndDateWidget->setFixedWidth(fixedFrame->width());
 
     // TODO faire miex que "     "
-    QLabel* nameLabel = new QLabel("Nom:", this);
+    QLabel* nameLabel = new QLabel(Text::name() + " : ", this);
     nameEdit = new QLabel("", this);
     dateEdit = new QDateTimeEdit(this);
-    QLabel* dateLabel = new QLabel("     Date:", this);
+    QLabel* dateLabel = new QLabel("     " + Text::date() + " : ", this);
 
     nameAndDateLayout->addWidget(nameLabel);
     nameAndDateLayout->addWidget(nameEdit);
@@ -84,7 +84,7 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     calendarWidget->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
     calendarWidget->setNavigationBarVisible(true);
 
-    validateButton = new QPushButton(Text::VALIDATE, this);
+    validateButton = new QPushButton(Text::validate(), this);
     connect(validateButton, &QPushButton::clicked, this, &ImageEditor::validateMetadata);
 
     buttonLayout = new QVBoxLayout();
@@ -154,7 +154,7 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
 
     editGeo = createMapWidget();
 
-    infoLayout->addWidget(new QLabel("Géolocalisation:", this));
+    infoLayout->addWidget(new QLabel(Text::geolocation() + " : ", this));
     infoLayout->addWidget(editGeo);
 
     if (mapEditor && !bigImage) {
@@ -592,7 +592,7 @@ ClickableLabel* ImageEditor::createImageDelete() {
         return nullptr;
     }
 
-    ClickableLabel* imageDeleteNew = new ClickableLabel(data, Const::IconPath::DELETE_ICON, Text::Tooltip::ImageEditor::DELETE_TIP, this, actionSize);
+    ClickableLabel* imageDeleteNew = new ClickableLabel(data, Const::IconPath::DELETE_ICON, Text::Tooltip::ImageEditor::delete_tip(), this, actionSize);
     imageDeleteNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     if (data->isDeleted(data->imagesData.getImageNumberInTotal())) {
@@ -614,7 +614,7 @@ ClickableLabel* ImageEditor::createImageSave() {
         return nullptr;
     }
 
-    ClickableLabel* imageSaveNew = new ClickableLabel(data, Const::IconPath::SAVE, Text::Tooltip::ImageEditor::SAVE, this, actionSize);
+    ClickableLabel* imageSaveNew = new ClickableLabel(data, Const::IconPath::SAVE, Text::Tooltip::ImageEditor::save(), this, actionSize);
     imageSaveNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() {
@@ -633,7 +633,7 @@ ClickableLabel* ImageEditor::createImageExport() {
         return nullptr;
     }
 
-    ClickableLabel* imageExportNew = new ClickableLabel(data, Const::IconPath::EXPORT, Text::Tooltip::ImageEditor::EXPORT, this, actionSize);
+    ClickableLabel* imageExportNew = new ClickableLabel(data, Const::IconPath::EXPORT, Text::Tooltip::ImageEditor::export_tip(), this, actionSize);
     imageExportNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
@@ -648,7 +648,7 @@ ClickableLabel* ImageEditor::createImageExport() {
  * @return A pointer to the ClickableLabel object representing the rotate right button
  */
 ClickableLabel* ImageEditor::createImageRotateRight() {
-    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, Const::IconPath::ROTATE_RIGHT, Text::Tooltip::ImageEditor::ROTATE_RIGHT, this, actionSize);
+    ClickableLabel* imageRotateRightNew = new ClickableLabel(data, Const::IconPath::ROTATE_RIGHT, Text::Tooltip::ImageEditor::rotate_right(), this, actionSize);
     imageRotateRightNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     if (!isTurnable(data->getImagesData()->getCurrentImageData()->getImagePath())) {
@@ -672,7 +672,7 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
         return nullptr;
     }
 
-    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, Const::IconPath::ROTATE_LEFT, Text::Tooltip::ImageEditor::ROTATE_LEFT, this, actionSize);
+    ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, Const::IconPath::ROTATE_LEFT, Text::Tooltip::ImageEditor::rotate_left(), this, actionSize);
     imageRotateLeftNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
@@ -696,7 +696,7 @@ ClickableLabel* ImageEditor::createImageMirrorUpDown() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, Const::IconPath::MIRROR_UP_DOWN, Text::Tooltip::ImageEditor::MIRROR_UP_DOWN, this, actionSize);
+    ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, Const::IconPath::MIRROR_UP_DOWN, Text::Tooltip::ImageEditor::mirror_up_down(), this, actionSize);
     imageMirrorUpDownNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
@@ -720,7 +720,7 @@ ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
         return nullptr;
     }
 
-    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, Const::IconPath::MIRROR_LEFT_RIGHT, Text::Tooltip::ImageEditor::MIRROR_LEFT_RIGHT, this, actionSize);
+    ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, Const::IconPath::MIRROR_LEFT_RIGHT, Text::Tooltip::ImageEditor::mirror_left_right(), this, actionSize);
     imageMirrorLeftRightNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
@@ -745,7 +745,7 @@ ClickableLabel* ImageEditor::createImageEditExif() {
         return nullptr;
     }
 
-    ClickableLabel* imageEditExifNew = new ClickableLabel(data, Const::IconPath::MAP, Text::Tooltip::ImageEditor::MAP, this, actionSize);
+    ClickableLabel* imageEditExifNew = new ClickableLabel(data, Const::IconPath::MAP, Text::Tooltip::ImageEditor::map(), this, actionSize);
     imageEditExifNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
@@ -775,7 +775,7 @@ ClickableLabel* ImageEditor::createImageConversion() {
         return nullptr;
     }
 
-    ClickableLabel* imageConversionNew = new ClickableLabel(data, Const::IconPath::CONVERSION, Text::Tooltip::ImageEditor::CONVERSION, this, actionSize);
+    ClickableLabel* imageConversionNew = new ClickableLabel(data, Const::IconPath::CONVERSION, Text::Tooltip::ImageEditor::conversion(), this, actionSize);
     imageConversionNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
@@ -794,7 +794,7 @@ ClickableLabel* ImageEditor::createImagePersons() {
         return nullptr;
     }
 
-    ClickableLabel* imagePersonsNew = new ClickableLabel(data, Const::IconPath::EDIT_PERSONS, Text::Tooltip::ImageEditor::EDIT_PERSONS, this, actionSize);
+    ClickableLabel* imagePersonsNew = new ClickableLabel(data, Const::IconPath::EDIT_PERSONS, Text::Tooltip::ImageEditor::edit_persons(), this, actionSize);
     imagePersonsNew->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
     imagePersonsNew->addLogo("#700c13", "#ffffff");
 
@@ -824,7 +824,7 @@ ClickableLabel* ImageEditor::createImagePersons() {
                                   "yolov5m - Medium model, more accurate but slower",
                                   "yolov5l - Large model, higher accuracy, slower",
                                   "yolov5x - Extra-large model, most accurate but slowest"};
-        QString currentModel = QString::fromStdString(data->model.getModelName());
+        QString currentModel = QString::fromStdString(data->getModelConst().getModelName());
         for (int i = 0; i < yoloModels.size(); ++i) {
             if (yoloModels[i].startsWith(currentModel)) {
                 yoloModels[i] = yoloModels[i] + " -> [Selected]";
@@ -846,13 +846,13 @@ ClickableLabel* ImageEditor::createImagePersons() {
 
         QSlider* confidenceSlider = new QSlider(Qt::Horizontal, &dialog);
         confidenceSlider->setRange(0, 100);                                               // Confidence range from 0 to 100
-        confidenceSlider->setValue(static_cast<int>(data->model.getConfidence() * 100));  // Set initial value
+        confidenceSlider->setValue(static_cast<int>(data->getModelConst().getConfidence() * 100));  // Set initial value
         QLabel* confidenceLabel = new QLabel(QString("Confidence: %1%").arg(confidenceSlider->value()), &dialog);
 
         connect(confidenceSlider, &QSlider::valueChanged, [this, confidenceLabel](int value) {
             float confidence = value / 100.0f;  // Convert slider value to float
             confidenceLabel->setText(QString("Confidence: %1%").arg(value));
-            data->model.setConfidence(confidence);  // Update confidence in the model
+            data->getModelPtr()->setConfidence(confidence);  // Update confidence in the model
         });
 
         dialogLayout->addWidget(confidenceLabel);
@@ -870,7 +870,7 @@ ClickableLabel* ImageEditor::createImagePersons() {
             qInfo() << "Selected YOLO Model:" << selectedModel;
 
             const std::string modelName = selectedModel.split(" - ").first().toStdString();
-            data->model.setModelName(modelName);
+            data->getModelPtr()->setModelName(modelName);
             downloadModelIfNotExists(modelName + ".onnx");
 
             ImageData* imageData = data->imagesData.getCurrentImageData();
@@ -879,11 +879,11 @@ ClickableLabel* ImageEditor::createImagePersons() {
                 QImage qImage = data->loadImageNormal(nullptr, imageData->getImagePath(), QSize(0, 0), false);
                 qImage = data->rotateQImage(qImage, imageData);
 
-                DetectedObjects* detectedObjects = data->detect(imageData->getImagePath(), qImage, data->model.getModelName());
+                DetectedObjects* detectedObjects = data->detect(imageData->getImagePath(), qImage, data->getModelConst().getModelName());
                 if (detectedObjects) {
                     imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
                 }
-                qInfo() << "Object detection re-run with model:" << QString::fromStdString(data->model.getModelName());
+                qInfo() << "Object detection re-run with model:" << QString::fromStdString(data->getModelConst().getModelName());
             }
 
             reload();

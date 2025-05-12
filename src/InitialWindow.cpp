@@ -40,6 +40,10 @@ InitialWindow::InitialWindow() {
     resizeTimer->setInterval(TIME_BEFORE_REZISE);
     resizeTimer->setSingleShot(true);
     connect(resizeTimer, &QTimer::timeout, this, [this]() {
+        emit resize();
+    });
+
+    connect(this, &InitialWindow::resize, this, [this]() {
         if (imageEditor) {
             data->sizes->update();
             clearImageEditor();
@@ -55,7 +59,6 @@ InitialWindow::InitialWindow() {
             clearMainWindow();
             createMainWindow(data);
         }
-        emit resize();
     });
 
     QTimer::singleShot(1, this, [this]() {
@@ -104,6 +107,10 @@ InitialWindow::InitialWindow() {
         windowLayout->addLayout(layout);
 
         linkButton = &data->sizes->linkButton;
+
+        imageLanguage = createImageLanguage();
+        imageLanguage->setAlignment(Qt::AlignLeft);
+
         imageDiscord = createImageDiscord();
         imageGithub = createImageGithub();
         imageOption = createImageOption();
@@ -120,14 +127,22 @@ InitialWindow::InitialWindow() {
         centerText->setFont(font);
         data->setCenterTextLabel(centerText);
 
+        QHBoxLayout* bottomLayout = new QHBoxLayout();
         linkLayout = new QHBoxLayout();
+        languageLayout = new QHBoxLayout();
+        bottomLayout->addLayout(languageLayout);
+        bottomLayout->addLayout(linkLayout);
+
+        languageLayout->addWidget(imageLanguage);
+        languageLayout->setAlignment(Qt::AlignLeft);
+
         linkLayout->addWidget(imageDiscord);
         linkLayout->addWidget(imageGithub);
         linkLayout->addWidget(imageOption);
         linkLayout->setAlignment(Qt::AlignRight);
 
         windowLayout->addWidget(centerText);
-        windowLayout->addLayout(linkLayout);
+        windowLayout->addLayout(bottomLayout);
 
         createMainWindow(data);
         QProgressDialog progressDialog("Checking for updates...", nullptr, 0, 0, this);
@@ -340,7 +355,7 @@ void InitialWindow::createImageEditor(std::shared_ptr<Data> data) {
  */
 void InitialWindow::createImageBooth(std::shared_ptr<Data> data) {
     qInfo() << "createImageBooth";
-    data->sizes->imagesBoothSizes->imagesPerLine = std::stoi(data->options.at("Sizes::imageBooth::ImagesPerLine").value);
+    data->sizes->imagesBoothSizes->imagesPerLine = std::stoi(data->getOptionsConst().at("Sizes::imageBooth::ImagesPerLine").value);
     data->sizes->update();
 
     imageBooth = new ImageBooth(data, this);
@@ -479,13 +494,52 @@ void InitialWindow::showMainWindow() {
 }
 
 /**
+ * @brief Create language image label
+ * @return ClickableLabel* Pointer to the created ClickableLabel object
+ */
+ClickableLabel* InitialWindow::createImageLanguage() {
+    // TODO change with language
+    QString language = QString::fromStdString(data->getOptionsConst().at("Language").value);
+    Text::translationManager.setLanguage(language.toStdString());
+    // Text::updateTranslations();
+    // QString language = "es";
+
+    if (language == "en") {
+        language = Const::IconPath::Language::EN;
+    } else if (language == "fr") {
+        language = Const::IconPath::Language::FR;
+    } else if (language == "es") {
+        language = Const::IconPath::Language::ES;
+    } else {
+        (*data.get()->getOptionsPtr())["Language"].value = "en";
+        language = Const::IconPath::Language::EN;
+    }
+
+    ClickableLabel* newImageLanguage = new ClickableLabel(data, language, Text::Tooltip::language(), this, linkButton, false, 0, true);
+    newImageLanguage->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
+
+    connect(newImageLanguage, &ClickableLabel::clicked, [this]() {
+        openOption();
+    });
+
+    connect(this, &InitialWindow::resize, newImageLanguage, [this]() {
+        ClickableLabel* newImageLanguage = createImageLanguage();
+        languageLayout->replaceWidget(imageLanguage, newImageLanguage);
+        imageLanguage->deleteLater();
+        imageLanguage = newImageLanguage;
+    });
+
+    return newImageLanguage;
+}
+
+/**
  * @brief Create the Discord image label
  * @return ClickableLabel* Pointer to the created ClickableLabel object
  * @details This function creates a clickable label to open the Discord server link.
  * @details It also sets up a signal to handle the resize event and update the label accordingly.
  */
 ClickableLabel* InitialWindow::createImageDiscord() {
-    ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Text::Tooltip::DISCORD, this, linkButton, false, 0, true);
+    ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Text::Tooltip::discord(), this, linkButton, false, 0, true);
     newImageDiscord->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(newImageDiscord, &ClickableLabel::clicked, [this]() {
@@ -509,7 +563,7 @@ ClickableLabel* InitialWindow::createImageDiscord() {
  * @details It also sets up a signal to handle the resize event and update the label accordingly.
  */
 ClickableLabel* InitialWindow::createImageGithub() {
-    ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Text::Tooltip::GITHUB, this, linkButton, false, 0, true);
+    ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Text::Tooltip::github(), this, linkButton, false, 0, true);
     newImageGithub->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(newImageGithub, &ClickableLabel::clicked, [this]() {
@@ -526,7 +580,7 @@ ClickableLabel* InitialWindow::createImageGithub() {
     return newImageGithub;
 }
 ClickableLabel* InitialWindow::createImageOption() {
-    ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Text::Tooltip::PARAMETER, this, linkButton, false, 0, true);
+    ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Text::Tooltip::option(), this, linkButton, false, 0, true);
     newImageOption->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(newImageOption, &ClickableLabel::clicked, [this]() {
@@ -548,20 +602,19 @@ ClickableLabel* InitialWindow::createImageOption() {
  * @details This function opens the options dialog and allows the user to modify the application options.
  */
 void InitialWindow::openOption() {
-    if (data->options.size() == 0) {
-        data->options = DEFAULT_OPTIONS;
+    if (data->getOptionsConst().size() == 0) {
+        *data->getOptionsPtr() = DEFAULT_OPTIONS;
     }
 
-    std::map<std::string, std::string> options = showOptionsDialog(this, "Options", data->options);
+    std::map<std::string, std::string> options = showOptionsDialog(this, "Options", data->getOptionsConst());
 
     for (const auto& [key, value] : options) {
-        data->options[key].value = value;
+        (*data->getOptionsPtr())[key].value = value;
     }
 
-    // Reload the window
-    if (imageBooth) {
-        showImageBooth();
-    }
+    Text::translationManager.setLanguage(data->getOptionsConst().at("Language").value);
+
+    emit resize();
 }
 
 /**

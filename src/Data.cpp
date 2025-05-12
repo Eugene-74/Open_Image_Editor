@@ -213,9 +213,18 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                              bool setSize, int thumbnail, bool force) {
     if (imagePath.at(0) == ':') {
         if (darkMode) {
-            imagePath.insert(imagePath.find_first_of(':') + 1, "/255-255-255-255");
+            std::string newPath = imagePath;
+            newPath.insert(newPath.find_first_of(':') + 1, "/255-255-255-255");
+            if (QResource(QString::fromStdString(newPath)).isValid()) {
+                imagePath = newPath;
+            }
+
         } else {
-            imagePath.insert(imagePath.find_first_of(':') + 1, "/0-0-0-255");
+            std::string newPath = imagePath;
+            newPath.insert(newPath.find_first_of(':') + 1, "/0-0-0-255");
+            if (QResource(QString::fromStdString(newPath)).isValid()) {
+                imagePath = newPath;
+            }
         }
     }
 
@@ -1959,6 +1968,30 @@ void Data::setCenterTextLabel(QLabel* centerTextLabel) {
  */
 void Data::setCenterText(std::string text) {
     this->centerTextLabel->setText(QString::fromStdString(text));
+}
+
+DetectObjectsModel Data::getModelConst() const {
+    return this->model;
+}
+
+DetectObjectsModel* Data::getModelPtr() {
+    return &this->model;
+}
+
+void Data::setModel(DetectObjectsModel model) {
+    this->model = model;
+}
+
+std::map<std::string, Option> Data::getOptionsConst() const {
+    return this->options;
+}
+
+std::map<std::string, Option>* Data::getOptionsPtr() {
+    return &this->options;
+}
+
+void Data::setOptions(std::map<std::string, Option> options) {
+    this->options = options;
 }
 
 /**

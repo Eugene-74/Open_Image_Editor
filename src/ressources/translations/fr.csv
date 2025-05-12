@@ -1,30 +1,34 @@
 Text.VALIDATE:Valider
-Text.Tooltip.DISCORD:
-Text.Tooltip.GITHUB:
-Text.Tooltip.PARAMETER:
-Text.Tooltip.OPEN_IMAGE_BOOTH:
-Text.Tooltip.OPEN_IMAGE_EDITOR:
-Text.Tooltip.ADD_IMAGES:
-Text.Tooltip.BACK:
-Text.Tooltip.ImageBooth.DELETE_TIP:
-Text.Tooltip.ImageBooth.SAVE:
-Text.Tooltip.ImageBooth.EXPORT:
-Text.Tooltip.ImageBooth.ROTATE_RIGHT:
-Text.Tooltip.ImageBooth.ROTATE_LEFT:
-Text.Tooltip.ImageBooth.MIRROR_UP_DOWN:
-Text.Tooltip.ImageBooth.MIRROR_LEFT_RIGHT:
-Text.Tooltip.ImageBooth.CONVERSION:
-Text.Tooltip.ImageBooth.MAP:
-Text.Tooltip.ImageBooth.EDIT_PERSONS:
-Text.Tooltip.ImageBooth.EDIT_FILTERS:
-Text.Tooltip.ImageBooth.ALL_IMAGES:
-Text.Tooltip.ImageEditor.DELETE_TIP:
-Text.Tooltip.ImageEditor.SAVE:
-Text.Tooltip.ImageEditor.EXPORT:
-Text.Tooltip.ImageEditor.ROTATE_RIGHT:
-Text.Tooltip.ImageEditor.ROTATE_LEFT:
-Text.Tooltip.ImageEditor.MIRROR_UP_DOWN:
-Text.Tooltip.ImageEditor.MIRROR_LEFT_RIGHT:
-Text.Tooltip.ImageEditor.MAP:
-Text.Tooltip.ImageEditor.EDIT_PERSONS:
-Text.Tooltip.ImageEditor.CONVERSION:
+Text.NAME:Nom
+Text.DATE:Date
+Text.GEOLOCATION:Géolocalisation
+Text.Tooltip.LANGUAGE:Changer la langue de l'application
+Text.Tooltip.DISCORD:Ouvrir le discord de l'application
+Text.Tooltip.GITHUB:Ouvrir le github de l'application
+Text.Tooltip.PARAMETER:Ouvrir les paramètres
+Text.Tooltip.OPEN_IMAGE_BOOTH:Voir toutes les images
+Text.Tooltip.OPEN_IMAGE_EDITOR:Éditer les images une par une
+Text.Tooltip.ADD_IMAGES:Ajouter des images à l'application
+Text.Tooltip.BACK:Revenir au dernier dossier
+Text.Tooltip.ImageBooth.DELETE_TIP:Supprimer les images sélectionnées
+Text.Tooltip.ImageBooth.SAVE:Enregistrer les modifications
+Text.Tooltip.ImageBooth.EXPORT:Exporter les images sélectionnées
+Text.Tooltip.ImageBooth.ROTATE_RIGHT:Pivoter à droite les images sélectionnées
+Text.Tooltip.ImageBooth.ROTATE_LEFT:Pivoter à gauche les images sélectionnées
+Text.Tooltip.ImageBooth.MIRROR_UP_DOWN:Inverser haut-bas les images sélectionnées
+Text.Tooltip.ImageBooth.MIRROR_LEFT_RIGHT:Inverser gauche-droite les images sélectionnées
+Text.Tooltip.ImageBooth.CONVERSION:Convertir les images sélectionnées
+Text.Tooltip.ImageBooth.MAP:Modifier les données de carte des images sélectionnées
+Text.Tooltip.ImageBooth.EDIT_PERSONS:Modifier les données des personnes des images sélectionnées
+Text.Tooltip.ImageBooth.EDIT_FILTERS:Modifier les filtres
+Text.Tooltip.ImageBooth.ALL_IMAGES:Ouvrir toutes vos images à la fois
+Text.Tooltip.ImageEditor.DELETE_TIP:Supprimer l'image
+Text.Tooltip.ImageEditor.SAVE:Enregistrer les modifications
+Text.Tooltip.ImageEditor.EXPORT:Exporter l'image
+Text.Tooltip.ImageEditor.ROTATE_RIGHT:Pivoter à droite l'image
+Text.Tooltip.ImageEditor.ROTATE_LEFT:Pivoter à gauche l'image
+Text.Tooltip.ImageEditor.MIRROR_UP_DOWN:Inverser haut-bas l'image
+Text.Tooltip.ImageEditor.MIRROR_LEFT_RIGHT:Inverser gauche-droite l'image
+Text.Tooltip.ImageEditor.MAP:Modifier les données de carte de l'image
+Text.Tooltip.ImageEditor.EDIT_PERSONS:Modifier les données des personnes de l'image
+Text.Tooltip.ImageEditor.CONVERSION:Convertir l'image

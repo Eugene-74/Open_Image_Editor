@@ -149,7 +149,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, std::shared_ptr<Data> data, c
                         QImage qImage = data->loadImageNormal(nullptr, imageData->getImagePath(), QSize(0, 0), false);
                         qImage = data->rotateQImage(qImage, imageData);
 
-                        DetectedObjects* detectedObjects = data->detect(imageData->getImagePath(), qImage, data->model.getModelName());
+                        DetectedObjects* detectedObjects = data->detect(imageData->getImagePath(), qImage, data->getModelConst().getModelName());
                         if (detectedObjects) {
                             imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
                             imageData->setDetectionStatusLoaded();

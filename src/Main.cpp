@@ -1,4 +1,3 @@
-#include "Main.hpp"
 
 #include <QApplication>
 #include <QCursor>

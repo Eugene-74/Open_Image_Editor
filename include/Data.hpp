@@ -19,10 +19,8 @@
 #include "ThreadManager.hpp"
 
 // Forward declarations
-// class ImagesData;
 class ImageData;
 class QApplication;
-// class Folders;
 class Option;
 class Option;
 
@@ -41,9 +39,6 @@ class Actions {
 
 class Data : public std::enable_shared_from_this<Data> {
    public:
-    DetectObjectsModel model;
-    std::vector<std::string> classNames;
-
     QApplication* app;
     ImagesData imagesData;
 
@@ -57,10 +52,7 @@ class Data : public std::enable_shared_from_this<Data> {
 #endif
     Folders* currentFolder = &rootFolders;
 
-    std::map<std::string, Option> options;
     Sizes* sizes = new Sizes();
-
-    std::unordered_map<std::string, QImageAndPath>* imageCache = nullptr;
 
     bool saved = true;
 
@@ -171,12 +163,22 @@ class Data : public std::enable_shared_from_this<Data> {
     void setCenterTextLabel(QLabel* centerTextLabel);
     void setCenterText(std::string text);
 
+    DetectObjectsModel getModelConst() const;
+    DetectObjectsModel* getModelPtr();
+    void setModel(DetectObjectsModel model);
+
+    std::map<std::string, Option> getOptionsConst() const;
+    std::map<std::string, Option>* getOptionsPtr();
+    void setOptions(std::map<std::string, Option> options);
+
    private:
     ThreadManager manager;
     QLabel* centerTextLabel;
+    std::unordered_map<std::string, QImageAndPath>* imageCache = nullptr;
+    DetectObjectsModel model;
+    std::map<std::string, Option> options;
 
-    Folders*
-    findFirstFolderWithAllImagesSub(Folders* currentFolder);
+    Folders* findFirstFolderWithAllImagesSub(Folders* currentFolder);
     std::vector<Actions> lastActions = {};
     std::vector<Actions> lastActionsDone = {};
 

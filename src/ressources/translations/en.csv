@@ -1,4 +1,8 @@
 Text.VALIDATE:Validate
+Text.NAME:Name
+Text.DATE:Date
+Text.GEOLOCATION:Geolocation
+Text.Tooltip.LANGUAGE:Change the app language
 Text.Tooltip.DISCORD:Open the app discord
 Text.Tooltip.GITHUB:Open the app github
 Text.Tooltip.PARAMETER:Open the parameters

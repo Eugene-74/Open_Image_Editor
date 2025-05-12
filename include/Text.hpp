@@ -6,45 +6,123 @@
 #include "Translation.hpp"
 namespace Text {
 extern TranslationManager translationManager;
-static const QString VALIDATE = translationManager.translateQ("Text.VALIDATE");
+
+inline QString validate() {
+    return translationManager.translateQ("Text.VALIDATE");
+}
+
+inline QString name() {
+    return translationManager.translateQ("Text.NAME");
+}
+
+inline QString date() {
+    return translationManager.translateQ("Text.DATE");
+}
+
+inline QString geolocation() {
+    return translationManager.translateQ("Text.GEOLOCATION");
+}
 namespace Tooltip {
-static const QString DISCORD = translationManager.translateQ("Text.Tooltip.DISCORD");
-static const QString GITHUB = translationManager.translateQ("Text.Tooltip.GITHUB");
-static const QString PARAMETER = translationManager.translateQ("Text.Tooltip.PARAMETER");
+inline QString language() {
+    return translationManager.translateQ("Text.Tooltip.LANGUAGE");
+}
 
-static const QString OPEN_IMAGE_BOOTH = translationManager.translateQ("Text.Tooltip.OPEN_IMAGE_BOOTH");
-static const QString OPEN_IMAGE_EDITOR = translationManager.translateQ("Text.Tooltip.OPEN_IMAGE_EDITOR");
-static const QString ADD_IMAGES = translationManager.translateQ("Text.Tooltip.ADD_IMAGES");
+inline QString discord() {
+    return translationManager.translateQ("Text.Tooltip.DISCORD");
+}
+inline QString github() {
+    return translationManager.translateQ("Text.Tooltip.GITHUB");
+}
+inline QString option() {
+    return translationManager.translateQ("Text.Tooltip.PARAMETER");
+}
 
-static const QString BACK = translationManager.translateQ("Text.Tooltip.BACK");
+inline QString open_image_booth() {
+    return translationManager.translateQ("Text.Tooltip.OPEN_IMAGE_BOOTH");
+}
+inline QString open_image_editor() {
+    return translationManager.translateQ("Text.Tooltip.OPEN_IMAGE_EDITOR");
+}
+inline QString add_images() {
+    return translationManager.translateQ("Text.Tooltip.ADD_IMAGES");
+}
+
+inline QString back() {
+    return translationManager.translateQ("Text.Tooltip.BACK");
+}
 
 namespace ImageBooth {
-static const QString DELETE_TIP = translationManager.translateQ("Text.Tooltip.ImageBooth.DELETE_TIP");
-static const QString SAVE = translationManager.translateQ("Text.Tooltip.ImageBooth.SAVE");
-static const QString EXPORT = translationManager.translateQ("Text.Tooltip.ImageBooth.EXPORT");
-static const QString ROTATE_RIGHT = translationManager.translateQ("Text.Tooltip.ImageBooth.ROTATE_RIGHT");
-static const QString ROTATE_LEFT = translationManager.translateQ("Text.Tooltip.ImageBooth.ROTATE_LEFT");
-static const QString MIRROR_UP_DOWN = translationManager.translateQ("Text.Tooltip.ImageBooth.MIRROR_UP_DOWN");
-static const QString MIRROR_LEFT_RIGHT = translationManager.translateQ("Text.Tooltip.ImageBooth.MIRROR_LEFT_RIGHT");
-static const QString CONVERSION = translationManager.translateQ("Text.Tooltip.ImageBooth.CONVERSION");
+inline QString delete_tip() {
+    return translationManager.translateQ("Text.Tooltip.ImageBooth.DELETE_TIP");
+}
+inline QString save() {
+    return translationManager.translateQ("Text.Tooltip.ImageBooth.SAVE");
+}
+inline QString export_tip() {
+    return translationManager.translateQ("Text.Tooltip.ImageBooth.EXPORT");
+}
+inline QString rotate_right() {
+    return translationManager.translateQ("Text.Tooltip.ImageBooth.ROTATE_RIGHT");
+}
+inline QString rotate_left() {
+    return translationManager.translateQ("Text.Tooltip.ImageBooth.ROTATE_LEFT");
+}
+inline QString mirror_up_down() {
+    return translationManager.translateQ("Text.Tooltip.ImageBooth.MIRROR_UP_DOWN");
+}
+inline QString mirror_left_right() {
+    return translationManager.translateQ("Text.Tooltip.ImageBooth.MIRROR_LEFT_RIGHT");
+}
+inline QString conversion() {
+    return translationManager.translateQ("Text.Tooltip.ImageBooth.CONVERSION");
+}
 
-static const QString MAP = translationManager.translateQ("Text.Tooltip.ImageBooth.MAP");
-static const QString EDIT_PERSONS = translationManager.translateQ("Text.Tooltip.ImageBooth.EDIT_PERSONS");
-static const QString EDIT_FILTERS = translationManager.translateQ("Text.Tooltip.ImageBooth.EDIT_FILTERS");
+inline QString map() {
+    return translationManager.translateQ("Text.Tooltip.ImageBooth.MAP");
+}
+inline QString edit_persons() {
+    return translationManager.translateQ("Text.Tooltip.ImageBooth.EDIT_PERSONS");
+}
+inline QString edit_filters() {
+    return translationManager.translateQ("Text.Tooltip.ImageBooth.EDIT_FILTERS");
+}
 
-static const QString ALL_IMAGES = translationManager.translateQ("Text.Tooltip.ImageBooth.ALL_IMAGES");
+inline QString all_images() {
+    return translationManager.translateQ("Text.Tooltip.ImageBooth.ALL_IMAGES");
+}
 };  // namespace ImageBooth
+
 namespace ImageEditor {
-static const QString DELETE_TIP = translationManager.translateQ("Text.Tooltip.ImageEditor.DELETE_TIP");
-static const QString SAVE = translationManager.translateQ("Text.Tooltip.ImageEditor.SAVE");
-static const QString EXPORT = translationManager.translateQ("Text.Tooltip.ImageEditor.EXPORT");
-static const QString ROTATE_RIGHT = translationManager.translateQ("Text.Tooltip.ImageEditor.ROTATE_RIGHT");
-static const QString ROTATE_LEFT = translationManager.translateQ("Text.Tooltip.ImageEditor.ROTATE_LEFT");
-static const QString MIRROR_UP_DOWN = translationManager.translateQ("Text.Tooltip.ImageEditor.MIRROR_UP_DOWN");
-static const QString MIRROR_LEFT_RIGHT = translationManager.translateQ("Text.Tooltip.ImageEditor.MIRROR_LEFT_RIGHT");
-static const QString MAP = translationManager.translateQ("Text.Tooltip.ImageEditor.MAP");
-static const QString EDIT_PERSONS = translationManager.translateQ("Text.Tooltip.ImageEditor.EDIT_PERSONS");
-static const QString CONVERSION = translationManager.translateQ("Text.Tooltip.ImageEditor.CONVERSION");
+inline QString delete_tip() {
+    return translationManager.translateQ("Text.Tooltip.ImageEditor.DELETE_TIP");
+}
+inline QString save() {
+    return translationManager.translateQ("Text.Tooltip.ImageEditor.SAVE");
+}
+inline QString export_tip() {
+    return translationManager.translateQ("Text.Tooltip.ImageEditor.EXPORT");
+}
+inline QString rotate_right() {
+    return translationManager.translateQ("Text.Tooltip.ImageEditor.ROTATE_RIGHT");
+}
+inline QString rotate_left() {
+    return translationManager.translateQ("Text.Tooltip.ImageEditor.ROTATE_LEFT");
+}
+inline QString mirror_up_down() {
+    return translationManager.translateQ("Text.Tooltip.ImageEditor.MIRROR_UP_DOWN");
+}
+inline QString mirror_left_right() {
+    return translationManager.translateQ("Text.Tooltip.ImageEditor.MIRROR_LEFT_RIGHT");
+}
+inline QString map() {
+    return translationManager.translateQ("Text.Tooltip.ImageEditor.MAP");
+}
+inline QString edit_persons() {
+    return translationManager.translateQ("Text.Tooltip.ImageEditor.EDIT_PERSONS");
+}
+inline QString conversion() {
+    return translationManager.translateQ("Text.Tooltip.ImageEditor.CONVERSION");
+}
 };  // namespace ImageEditor
 };  // namespace Tooltip
 };  // namespace Text

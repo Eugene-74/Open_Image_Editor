@@ -63,6 +63,7 @@ const std::string THUMBNAIL_PATH = SAVE_PATH + "/thumbnails";
 const std::string IMAGESDATA_SAVE_DATA_PATH = SAVE_PATH + "/save." + APP_NAME;
 
 const std::map<std::string, Option> DEFAULT_OPTIONS = {
+    {"Language", Option("text", "en")},
     {"Sizes::imageBooth::ImagesPerLine", Option("text", "10")}};
 
 const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED = "red";
@@ -160,6 +161,12 @@ static const QString ADD_IMAGES = ":/icons/addImages.png";
 static const QString DISCORD = ":/icons/discord.png";
 static const QString GITHUB = ":/icons/github.png";
 static const QString OPTION = ":/icons/option.png";
+namespace Language {
+static const QString EN = ":/icons/en.png";
+static const QString FR = ":/icons/fr.png";
+static const QString ES = ":/icons/es.png";
+
+}  // namespace Language
 };  // namespace IconPath
 
 namespace StyleSheet {

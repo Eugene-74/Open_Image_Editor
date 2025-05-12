@@ -52,12 +52,18 @@ class InitialWindow : public QMainWindow {
     MainWindow* mainWindow = nullptr;
 
     QVBoxLayout* layout;
+
+    QHBoxLayout* languageLayout;
     QHBoxLayout* linkLayout;
     QWidget* centralWidget;
+
+    ClickableLabel* imageLanguage;
 
     ClickableLabel* imageDiscord;
     ClickableLabel* imageGithub;
     ClickableLabel* imageOption;
+
+    ClickableLabel* createImageLanguage();
 
     ClickableLabel* createImageDiscord();
     ClickableLabel* createImageGithub();
