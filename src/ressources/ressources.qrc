@@ -120,4 +120,12 @@
 
 
     </qresource>
+
+    </qresource>
+    <qresource prefix="">
+        <file>translations/en.csv</file>
+        <file>translations/fr.csv</file>
+
+
+    </qresource>
 </RCC>

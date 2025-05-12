@@ -25,6 +25,7 @@
 #include "ImageEditor.hpp"
 #include "MainWindow.hpp"
 #include "Network.hpp"
+#include "Text.hpp"
 
 namespace fs = std::filesystem;
 
@@ -484,7 +485,7 @@ void InitialWindow::showMainWindow() {
  * @details It also sets up a signal to handle the resize event and update the label accordingly.
  */
 ClickableLabel* InitialWindow::createImageDiscord() {
-    ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Const::Tooltip::DISCORD, this, linkButton, false, 0, true);
+    ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Text::Tooltip::DISCORD, this, linkButton, false, 0, true);
     newImageDiscord->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(newImageDiscord, &ClickableLabel::clicked, [this]() {
@@ -508,7 +509,7 @@ ClickableLabel* InitialWindow::createImageDiscord() {
  * @details It also sets up a signal to handle the resize event and update the label accordingly.
  */
 ClickableLabel* InitialWindow::createImageGithub() {
-    ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Const::Tooltip::GITHUB, this, linkButton, false, 0, true);
+    ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Text::Tooltip::GITHUB, this, linkButton, false, 0, true);
     newImageGithub->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(newImageGithub, &ClickableLabel::clicked, [this]() {
@@ -525,7 +526,7 @@ ClickableLabel* InitialWindow::createImageGithub() {
     return newImageGithub;
 }
 ClickableLabel* InitialWindow::createImageOption() {
-    ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Const::Tooltip::PARAMETER, this, linkButton, false, 0, true);
+    ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Text::Tooltip::PARAMETER, this, linkButton, false, 0, true);
     newImageOption->setInitialBackground(Const::StyleSheet::Color::TRANSPARENT1, "#b3b3b3");
 
     connect(newImageOption, &ClickableLabel::clicked, [this]() {
