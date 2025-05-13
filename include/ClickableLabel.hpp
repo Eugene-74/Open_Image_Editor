@@ -54,20 +54,20 @@ class ClickableLabel : public QLabel {
     QColor logoTextColor = Qt::white;
     QColor logoColor = Qt::red;
 
-    std::string disabled_border_color = "#b3b3b3";
-    std::string disabled_background_color = "#b3b3b3";
+    std::string disabled_border_color = Const::Color::LIGHT_GRAY;
+    std::string disabled_background_color = Const::Color::LIGHT_GRAY;
 
-    std::string border_color = Const::StyleSheet::Color::TRANSPARENT1;
-    std::string hover_border_color = Const::StyleSheet::Color::TRANSPARENT1;
+    std::string border_color = Const::Color::TRANSPARENT1;
+    std::string hover_border_color = Const::Color::TRANSPARENT1;
 
-    std::string background_color = Const::StyleSheet::Color::TRANSPARENT1;
-    std::string hover_background_color = Const::StyleSheet::Color::TRANSPARENT1;
+    std::string background_color = Const::Color::TRANSPARENT1;
+    std::string hover_background_color = Const::Color::TRANSPARENT1;
 
-    std::string initial_border_color = Const::StyleSheet::Color::TRANSPARENT1;
-    std::string initial_hover_border_color = Const::StyleSheet::Color::TRANSPARENT1;
+    std::string initial_border_color = Const::Color::TRANSPARENT1;
+    std::string initial_hover_border_color = Const::Color::TRANSPARENT1;
 
-    std::string initial_background_color = Const::StyleSheet::Color::TRANSPARENT1;
-    std::string initial_hover_background_color = Const::StyleSheet::Color::TRANSPARENT1;
+    std::string initial_background_color = Const::Color::TRANSPARENT1;
+    std::string initial_hover_background_color = Const::Color::TRANSPARENT1;
 
     void updateStyleSheet();
 

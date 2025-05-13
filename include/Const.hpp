@@ -41,10 +41,6 @@ const int TIME_UNDO_VISUALISATION = 500;
 
 const int TIME_BEFORE_REZISE = 100;
 
-const std::string CLICK_BACKGROUND_COLOR = "#9c9c9c";
-const std::string HOVER_BACKGROUND_COLOR = "#b3b3b3";
-const std::string BACKGROUND_COLOR = "transparent";
-
 const QString IMAGE_EDITOR_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Editor Window";
 const QString IMAGE_BOOTH_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Booth Window";
 const QString MAIN_WINDOW_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Booth Window";
@@ -66,15 +62,6 @@ const std::map<std::string, Option> DEFAULT_OPTIONS = {
     {"Language", Option("text", "en")},
     {"Sizes::imageBooth::ImagesPerLine", Option("text", "10")}};
 
-const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED = "red";
-const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED = "red";
-
-const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = "blue";
-const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = "blue";
-
-const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
-const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = "green";
-
 namespace Const {
 namespace Orientation {
 static const int UNDEFINED = 0;
@@ -87,6 +74,7 @@ static const int ROTATE_90 = 6;
 static const int TRANSVERSE = 7;
 static const int ROTATE_270 = 8;
 };  // namespace Orientation
+
 namespace Rotation {
 static const int LEFT = -90;
 static const int RIGHT = 90;
@@ -169,9 +157,30 @@ static const QString ES = ":/icons/es.png";
 }  // namespace Language
 };  // namespace IconPath
 
-namespace StyleSheet {
 namespace Color {
 static const std::string TRANSPARENT1 = "transparent";
-};
-};  // namespace StyleSheet
+static const std::string LIGHT_GRAY = "#b3b3b3";
+static const std::string GRAY = "#9c9c9c";
+static const std::string WHITE = "#FFFFFF";
+static const std::string RED = "#FF0000";
+static const std::string GREEN = "#00FF00";
+static const std::string BLUE = "#FF0000";
+
+static const std::string DARK_RED = "#700c13";
+static const std::string LIGHT_RED = "#F00c13";
+
+};  // namespace Color
 };  // namespace Const
+
+const std::string CLICK_BACKGROUND_COLOR = Const::Color::GRAY;
+const std::string HOVER_BACKGROUND_COLOR = Const::Color::LIGHT_GRAY;
+const std::string BACKGROUND_COLOR = Const::Color::TRANSPARENT1;
+
+const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED = Const::Color::RED;
+const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED = Const::Color::RED;
+
+const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = Const::Color::BLUE;
+const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = Const::Color::BLUE;
+
+const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = Const::Color::GREEN;
+const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = Const::Color::GREEN;

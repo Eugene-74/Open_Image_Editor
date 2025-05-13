@@ -7,6 +7,10 @@
 namespace Text {
 extern TranslationManager translationManager;
 
+inline QString welcome() {
+    return translationManager.translateQ("Text.WELCOME");
+}
+
 inline QString validate() {
     return translationManager.translateQ("Text.VALIDATE");
 }

@@ -58,9 +58,9 @@ class MainImage : public QLabel {
    public:
     void updateStyleSheet();
 
-    QString border_color = QString::fromStdString(Const::StyleSheet::Color::TRANSPARENT1);
-    QString hover_border_color = QString::fromStdString(Const::StyleSheet::Color::TRANSPARENT1);
+    QString border_color = QString::fromStdString(Const::Color::TRANSPARENT1);
+    QString hover_border_color = QString::fromStdString(Const::Color::TRANSPARENT1);
 
-    QString background_color = QString::fromStdString(Const::StyleSheet::Color::TRANSPARENT1);
-    QString hover_background_color = QString::fromStdString(Const::StyleSheet::Color::TRANSPARENT1);
+    QString background_color = QString::fromStdString(Const::Color::TRANSPARENT1);
+    QString hover_background_color = QString::fromStdString(Const::Color::TRANSPARENT1);
 };
