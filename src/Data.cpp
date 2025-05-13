@@ -863,13 +863,13 @@ void Data::saveData() {
         outFile.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
         outFile.write(key.c_str(), keySize);
 
-        size_t typeSize = option.type.size();
+        size_t typeSize = option.getTypeConst().size();
         outFile.write(reinterpret_cast<const char*>(&typeSize), sizeof(typeSize));
-        outFile.write(option.type.c_str(), typeSize);
+        outFile.write(option.getTypeConst().c_str(), typeSize);
 
-        size_t valueSize = option.value.size();
+        size_t valueSize = option.getValueConst().size();
         outFile.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
-        outFile.write(option.value.c_str(), valueSize);
+        outFile.write(option.getValueConst().c_str(), valueSize);
     }
 
     rootFolders.save(outFile);

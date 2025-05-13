@@ -1,4 +1,9 @@
+Text.WELCOME:
 Text.VALIDATE:
+Text.NAME:
+Text.DATE:
+Text.GEOLOCATION:
+Text.Tooltip.LANGUAGE:
 Text.Tooltip.DISCORD:
 Text.Tooltip.GITHUB:
 Text.Tooltip.PARAMETER:

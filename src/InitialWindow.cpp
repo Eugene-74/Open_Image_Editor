@@ -355,7 +355,7 @@ void InitialWindow::createImageEditor(std::shared_ptr<Data> data) {
  */
 void InitialWindow::createImageBooth(std::shared_ptr<Data> data) {
     qInfo() << "createImageBooth";
-    data->sizes->imagesBoothSizes->imagesPerLine = std::stoi(data->getOptionsConst().at("Sizes::imageBooth::ImagesPerLine").value);
+    data->sizes->imagesBoothSizes->imagesPerLine = std::stoi(data->getOptionsConst().at("Sizes::imageBooth::ImagesPerLine").getValueConst());
     data->sizes->update();
 
     imageBooth = new ImageBooth(data, this);
@@ -499,10 +499,8 @@ void InitialWindow::showMainWindow() {
  */
 ClickableLabel* InitialWindow::createImageLanguage() {
     // TODO change with language
-    QString language = QString::fromStdString(data->getOptionsConst().at("Language").value);
+    QString language = QString::fromStdString(data->getOptionsConst().at("Language").getValueConst());
     Text::translationManager.setLanguage(language.toStdString());
-    // Text::updateTranslations();
-    // QString language = "es";
 
     if (language == "en") {
         language = Const::IconPath::Language::EN;
@@ -511,7 +509,7 @@ ClickableLabel* InitialWindow::createImageLanguage() {
     } else if (language == "es") {
         language = Const::IconPath::Language::ES;
     } else {
-        (*data.get()->getOptionsPtr())["Language"].value = "en";
+        *(*data.get()->getOptionsPtr())["Language"].getValuePtr() = "en";
         language = Const::IconPath::Language::EN;
     }
 
@@ -609,10 +607,10 @@ void InitialWindow::openOption() {
     std::map<std::string, std::string> options = showOptionsDialog(this, "Options", data->getOptionsConst());
 
     for (const auto& [key, value] : options) {
-        (*data->getOptionsPtr())[key].value = value;
+        *(*data->getOptionsPtr())[key].getValuePtr() = value;
     }
 
-    Text::translationManager.setLanguage(data->getOptionsConst().at("Language").value);
+    Text::translationManager.setLanguage(data->getOptionsConst().at("Language").getValueConst());
 
     emit resize();
 }

@@ -31,8 +31,6 @@
  * @details The dialog will be deleted automatically when closed
  */
 void showModalDialog(QWidget* parent, QMessageBox::Icon icon, const std::string& text, const std::string& title, int posX, int posY, bool async) {
-    // QMetaObject::invokeMethod(QApplication::instance(), [&]() {
-
     auto* msgBox = new QMessageBox(parent);
     msgBox->setIcon(icon);
     msgBox->setText(QString::fromStdString(text));
@@ -50,7 +48,6 @@ void showModalDialog(QWidget* parent, QMessageBox::Icon icon, const std::string&
         msgBox->setWindowModality(Qt::ApplicationModal);
         msgBox->exec();
     }
-    // }, Qt::BlockingQueuedConnection);
 }
 
 /**
@@ -153,19 +150,19 @@ std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std:
         auto* label = new QLabel(QString::fromStdString(key));
         rowLayout->addWidget(label);
 
-        if (option.type == "bool") {
+        if (option.getTypeConst() == "bool") {
             auto* checkBox = new QCheckBox();
-            checkBox->setChecked(option.value == "true");
+            checkBox->setChecked(option.getValueConst() == "true");
             rowLayout->addWidget(checkBox);
             widgets[key] = checkBox;
-        } else if (option.type == "text") {
+        } else if (option.getTypeConst() == "text") {
             auto* lineEdit = new QLineEdit();
-            lineEdit->setText(QString::fromStdString(option.value));
+            lineEdit->setText(QString::fromStdString(option.getValueConst()));
             rowLayout->addWidget(lineEdit);
             widgets[key] = lineEdit;
-        } else if (option.type == "file") {
+        } else if (option.getTypeConst() == "file") {
             auto* lineEdit = new QLineEdit();
-            lineEdit->setText(QString::fromStdString(option.value));
+            lineEdit->setText(QString::fromStdString(option.getValueConst()));
             auto* browseButton = new QPushButton("Browse");
             rowLayout->addWidget(lineEdit);
             rowLayout->addWidget(browseButton);
@@ -177,9 +174,9 @@ std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std:
                     lineEdit->setText(filePath);
                 }
             });
-        } else if (option.type == "directory") {
+        } else if (option.getTypeConst() == "directory") {
             auto* lineEdit = new QLineEdit();
-            lineEdit->setText(QString::fromStdString(option.value));
+            lineEdit->setText(QString::fromStdString(option.getValueConst()));
             auto* browseButton = new QPushButton("Browse");
             rowLayout->addWidget(lineEdit);
             rowLayout->addWidget(browseButton);

@@ -4,20 +4,11 @@
 #include <map>
 #include <string>
 
+#include "Option.hpp"
+
 // Forward declarations
 class QWidget;
 
-class Option {
-    // TODO refactor
-   public:
-    std::string type;
-    std::string value;
-
-    Option() = default;
-    Option(const std::string& type, const std::string& value)
-        : type(type), value(value) {
-    }
-};
 void showModalDialog(QWidget* parent, QMessageBox::Icon icon, const std::string& text, const std::string& title, int posX, int posY, bool async);
 
 void showInformationMessage(QWidget* parent, const std::string& text, const std::string& title = "information", int posX = -1, int posY = -1, bool async = false);
