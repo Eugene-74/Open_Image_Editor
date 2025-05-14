@@ -376,10 +376,6 @@ void ImageData::load(std::ifstream& in) {
     }
 
     in.read(reinterpret_cast<char*>(&detectionStatus), sizeof(detectionStatus));
-    // TODO mettre autre part
-    if (isDetectionStatusLoading()) {
-        setDetectionStatusNotLoaded();
-    }
 
     detectedObjects.load(in);
 }

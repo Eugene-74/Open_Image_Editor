@@ -34,7 +34,7 @@ const int TIME_BEFORE_FULL_QUALITY = 200;
 
 const int IMAGE_BOOTH_PRE_LOAD_RADIUS = 5;  // x pages d'image
 
-const int FREE_THREAD = 2;
+const int FREE_THREAD = 4;
 const int PRE_LOAD_RADIUS_IMAGE_BOOTH = 5;
 
 const int TIME_UNDO_VISUALISATION = 500;
@@ -165,6 +165,7 @@ static const std::string WHITE = "#FFFFFF";
 static const std::string RED = "#FF0000";
 static const std::string GREEN = "#00FF00";
 static const std::string BLUE = "#FF0000";
+static const std::string DARK = "#000000";
 
 static const std::string DARK_RED = "#700c13";
 static const std::string LIGHT_RED = "#F00c13";

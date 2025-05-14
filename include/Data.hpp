@@ -4,6 +4,7 @@
 #include <QMediaPlayer>
 #include <QRunnable>
 #include <QSize>
+#include <QTimer>
 #include <QWidget>
 #include <map>
 #include <memory>
@@ -156,6 +157,7 @@ class Data : public std::enable_shared_from_this<Data> {
     void stopAllThreads();
 
     void checkThumbnailAndDetectObjects();
+    void checkDetectObjects();
 
     void checkToUnloadImages(int center, int radius);
     void checkToLoadImages(int center, int radius, int thumbnailSize = 0);
@@ -177,6 +179,16 @@ class Data : public std::enable_shared_from_this<Data> {
     std::unordered_map<std::string, QImageAndPath>* imageCache = nullptr;
     DetectObjectsModel model;
     std::map<std::string, Option> options;
+
+    QTimer* thumbnailTimer = new QTimer();
+    int thumbnailWorking = 0;
+    std::deque<std::string> hasNoThumbnail;
+    std::mutex thumbnailMutex;
+
+    QTimer* detectObjectTimer = new QTimer();
+    int detectionWorking = 0;
+    std::deque<ImageData*> hasNotBeenDetected;
+    std::mutex detectionMutex;
 
     Folders* findFirstFolderWithAllImagesSub(Folders* currentFolder);
     std::vector<Actions> lastActions = {};

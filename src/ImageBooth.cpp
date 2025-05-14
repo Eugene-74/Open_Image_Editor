@@ -602,7 +602,7 @@ void ImageBooth::updateImages() {
                             folderButton = new ClickableLabel(data, Const::IconPath::ALL_IMAGES,
                                                               Text::Tooltip::ImageBooth::all_images(),
                                                               this, imageSize, false, 0, true);
-                            folderButton->addLogo(QColor::fromString(Const::Color::GREEN), QColor::fromString(Const::Color::WHITE), data->getImagesData()->get()->size());
+                            folderButton->addLogo(QColor::fromString(Const::Color::GREEN), QColor::fromString(Const::Color::DARK), data->getImagesData()->get()->size());
                         } else {
                             folderButton = new ClickableLabel(data, Const::IconPath::BACK,
                                                               Text::Tooltip::back() + " : " + QString::fromStdString(data->getCurrentFolders()->getParent()->getName()),
@@ -630,7 +630,7 @@ void ImageBooth::updateImages() {
                         if (currentFolder) {
                             countImagesInFolder(currentFolder, totalImages);
                         }
-                        folderButton->addLogo(QColor::fromString(Const::Color::GREEN), QColor::fromString(Const::Color::WHITE), totalImages);
+                        folderButton->addLogo(QColor::fromString(Const::Color::GREEN), QColor::fromString(Const::Color::DARK), totalImages);
 
                         connect(folderButton, &ClickableLabel::leftClicked, [this, folderNbr]() {
                             openFolder(folderNbr - 1);
@@ -1183,7 +1183,7 @@ ClickableLabel* ImageBooth::createEditFilters() {
         }
     }
     if (activeFiltersCount > 0) {
-        editFiltersNew->addLogo(QColor::fromString(Const::Color::GRAY), QColor::fromString(Const::Color::WHITE), activeFiltersCount);
+        editFiltersNew->addLogo(QColor::fromString(Const::Color::GRAY), QColor::fromString(Const::Color::DARK), activeFiltersCount);
     }
 
     connect(editFiltersNew, &ClickableLabel::clicked, [this]() {
