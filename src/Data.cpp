@@ -1861,7 +1861,7 @@ DetectedObjects* Data::detect(std::string imagePath, QImage image, std::string m
             cv::Mat scores(1, className.size(), CV_32FC1, classes_scores);
             cv::Point class_id;
             double max_class_score;
-            minMaxLoc(scores, 0, &max_class_score, 0, &class_id);
+            minMaxLoc(scores, nullptr, &max_class_score, nullptr, &class_id);
             if (max_class_score > Const::Yolo::SCORE_THRESHOLD) {
                 confidences.push_back(confidence);
 

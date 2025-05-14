@@ -10,7 +10,7 @@
  */
 bool hasConnection() {
     QNetworkAccessManager manager;
-    QNetworkRequest request(QUrl("http://www.google.com"));
+    QNetworkRequest request(QUrl("https://www.google.com"));
     QNetworkReply* reply = manager.get(request);
 
     QEventLoop loop;

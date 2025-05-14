@@ -178,7 +178,7 @@ bool MetaData::modifyIptcValue(const std::string& key, const std::string& newVal
  * @details This function sets or creates Exif data for the image, including the date and time, make, model, and orientation.
  */
 void MetaData::setOrCreateExifData(std::string imagePath) {
-    time_t now = time(0);
+    time_t now = time(nullptr);
     std::tm* timeinfo = std::localtime(&now);
 
     char dateTime[20];
