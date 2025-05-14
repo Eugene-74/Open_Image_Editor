@@ -7,7 +7,7 @@
 #include <sstream>
 #include <stdexcept>
 TranslationManager::TranslationManager() {
-    this->currentLanguage = "fr";
+    this->currentLanguage = "en";
     this->defaultTranslations = *openTranslation("en");
 }
 
@@ -65,19 +65,19 @@ std::string getTranslation(const std::map<std::string, std::string>& translation
     auto it = translations.find(key);
     if (it != translations.end()) {
         if (it->second.empty()) {
-            qWarning() << "Translation is empty for key:" << QString::fromStdString(key);
+            // qWarning() << "Translation is empty for key:" << QString::fromStdString(key);
         } else {
-            qDebug() << "Translation found for key:" << QString::fromStdString(key) << "->" << QString::fromStdString(it->second);
+            // qDebug() << "Translation found for key:" << QString::fromStdString(key) << "->" << QString::fromStdString(it->second);
             return it->second;
         }
     }
 
     auto defaultIt = defaultTranslations.find(key);
     if (defaultIt != defaultTranslations.end()) {
-        qDebug() << "Default translation found for key:" << QString::fromStdString(key) << "->" << QString::fromStdString(defaultIt->second);
+        // qDebug() << "Default translation found for key:" << QString::fromStdString(key) << "->" << QString::fromStdString(defaultIt->second);
         return defaultIt->second;
     }
 
-    qWarning() << "Translation not found for key:" << QString::fromStdString(key);
-    return "[MISSING TRANSLATION: " + key + "]";  // Retourne une chaîne explicite pour les traductions manquantes
+    // qWarning() << "Translation not found for key:" << QString::fromStdString(key);
+    return "[MISSING TRANSLATION: " + key + "]";
 }

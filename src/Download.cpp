@@ -82,6 +82,7 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
  * @return true if the download was successful, false otherwise
  */
 bool downloadModelIfNotExists(const std::string& modelName) {
+    qDebug() << "Downloading model: " << QString::fromStdString(modelName);
     if (!hasConnection()) {
         return false;
     }
@@ -109,7 +110,7 @@ bool downloadModel(const std::string& modelName) {
     QMetaObject::invokeMethod(QApplication::instance(), [&]() {
         const std::string url = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/yolov5/" + std::string(modelName);
         qInfo() << "Downloading model from URL: " << QString::fromStdString(url) << " to path: " << QString::fromStdString(modelName);
-        const std::string modeloutputPath = APP_FILES.toStdString() + "/" + modelName;
+        const std::string modelOutputPath = APP_FILES.toStdString() + "/" + modelName;
 
         QProgressDialog progressDialog("Downloading " + QString::fromStdString(modelName), nullptr, 0, 100);
         progressDialog.setWindowModality(Qt::ApplicationModal);
@@ -117,7 +118,8 @@ bool downloadModel(const std::string& modelName) {
         progressDialog.setValue(0);
         progressDialog.show();
         QApplication::processEvents();
-        result = downloadFile(url, modeloutputPath, &progressDialog); }, Qt::BlockingQueuedConnection);
+        qInfo() << "Downloading model from URL 2: " << QString::fromStdString(url) << " to path: " << QString::fromStdString(modelName);
+        result = downloadFile(url, modelOutputPath, &progressDialog); }, Qt::BlockingQueuedConnection);
     return result;
 }
 

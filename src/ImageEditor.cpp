@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include <QDateTimeEdit>
 #include <QFrame>
+#include <QFuture>
 #include <QHBoxLayout>
 #include <QInputDialog>
 #include <QKeyEvent>
@@ -19,6 +20,7 @@
 #include <QSize>
 #include <QSlider>
 #include <QString>
+#include <QThread>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -871,7 +873,32 @@ ClickableLabel* ImageEditor::createImagePersons() {
 
             const std::string modelName = selectedModel.split(" - ").first().toStdString();
             data->getModelPtr()->setModelName(modelName);
-            downloadModelIfNotExists(modelName + ".onnx");
+
+            // TODO cree un thread pour telechargement puis detection pour eviter que ca bug
+            QThread* downloadThread = new QThread();
+            QObject* worker = new QObject();
+
+            connect(downloadThread, &QThread::started, [=]() {
+                bool result = downloadModelIfNotExists(modelName + ".onnx");
+                if (result) {
+                    qDebug() << "Model downloaded:" << modelName;
+                } else {
+                    qWarning() << "Failed to download model:" << modelName;
+                }
+                downloadThread->quit();  // Quitter le thread une fois terminé
+            });
+
+            connect(downloadThread, &QThread::finished, downloadThread, &QThread::deleteLater);
+            connect(downloadThread, &QThread::finished, worker, &QObject::deleteLater);
+
+            downloadThread->start();
+
+            // Garder l'interface utilisateur réactive pendant le téléchargement
+            while (downloadThread->isRunning()) {
+                QApplication::processEvents();
+            }
+
+            qDebug() << "Model downloaded:" << modelName;
 
             ImageData* imageData = data->imagesData.getCurrentImageData();
             if (imageData) {
@@ -990,7 +1017,6 @@ MainImage* ImageEditor::createImageLabel() {
     int imageNbr = data->imagesData.getImageNumber();
     if (imageData->isDetectionStatusNotLoaded()) {
         imageData->setDetectionStatusLoading();
-        qInfo() << "starting face recognition";
         QImage image = data->loadImageNormal(nullptr, data->imagesData.getCurrentImageData()->getImagePath(), QSize(0, 0), false);
 
         image = data->rotateQImage(image, imageData);
@@ -1002,7 +1028,6 @@ MainImage* ImageEditor::createImageLabel() {
                 ImageData* imageData = self->data->getImagesData()->getImageData(currentImagePath);
 
                 if (imageData) {
-                    qInfo() << "recognition done";
                     imageData->setDetectedObjects(detectedObject.getDetectedObjects());
                     imageData->setDetectionStatusLoaded();
                 }
