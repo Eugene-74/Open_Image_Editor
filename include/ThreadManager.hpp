@@ -22,7 +22,7 @@ class ThreadManager : public QObject {
     Q_OBJECT
 
    public:
-    ThreadManager(QObject* parent = nullptr, int maxThreads = std::max(QThreadPool::globalInstance()->maxThreadCount() - FREE_THREAD, 1));
+    ThreadManager(QObject* parent = nullptr, int maxThreads = QThreadPool::globalInstance()->maxThreadCount());
     ~ThreadManager();
 
     void addThread(std::function<void()> job);
