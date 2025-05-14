@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.6</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -174,9 +174,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>resetBackground</b> (
 <tr class="memitem:a7b4258a19f8290ef615abf1c41ce9c3c" id="r_a7b4258a19f8290ef615abf1c41ce9c3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b4258a19f8290ef615abf1c41ce9c3c">setLogoDisabled</a> ()</td></tr>
 <tr class="memdesc:a7b4258a19f8290ef615abf1c41ce9c3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the logo to be disabled (hidden)  <br /></td></tr>
 <tr class="separator:a7b4258a19f8290ef615abf1c41ce9c3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb9248ff5d01620fce78d8d30c3723ea" id="r_adb9248ff5d01620fce78d8d30c3723ea"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb9248ff5d01620fce78d8d30c3723ea">ClickableLabel</a> (<a class="el" href="class_data.html">Data</a> *data, const QString &amp;i, QString toolTip=&quot;&quot;, QWidget *parent=nullptr, QSize *sizePtr=new QSize(0, 0), bool setSize=true, int thumbnail=0, bool square=false, bool force=false)</td></tr>
-<tr class="memdesc:adb9248ff5d01620fce78d8d30c3723ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="class_clickable_label.html">ClickableLabel</a>.  <br /></td></tr>
-<tr class="separator:adb9248ff5d01620fce78d8d30c3723ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67a3af662f3d297e82925a3951578cd0" id="r_a67a3af662f3d297e82925a3951578cd0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67a3af662f3d297e82925a3951578cd0">ClickableLabel</a> (std::shared_ptr&lt; <a class="el" href="class_data.html">Data</a> &gt; data, const QString &amp;i, QString toolTip=&quot;&quot;, QWidget *parent=nullptr, QSize *sizePtr=new QSize(0, 0), bool setSize=true, int thumbnail=0, bool square=false, bool force=false)</td></tr>
+<tr class="memdesc:a67a3af662f3d297e82925a3951578cd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="class_clickable_label.html">ClickableLabel</a>.  <br /></td></tr>
+<tr class="separator:a67a3af662f3d297e82925a3951578cd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -188,8 +188,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a24e708fc82dec930ef9e35d3591928e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="adb9248ff5d01620fce78d8d30c3723ea" name="adb9248ff5d01620fce78d8d30c3723ea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adb9248ff5d01620fce78d8d30c3723ea">&#9670;&#160;</a></span>ClickableLabel()</h2>
+<a id="a67a3af662f3d297e82925a3951578cd0" name="a67a3af662f3d297e82925a3951578cd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67a3af662f3d297e82925a3951578cd0">&#9670;&#160;</a></span>ClickableLabel()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -200,7 +200,7 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname">ClickableLabel::ClickableLabel </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_data.html">Data</a> *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="class_data.html">Data</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -259,7 +259,7 @@ Protected Member Functions</h2></td></tr>
     <tr><td class="paramname">parent</td><td>Parent widget </td></tr>
     <tr><td class="paramname">sizePtr</td><td>Pointer to the size of the label </td></tr>
     <tr><td class="paramname">setSize</td><td>If true, set the size of the label to the sizePtr </td></tr>
-    <tr><td class="paramname">thumbnail</td><td>Thumbnail size (16, 128, 256, 512 or 0 for full size) </td></tr>
+    <tr><td class="paramname">thumbnail</td><td>Thumbnail size (0 for full size) </td></tr>
     <tr><td class="paramname">square</td><td>If true, the label will be square </td></tr>
     <tr><td class="paramname">force</td><td>If true, force the loading of the image </td></tr>
   </table>

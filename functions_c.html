@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.6</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -108,6 +108,9 @@ $(function(){initNavTree('functions_c.html',''); initResizable(true); });
 
 <h3><a id="index_c" name="index_c"></a>- c -</h3><ul>
 <li>changeimagesPerLine()&#160;:&#160;<a class="el" href="class_sizes_1_1_images_booth_sizes.html#a6d391b2902e6fb9638ae310b8eebdc2f">Sizes::ImagesBoothSizes</a></li>
+<li>checkThumbnailAndDetectObjects()&#160;:&#160;<a class="el" href="class_data.html#a88a0d92c7b1ae2182276dc42bd19f9e8">Data</a></li>
+<li>checkToLoadImages()&#160;:&#160;<a class="el" href="class_data.html#aa638f8484d66933775ef691bb9acb034">Data</a></li>
+<li>checkToUnloadImages()&#160;:&#160;<a class="el" href="class_data.html#aef4d44371a2b265bc6a2813847f86c49">Data</a></li>
 <li>clear()&#160;:&#160;<a class="el" href="class_data.html#a44b749f64ffa35e034f9503fdec4917e">Data</a>, <a class="el" href="class_detected_objects.html#a5eb71da55a0cdd1f364748d2a97981c1">DetectedObjects</a>, <a class="el" href="class_folders.html#aaa63ca280c10fc90c09cc29e38c80a02">Folders</a>, <a class="el" href="class_image_editor.html#a5fc8f409069540e84a79536842dfc65e">ImageEditor</a>, <a class="el" href="class_images_data.html#a31bb9b1edfe1d44c8521d6db6ef704a8">ImagesData</a>, <a class="el" href="class_meta_data.html#a7c80f24121d6c01ff3c9ec939a17e542">MetaData</a></li>
 <li>clearActions()&#160;:&#160;<a class="el" href="class_data.html#a7748a0c372b9d0372f797cbcbe77f3ac">Data</a></li>
 <li>clearCache()&#160;:&#160;<a class="el" href="class_data.html#a07c367ea35288f2ee324c684e5132039">Data</a></li>
@@ -117,17 +120,18 @@ $(function(){initNavTree('functions_c.html',''); initResizable(true); });
 <li>clearMainWindow()&#160;:&#160;<a class="el" href="class_initial_window.html#a68f887904a22ec476c253a9e2869f621">InitialWindow</a></li>
 <li>clearMetaData()&#160;:&#160;<a class="el" href="class_image_data.html#ad01b78e5b42c00407dd4593bed49cae6">ImageData</a></li>
 <li>clearRecursively()&#160;:&#160;<a class="el" href="class_folders.html#a37d380b2a155a287f102e8a8680d3570">Folders</a></li>
-<li>ClickableLabel()&#160;:&#160;<a class="el" href="class_clickable_label.html#adb9248ff5d01620fce78d8d30c3723ea">ClickableLabel</a></li>
+<li>ClickableLabel()&#160;:&#160;<a class="el" href="class_clickable_label.html#a67a3af662f3d297e82925a3951578cd0">ClickableLabel</a></li>
 <li>closeEvent()&#160;:&#160;<a class="el" href="class_initial_window.html#a838c13be97b74b4e963a2aedf65a9a4c">InitialWindow</a></li>
 <li>ConversionDialog()&#160;:&#160;<a class="el" href="class_conversion_dialog.html#ad6ed831ecfe92f40bd1f5472bf380f5e">ConversionDialog</a></li>
 <li>createAllThumbnail()&#160;:&#160;<a class="el" href="class_data.html#a35538c818729585433e73c1a7b9cf6a1">Data</a></li>
 <li>createAllThumbnailIfNotExists()&#160;:&#160;<a class="el" href="class_data.html#abc7ef6d83dc19e0d0e87742f18a0bd2b">Data</a></li>
-<li>createImageBooth()&#160;:&#160;<a class="el" href="class_initial_window.html#a565720ed21ac5de86b28c32d44af99a8">InitialWindow</a></li>
-<li>createImageEditor()&#160;:&#160;<a class="el" href="class_initial_window.html#a16c50ed7c05d4de34976ef51cc774414">InitialWindow</a></li>
-<li>createMainWindow()&#160;:&#160;<a class="el" href="class_initial_window.html#a4c4711ec060b1c2605aaf4bc943c6b8d">InitialWindow</a></li>
+<li>createAllThumbnailsAsync()&#160;:&#160;<a class="el" href="class_data.html#aa5537964be48a0a93eb48185a65e454f">Data</a></li>
+<li>createImageBooth()&#160;:&#160;<a class="el" href="class_initial_window.html#a4e0df5aa0a456618d423695fcca29949">InitialWindow</a></li>
+<li>createImageEditor()&#160;:&#160;<a class="el" href="class_initial_window.html#aee10032b9ac5899211da9960d9625f6d">InitialWindow</a></li>
+<li>createMainWindow()&#160;:&#160;<a class="el" href="class_initial_window.html#ae6869aa781205da8f59e215106994c70">InitialWindow</a></li>
 <li>createThumbnail()&#160;:&#160;<a class="el" href="class_data.html#a189734a9548fcfe79f79e69b3e4b5545">Data</a></li>
-<li>createThumbnailAsync()&#160;:&#160;<a class="el" href="class_data.html#aa9668f3abe8b69946049f346bf45a5ac">Data</a></li>
-<li>createThumbnailIfNotExists()&#160;:&#160;<a class="el" href="class_data.html#ae78c4a7243b4add7f6bb3b1f003e8ed2">Data</a></li>
+<li>createThumbnailAsync()&#160;:&#160;<a class="el" href="class_data.html#aae9c10027d47182deb8a4f29f7afbe0e">Data</a></li>
+<li>createThumbnailIfNotExists()&#160;:&#160;<a class="el" href="class_data.html#a227123c950328dcb7eca89a8606cbef3">Data</a></li>
 <li>createThumbnails()&#160;:&#160;<a class="el" href="class_data.html#a101569ad4915dec29e24887931da68ac">Data</a></li>
 <li>createThumbnailsIfNotExists()&#160;:&#160;<a class="el" href="class_data.html#a824cae3b176fed1f42b20b3112a5806a">Data</a></li>
 </ul>

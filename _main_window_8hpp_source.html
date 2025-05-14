@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.6</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -118,14 +118,14 @@ $(function(){initNavTree('_main_window_8hpp_source.html',''); initResizable(true
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>QHBoxLayout;</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
 <div class="foldopen" id="foldopen00011" data-start="{" data-end="};">
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="class_main_window.html">   11</a></span><span class="keyword">class </span><a class="code hl_function" href="class_main_window.html#a27b7df0b1b8261dcb25dca139686d0ee">MainWindow</a> : <span class="keyword">public</span> QMainWindow {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="class_main_window.html">   11</a></span><span class="keyword">class </span><a class="code hl_function" href="class_main_window.html#aa94fd46b513658e6a3de04e88ab917c0">MainWindow</a> : <span class="keyword">public</span> QMainWindow {</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    Q_OBJECT</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>   <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_function" href="class_main_window.html#a27b7df0b1b8261dcb25dca139686d0ee">MainWindow</a>(<a class="code hl_class" href="class_data.html">Data</a>* dat, QWidget* parent = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_function" href="class_main_window.html#a27b7df0b1b8261dcb25dca139686d0ee">~MainWindow</a>() {}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_function" href="class_main_window.html#aa94fd46b513658e6a3de04e88ab917c0">MainWindow</a>(std::shared_ptr&lt;Data&gt; dat, QWidget* parent = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_function" href="class_main_window.html#aa94fd46b513658e6a3de04e88ab917c0">~MainWindow</a>() {}</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_class" href="class_data.html">Data</a>* data;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    std::shared_ptr&lt;Data&gt; data;</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    QHBoxLayout* mainLayout;</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    QHBoxLayout* switchLayout;</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
@@ -138,9 +138,8 @@ $(function(){initNavTree('_main_window_8hpp_source.html',''); initResizable(true
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_main_window.html#a379d8ebd251561f4b5c621902c63584f">enterEvent</a>(QEnterEvent* event) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
 </div>
-<div class="ttc" id="aclass_data_html"><div class="ttname"><a href="class_data.html">Data</a></div><div class="ttdef"><b>Definition</b> Data.hpp:41</div></div>
-<div class="ttc" id="aclass_main_window_html_a27b7df0b1b8261dcb25dca139686d0ee"><div class="ttname"><a href="class_main_window.html#a27b7df0b1b8261dcb25dca139686d0ee">MainWindow::MainWindow</a></div><div class="ttdeci">MainWindow(Data *dat, QWidget *parent=nullptr)</div><div class="ttdoc">Constructor for the MainWindow class.</div><div class="ttdef"><b>Definition</b> MainWindow.cpp:15</div></div>
-<div class="ttc" id="aclass_main_window_html_a379d8ebd251561f4b5c621902c63584f"><div class="ttname"><a href="class_main_window.html#a379d8ebd251561f4b5c621902c63584f">MainWindow::enterEvent</a></div><div class="ttdeci">void enterEvent(QEnterEvent *event) override</div><div class="ttdoc">Set the focus to the mainWindow when the mouse enters.</div><div class="ttdef"><b>Definition</b> MainWindow.cpp:61</div></div>
+<div class="ttc" id="aclass_main_window_html_a379d8ebd251561f4b5c621902c63584f"><div class="ttname"><a href="class_main_window.html#a379d8ebd251561f4b5c621902c63584f">MainWindow::enterEvent</a></div><div class="ttdeci">void enterEvent(QEnterEvent *event) override</div><div class="ttdoc">Set the focus to the mainWindow when the mouse enters.</div><div class="ttdef"><b>Definition</b> MainWindow.cpp:62</div></div>
+<div class="ttc" id="aclass_main_window_html_aa94fd46b513658e6a3de04e88ab917c0"><div class="ttname"><a href="class_main_window.html#aa94fd46b513658e6a3de04e88ab917c0">MainWindow::MainWindow</a></div><div class="ttdeci">MainWindow(std::shared_ptr&lt; Data &gt; dat, QWidget *parent=nullptr)</div><div class="ttdoc">Constructor for the MainWindow class.</div><div class="ttdef"><b>Definition</b> MainWindow.cpp:16</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

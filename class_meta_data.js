@@ -5,6 +5,8 @@ var class_meta_data =
     [ "getExifData", "class_meta_data.html#af8510c9b25716b9d2b7f427f100fc6a4", null ],
     [ "getImageOrientation", "class_meta_data.html#adfe819816e9c0feed47255c2bddcc079", null ],
     [ "getIptcData", "class_meta_data.html#aece025c4b7874c5ff664575a91943fe3", null ],
+    [ "getLatitude", "class_meta_data.html#a1993b2d34b63053dc50c8c5b0869ab5d", null ],
+    [ "getLongitude", "class_meta_data.html#a2507452841e790eae7049491e93aa649", null ],
     [ "getTimestamp", "class_meta_data.html#a6d28391547c03d0b621751fb139b9ab6", null ],
     [ "getXmpData", "class_meta_data.html#ad26d4ecb82fa73ae048d82492a5b6fb6", null ],
     [ "loadData", "class_meta_data.html#ab9b40e19dab8903f0bc1c5859a131edc", null ],
@@ -16,6 +18,8 @@ var class_meta_data =
     [ "saveMetaData", "class_meta_data.html#a7a9256d463bc3dbf917208872f68cd57", null ],
     [ "setExifData", "class_meta_data.html#a80794012b7bcf47094eee3b515406336", null ],
     [ "setIptcData", "class_meta_data.html#afb3819f2fd2627bb478214218cc15fb0", null ],
+    [ "setLatitude", "class_meta_data.html#a56bd8cd5b599a0472161872da68fe002", null ],
+    [ "setLongitude", "class_meta_data.html#a47b69b0c19d7d5cd102b432fe4f9af80", null ],
     [ "setOrCreateExifData", "class_meta_data.html#a8041bdf76ccdcbbd397532342fd78652", null ],
     [ "setXmpData", "class_meta_data.html#af0f2b20cf3887f906bba8c1a1855408c", null ]
 ];

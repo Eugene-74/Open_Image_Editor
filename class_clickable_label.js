@@ -1,6 +1,6 @@
 var class_clickable_label =
 [
-    [ "ClickableLabel", "class_clickable_label.html#adb9248ff5d01620fce78d8d30c3723ea", null ],
+    [ "ClickableLabel", "class_clickable_label.html#a67a3af662f3d297e82925a3951578cd0", null ],
     [ "addLogo", "class_clickable_label.html#a374984a034b9afacb835f05ae92943b3", null ],
     [ "addLogo", "class_clickable_label.html#ade14623b91971141e8cd9e2a143d43be", null ],
     [ "mouseReleaseEvent", "class_clickable_label.html#a040d1af68245bbc4989fefe04b9ffdd0", null ],

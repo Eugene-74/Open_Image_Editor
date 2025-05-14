@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.6</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -135,6 +135,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setExif</b> (const Ex
 <tr class="memitem:a6d28391547c03d0b621751fb139b9ab6" id="r_a6d28391547c03d0b621751fb139b9ab6"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d28391547c03d0b621751fb139b9ab6">getTimestamp</a> ()</td></tr>
 <tr class="memdesc:a6d28391547c03d0b621751fb139b9ab6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the timestamp from the metadata.  <br /></td></tr>
 <tr class="separator:a6d28391547c03d0b621751fb139b9ab6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56bd8cd5b599a0472161872da68fe002" id="r_a56bd8cd5b599a0472161872da68fe002"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56bd8cd5b599a0472161872da68fe002">setLatitude</a> (double latitude)</td></tr>
+<tr class="memdesc:a56bd8cd5b599a0472161872da68fe002"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the latitude in the metadata.  <br /></td></tr>
+<tr class="separator:a56bd8cd5b599a0472161872da68fe002"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1993b2d34b63053dc50c8c5b0869ab5d" id="r_a1993b2d34b63053dc50c8c5b0869ab5d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1993b2d34b63053dc50c8c5b0869ab5d">getLatitude</a> () const</td></tr>
+<tr class="memdesc:a1993b2d34b63053dc50c8c5b0869ab5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the latitude from the metadata.  <br /></td></tr>
+<tr class="separator:a1993b2d34b63053dc50c8c5b0869ab5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47b69b0c19d7d5cd102b432fe4f9af80" id="r_a47b69b0c19d7d5cd102b432fe4f9af80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a47b69b0c19d7d5cd102b432fe4f9af80">setLongitude</a> (double longitude)</td></tr>
+<tr class="memdesc:a47b69b0c19d7d5cd102b432fe4f9af80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the longitude in the metadata.  <br /></td></tr>
+<tr class="separator:a47b69b0c19d7d5cd102b432fe4f9af80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2507452841e790eae7049491e93aa649" id="r_a2507452841e790eae7049491e93aa649"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2507452841e790eae7049491e93aa649">getLongitude</a> () const</td></tr>
+<tr class="memdesc:a2507452841e790eae7049491e93aa649"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the longitude from the metadata.  <br /></td></tr>
+<tr class="separator:a2507452841e790eae7049491e93aa649"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad50fd65e0af3c3b44930e0e0e14fa4dd" id="r_ad50fd65e0af3c3b44930e0e0e14fa4dd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad50fd65e0af3c3b44930e0e0e14fa4dd">modifyExifValue</a> (const std::string &amp;key, const std::string &amp;newValue)</td></tr>
 <tr class="memdesc:ad50fd65e0af3c3b44930e0e0e14fa4dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Exif data.  <br /></td></tr>
 <tr class="separator:ad50fd65e0af3c3b44930e0e0e14fa4dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -288,6 +300,46 @@ Exiv2::IptcData&#160;</td><td class="memItemRight" valign="bottom"><b>iptcMetaDa
 
 <p>Get the IPTC data. </p>
 <dl class="section return"><dt>Returns</dt><dd>The IPTC data </dd></dl>
+
+</div>
+</div>
+<a id="a1993b2d34b63053dc50c8c5b0869ab5d" name="a1993b2d34b63053dc50c8c5b0869ab5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1993b2d34b63053dc50c8c5b0869ab5d">&#9670;&#160;</a></span>getLatitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double MetaData::getLatitude </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the latitude from the metadata. </p>
+<dl class="section return"><dt>Returns</dt><dd>The latitude in degrees </dd></dl>
+
+</div>
+</div>
+<a id="a2507452841e790eae7049491e93aa649" name="a2507452841e790eae7049491e93aa649"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2507452841e790eae7049491e93aa649">&#9670;&#160;</a></span>getLongitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double MetaData::getLongitude </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the longitude from the metadata. </p>
+<dl class="section return"><dt>Returns</dt><dd>The longitude in degrees </dd></dl>
 
 </div>
 </div>
@@ -572,6 +624,56 @@ Exiv2::IptcData&#160;</td><td class="memItemRight" valign="bottom"><b>iptcMetaDa
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">data</td><td>The IPTC data to set </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a56bd8cd5b599a0472161872da68fe002" name="a56bd8cd5b599a0472161872da68fe002"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56bd8cd5b599a0472161872da68fe002">&#9670;&#160;</a></span>setLatitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MetaData::setLatitude </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>latitude</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the latitude in the metadata. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">latitude</td><td>The latitude in degrees </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a47b69b0c19d7d5cd102b432fe4f9af80" name="a47b69b0c19d7d5cd102b432fe4f9af80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47b69b0c19d7d5cd102b432fe4f9af80">&#9670;&#160;</a></span>setLongitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MetaData::setLongitude </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>longitude</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the longitude in the metadata. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">longitude</td><td>The longitude in degrees </td></tr>
   </table>
   </dd>
 </dl>

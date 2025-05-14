@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['option_0',['Option',['../class_option.html',1,'']]],
-  ['orientation_1',['Orientation',['../class_const_1_1_orientation.html',1,'Const']]]
+  ['option_0',['Option',['../class_option.html',1,'']]]
 ];

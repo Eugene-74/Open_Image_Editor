@@ -1,8 +1,10 @@
 var annotated_dup =
 [
+    [ "checkForMissingTranslation", null, [
+      [ "TranslationEditor", "classcheck_for_missing_translation_1_1_translation_editor.html", null ]
+    ] ],
     [ "Actions", "class_actions.html", null ],
     [ "ClickableLabel", "class_clickable_label.html", "class_clickable_label" ],
-    [ "Const", "class_const.html", "class_const" ],
     [ "ConversionDialog", "class_conversion_dialog.html", "class_conversion_dialog" ],
     [ "Data", "class_data.html", "class_data" ],
     [ "DetectedObjects", "class_detected_objects.html", "class_detected_objects" ],
@@ -16,10 +18,12 @@ var annotated_dup =
     [ "InitialWindow", "class_initial_window.html", "class_initial_window" ],
     [ "MainImage", "class_main_image.html", "class_main_image" ],
     [ "MainWindow", "class_main_window.html", "class_main_window" ],
+    [ "MapWidget", "class_map_widget.html", "class_map_widget" ],
     [ "MetaData", "class_meta_data.html", "class_meta_data" ],
     [ "Option", "class_option.html", null ],
     [ "QImageAndPath", "class_q_image_and_path.html", null ],
     [ "Sizes", "class_sizes.html", "class_sizes" ],
     [ "ThreadManager", "class_thread_manager.html", "class_thread_manager" ],
+    [ "TranslationManager", "class_translation_manager.html", null ],
     [ "Worker", "class_worker.html", "class_worker" ]
 ];

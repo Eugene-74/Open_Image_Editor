@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.6</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -115,108 +115,109 @@ $(function(){initNavTree('_clickable_label_8hpp_source.html',''); initResizable(
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;QString&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// Forward declarations</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span><a class="code hl_class" href="class_data.html">Data</a>;</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="class_clickable_label.html">   12</a></span><span class="keyword">class </span><a class="code hl_function" href="class_clickable_label.html#adb9248ff5d01620fce78d8d30c3723ea">ClickableLabel</a> : <span class="keyword">public</span> QLabel {</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    Q_OBJECT</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>   <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a2f7fa5171a0f7615cbac130b3097395a">setInitialBorder</a>(std::string borderColor, std::string hoverBorderColor);</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a95ee7876c78ebc1312e097a404ce0412">setBorder</a>(std::string borderColor, std::string hoverBorderColor);</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#af10c32e0c50c0ab1d27534166c35b3b7">resetBorder</a>();</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a02a40df49210cbb293998332947d04ae">setInitialBackground</a>(std::string backgroundColor, std::string hoverBackgroundColor);</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#aa550596abff263952352227cad6d2d05">setBackground</a>(std::string backgroundColor, std::string hoverBackgroundColor);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a6147edffd39d0efa1f2b532c71022633">resetBackground</a>();</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a374984a034b9afacb835f05ae92943b3">addLogo</a>(QColor logoColor, QColor logoTextColor);</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a374984a034b9afacb835f05ae92943b3">addLogo</a>(QColor logoColor, QColor logoTextColor, <span class="keywordtype">int</span> logoNumber);</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#ac18f2423fe0aa2fa2c383f14f962c9e1">setLogoNumber</a>(<span class="keywordtype">int</span> logoNumber);</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a6cd35b4fd9c5ed57e67682ea4a2720a6">setLogoEnabled</a>();</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a7b4258a19f8290ef615abf1c41ce9c3c">setLogoDisabled</a>();</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="class_clickable_label.html#adb9248ff5d01620fce78d8d30c3723ea">ClickableLabel</a>(<a class="code hl_class" href="class_data.html">Data</a>* data, <span class="keyword">const</span> QString&amp; i, QString toolTip = <span class="stringliteral">&quot;&quot;</span>, QWidget* parent = <span class="keyword">nullptr</span>, QSize* sizePtr = <span class="keyword">new</span> QSize(0, 0), <span class="keywordtype">bool</span> setSize = <span class="keyword">true</span>, <span class="keywordtype">int</span> thumbnail = 0, <span class="keywordtype">bool</span> square = <span class="keyword">false</span>, <span class="keywordtype">bool</span> force = <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>   signals:</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">void</span> clicked();</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> leftClicked();</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> rightClicked();</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">void</span> shiftLeftClicked();</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> ctrlLeftClicked();</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>   <span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a040d1af68245bbc4989fefe04b9ffdd0">mouseReleaseEvent</a>(QMouseEvent* event) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a24e708fc82dec930ef9e35d3591928e6">paintEvent</a>(QPaintEvent* event) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>   <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">int</span> border = 0;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">int</span> border_radius = 0;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    QSize* sizePtr;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    QString logoText = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">bool</span> logoVisible = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    QColor logoTextColor = Qt::white;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    QColor logoColor = Qt::red;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    std::string disabled_border_color = <span class="stringliteral">&quot;#b3b3b3&quot;</span>;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    std::string disabled_background_color = <span class="stringliteral">&quot;#b3b3b3&quot;</span>;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    std::string border_color = <span class="stringliteral">&quot;transparent&quot;</span>;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::string hover_border_color = <span class="stringliteral">&quot;transparent&quot;</span>;</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::string background_color = <span class="stringliteral">&quot;transparent&quot;</span>;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::string hover_background_color = <span class="stringliteral">&quot;transparent&quot;</span>;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    std::string initial_border_color = <span class="stringliteral">&quot;transparent&quot;</span>;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::string initial_hover_border_color = <span class="stringliteral">&quot;transparent&quot;</span>;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    std::string initial_background_color = <span class="stringliteral">&quot;transparent&quot;</span>;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    std::string initial_hover_background_color = <span class="stringliteral">&quot;transparent&quot;</span>;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">void</span> updateStyleSheet();</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a95ee7876c78ebc1312e097a404ce0412">setBorder</a>(<span class="keywordtype">int</span> border);</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">void</span> setBorderRadius(<span class="keywordtype">int</span> border_radius);</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span> setDisabledColor(std::string borderColor, std::string backgroundColor);</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">void</span> setDisabledBorderColor(std::string borderColor);</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">void</span> setDisabledBackgroundColor(std::string backgroundColor);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">void</span> setInitialBorderColor(std::string borderColor);</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">void</span> setInitialHoverBorderColor(std::string hoverBorderColor);</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">void</span> setBorderColor(std::string borderColor);</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">void</span> setHoverBorderColor(std::string hoverBorderColor);</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">void</span> setInitialBackgroundColor(std::string backgroundColor);</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">void</span> setInitialHoverBackgroundColor(std::string hoverBackgroundColor);</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">void</span> setBackgroundColor(std::string backgroundColor);</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">void</span> setHoverBackgroundColor(std::string hoverBackgroundColor);</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">void</span> setLogoColor(QColor logoColor);</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">void</span> setLogoTextColor(QColor logoTextColor);</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">void</span> setLogoVisible(<span class="keywordtype">bool</span> logoVisible);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>};</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;Const.hpp&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// Forward declarations</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span><a class="code hl_class" href="class_data.html">Data</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="class_clickable_label.html">   13</a></span><span class="keyword">class </span><a class="code hl_function" href="class_clickable_label.html#a67a3af662f3d297e82925a3951578cd0">ClickableLabel</a> : <span class="keyword">public</span> QLabel {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    Q_OBJECT</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>   <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a2f7fa5171a0f7615cbac130b3097395a">setInitialBorder</a>(std::string borderColor, std::string hoverBorderColor);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a95ee7876c78ebc1312e097a404ce0412">setBorder</a>(std::string borderColor, std::string hoverBorderColor);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#af10c32e0c50c0ab1d27534166c35b3b7">resetBorder</a>();</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a02a40df49210cbb293998332947d04ae">setInitialBackground</a>(std::string backgroundColor, std::string hoverBackgroundColor);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#aa550596abff263952352227cad6d2d05">setBackground</a>(std::string backgroundColor, std::string hoverBackgroundColor);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a6147edffd39d0efa1f2b532c71022633">resetBackground</a>();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a374984a034b9afacb835f05ae92943b3">addLogo</a>(QColor logoColor, QColor logoTextColor);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a374984a034b9afacb835f05ae92943b3">addLogo</a>(QColor logoColor, QColor logoTextColor, <span class="keywordtype">int</span> logoNumber);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#ac18f2423fe0aa2fa2c383f14f962c9e1">setLogoNumber</a>(<span class="keywordtype">int</span> logoNumber);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a6cd35b4fd9c5ed57e67682ea4a2720a6">setLogoEnabled</a>();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a7b4258a19f8290ef615abf1c41ce9c3c">setLogoDisabled</a>();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="class_clickable_label.html#a67a3af662f3d297e82925a3951578cd0">ClickableLabel</a>(std::shared_ptr&lt;Data&gt; data, <span class="keyword">const</span> QString&amp; i, QString toolTip = <span class="stringliteral">&quot;&quot;</span>, QWidget* parent = <span class="keyword">nullptr</span>, QSize* sizePtr = <span class="keyword">new</span> QSize(0, 0), <span class="keywordtype">bool</span> setSize = <span class="keyword">true</span>, <span class="keywordtype">int</span> thumbnail = 0, <span class="keywordtype">bool</span> square = <span class="keyword">false</span>, <span class="keywordtype">bool</span> force = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>   signals:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> clicked();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> leftClicked();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">void</span> rightClicked();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> shiftLeftClicked();</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">void</span> ctrlLeftClicked();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>   <span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a040d1af68245bbc4989fefe04b9ffdd0">mouseReleaseEvent</a>(QMouseEvent* event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a24e708fc82dec930ef9e35d3591928e6">paintEvent</a>(QPaintEvent* event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>   <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">int</span> border = 0;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">int</span> border_radius = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    QSize* sizePtr;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    QString logoText = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">bool</span> logoVisible = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    QColor logoTextColor = Qt::white;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    QColor logoColor = Qt::red;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    std::string disabled_border_color = Const::Color::LIGHT_GRAY;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    std::string disabled_background_color = Const::Color::LIGHT_GRAY;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::string border_color = Const::Color::TRANSPARENT1;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    std::string hover_border_color = Const::Color::TRANSPARENT1;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::string background_color = Const::Color::TRANSPARENT1;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    std::string hover_background_color = Const::Color::TRANSPARENT1;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::string initial_border_color = Const::Color::TRANSPARENT1;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    std::string initial_hover_border_color = Const::Color::TRANSPARENT1;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    std::string initial_background_color = Const::Color::TRANSPARENT1;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    std::string initial_hover_background_color = Const::Color::TRANSPARENT1;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">void</span> updateStyleSheet();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_clickable_label.html#a95ee7876c78ebc1312e097a404ce0412">setBorder</a>(<span class="keywordtype">int</span> border);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">void</span> setBorderRadius(<span class="keywordtype">int</span> border_radius);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">void</span> setDisabledColor(std::string borderColor, std::string backgroundColor);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">void</span> setDisabledBorderColor(std::string borderColor);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">void</span> setDisabledBackgroundColor(std::string backgroundColor);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">void</span> setInitialBorderColor(std::string borderColor);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">void</span> setInitialHoverBorderColor(std::string hoverBorderColor);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">void</span> setBorderColor(std::string borderColor);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordtype">void</span> setHoverBorderColor(std::string hoverBorderColor);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">void</span> setInitialBackgroundColor(std::string backgroundColor);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">void</span> setInitialHoverBackgroundColor(std::string hoverBackgroundColor);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">void</span> setBackgroundColor(std::string backgroundColor);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">void</span> setHoverBackgroundColor(std::string hoverBackgroundColor);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">void</span> setLogoColor(QColor logoColor);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">void</span> setLogoTextColor(QColor logoTextColor);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">void</span> setLogoVisible(<span class="keywordtype">bool</span> logoVisible);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>};</div>
 </div>
-<div class="ttc" id="aclass_clickable_label_html_a02a40df49210cbb293998332947d04ae"><div class="ttname"><a href="class_clickable_label.html#a02a40df49210cbb293998332947d04ae">ClickableLabel::setInitialBackground</a></div><div class="ttdeci">void setInitialBackground(std::string backgroundColor, std::string hoverBackgroundColor)</div><div class="ttdoc">Set the initial background and hover background color of the label.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:276</div></div>
-<div class="ttc" id="aclass_clickable_label_html_a040d1af68245bbc4989fefe04b9ffdd0"><div class="ttname"><a href="class_clickable_label.html#a040d1af68245bbc4989fefe04b9ffdd0">ClickableLabel::mouseReleaseEvent</a></div><div class="ttdeci">void mouseReleaseEvent(QMouseEvent *event) override</div><div class="ttdoc">Emit the right signal when the label is clicked (left, right, shift left, ctrl left)</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:77</div></div>
-<div class="ttc" id="aclass_clickable_label_html_a24e708fc82dec930ef9e35d3591928e6"><div class="ttname"><a href="class_clickable_label.html#a24e708fc82dec930ef9e35d3591928e6">ClickableLabel::paintEvent</a></div><div class="ttdeci">void paintEvent(QPaintEvent *event) override</div><div class="ttdoc">Paint the label with a logo if it is visible.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:328</div></div>
-<div class="ttc" id="aclass_clickable_label_html_a2f7fa5171a0f7615cbac130b3097395a"><div class="ttname"><a href="class_clickable_label.html#a2f7fa5171a0f7615cbac130b3097395a">ClickableLabel::setInitialBorder</a></div><div class="ttdeci">void setInitialBorder(std::string borderColor, std::string hoverBorderColor)</div><div class="ttdoc">Set the initial border and hover border color of the label.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:239</div></div>
-<div class="ttc" id="aclass_clickable_label_html_a374984a034b9afacb835f05ae92943b3"><div class="ttname"><a href="class_clickable_label.html#a374984a034b9afacb835f05ae92943b3">ClickableLabel::addLogo</a></div><div class="ttdeci">void addLogo(QColor logoColor, QColor logoTextColor)</div><div class="ttdoc">Add a logo to the label.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:359</div></div>
-<div class="ttc" id="aclass_clickable_label_html_a6147edffd39d0efa1f2b532c71022633"><div class="ttname"><a href="class_clickable_label.html#a6147edffd39d0efa1f2b532c71022633">ClickableLabel::resetBackground</a></div><div class="ttdeci">void resetBackground()</div><div class="ttdoc">Set the background color of the label to the initial color.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:299</div></div>
-<div class="ttc" id="aclass_clickable_label_html_a6cd35b4fd9c5ed57e67682ea4a2720a6"><div class="ttname"><a href="class_clickable_label.html#a6cd35b4fd9c5ed57e67682ea4a2720a6">ClickableLabel::setLogoEnabled</a></div><div class="ttdeci">void setLogoEnabled()</div><div class="ttdoc">Set the logo to be enabled (visible)</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:428</div></div>
-<div class="ttc" id="aclass_clickable_label_html_a7b4258a19f8290ef615abf1c41ce9c3c"><div class="ttname"><a href="class_clickable_label.html#a7b4258a19f8290ef615abf1c41ce9c3c">ClickableLabel::setLogoDisabled</a></div><div class="ttdeci">void setLogoDisabled()</div><div class="ttdoc">Set the logo to be disabled (hidden)</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:436</div></div>
-<div class="ttc" id="aclass_clickable_label_html_a95ee7876c78ebc1312e097a404ce0412"><div class="ttname"><a href="class_clickable_label.html#a95ee7876c78ebc1312e097a404ce0412">ClickableLabel::setBorder</a></div><div class="ttdeci">void setBorder(std::string borderColor, std::string hoverBorderColor)</div><div class="ttdoc">Set the border and hover border color of the label.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:257</div></div>
-<div class="ttc" id="aclass_clickable_label_html_aa550596abff263952352227cad6d2d05"><div class="ttname"><a href="class_clickable_label.html#aa550596abff263952352227cad6d2d05">ClickableLabel::setBackground</a></div><div class="ttdeci">void setBackground(std::string backgroundColor, std::string hoverBackgroundColor)</div><div class="ttdoc">Set the background and hover background color of the label.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:290</div></div>
-<div class="ttc" id="aclass_clickable_label_html_ac18f2423fe0aa2fa2c383f14f962c9e1"><div class="ttname"><a href="class_clickable_label.html#ac18f2423fe0aa2fa2c383f14f962c9e1">ClickableLabel::setLogoNumber</a></div><div class="ttdeci">void setLogoNumber(int logoNumber)</div><div class="ttdoc">Set the logo number to display in the logo.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:387</div></div>
-<div class="ttc" id="aclass_clickable_label_html_adb9248ff5d01620fce78d8d30c3723ea"><div class="ttname"><a href="class_clickable_label.html#adb9248ff5d01620fce78d8d30c3723ea">ClickableLabel::ClickableLabel</a></div><div class="ttdeci">ClickableLabel(Data *data, const QString &amp;i, QString toolTip=&quot;&quot;, QWidget *parent=nullptr, QSize *sizePtr=new QSize(0, 0), bool setSize=true, int thumbnail=0, bool square=false, bool force=false)</div><div class="ttdoc">Constructor for ClickableLabel.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:25</div></div>
-<div class="ttc" id="aclass_clickable_label_html_af10c32e0c50c0ab1d27534166c35b3b7"><div class="ttname"><a href="class_clickable_label.html#af10c32e0c50c0ab1d27534166c35b3b7">ClickableLabel::resetBorder</a></div><div class="ttdeci">void resetBorder()</div><div class="ttdoc">Set the border color of the label to the initial color.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:266</div></div>
-<div class="ttc" id="aclass_data_html"><div class="ttname"><a href="class_data.html">Data</a></div><div class="ttdef"><b>Definition</b> Data.hpp:41</div></div>
+<div class="ttc" id="aclass_clickable_label_html_a02a40df49210cbb293998332947d04ae"><div class="ttname"><a href="class_clickable_label.html#a02a40df49210cbb293998332947d04ae">ClickableLabel::setInitialBackground</a></div><div class="ttdeci">void setInitialBackground(std::string backgroundColor, std::string hoverBackgroundColor)</div><div class="ttdoc">Set the initial background and hover background color of the label.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:274</div></div>
+<div class="ttc" id="aclass_clickable_label_html_a040d1af68245bbc4989fefe04b9ffdd0"><div class="ttname"><a href="class_clickable_label.html#a040d1af68245bbc4989fefe04b9ffdd0">ClickableLabel::mouseReleaseEvent</a></div><div class="ttdeci">void mouseReleaseEvent(QMouseEvent *event) override</div><div class="ttdoc">Emit the right signal when the label is clicked (left, right, shift left, ctrl left)</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:75</div></div>
+<div class="ttc" id="aclass_clickable_label_html_a24e708fc82dec930ef9e35d3591928e6"><div class="ttname"><a href="class_clickable_label.html#a24e708fc82dec930ef9e35d3591928e6">ClickableLabel::paintEvent</a></div><div class="ttdeci">void paintEvent(QPaintEvent *event) override</div><div class="ttdoc">Paint the label with a logo if it is visible.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:326</div></div>
+<div class="ttc" id="aclass_clickable_label_html_a2f7fa5171a0f7615cbac130b3097395a"><div class="ttname"><a href="class_clickable_label.html#a2f7fa5171a0f7615cbac130b3097395a">ClickableLabel::setInitialBorder</a></div><div class="ttdeci">void setInitialBorder(std::string borderColor, std::string hoverBorderColor)</div><div class="ttdoc">Set the initial border and hover border color of the label.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:237</div></div>
+<div class="ttc" id="aclass_clickable_label_html_a374984a034b9afacb835f05ae92943b3"><div class="ttname"><a href="class_clickable_label.html#a374984a034b9afacb835f05ae92943b3">ClickableLabel::addLogo</a></div><div class="ttdeci">void addLogo(QColor logoColor, QColor logoTextColor)</div><div class="ttdoc">Add a logo to the label.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:357</div></div>
+<div class="ttc" id="aclass_clickable_label_html_a6147edffd39d0efa1f2b532c71022633"><div class="ttname"><a href="class_clickable_label.html#a6147edffd39d0efa1f2b532c71022633">ClickableLabel::resetBackground</a></div><div class="ttdeci">void resetBackground()</div><div class="ttdoc">Set the background color of the label to the initial color.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:297</div></div>
+<div class="ttc" id="aclass_clickable_label_html_a67a3af662f3d297e82925a3951578cd0"><div class="ttname"><a href="class_clickable_label.html#a67a3af662f3d297e82925a3951578cd0">ClickableLabel::ClickableLabel</a></div><div class="ttdeci">ClickableLabel(std::shared_ptr&lt; Data &gt; data, const QString &amp;i, QString toolTip=&quot;&quot;, QWidget *parent=nullptr, QSize *sizePtr=new QSize(0, 0), bool setSize=true, int thumbnail=0, bool square=false, bool force=false)</div><div class="ttdoc">Constructor for ClickableLabel.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:25</div></div>
+<div class="ttc" id="aclass_clickable_label_html_a6cd35b4fd9c5ed57e67682ea4a2720a6"><div class="ttname"><a href="class_clickable_label.html#a6cd35b4fd9c5ed57e67682ea4a2720a6">ClickableLabel::setLogoEnabled</a></div><div class="ttdeci">void setLogoEnabled()</div><div class="ttdoc">Set the logo to be enabled (visible)</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:426</div></div>
+<div class="ttc" id="aclass_clickable_label_html_a7b4258a19f8290ef615abf1c41ce9c3c"><div class="ttname"><a href="class_clickable_label.html#a7b4258a19f8290ef615abf1c41ce9c3c">ClickableLabel::setLogoDisabled</a></div><div class="ttdeci">void setLogoDisabled()</div><div class="ttdoc">Set the logo to be disabled (hidden)</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:434</div></div>
+<div class="ttc" id="aclass_clickable_label_html_a95ee7876c78ebc1312e097a404ce0412"><div class="ttname"><a href="class_clickable_label.html#a95ee7876c78ebc1312e097a404ce0412">ClickableLabel::setBorder</a></div><div class="ttdeci">void setBorder(std::string borderColor, std::string hoverBorderColor)</div><div class="ttdoc">Set the border and hover border color of the label.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:255</div></div>
+<div class="ttc" id="aclass_clickable_label_html_aa550596abff263952352227cad6d2d05"><div class="ttname"><a href="class_clickable_label.html#aa550596abff263952352227cad6d2d05">ClickableLabel::setBackground</a></div><div class="ttdeci">void setBackground(std::string backgroundColor, std::string hoverBackgroundColor)</div><div class="ttdoc">Set the background and hover background color of the label.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:288</div></div>
+<div class="ttc" id="aclass_clickable_label_html_ac18f2423fe0aa2fa2c383f14f962c9e1"><div class="ttname"><a href="class_clickable_label.html#ac18f2423fe0aa2fa2c383f14f962c9e1">ClickableLabel::setLogoNumber</a></div><div class="ttdeci">void setLogoNumber(int logoNumber)</div><div class="ttdoc">Set the logo number to display in the logo.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:385</div></div>
+<div class="ttc" id="aclass_clickable_label_html_af10c32e0c50c0ab1d27534166c35b3b7"><div class="ttname"><a href="class_clickable_label.html#af10c32e0c50c0ab1d27534166c35b3b7">ClickableLabel::resetBorder</a></div><div class="ttdeci">void resetBorder()</div><div class="ttdoc">Set the border color of the label to the initial color.</div><div class="ttdef"><b>Definition</b> ClickableLabel.cpp:264</div></div>
+<div class="ttc" id="aclass_data_html"><div class="ttname"><a href="class_data.html">Data</a></div><div class="ttdef"><b>Definition</b> Data.hpp:40</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

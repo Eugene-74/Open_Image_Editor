@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['threadmanager_0',['ThreadManager',['../class_thread_manager.html',1,'']]]
+  ['worker_0',['Worker',['../class_worker.html',1,'']]]
 ];

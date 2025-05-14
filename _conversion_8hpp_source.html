@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.6</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -109,37 +109,38 @@ $(function(){initNavTree('_conversion_8hpp_source.html',''); initResizable(true)
 <div class="contents">
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;QDialog&gt;</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// Forward declarations</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">class </span>QComboBox;</div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="foldopen" id="foldopen00007" data-start="{" data-end="};">
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="class_conversion_dialog.html">    7</a></span><span class="keyword">class </span><a class="code hl_function" href="class_conversion_dialog.html#ad6ed831ecfe92f40bd1f5472bf380f5e">ConversionDialog</a> : <span class="keyword">public</span> QDialog {</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    Q_OBJECT</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>   <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <a class="code hl_function" href="class_conversion_dialog.html#ad6ed831ecfe92f40bd1f5472bf380f5e">ConversionDialog</a>(QWidget* parent = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="comment">// : QDialog(parent);</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    QString <a class="code hl_function" href="class_conversion_dialog.html#a58f302f310eec4e2dbf326e183471f5c">getSelectedFormat</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    QComboBox* comboBox;</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>   <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>};</div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;QProgressDialog&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// Forward declarations</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">class </span>QComboBox;</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="};">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="class_conversion_dialog.html">    8</a></span><span class="keyword">class </span><a class="code hl_function" href="class_conversion_dialog.html#ad6ed831ecfe92f40bd1f5472bf380f5e">ConversionDialog</a> : <span class="keyword">public</span> QDialog {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    Q_OBJECT</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>   <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <a class="code hl_function" href="class_conversion_dialog.html#ad6ed831ecfe92f40bd1f5472bf380f5e">ConversionDialog</a>(QWidget* parent = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="comment">// : QDialog(parent);</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    QString <a class="code hl_function" href="class_conversion_dialog.html#a58f302f310eec4e2dbf326e183471f5c">getSelectedFormat</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    QComboBox* comboBox;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>   <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
 </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keywordtype">void</span> launchConversionDialogAndConvert(<span class="keyword">const</span> QString&amp; inputImagePath);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>QString launchConversionDialog();</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keywordtype">void</span> convertion(<span class="keyword">const</span> QString&amp; inputImagePath, <span class="keyword">const</span> QString&amp; selectedFormat);</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keywordtype">bool</span> convertImageWithMetadata(<span class="keyword">const</span> std::string&amp; inputPath, <span class="keyword">const</span> std::string&amp; outputPath);</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>QImage readHeicAndHeif(<span class="keyword">const</span> std::string&amp; filePath);</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keywordtype">bool</span> writeHeicAndHeif(<span class="keyword">const</span> QImage&amp; image, <span class="keyword">const</span> std::string&amp; imagePath);</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>QImage readRaw(<span class="keyword">const</span> std::string&amp; filePath);</div>
-<div class="ttc" id="aclass_conversion_dialog_html_a58f302f310eec4e2dbf326e183471f5c"><div class="ttname"><a href="class_conversion_dialog.html#a58f302f310eec4e2dbf326e183471f5c">ConversionDialog::getSelectedFormat</a></div><div class="ttdeci">QString getSelectedFormat() const</div><div class="ttdoc">Get the selected format from the dialog.</div><div class="ttdef"><b>Definition</b> Conversion.cpp:310</div></div>
-<div class="ttc" id="aclass_conversion_dialog_html_ad6ed831ecfe92f40bd1f5472bf380f5e"><div class="ttname"><a href="class_conversion_dialog.html#ad6ed831ecfe92f40bd1f5472bf380f5e">ConversionDialog::ConversionDialog</a></div><div class="ttdeci">ConversionDialog(QWidget *parent=nullptr)</div><div class="ttdoc">Dialog to choose the output file type and convert the image.</div><div class="ttdef"><b>Definition</b> Conversion.cpp:30</div></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keywordtype">void</span> launchConversionDialogAndConvert(<span class="keyword">const</span> QString&amp; inputImagePath);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>QString launchConversionDialog();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keywordtype">void</span> convertion(<span class="keyword">const</span> QString&amp; inputImagePath, <span class="keyword">const</span> QString&amp; selectedFormat, QProgressDialog* progressDialog = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keywordtype">bool</span> convertImageWithMetadata(<span class="keyword">const</span> std::string&amp; inputPath, <span class="keyword">const</span> std::string&amp; outputPath, QProgressDialog* progressDialog = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>QImage readHeicAndHeif(<span class="keyword">const</span> std::string&amp; filePath);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keywordtype">bool</span> writeHeicAndHeif(<span class="keyword">const</span> QImage&amp; image, <span class="keyword">const</span> std::string&amp; imagePath);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>QImage readRaw(<span class="keyword">const</span> std::string&amp; filePath);</div>
+<div class="ttc" id="aclass_conversion_dialog_html_a58f302f310eec4e2dbf326e183471f5c"><div class="ttname"><a href="class_conversion_dialog.html#a58f302f310eec4e2dbf326e183471f5c">ConversionDialog::getSelectedFormat</a></div><div class="ttdeci">QString getSelectedFormat() const</div><div class="ttdoc">Get the selected format from the dialog.</div><div class="ttdef"><b>Definition</b> Conversion.cpp:339</div></div>
+<div class="ttc" id="aclass_conversion_dialog_html_ad6ed831ecfe92f40bd1f5472bf380f5e"><div class="ttname"><a href="class_conversion_dialog.html#ad6ed831ecfe92f40bd1f5472bf380f5e">ConversionDialog::ConversionDialog</a></div><div class="ttdeci">ConversionDialog(QWidget *parent=nullptr)</div><div class="ttdoc">Dialog to choose the output file type and convert the image.</div><div class="ttdef"><b>Definition</b> Conversion.cpp:33</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

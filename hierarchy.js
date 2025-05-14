@@ -1,10 +1,11 @@
 var hierarchy =
 [
     [ "Actions", "class_actions.html", null ],
-    [ "Const", "class_const.html", null ],
-    [ "Data", "class_data.html", null ],
     [ "DetectedObjects", "class_detected_objects.html", null ],
     [ "DetectObjectsModel", "class_detect_objects_model.html", null ],
+    [ "std::enable_shared_from_this", null, [
+      [ "Data", "class_data.html", null ]
+    ] ],
     [ "fileSelector", "classfile_selector.html", null ],
     [ "Folders", "class_folders.html", null ],
     [ "ImageData", "class_image_data.html", null ],
@@ -14,9 +15,9 @@ var hierarchy =
     [ "Sizes::MainWindowSizes", "class_sizes_1_1_main_window_sizes.html", null ],
     [ "MetaData", "class_meta_data.html", null ],
     [ "Option", "class_option.html", null ],
-    [ "Const::Orientation", "class_const_1_1_orientation.html", null ],
     [ "QDialog", null, [
-      [ "ConversionDialog", "class_conversion_dialog.html", null ]
+      [ "ConversionDialog", "class_conversion_dialog.html", null ],
+      [ "MapWidget", "class_map_widget.html", null ]
     ] ],
     [ "QImageAndPath", "class_q_image_and_path.html", null ],
     [ "QLabel", null, [
@@ -35,6 +36,7 @@ var hierarchy =
     [ "QRunnable", null, [
       [ "Worker", "class_worker.html", null ]
     ] ],
-    [ "Const::Rotation", "class_const_1_1_rotation.html", null ],
-    [ "Sizes", "class_sizes.html", null ]
+    [ "Sizes", "class_sizes.html", null ],
+    [ "checkForMissingTranslation.TranslationEditor", "classcheck_for_missing_translation_1_1_translation_editor.html", null ],
+    [ "TranslationManager", "class_translation_manager.html", null ]
 ];
