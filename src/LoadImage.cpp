@@ -127,49 +127,6 @@ bool startLoadingImagesFromFolder(QWidget* parent, std::shared_ptr<Data> data, c
         return false;
     }
 
-    if (QMessageBox::question(parent, "Pre-detection", "Do you want to perform object pre-detection on all images?") == QMessageBox::Yes) {
-        progressDialog.setLabelText("Detecting objects in images...");
-        progressDialog.setValue(0);
-        progressDialog.setMaximum(data->getImagesData()->get()->size());
-        progressDialog.show();
-        QApplication::processEvents();
-
-        int detectedImages = 0;
-        int batchSize = IMAGE_PER_THREAD;
-        int totalImages = data->getImagesData()->get()->size();
-
-        for (int start = 0; start < totalImages; start += batchSize) {
-            int end = std::min(start + batchSize, totalImages);
-
-            data->addHeavyThread([start, end, data, &detectedImages]() {
-                for (int i = start; i < end; ++i) {
-                    ImageData* imageData = data->getImagesData()->get()->at(i);
-                    if (imageData->isDetectionStatusNotLoaded()) {
-                        // QImage qImage(QString::fromStdString(imageData->getImagePath()));
-                        QImage qImage = data->loadImageNormal(nullptr, imageData->getImagePath(), QSize(0, 0), false);
-                        qImage = data->rotateQImage(qImage, imageData);
-
-                        DetectedObjects* detectedObjects = data->detect(imageData->getImagePath(), qImage, data->getModelConst().getModelName());
-                        if (detectedObjects) {
-                            imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
-                            imageData->setDetectionStatusLoaded();
-                        } else {
-                            imageData->setDetectionStatusNotLoaded();
-                        }
-                    }
-                    detectedImages++;
-                }
-            });
-        }
-        while (QThreadPool::globalInstance()->activeThreadCount() > 0) {
-            progressDialog.setValue(detectedImages);
-            QCoreApplication::processEvents();
-            if (progressDialog.wasCanceled()) {
-                break;
-            }
-        }
-    }
-
     return true;
 }
 
