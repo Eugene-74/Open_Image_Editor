@@ -86,7 +86,6 @@ void Data::revocerDeletedImage(int imageNbr) {
  */
 void Data::removeDeletedImages() {
     for (const auto& deletedImage : *deletedImagesData.get()) {
-        // TODO faire sans mais ça marche pas ...
         ImageData* imageData = getImagesData()->getImageData(deletedImage->getImagePath());
 
         removeImageFromFolders(*imageData);
@@ -1022,7 +1021,7 @@ void Data::sortCurrentImagesData() {
     progressDialog.setLabelText("Sorting ...");
     progressDialog.setValue(0);
     int n = imagesData.getCurrent()->size();
-    // TODO mieux estimer X( estimatedSteps
+
     int estimatedSteps = static_cast<int>(n * std::log(n) * 3);
     progressDialog.setMaximum(estimatedSteps);
     progressDialog.hide();
@@ -1212,7 +1211,6 @@ void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
  */
 void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
     ImageData* imageData = imagesData.getImageData(nbr);
-    // TODO faire sans mais ça marche pas ...
     imageData = getImagesData()->getImageData(imageData->getImagePath());
 
     if (!isTurnable(imageData->getImagePath())) {
