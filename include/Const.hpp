@@ -63,6 +63,12 @@ const std::map<std::string, Option> DEFAULT_OPTIONS = {
     {"Sizes::imageBooth::ImagesPerLine", Option("text", "10")}};
 
 namespace Const {
+const int MAX_WORKING_THUMBNAIL = 100;
+const int MAX_WORKING_DETECTION = 100;
+
+const int WORKING_THUMBNAIL_TIME = 1000;
+const int WORKING_DETECTION_TIME = 10000;
+
 namespace Orientation {
 static const int UNDEFINED = 0;
 static const int NORMAL = 1;

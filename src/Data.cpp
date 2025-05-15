@@ -2033,16 +2033,13 @@ void Data::checkDetectObjects() {
         }
     }
     QObject::connect(detectObjectTimer, &QTimer::timeout, [this]() {
-        // qInfo() << "Executing periodic task bis ..." << detectionWorking << " to do : " << hasNotBeenDetected.size();
         if (hasNotBeenDetected.size() == 0) {
             detectObjectTimer->stop();
             qInfo() << "all detection done";
             return;
         }
-        // TODO mettre en parametre
-        while (detectionWorking < 100) {
+        while (detectionWorking < Const::MAX_WORKING_DETECTION) {
             detectionWorking++;
-            // qInfo() << "launching detection ...";
             ImageData* imageData = hasNotBeenDetected.front();
             addHeavyThread([this, imageData]() {
                 if (imageData) {
@@ -2059,7 +2056,6 @@ void Data::checkDetectObjects() {
                         imageData->setDetectionStatusNotLoaded();
                     }
                     unloadFromCache(imagePath);
-                    // qDebug() << "PRE Detection done for image: " << QString::fromStdString(imagePath);
                     detectionWorking--;
                 }
             });
@@ -2076,8 +2072,8 @@ void Data::checkDetectObjects() {
             }
         }
     });
-    detectObjectTimer->start(10000);
-    detectObjectTimer->setInterval(10000);
+    detectObjectTimer->start(Const::WORKING_DETECTION_TIME);
+    detectObjectTimer->setInterval(Const::WORKING_DETECTION_TIME);
 }
 
 /**
@@ -2099,20 +2095,15 @@ void Data::checkThumbnailAndDetectObjects() {
         }
     }
     QObject::connect(thumbnailTimer, &QTimer::timeout, [this]() {
-        // qInfo() << "Executing periodic task..." << thumbnailWorking << " to do : " << hasNoThumbnail.size();
         if (hasNoThumbnail.size() == 0) {
-            // qInfo() << "all created ...";
-
             thumbnailTimer->stop();
 
             qInfo() << "all thumbnails created";
             checkDetectObjects();
             return;
         }
-        // TODO mettre en parametre
-        while (thumbnailWorking < 100) {
+        while (thumbnailWorking < Const::MAX_WORKING_THUMBNAIL) {
             thumbnailWorking++;
-            // qInfo() << "creating thumbnail ...";
 
             createAllThumbnailsAsync(hasNoThumbnail.front(), [this](bool done) { thumbnailWorking--; }, false);
 
@@ -2130,6 +2121,6 @@ void Data::checkThumbnailAndDetectObjects() {
             }
         }
     });
-    thumbnailTimer->start(1000);
-    thumbnailTimer->setInterval(1000);
+    thumbnailTimer->start(Const::WORKING_THUMBNAIL_TIME);
+    thumbnailTimer->setInterval(Const::WORKING_THUMBNAIL_TIME);
 }
