@@ -75,7 +75,7 @@ class InitialWindow : public QMainWindow {
     void closeEvent(QCloseEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
    signals:
-    void resize();
+    void reload();
 };
 
 bool isDarkMode();

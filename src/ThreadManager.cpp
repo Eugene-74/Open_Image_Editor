@@ -224,13 +224,6 @@ void ThreadManager::startJob(std::function<void()> job) {
         if (activeThreads >= maxThreads) {
             qWarning() << "Cannot start job. Active threads: " << activeThreads << ", Max threads: " << maxThreads;
 
-            // TODO fait crash (je crois)
-            // {
-            //     std::lock_guard<std::mutex> lock(taskQueueMutex);
-
-            //     taskQueue.push_back(std::move(job));
-            // }
-
             return;
         }
 

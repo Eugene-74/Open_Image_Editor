@@ -874,46 +874,49 @@ ClickableLabel* ImageEditor::createImagePersons() {
             const std::string modelName = selectedModel.split(" - ").first().toStdString();
             data->getModelPtr()->setModelName(modelName);
 
-            // TODO cree un thread pour telechargement puis detection pour eviter que ca bug
-            QThread* downloadThread = new QThread();
-            QObject* worker = new QObject();
-
-            connect(downloadThread, &QThread::started, [=]() {
-                bool result = downloadModelIfNotExists(modelName + ".onnx");
-                if (result) {
-                    qDebug() << "Model downloaded:" << modelName;
-                } else {
-                    qWarning() << "Failed to download model:" << modelName;
-                }
-                downloadThread->quit();  // Quitter le thread une fois terminé
-            });
-
-            connect(downloadThread, &QThread::finished, downloadThread, &QThread::deleteLater);
-            connect(downloadThread, &QThread::finished, worker, &QObject::deleteLater);
-
-            downloadThread->start();
-
-            // Garder l'interface utilisateur réactive pendant le téléchargement
-            while (downloadThread->isRunning()) {
-                QApplication::processEvents();
-            }
-
-            qDebug() << "Model downloaded:" << modelName;
-
             ImageData* imageData = data->imagesData.getCurrentImageData();
-            if (imageData) {
-                // QImage qImage(QString::fromStdString(imageData->getImagePath()));
-                QImage qImage = data->loadImageNormal(nullptr, imageData->getImagePath(), QSize(0, 0), false);
-                qImage = data->rotateQImage(qImage, imageData);
+            int imageNbr = data->imagesData.getImageNumber();
+            QImage image = data->loadImageNormal(nullptr, data->imagesData.getCurrentImageData()->getImagePath(), QSize(0, 0), false);
+            image = data->rotateQImage(image, imageData);
+            std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
 
-                DetectedObjects* detectedObjects = data->detect(imageData->getImagePath(), qImage, data->getModelConst().getModelName());
-                if (detectedObjects) {
-                    imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
-                }
-                qInfo() << "Object detection re-run with model:" << QString::fromStdString(data->getModelConst().getModelName());
-            }
+            QPointer<ImageEditor> self = this;
+            detectObjectsAsync(data, currentImagePath, image, [self, imageNbr, currentImagePath](DetectedObjects detectedObject) {
+                if (!self.isNull()) {
+                    ImageData* imageData = self->data->getImagesData()->getImageData(currentImagePath);
 
-            reload();
+                    if (imageData) {
+                        imageData->setDetectedObjects(detectedObject.getDetectedObjects());
+                        imageData->setDetectionStatusLoaded();
+                    }
+                    if (self->data->imagesData.getImageNumber() == imageNbr) {
+                        if (self->imagePersons) {
+                            self->imagePersons->setLogoNumber(detectedObject.getDetectedObjects()["person"].size());
+
+                            self->imagePersons->update();
+
+                            if (self->imageLabel) {
+                                self->imageLabel->update();
+                            }
+                        }
+                    }
+                } }, true);
+            // data->addHeavyThread([=]() {
+            //     ImageData* imageData = data->imagesData.getCurrentImageData();
+            //     if (imageData) {
+            //         // QImage qImage(QString::fromStdString(imageData->getImagePath()));
+            //         QImage qImage = data->loadImageNormal(nullptr, imageData->getImagePath(), QSize(0, 0), false);
+            //         qImage = data->rotateQImage(qImage, imageData);
+
+            //         DetectedObjects* detectedObjects = data->detect(imageData->getImagePath(), qImage, data->getModelConst().getModelName());
+            //         if (detectedObjects) {
+            //             imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
+            //         }
+            //         qInfo() << "Object detection re-run with model:" << QString::fromStdString(data->getModelConst().getModelName());
+            //     }
+
+            //     QMetaObject::invokeMethod(this, [this]() { reload(); }, Qt::QueuedConnection);
+            // });
         }
     });
 
@@ -1614,7 +1617,10 @@ bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
     return QMainWindow::eventFilter(obj, event);
 }
 
-// TODO doc
+/**
+ * @brief Create a MapWidget for displaying the map
+ * @return A pointer to the MapWidget object
+ */
 MapWidget* ImageEditor::createMapWidget() {
     ImageData* imageData = data.get()->getImagesData()->getCurrentImageData();
 

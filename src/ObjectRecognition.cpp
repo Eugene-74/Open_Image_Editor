@@ -111,8 +111,8 @@ QImage CvMatToQImage(const cv::Mat& inImage) {
  * @param callback Callback function to call after detection
  * @details This function runs the detection in a separate thread and calls the callback with the detected objects
  */
-void detectObjectsAsync(std::shared_ptr<Data> data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback) {
-    data->addHeavyThreadToFront([data, imagePath, image, callback]() {
+void detectObjectsAsync(std::shared_ptr<Data> data, std::string imagePath, QImage image, std::function<void(DetectedObjects)> callback, bool toFront) {
+    auto detectionTask = [data, imagePath, image, callback]() {
         std::string modelName = data->getModelConst().getModelName();
         DetectedObjects* detectedObjects = data->detect(imagePath, image, modelName);
         if (detectedObjects) {
@@ -122,7 +122,12 @@ void detectObjectsAsync(std::shared_ptr<Data> data, std::string imagePath, QImag
                 qCritical() << e.what();
             }
         }
-    });
+    };
+    if (toFront) {
+        data->addHeavyThreadToFront(detectionTask);
+    } else {
+        data->addHeavyThread(detectionTask);
+    }
 }
 
 /**

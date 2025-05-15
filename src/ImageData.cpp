@@ -250,14 +250,11 @@ void ImageData::loadData() {
                     double min = parseFraction(minutes);
                     double sec = parseFraction(seconds);
 
-                    // Calculer la valeur finale en degrés décimaux
                     return deg + (min / 60.0) + (sec / 3600.0);
                 };
 
                 latitude = convertGpsCoordinate(exifData["Exif.GPSInfo.GPSLatitude"].toString());
                 longitude = convertGpsCoordinate(exifData["Exif.GPSInfo.GPSLongitude"].toString());
-                // qInfo() << "Latitude:" << latitude
-                //         << "Longitude:" << longitude;
             } else {
                 qWarning() << "GPS data not found in metadata.";
             }

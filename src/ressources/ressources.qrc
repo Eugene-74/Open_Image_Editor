@@ -125,5 +125,6 @@
     <qresource prefix="">
         <file>translations/en.csv</file>
         <file>translations/fr.csv</file>
+        <file>translations/es.csv</file>
     </qresource>
 </RCC>

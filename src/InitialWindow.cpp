@@ -40,10 +40,10 @@ InitialWindow::InitialWindow() {
     resizeTimer->setInterval(TIME_BEFORE_REZISE);
     resizeTimer->setSingleShot(true);
     connect(resizeTimer, &QTimer::timeout, this, [this]() {
-        emit resize();
+        emit reload();
     });
 
-    connect(this, &InitialWindow::resize, this, [this]() {
+    connect(this, &InitialWindow::reload, this, [this]() {
         if (imageEditor) {
             data->sizes->update();
             clearImageEditor();
@@ -117,7 +117,8 @@ InitialWindow::InitialWindow() {
 
         QLabel* centerText = new QLabel(Text::welcome(), this);
         centerText->setAlignment(Qt::AlignCenter);
-        connect(this, &InitialWindow::resize, centerText, [this, centerText]() {
+        connect(this, &InitialWindow::reload, centerText, [this, centerText]() {
+            centerText->setText(Text::welcome());
             QFont font = centerText->font();
             font.setPointSize(data.get()->sizes->fontSize);
             centerText->setFont(font);
@@ -498,7 +499,6 @@ void InitialWindow::showMainWindow() {
  * @return ClickableLabel* Pointer to the created ClickableLabel object
  */
 ClickableLabel* InitialWindow::createImageLanguage() {
-    // TODO change with language
     QString language = QString::fromStdString(data->getOptionsConst().at("Language").getValueConst());
     Text::translationManager.setLanguage(language.toStdString());
 
@@ -520,7 +520,7 @@ ClickableLabel* InitialWindow::createImageLanguage() {
         openOption();
     });
 
-    connect(this, &InitialWindow::resize, newImageLanguage, [this]() {
+    connect(this, &InitialWindow::reload, newImageLanguage, [this]() {
         ClickableLabel* newImageLanguage = createImageLanguage();
         languageLayout->replaceWidget(imageLanguage, newImageLanguage);
         imageLanguage->deleteLater();
@@ -534,7 +534,7 @@ ClickableLabel* InitialWindow::createImageLanguage() {
  * @brief Create the Discord image label
  * @return ClickableLabel* Pointer to the created ClickableLabel object
  * @details This function creates a clickable label to open the Discord server link.
- * @details It also sets up a signal to handle the resize event and update the label accordingly.
+ * @details It also sets up a signal to handle the reload event and update the label accordingly.
  */
 ClickableLabel* InitialWindow::createImageDiscord() {
     ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Text::Tooltip::discord(), this, linkButton, false, 0, true);
@@ -544,7 +544,7 @@ ClickableLabel* InitialWindow::createImageDiscord() {
         QDesktopServices::openUrl(QUrl("https://discord.gg/Q2HhZucmxU"));
     });
 
-    connect(this, &InitialWindow::resize, newImageDiscord, [this]() {
+    connect(this, &InitialWindow::reload, newImageDiscord, [this]() {
         ClickableLabel* newImageDiscord = createImageDiscord();
         linkLayout->replaceWidget(imageDiscord, newImageDiscord);
         imageDiscord->deleteLater();
@@ -558,7 +558,7 @@ ClickableLabel* InitialWindow::createImageDiscord() {
  * @brief Create the GitHub image label
  * @return ClickableLabel* Pointer to the created ClickableLabel object
  * @details This function creates a clickable label to open the GitHub repository link.
- * @details It also sets up a signal to handle the resize event and update the label accordingly.
+ * @details It also sets up a signal to handle the reload event and update the label accordingly.
  */
 ClickableLabel* InitialWindow::createImageGithub() {
     ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Text::Tooltip::github(), this, linkButton, false, 0, true);
@@ -568,7 +568,7 @@ ClickableLabel* InitialWindow::createImageGithub() {
         QDesktopServices::openUrl(QUrl("https://github.com/Eugene-74/Open_Image_Editor"));
     });
 
-    connect(this, &InitialWindow::resize, newImageGithub, [this]() {
+    connect(this, &InitialWindow::reload, newImageGithub, [this]() {
         ClickableLabel* newImageGithub = createImageGithub();
         linkLayout->replaceWidget(imageGithub, newImageGithub);
         imageGithub->deleteLater();
@@ -585,7 +585,7 @@ ClickableLabel* InitialWindow::createImageOption() {
         openOption();
     });
 
-    connect(this, &InitialWindow::resize, newImageOption, [this]() {
+    connect(this, &InitialWindow::reload, newImageOption, [this]() {
         ClickableLabel* newnewImageOption = createImageOption();
         linkLayout->replaceWidget(imageOption, newnewImageOption);
         imageOption->deleteLater();
@@ -612,7 +612,7 @@ void InitialWindow::openOption() {
 
     Text::translationManager.setLanguage(data->getOptionsConst().at("Language").getValueConst());
 
-    emit resize();
+    emit reload();
 }
 
 /**
