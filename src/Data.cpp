@@ -1061,13 +1061,14 @@ void Data::clearCache() {
  * @param action Set if the action should be added to the undo stack
  */
 void Data::rotateLeft(int nbr, std::string extension, std::function<void()> reload, bool action) {
+    // nbr = nbrInTotal
     if (isExif(extension)) {
         exifRotate(nbr, Const::Rotation::LEFT, reload);
         if (action) {
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1078,7 +1079,7 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1094,7 +1095,7 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1105,7 +1106,7 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1126,6 +1127,8 @@ void Data::rotateLeft(int nbr, std::string extension, std::function<void()> relo
  * @param action Set if the action should be added to the undo stack
  */
 void Data::rotateRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
+    // nbr = nbrInTotal
+
     if (isExif(extension)) {
         exifRotate(nbr, Const::Rotation::RIGHT, reload);
 
@@ -1133,7 +1136,7 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1144,7 +1147,7 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1160,7 +1163,7 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1171,7 +1174,7 @@ void Data::rotateRight(int nbr, std::string extension, std::function<void()> rel
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1295,6 +1298,7 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
  * @param action Set if the action should be added to the undo stack
  */
 void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> reload, bool action) {
+    // nbr = nbrInTotal
     if (isExif(extension)) {
         exifMirror(nbr, true, reload);
 
@@ -1302,7 +1306,7 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1313,7 +1317,7 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1330,7 +1334,7 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1341,7 +1345,7 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1363,6 +1367,8 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
  * @param action Set if the action should be added to the undo stack
  */
 void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()> reload, bool action) {
+    // nbr = nbrInTotal
+
     if (isExif(extension)) {
         exifMirror(nbr, false, reload);
 
@@ -1370,7 +1376,7 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1381,7 +1387,7 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1397,7 +1403,7 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
             addAction(
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1408,7 +1414,7 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
                 },
                 [this, nbr, reload]() {
                     int time = 0;
-                    if (imagesData.getImageNumber() != nbr) {
+                    if (imagesData.getImageNumberInTotal() != nbr) {
                         imagesData.setImageNumber(nbr);
                         reload();
                         time = TIME_UNDO_VISUALISATION;
@@ -1609,6 +1615,7 @@ void Data::removeImageFromFolders(ImageData& imageData) {
  * @return The absolute path of the folder
  */
 std::string Data::getFolderPath(Folders* folder) {
+    // TODO  deplacer dans FOLDERS
     if (folder == &rootFolders) {
         return "/";
     }

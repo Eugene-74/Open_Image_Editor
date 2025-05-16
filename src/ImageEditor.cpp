@@ -1306,7 +1306,7 @@ void ImageEditor::deleteImage() {
         data->addAction(
             [this, nbrInTotal, saved]() {
                 int time = 0;
-                if (data->getImagesData()->getImageNumber() != nbrInTotal) {
+                if (data->getImagesData()->getImageNumberInTotal() != nbrInTotal) {
                     data->getImagesData()->setImageNumber(nbrInTotal);
                     reload();
                     time = TIME_UNDO_VISUALISATION;
@@ -1321,7 +1321,7 @@ void ImageEditor::deleteImage() {
             },
             [this, nbrInTotal]() {
                 int time = 0;
-                if (data->getImagesData()->getImageNumber() != nbrInTotal) {
+                if (data->getImagesData()->getImageNumberInTotal() != nbrInTotal) {
                     data->getImagesData()->setImageNumber(nbrInTotal);
                     reload();
                     time = TIME_UNDO_VISUALISATION;
@@ -1338,7 +1338,7 @@ void ImageEditor::deleteImage() {
         data->addAction(
             [this, nbrInTotal, saved]() {
                 int time = 0;
-                if (data->getImagesData()->getImageNumber() != nbrInTotal) {
+                if (data->getImagesData()->getImageNumberInTotal() != nbrInTotal) {
                     data->getImagesData()->setImageNumber(nbrInTotal);
                     reload();
                     time = TIME_UNDO_VISUALISATION;
@@ -1353,7 +1353,7 @@ void ImageEditor::deleteImage() {
             },
             [this, nbrInTotal]() {
                 int time = 0;
-                if (data->getImagesData()->getImageNumber() != nbrInTotal) {
+                if (data->getImagesData()->getImageNumberInTotal() != nbrInTotal) {
                     data->getImagesData()->setImageNumber(nbrInTotal);
                     reload();
                     time = TIME_UNDO_VISUALISATION;

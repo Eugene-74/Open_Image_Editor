@@ -123,9 +123,8 @@ ImageBooth::ImageBooth(std::shared_ptr<Data> dat, QWidget* parent)
 
     connect(scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, this, &ImageBooth::onScroll);
 
-    // TODO marche pas bien
     QTimer::singleShot(100, this, [this]() {
-        qInfo() << "go to image";
+        // wait because else it doesn't work
         gotToImage(data->imagesData.getImageNumber(), true);
     });
 }
@@ -139,8 +138,13 @@ void ImageBooth::openFolder(int index) {
 
     if (data->getCurrentFolders()->getFolders()->size() > index || index == -2) {
         if (index == -2) {
+            if (data->getFolderPath(data.get()->getCurrentFolders()) == data->getFolderPath(data->findFirstFolderWithAllImages())) {
+                switchToMainWindow();
+                return;
+            }
+
             if (data->getCurrentFolders()->getParent() == nullptr) {
-                qCritical() << "Error : getCurrentFolders parent is null";
+                switchToMainWindow();
             }
             data->currentFolder = data->getCurrentFolders()->getParent();
         } else {
@@ -184,8 +188,7 @@ void ImageBooth::openFolder(int index) {
 
     data->addAction(
         [this, index]() {
-            // TODO adapter ne permet pas de faire autre chose que remonter dans les dossier
-            openFolder(index);
+            openFolder(-2);
         },
         [this, index]() {
             openFolder(index);
@@ -497,7 +500,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
  * @param force Force the update even if the image is already visible
  */
 void ImageBooth::gotToImage(int imageNumberInCurrent, bool force) {
-    qInfo() << "gotToImage : " << imageNumberInCurrent;
     int imageLine = imageNumberInCurrent / data->sizes->imagesBoothSizes->widthImageNumber;
     int spacerHeight = imageLine * data->sizes->imagesBoothSizes->realImageSize.height();
 
