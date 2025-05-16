@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include "Const.hpp"
+#include "GPS_Conversion.hpp"
 #include "Verification.hpp"
 
 namespace fs = std::filesystem;
@@ -222,39 +223,11 @@ void ImageData::loadData() {
             setOrientation(metaData.getImageOrientation());
             setDate(metaData.getTimestamp());
 
-            // TODO add get set
             auto exifData = metaData.getExifData();
-            if (exifData.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSLatitude")) != exifData.end() &&
-                exifData.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSLongitude")) != exifData.end()) {
-                auto convertGpsCoordinate = [](const std::string& coordinate) -> double {
-                    std::istringstream iss(coordinate);
-                    std::string degrees, minutes, seconds;
-
-                    // Lire les parties de la chaîne (degrés, minutes, secondes)
-                    std::getline(iss, degrees, ' ');
-                    std::getline(iss, minutes, ' ');
-                    std::getline(iss, seconds, ' ');
-
-                    // Convertir chaque partie en double
-                    auto parseFraction = [](const std::string& fraction) -> double {
-                        size_t slashPos = fraction.find('/');
-                        if (slashPos != std::string::npos) {
-                            double numerator = std::stod(fraction.substr(0, slashPos));
-                            double denominator = std::stod(fraction.substr(slashPos + 1));
-                            return numerator / denominator;
-                        }
-                        return std::stod(fraction);
-                    };
-
-                    double deg = parseFraction(degrees);
-                    double min = parseFraction(minutes);
-                    double sec = parseFraction(seconds);
-
-                    return deg + (min / 60.0) + (sec / 3600.0);
-                };
-
-                latitude = convertGpsCoordinate(exifData["Exif.GPSInfo.GPSLatitude"].toString());
-                longitude = convertGpsCoordinate(exifData["Exif.GPSInfo.GPSLongitude"].toString());
+            if (metaData.getLatitude() != -1 &&
+                metaData.getLongitude() != -1) {
+                latitude = convertGpsCoordinateToDecimal(exifData["Exif.GPSInfo.GPSLatitude"].toString());
+                longitude = convertGpsCoordinateToDecimal(exifData["Exif.GPSInfo.GPSLongitude"].toString());
             } else {
                 qWarning() << "GPS data not found in metadata.";
             }

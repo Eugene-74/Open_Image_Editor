@@ -67,7 +67,6 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     nameAndDateWidget->setLayout(nameAndDateLayout);
     nameAndDateWidget->setFixedWidth(fixedFrame->width());
 
-    // TODO faire miex que "     "
     QLabel* nameLabel = new QLabel(Text::name() + " : ", this);
     nameEdit = new QLabel("", this);
     dateEdit = new QDateTimeEdit(this);
