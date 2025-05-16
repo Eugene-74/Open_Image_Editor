@@ -1188,7 +1188,6 @@ ClickableLabel* ImageBooth::createEditFilters() {
     connect(editFiltersNew, &ClickableLabel::clicked, [this]() {
         openFiltersPopup();
         switchToImageBooth();
-        // TODO update the window
     });
 
     return editFiltersNew;
