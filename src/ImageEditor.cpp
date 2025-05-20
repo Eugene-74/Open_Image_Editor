@@ -1072,15 +1072,14 @@ void ImageEditor::reloadImageLabel() {
  * @param event The key event to handle
  */
 void ImageEditor::keyPressEvent(QKeyEvent* event) {
-    if (dateEdit->hasFocus()) {
-        return;
-    }
-
     switch (event->key()) {
         case Qt::Key_Left:
             if (event->modifiers() & Qt::ControlModifier) {
                 imageRotateLeft->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             } else {
+                if (dateEdit->hasFocus()) {
+                    return;
+                }
                 buttonImageBefore->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             }
             break;
@@ -1092,6 +1091,9 @@ void ImageEditor::keyPressEvent(QKeyEvent* event) {
             if (event->modifiers() & Qt::ControlModifier) {
                 imageRotateRight->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             } else {
+                if (dateEdit->hasFocus()) {
+                    return;
+                }
                 buttonImageNext->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
             }
             break;
@@ -1152,6 +1154,9 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
                 data->getImagesData()->setImageNumber(data->imagesData.get()->size() - 1);
                 reload();
             } else {
+                if (dateEdit->hasFocus()) {
+                    return;
+                }
                 buttonImageBefore->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
                 previousImage();
             }
@@ -1170,6 +1175,9 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
                 data->getImagesData()->setImageNumber(data->imagesData.get()->size() - 1);
                 reload();
             } else {
+                if (dateEdit->hasFocus()) {
+                    return;
+                }
                 buttonImageNext->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
                 nextImage();
             }
@@ -1603,13 +1611,11 @@ void ImageEditor::enterEvent(QEnterEvent* event) {
  */
 bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::MouseButtonPress) {
-        if (mapEditor && !bigImage) {
-            if (dateEdit->hasFocus()) {
-                QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-                if (!dateEdit->geometry().contains(mouseEvent->pos())) {
-                    dateEdit->clearFocus();
-                    this->setFocus();
-                }
+        if (dateEdit->hasFocus()) {
+            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+            if (!dateEdit->geometry().contains(mouseEvent->pos())) {
+                dateEdit->clearFocus();
+                this->setFocus();
             }
         }
     }

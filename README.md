@@ -44,13 +44,12 @@ pacman -S mingw-w64-x86_64-curl
 
 pacman -S mingw-w64-x86_64-jsoncpp
 
-pacman -S mingw-w64-x86_64-dlib
+```
 
+For the tests you will need an aditional library :
+
+```
 pacman -S mingw-w64-x86_64-gtest
-
-pacman -S mingw-w64-x86_64-ccache
-
-
 ```
 
 When all in well installed just launch scripts\compile.bat
