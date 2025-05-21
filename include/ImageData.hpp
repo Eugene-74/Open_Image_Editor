@@ -13,6 +13,12 @@ class QPoint;
 // class MetaData;
 
 class ImageData {
+    enum class DetectionStatus {
+        NotLoaded,
+        Loading,
+        Loaded
+    };
+
    public:
     ImageData();
     ImageData(const Folders folders);
@@ -93,13 +99,7 @@ class ImageData {
     void clearMetaData();
 
    private:
-    enum class DetectionStatus {
-        NotLoaded,
-        Loading,
-        Loaded
-    };
-
-    MetaData metaData;
+        MetaData metaData;
     DetectedObjects detectedObjects;
     Folders folders;
     DetectionStatus detectionStatus = DetectionStatus::NotLoaded;

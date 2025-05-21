@@ -217,7 +217,7 @@ void ImageData::setExifMetaData(const Exiv2::ExifData& toAddMetaData) {
  */
 void ImageData::loadData() {
     try {
-        if (!metaData.dataLoaded) {
+        if (!metaData.getDataLoadedConst()) {
             metaData.loadData(getImagePath());
 
             setOrientation(metaData.getImageOrientation());
@@ -232,7 +232,7 @@ void ImageData::loadData() {
                 qWarning() << "GPS data not found in metadata.";
             }
 
-            metaData.dataLoaded = true;
+            metaData.setDataLoaded(true);
         }
     } catch (const Exiv2::Error& e) {
         qWarning() << "Error loading metadata for image: " << getImagePath();
@@ -371,7 +371,7 @@ void ImageData::setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes) 
  */
 void ImageData::clearMetaData() {
     metaData.clear();
-    metaData.dataLoaded = false;
+    metaData.setDataLoaded(false);
 }
 
 /**

@@ -217,7 +217,7 @@ void MetaData::setOrCreateExifData(std::string imagePath) {
 void MetaData::loadData(const std::string& imagePath) {
     try {
         std::unique_ptr<Exiv2::Image> image;
-        if (!dataLoaded) {
+        if (!getDataLoadedConst()) {
 #ifdef _WIN32
             std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
             std::wstring wImagePath = converter.from_bytes(imagePath);
@@ -232,7 +232,7 @@ void MetaData::loadData(const std::string& imagePath) {
             xmpMetaData = image->xmpData();
             iptcMetaData = image->iptcData();
 
-            dataLoaded = true;
+            setDataLoaded(true);
 
             // auto pos = exifMetaData.findKey(Exiv2::ExifKey("Exif.Image.DateTime"));
             // if (pos == exifMetaData.end()) {
@@ -381,9 +381,9 @@ void displayIptcData(const Exiv2::IptcData& data) {
  * @details This function displays the EXIF, XMP, and IPTC metadata.
  */
 void displayData(const MetaData metaData) {
-    displayExifData(metaData.exifMetaData);
-    displayXmpData(metaData.xmpMetaData);
-    displayIptcData(metaData.iptcMetaData);
+    displayExifData(metaData.getExifMetaDataConst());
+    displayXmpData(metaData.getXmpMetaDataConst());
+    displayIptcData(metaData.getIptcMetaDataConst());
 }
 
 /**
@@ -493,4 +493,44 @@ double MetaData::getLongitude() const {
         }
     }
     return -1;
+}
+
+/**
+ * @brief Get the data loaded status
+ * @return True if the data is loaded, false otherwise
+ */
+bool MetaData::getDataLoadedConst() const {
+    return this->dataLoaded;
+}
+
+/**
+ * @brief Set the data loaded status
+ * @param dataLoaded The data loaded status to set
+ */
+void MetaData::setDataLoaded(bool dataLoaded) {
+    this->dataLoaded = dataLoaded;
+}
+
+/**
+ * @brief Get the EXIF metadata
+ * @return A pointer to the EXIF metadata
+ */
+Exiv2::ExifData MetaData::getExifMetaDataConst() const {
+    return exifMetaData;
+}
+
+/**
+ * @brief Get the XMP metadata
+ * @return A pointer to the XMP metadata
+ */
+Exiv2::XmpData MetaData::getXmpMetaDataConst() const {
+    return xmpMetaData;
+}
+
+/**
+ * @brief Get the IPTC metadata
+ * @return A pointer to the IPTC metadata
+ */
+Exiv2::IptcData MetaData::getIptcMetaDataConst() const {
+    return iptcMetaData;
 }

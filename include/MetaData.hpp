@@ -7,24 +7,13 @@
 #include <QObject>
 class MetaData {
    public:
-    //  TODO make private
-    bool dataLoaded = false;
-
-    Exiv2::ExifData exifMetaData;
-    Exiv2::XmpData xmpMetaData;
-    Exiv2::IptcData iptcMetaData;
-    //
-
-    // Constructeur par défaut
     MetaData() = default;
 
-    // Constructeur de copie
     MetaData(const MetaData& other)
         : xmpMetaData(other.xmpMetaData),
           exifMetaData(other.exifMetaData),
           iptcMetaData(other.iptcMetaData) {}
 
-    // Opérateur d'affectation
     MetaData& operator=(const MetaData& other);
     bool operator==(const MetaData& other) const;
 
@@ -60,6 +49,20 @@ class MetaData {
 
     void loadData(const std::string& imagePath);
     void clear();
+
+    bool getDataLoadedConst() const;
+    void setDataLoaded(bool dataLoaded);
+
+    Exiv2::ExifData getExifMetaDataConst() const;
+    Exiv2::XmpData getXmpMetaDataConst() const;
+    Exiv2::IptcData getIptcMetaDataConst() const;
+
+   private:
+    bool dataLoaded = false;
+
+    Exiv2::ExifData exifMetaData;
+    Exiv2::XmpData xmpMetaData;
+    Exiv2::IptcData iptcMetaData;
 };
 
 bool saveExifData(const std::string& imagePath, const Exiv2::ExifData& exifData);
