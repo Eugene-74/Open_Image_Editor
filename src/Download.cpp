@@ -3,6 +3,7 @@
 #include <json/json.h>
 
 #include <QApplication>
+#include <QPushButton>
 #include <filesystem>
 #include <fstream>
 
@@ -44,6 +45,9 @@ int progressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownlo
         double progress = (nowDownloaded / (double)totalToDownload) * 100.0;
         progressDialog->setValue((int)progress);
     }
+    if (progressDialog->wasCanceled()) {
+        return 1;  // Stop the download
+    }
     return 0;
 }
 
@@ -60,6 +64,9 @@ int progressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownlo
 int progressCallbackForContinuous(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded) {
     QProgressDialog* progressDialog = static_cast<QProgressDialog*>(ptr);
     QApplication::processEvents();
+    if (progressDialog->wasCanceled()) {
+        return 1;  // Stop the download
+    }
     return 0;
 }
 
@@ -80,6 +87,7 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
  * @brief Download a model from the specified modelName. But it only download it if the file doesn't already exist.
  * @param modelName The name of the model to download (with extension)
  * @return true if the download was successful, false otherwise
+ * @note This function must be called from an other thread than the main thread.
  */
 bool downloadModelIfNotExists(const std::string& modelName) {
     qDebug() << "Downloading model: " << QString::fromStdString(modelName);
@@ -100,6 +108,7 @@ bool downloadModelIfNotExists(const std::string& modelName) {
  * @brief Download a model from the specified modelName.
  * @param modelName The name of the model to download (with extension)
  * @return true if the download was successful, false otherwise
+ * @note This function must be called from an other thread than the main thread.
  */
 bool downloadModel(const std::string& modelName) {
     if (!hasConnection()) {
@@ -114,7 +123,9 @@ bool downloadModel(const std::string& modelName) {
 
         QProgressDialog progressDialog("Downloading " + QString::fromStdString(modelName), nullptr, 0, 100);
         progressDialog.setWindowModality(Qt::ApplicationModal);
-        progressDialog.setCancelButton(nullptr);
+        QPushButton* cancelButton = new QPushButton("Cancel", &progressDialog);
+        QObject::connect(cancelButton, &QPushButton::clicked, &progressDialog, &QProgressDialog::cancel);
+        progressDialog.setCancelButton(cancelButton);
         progressDialog.setValue(0);
         progressDialog.show();
         QApplication::processEvents();

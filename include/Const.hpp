@@ -69,6 +69,10 @@ const int MAX_WORKING_DETECTION = 100;
 const int WORKING_THUMBNAIL_TIME = 1000;
 const int WORKING_DETECTION_TIME = 10000;
 
+namespace Time {
+const int SEC_1 = 1000;
+const int MIN_1 = 60 * SEC_1;
+};  // namespace Time
 namespace Orientation {
 static const int UNDEFINED = 0;
 static const int NORMAL = 1;

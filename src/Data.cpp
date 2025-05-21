@@ -11,6 +11,7 @@
 #include <QResource>
 #include <QString>
 #include <QThreadPool>
+#include <QTimer>
 #include <QWidget>
 #include <opencv2/core.hpp>
 #include <opencv2/core/ocl.hpp>
@@ -1844,6 +1845,9 @@ DetectedObjects* Data::detect(std::string imagePath, QImage image, std::string m
     cv::dnn::Net net = load_net(model);
     if (net.empty()) {
         qWarning() << "Failed to load the model.";
+        // TODO translate
+        this->setCenterText("Failed to load the model");
+
         return nullptr;
     }
 
@@ -2089,60 +2093,73 @@ std::vector<int>* Data::getImagesSelectedPtr() {
  * @brief Check if the objetcs has been detected and detect them if not
  */
 void Data::checkDetectObjects() {
-    for (auto imageData : this->getImagesDataPtr()->getConst()) {
-        int i = 0;
-        if (imageData->isDetectionStatusLoading()) {
-            imageData->setDetectionStatusNotLoaded();
-        }
-        if (!imageData->isDetectionStatusLoaded()) {
-            hasNotBeenDetected.push_back(imageData);
-        }
-    }
-    QObject::connect(detectObjectTimer, &QTimer::timeout, [this]() {
-        if (hasNotBeenDetected.size() == 0) {
-            detectObjectTimer->stop();
-            qInfo() << "all detection done";
+    this->addHeavyThreadToFront([this]() {
+        if (!downloadModelIfNotExists("yolov5n.onnx")) {
+            qInfo() << "yolov5n could not be downloaded cheking in 1 min";
+            // TODO translate
+            this->setCenterText("the model yolov5n could not be downloaded cheking in 1 min");
+
+            QTimer::singleShot(Const::Time::MIN_1, [this]() {
+                checkDetectObjects();
+            });
+
             return;
         }
-        while (detectionWorking < Const::MAX_WORKING_DETECTION) {
-            detectionWorking++;
-            ImageData* imageData = hasNotBeenDetected.front();
-            addHeavyThread([this, imageData]() {
-                if (imageData) {
-                    std::string imagePath = imageData->getImagePath();
-                    QImage image = this->loadImageNormal(nullptr, imagePath, QSize(0, 0), false, 0, true);
-                    image = rotateQImage(image, imageData);
-                    std::string modelName = "yolov5n";
-
-                    DetectedObjects* detectedObjects = this->detect(imagePath, image, modelName);
-                    if (detectedObjects) {
-                        imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
-                        imageData->setDetectionStatusLoaded();
-                    } else {
-                        imageData->setDetectionStatusNotLoaded();
-                    }
-                    if (!unloadFromCache(imagePath)) {
-                        qWarning() << "Error unloading image from cache: " << QString::fromStdString(imagePath);
-                    }
-
-                    detectionWorking--;
-                }
-            });
-            {
-                std::lock_guard<std::mutex> lock(detectionMutex);
-
-                hasNotBeenDetected.pop_front();
+        for (auto imageData : this->getImagesDataPtr()->getConst()) {
+            int i = 0;
+            if (imageData->isDetectionStatusLoading()) {
+                imageData->setDetectionStatusNotLoaded();
             }
+            if (!imageData->isDetectionStatusLoaded()) {
+                hasNotBeenDetected.push_back(imageData);
+            }
+        }
+        QObject::connect(detectObjectTimer, &QTimer::timeout, [this]() {
             if (hasNotBeenDetected.size() == 0) {
                 detectObjectTimer->stop();
-
                 qInfo() << "all detection done";
                 return;
             }
-        }
+            while (detectionWorking < Const::MAX_WORKING_DETECTION) {
+                detectionWorking++;
+                ImageData* imageData = hasNotBeenDetected.front();
+                addHeavyThread([this, imageData]() {
+                    if (imageData) {
+                        std::string imagePath = imageData->getImagePath();
+                        QImage image = this->loadImageNormal(nullptr, imagePath, QSize(0, 0), false, 0, true);
+                        image = rotateQImage(image, imageData);
+                        std::string modelName = "yolov5n";
+
+                        DetectedObjects* detectedObjects = this->detect(imagePath, image, modelName);
+                        if (detectedObjects) {
+                            imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
+                            imageData->setDetectionStatusLoaded();
+                        } else {
+                            imageData->setDetectionStatusNotLoaded();
+                        }
+                        if (!unloadFromCache(imagePath)) {
+                            qWarning() << "Error unloading image from cache: " << QString::fromStdString(imagePath);
+                        }
+
+                        detectionWorking--;
+                    }
+                });
+                {
+                    std::lock_guard<std::mutex> lock(detectionMutex);
+
+                    hasNotBeenDetected.pop_front();
+                }
+                if (hasNotBeenDetected.size() == 0) {
+                    detectObjectTimer->stop();
+
+                    qInfo() << "all detection done";
+                    return;
+                }
+            }
+        });
+        detectObjectTimer->start(Const::WORKING_DETECTION_TIME);
+        detectObjectTimer->setInterval(Const::WORKING_DETECTION_TIME);
     });
-    detectObjectTimer->start(Const::WORKING_DETECTION_TIME);
-    detectObjectTimer->setInterval(Const::WORKING_DETECTION_TIME);
 }
 
 /**

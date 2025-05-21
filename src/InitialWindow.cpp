@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QProcess>
 #include <QProgressDialog>
+#include <QPushButton>
 #include <QThreadPool>
 #include <QTimer>
 #include <QTranslator>
@@ -149,7 +150,9 @@ InitialWindow::InitialWindow() {
         createMainWindow(data);
         QProgressDialog progressDialog("Checking for updates...", nullptr, 0, 0, this);
         progressDialog.setWindowModality(Qt::ApplicationModal);
-        progressDialog.setCancelButton(nullptr);
+        QPushButton* cancelButton = new QPushButton("Cancel", &progressDialog);
+        QObject::connect(cancelButton, &QPushButton::clicked, &progressDialog, &QProgressDialog::cancel);
+        progressDialog.setCancelButton(cancelButton);
         progressDialog.show();
         progressDialog.move(0, 0);
         QApplication::processEvents();

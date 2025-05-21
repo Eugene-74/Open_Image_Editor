@@ -1,3 +1,6 @@
 #pragma once
+void recover();
 
-void deleteSave();
+void deleteSaveFile();
+void deleteSaveFolder();
+void reDownloadApp();
