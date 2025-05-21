@@ -46,7 +46,7 @@ void Data::preDeleteImage(int imageNbr) {
     ImageData* imageData;
     imageData = this->imagesData.getImageData(imageNbr);
 
-    this->deletedImagesData.addImage(imageData);
+    this->getDeletedImagesDataPtr()->addImage(imageData);
     qInfo() << "image deleted : " << imageNbr;
 }
 
@@ -57,7 +57,7 @@ void Data::preDeleteImage(int imageNbr) {
 void Data::unPreDeleteImage(int imageNbr) {
     const ImageData imageData = *imagesData.getImageData(imageNbr);
 
-    deletedImagesData.removeImage(imageData);
+    getDeletedImagesDataPtr()->removeImage(imageData);
 }
 
 /**
@@ -66,7 +66,7 @@ void Data::unPreDeleteImage(int imageNbr) {
  */
 void Data::revocerDeletedImage(ImageData& imageData) {
     imagesData.addImage(&imageData);
-    deletedImagesData.removeImage(imageData);
+    getDeletedImagesDataPtr()->removeImage(imageData);
 }
 
 /**
@@ -74,18 +74,18 @@ void Data::revocerDeletedImage(ImageData& imageData) {
  * @param imageNbr nbr of the images in the deleted images list
  */
 void Data::revocerDeletedImage(int imageNbr) {
-    ImageData* imageData = deletedImagesData.getImageData(imageNbr);
+    ImageData* imageData = getDeletedImagesDataPtr()->getImageData(imageNbr);
     revocerDeletedImage(*imageData);
 
     imagesData.addImage(imageData);
-    deletedImagesData.removeImage(*imageData);
+    getDeletedImagesDataPtr()->removeImage(*imageData);
 }
 
 /**
  * @brief Remove all deleted images from the imagesData
  */
 void Data::removeDeletedImages() {
-    for (const auto& deletedImage : *deletedImagesData.get()) {
+    for (const auto& deletedImage : *getDeletedImagesDataPtr()->get()) {
         ImageData* imageData = this->getImagesDataPtr()->getImageData(deletedImage->getImagePath());
 
         removeImageFromFolders(*imageData);
@@ -106,13 +106,13 @@ void Data::removeDeletedImages() {
  */
 bool Data::isDeleted(int imageNbr) {
     std::string imagePath = imagesData.getImageData(imageNbr)->getImagePathConst();
-    auto it = std::find_if(deletedImagesData.get()->begin(),
-                           deletedImagesData.get()->end(),
+    auto it = std::find_if(getDeletedImagesDataPtr()->get()->begin(),
+                           getDeletedImagesDataPtr()->get()->end(),
                            [imagePath, this](ImageData* imgPtr) {
                                return imgPtr->getImagePathConst() == imagePath;
                            });
 
-    if (it != deletedImagesData.get()->end()) {
+    if (it != getDeletedImagesDataPtr()->get()->end()) {
         imagesData.getImageData(imageNbr)->print();
 
         return true;
@@ -1582,6 +1582,22 @@ ImagesData* Data::getImagesDataPtr() {
 }
 
 /**
+ * @brief Give you deletedImagesData
+ * @return Ptr to deletedImagesData
+ */
+ImagesData* Data::getDeletedImagesDataPtr() {
+    return &deletedImagesData;
+}
+
+/**
+ * @brief
+ * @return
+ */
+Sizes* Data::getSizesPtr() {
+    return &sizes;
+}
+
+/**
  * @brief Remove an image from all folders
  * @param imageData ImageData object to remove from folders
  */
@@ -2062,6 +2078,14 @@ bool Data::getDarkMode() {
  */
 void Data::setDarkMode(bool darkMode) {
     this->darkMode = darkMode;
+}
+
+/**
+ * @brief Get the images selected (ptr)
+ * @return The images selected
+ */
+std::vector<int>* Data::getImagesSelectedPtr() {
+    return &this->imagesSelected;
 }
 
 /**

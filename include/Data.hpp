@@ -40,14 +40,6 @@ class Actions {
 
 class Data : public std::enable_shared_from_this<Data> {
    public:
-    QApplication* app;
-
-    ImagesData deletedImagesData;
-
-    Sizes* sizes = new Sizes();
-
-    std::vector<int> imagesSelected;
-
     Data();
 
     void clearCache();
@@ -135,6 +127,8 @@ class Data : public std::enable_shared_from_this<Data> {
     std::string getFolderPath(Folders* folder);
     Folders* findFolderByPath(Folders& root, const std::string& path);
 
+    ImagesData* getDeletedImagesDataPtr();
+
     void addThread(std::function<void()> job);
     void addThreadToFront(std::function<void()> job);
 
@@ -166,6 +160,10 @@ class Data : public std::enable_shared_from_this<Data> {
     bool getDarkMode();
     void setDarkMode(bool darkMode);
 
+    std::vector<int>* getImagesSelectedPtr();
+
+    Sizes* getSizesPtr();
+
    private:
 #ifdef _WIN32
     Folders rootFolders = Folders("");
@@ -178,6 +176,10 @@ class Data : public std::enable_shared_from_this<Data> {
     bool darkMode = true;
 
     ImagesData imagesData;
+    ImagesData deletedImagesData;
+    Sizes sizes;
+
+    std::vector<int> imagesSelected;
 
     ThreadManager manager;
     QLabel* centerTextLabel;

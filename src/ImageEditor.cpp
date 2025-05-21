@@ -50,14 +50,14 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
     mainLayout = new QHBoxLayout(centralWidget);
-    mainLayout->setSpacing(data->sizes->imageEditorSizes->mainLayoutSpacing);
-    mainLayout->setContentsMargins(data->sizes->imageEditorSizes->mainLayoutMargins[0],
-                                   data->sizes->imageEditorSizes->mainLayoutMargins[1],
-                                   data->sizes->imageEditorSizes->mainLayoutMargins[2],
-                                   data->sizes->imageEditorSizes->mainLayoutMargins[3]);  // Marges autour des bords (gauche, haut, droite, bas)
+    mainLayout->setSpacing(data->getSizesPtr()->imageEditorSizes->mainLayoutSpacing);
+    mainLayout->setContentsMargins(data->getSizesPtr()->imageEditorSizes->mainLayoutMargins[0],
+                                   data->getSizesPtr()->imageEditorSizes->mainLayoutMargins[1],
+                                   data->getSizesPtr()->imageEditorSizes->mainLayoutMargins[2],
+                                   data->getSizesPtr()->imageEditorSizes->mainLayoutMargins[3]);  // Marges autour des bords (gauche, haut, droite, bas)
 
     fixedFrame = new QFrame();
-    fixedFrame->setFixedSize(data->sizes->imageEditorSizes->mainImageSize);
+    fixedFrame->setFixedSize(data->getSizesPtr()->imageEditorSizes->mainImageSize);
     QVBoxLayout* fixedFrameLayout = new QVBoxLayout(fixedFrame);
     fixedFrameLayout->setAlignment(Qt::AlignCenter);
     fixedFrame->setLayout(fixedFrameLayout);
@@ -92,8 +92,8 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     buttonLayout = new QVBoxLayout();
     buttonLayout->setAlignment(Qt::AlignCenter);
 
-    if (data.get()->sizes->fontSize <= 5) {
-        qInfo() << "text size is too small : " << data.get()->sizes->fontSize;
+    if (data.get()->getSizesPtr()->fontSize <= 5) {
+        qInfo() << "text size is too small : " << data.get()->getSizesPtr()->fontSize;
         nameLabel->hide();
         nameEdit->hide();
         dateLabel->hide();
@@ -101,19 +101,19 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
         validateButton->hide();
     } else {
         QFont font = nameLabel->font();
-        font.setPointSize(data.get()->sizes->fontSize);
+        font.setPointSize(data.get()->getSizesPtr()->fontSize);
         nameLabel->setFont(font);
 
         font = nameEdit->font();
-        font.setPointSize(data.get()->sizes->fontSize);
+        font.setPointSize(data.get()->getSizesPtr()->fontSize);
         nameEdit->setFont(font);
 
         font = dateLabel->font();
-        font.setPointSize(data.get()->sizes->fontSize);
+        font.setPointSize(data.get()->getSizesPtr()->fontSize);
         dateLabel->setFont(font);
 
         font = dateEdit->font();
-        font.setPointSize(data.get()->sizes->fontSize);
+        font.setPointSize(data.get()->getSizesPtr()->fontSize);
         dateEdit->setFont(font);
 
         nameAndDateLayout->addWidget(validateButton);
@@ -202,9 +202,9 @@ void ImageEditor::reload() {
     checkCache();
 
     if (bigImage) {
-        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, personsEditor);
+        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), (data->getSizesPtr()->imageEditorSizes->bigImage), false, personsEditor);
 
-        bigImageLabelNew->setFixedSize(data->sizes->imageEditorSizes->bigImage);
+        bigImageLabelNew->setFixedSize(data->getSizesPtr()->imageEditorSizes->bigImage);
         connect(bigImageLabelNew, &MainImage::leftClicked, [this]() {
             closeBigImageLabel(bigImageLabel);
         });
@@ -1570,8 +1570,8 @@ void ImageEditor::openBigImageLabel() {
     bigImage = true;
     hide();
 
-    bigImageLabel = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, personsEditor);
-    bigImageLabel->setFixedSize(data->sizes->imageEditorSizes->bigImage);
+    bigImageLabel = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), (data->getSizesPtr()->imageEditorSizes->bigImage), false, personsEditor);
+    bigImageLabel->setFixedSize(data->getSizesPtr()->imageEditorSizes->bigImage);
 
     mainLayout->addWidget(bigImageLabel);
 

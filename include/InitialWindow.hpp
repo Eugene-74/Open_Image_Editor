@@ -43,7 +43,7 @@ class InitialWindow : public QMainWindow {
     void clearWindows();
 
    private:
-    // QSize* linkButton = &data->sizes->linkButton;
+    // QSize* linkButton = &data->getSizesPtr()->linkButton;
     QSize* linkButton;
 
     QTimer* resizeTimer;

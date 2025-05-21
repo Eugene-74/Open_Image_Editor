@@ -94,7 +94,7 @@ ImageBooth::ImageBooth(std::shared_ptr<Data> dat, QWidget* parent)
 
     scrollArea = new QScrollArea(centralWidget);
     scrollArea->setWidgetResizable(true);
-    scrollArea->setFixedSize(data->sizes->imagesBoothSizes->scrollAreaSize);
+    scrollArea->setFixedSize(data->getSizesPtr()->imagesBoothSizes->scrollAreaSize);
     actionButtonLayout->setAlignment(Qt::AlignCenter);
     scrollLayout->addWidget(scrollArea);
 
@@ -102,19 +102,19 @@ ImageBooth::ImageBooth(std::shared_ptr<Data> dat, QWidget* parent)
     linesLayout = new QVBoxLayout(scrollWidget);
     scrollArea->setWidget(scrollWidget);
 
-    int minTotalImagesHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesDataPtr()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
-    int minTotalFoldersHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->imagesPerLine + 1);
+    int minTotalImagesHeight = data->getSizesPtr()->imagesBoothSizes->realImageSize.height() * (data->getImagesDataPtr()->getCurrent()->size() / data->getSizesPtr()->imagesBoothSizes->widthImageNumber + 1);
+    int minTotalFoldersHeight = data->getSizesPtr()->imagesBoothSizes->realImageSize.height() * (getCurrentFoldersSize() / data->getSizesPtr()->imagesBoothSizes->imagesPerLine + 1);
 
     int minHeight = minTotalImagesHeight + minTotalFoldersHeight;
     scrollWidget->setMinimumHeight(minHeight);
 
     linesLayout->setAlignment(Qt::AlignTop);
-    linesLayout->setSpacing(data->sizes->imagesBoothSizes->linesLayoutSpacing);
+    linesLayout->setSpacing(data->getSizesPtr()->imagesBoothSizes->linesLayoutSpacing);
     linesLayout->setContentsMargins(
-        data->sizes->imagesBoothSizes->linesLayoutMargins[0],   // gauche
-        data->sizes->imagesBoothSizes->linesLayoutMargins[1],   // haut
-        data->sizes->imagesBoothSizes->linesLayoutMargins[2],   // droite
-        data->sizes->imagesBoothSizes->linesLayoutMargins[3]);  // bas
+        data->getSizesPtr()->imagesBoothSizes->linesLayoutMargins[0],   // gauche
+        data->getSizesPtr()->imagesBoothSizes->linesLayoutMargins[1],   // haut
+        data->getSizesPtr()->imagesBoothSizes->linesLayoutMargins[2],   // droite
+        data->getSizesPtr()->imagesBoothSizes->linesLayoutMargins[3]);  // bas
 
     spacer = new QSpacerItem(0, 0);
     linesLayout->insertSpacerItem(0, spacer);
@@ -172,9 +172,9 @@ void ImageBooth::openFolder(int index) {
         data->setCurrentFolders(allImagesFolder);
     }
 
-    int minTotalImagesHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (data->getImagesDataPtr()->getCurrent()->size() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
+    int minTotalImagesHeight = data->getSizesPtr()->imagesBoothSizes->realImageSize.height() * (data->getImagesDataPtr()->getCurrent()->size() / data->getSizesPtr()->imagesBoothSizes->widthImageNumber + 1);
 
-    int minTotalFoldersHeight = data->sizes->imagesBoothSizes->realImageSize.height() * (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber + 1);
+    int minTotalFoldersHeight = data->getSizesPtr()->imagesBoothSizes->realImageSize.height() * (getCurrentFoldersSize() / data->getSizesPtr()->imagesBoothSizes->widthImageNumber + 1);
 
     int minHeight = minTotalImagesHeight + minTotalFoldersHeight;
     scrollWidget->setMinimumHeight(minHeight);
@@ -201,10 +201,10 @@ void ImageBooth::openFolder(int index) {
  */
 void ImageBooth::updateVisibleImages(bool force) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
-    int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
+    int imageHeight = data->getSizesPtr()->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
-    int imageNumber = (spacerHeight / realImageSize->height()) * data->sizes->imagesBoothSizes->imagesPerLine;
+    int imageNumber = (spacerHeight / realImageSize->height()) * data->getSizesPtr()->imagesBoothSizes->imagesPerLine;
     data->getImagesDataPtr()->setImageNumber(imageNumber);
 
     int lineNbr = spacerHeight / imageHeight;
@@ -219,8 +219,8 @@ void ImageBooth::updateVisibleImages(bool force) {
     linesLayout->invalidate();
     lastLineNbr = lineNbr;
 
-    data->checkToUnloadImages(imageNumber, IMAGE_BOOTH_PRE_LOAD_RADIUS * maxVisibleLines * data->sizes->imagesBoothSizes->imagesPerLine);
-    data->checkToLoadImages(imageNumber, IMAGE_BOOTH_PRE_LOAD_RADIUS * maxVisibleLines * data->sizes->imagesBoothSizes->imagesPerLine, imageQuality);
+    data->checkToUnloadImages(imageNumber, IMAGE_BOOTH_PRE_LOAD_RADIUS * maxVisibleLines * data->getSizesPtr()->imagesBoothSizes->imagesPerLine);
+    data->checkToLoadImages(imageNumber, IMAGE_BOOTH_PRE_LOAD_RADIUS * maxVisibleLines * data->getSizesPtr()->imagesBoothSizes->imagesPerLine, imageQuality);
 }
 
 /**
@@ -230,11 +230,11 @@ void ImageBooth::updateVisibleImages(bool force) {
  */
 bool ImageBooth::isImageVisible(int imageIndex) {
     int spacerHeight = scrollArea->verticalScrollBar()->value();
-    int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
+    int imageHeight = data->getSizesPtr()->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
-    int firstImageNbr = spacerHeight / imageHeight * data->sizes->imagesBoothSizes->widthImageNumber;
-    int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->sizes->imagesBoothSizes->widthImageNumber;
+    int firstImageNbr = spacerHeight / imageHeight * data->getSizesPtr()->imagesBoothSizes->widthImageNumber;
+    int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->getSizesPtr()->imagesBoothSizes->widthImageNumber;
 
     return (imageIndex >= firstImageNbr && imageIndex <= lastImageNbr);
 }
@@ -243,7 +243,7 @@ bool ImageBooth::isImageVisible(int imageIndex) {
  * @brief Create the first images in the image booth
  */
 void ImageBooth::createFirstImages() {
-    int foldersLineNumber = (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber) + 1;
+    int foldersLineNumber = (getCurrentFoldersSize() / data->getSizesPtr()->imagesBoothSizes->widthImageNumber) + 1;
 
     for (int line = 0; line < maxVisibleLines; line++) {
         auto* lineLayout = new QHBoxLayout();
@@ -251,7 +251,7 @@ void ImageBooth::createFirstImages() {
 
         linesLayout->addLayout(lineLayout);
         lineLayouts.push_back(lineLayout);
-        int imagePerLine = data->sizes->imagesBoothSizes->imagesPerLine;
+        int imagePerLine = data->getSizesPtr()->imagesBoothSizes->imagesPerLine;
 
         int nbrInLine = 0;
         int folderNumber = (line * imagePerLine) + nbrInLine;
@@ -321,7 +321,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
     int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
 
-    if (std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNumberInTotal) != data->imagesSelected.end()) {
+    if (std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal) != data->getImagesSelectedPtr()->end()) {
         imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
     }
 
@@ -340,10 +340,10 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
     connect(imageButton, &ClickableLabel::ctrlLeftClicked, [this, nbr, imageButton]() {
         int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
-        auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNumberInTotal);
-        if (it != data->imagesSelected.end()) {
+        auto it = std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal);
+        if (it != data->getImagesSelectedPtr()->end()) {
             imageButton->resetBorder();
-            data->imagesSelected.erase(it);
+            data->getImagesSelectedPtr()->erase(it);
 
             data->addAction(
                 [this, nbr, imageNumberInTotal]() {
@@ -372,7 +372,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                 });
         } else {
             imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
-            data->imagesSelected.push_back(imageNumberInTotal);
+            data->getImagesSelectedPtr()->push_back(imageNumberInTotal);
 
             data->addAction(
                 [this, nbr, imageNumberInTotal]() {
@@ -419,16 +419,16 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
             for (int i = start; i <= end; ++i) {
                 int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(i);
-                auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNumberInTotal);
-                if (it != data->imagesSelected.end()) {
+                auto it = std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal);
+                if (it != data->getImagesSelectedPtr()->end()) {
                     if (!imageShiftSelectedSelect) {
-                        data->imagesSelected.erase(it);
+                        data->getImagesSelectedPtr()->erase(it);
                         modifiedNbr.push_back(i);
                         modifiedNbrInTotal.push_back(imageNumberInTotal);
                     }
                 } else {
                     if (imageShiftSelectedSelect) {
-                        data->imagesSelected.push_back(imageNumberInTotal);
+                        data->getImagesSelectedPtr()->push_back(imageNumberInTotal);
                         modifiedNbr.push_back(i);
                         modifiedNbrInTotal.push_back(imageNumberInTotal);
                     }
@@ -480,8 +480,8 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             // Select the first image
             int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
 
-            auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNumberInTotal);
-            if (it != data->imagesSelected.end()) {
+            auto it = std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal);
+            if (it != data->getImagesSelectedPtr()->end()) {
                 imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT);
                 imageShiftSelectedSelect = false;
             } else {
@@ -500,8 +500,8 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
  * @param force Force the update even if the image is already visible
  */
 void ImageBooth::gotToImage(int imageNumberInCurrent, bool force) {
-    int imageLine = imageNumberInCurrent / data->sizes->imagesBoothSizes->widthImageNumber;
-    int spacerHeight = imageLine * data->sizes->imagesBoothSizes->realImageSize.height();
+    int imageLine = imageNumberInCurrent / data->getSizesPtr()->imagesBoothSizes->widthImageNumber;
+    int spacerHeight = imageLine * data->getSizesPtr()->imagesBoothSizes->realImageSize.height();
 
     scrollArea->verticalScrollBar()->setValue(spacerHeight);
 
@@ -514,9 +514,9 @@ void ImageBooth::gotToImage(int imageNumberInCurrent, bool force) {
  * @param nbr The number to add (image number in imagesData)
  */
 void ImageBooth::addNbrToSelectedImages(int nbr) {
-    auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
-    if (it == data->imagesSelected.end()) {
-        data->imagesSelected.push_back(nbr);
+    auto it = std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), nbr);
+    if (it == data->getImagesSelectedPtr()->end()) {
+        data->getImagesSelectedPtr()->push_back(nbr);
     }
 }
 
@@ -525,9 +525,9 @@ void ImageBooth::addNbrToSelectedImages(int nbr) {
  * @param nbr The number to remove (image number in imagesData)
  */
 void ImageBooth::removeNbrToSelectedImages(int nbr) {
-    auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), nbr);
-    if (it != data->imagesSelected.end()) {
-        data->imagesSelected.erase(it);
+    auto it = std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), nbr);
+    if (it != data->getImagesSelectedPtr()->end()) {
+        data->getImagesSelectedPtr()->erase(it);
     }
 }
 
@@ -538,22 +538,22 @@ void ImageBooth::removeNbrToSelectedImages(int nbr) {
  * @return Pointer to the ClickableLabel object if it exists, nullptr otherwise
  */
 ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr, QHBoxLayout*& lineLayout) {
-    int foldersLineNumber = (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber) + 1;
-    imageNbr += foldersLineNumber * data->sizes->imagesBoothSizes->widthImageNumber;
+    int foldersLineNumber = (getCurrentFoldersSize() / data->getSizesPtr()->imagesBoothSizes->widthImageNumber) + 1;
+    imageNbr += foldersLineNumber * data->getSizesPtr()->imagesBoothSizes->widthImageNumber;
 
     int spacerHeight = scrollArea->verticalScrollBar()->value();
-    int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
+    int imageHeight = data->getSizesPtr()->imagesBoothSizes->realImageSize.height();
     spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
-    int firstImageNbr = spacerHeight / imageHeight * data->sizes->imagesBoothSizes->widthImageNumber;
-    int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->sizes->imagesBoothSizes->widthImageNumber;
+    int firstImageNbr = spacerHeight / imageHeight * data->getSizesPtr()->imagesBoothSizes->widthImageNumber;
+    int lastImageNbr = (spacerHeight / imageHeight + maxVisibleLines) * data->getSizesPtr()->imagesBoothSizes->widthImageNumber;
 
     if (imageNbr >= firstImageNbr && imageNbr <= lastImageNbr) {
-        int firstImageLine = firstImageNbr / data->sizes->imagesBoothSizes->widthImageNumber;
-        int imageLine = imageNbr / data->sizes->imagesBoothSizes->widthImageNumber;
+        int firstImageLine = firstImageNbr / data->getSizesPtr()->imagesBoothSizes->widthImageNumber;
+        int imageLine = imageNbr / data->getSizesPtr()->imagesBoothSizes->widthImageNumber;
 
         int imageRelativeLine = imageLine - firstImageLine;
-        int imageNbrInLine = imageNbr - imageLine * data->sizes->imagesBoothSizes->widthImageNumber;
+        int imageNbrInLine = imageNbr - imageLine * data->getSizesPtr()->imagesBoothSizes->widthImageNumber;
         lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(imageRelativeLine + 1)->layout());
         ClickableLabel* imageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(imageNbrInLine)->widget());
 
@@ -578,10 +578,10 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
 void ImageBooth::updateImages() {
     try {
         int spacerHeight = scrollArea->verticalScrollBar()->value();
-        int imageHeight = data->sizes->imagesBoothSizes->realImageSize.height();
+        int imageHeight = data->getSizesPtr()->imagesBoothSizes->realImageSize.height();
         spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
-        int foldersLineNumber = (getCurrentFoldersSize() / data->sizes->imagesBoothSizes->widthImageNumber) + 1;
+        int foldersLineNumber = (getCurrentFoldersSize() / data->getSizesPtr()->imagesBoothSizes->widthImageNumber) + 1;
         int lineNbr = spacerHeight / imageHeight;
 
         int folderLinesNbr = std::min(std::max(foldersLineNumber - lineNbr, 0), maxVisibleLines);
@@ -590,7 +590,7 @@ void ImageBooth::updateImages() {
         for (int i = 1; i < 1 + folderLinesNbr; i++) {
             QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
             for (int j = 0; j < lineLayout->count(); j++) {
-                int folderNbr = ((lineNbr + i - 1) * data->sizes->imagesBoothSizes->widthImageNumber) + j;
+                int folderNbr = ((lineNbr + i - 1) * data->getSizesPtr()->imagesBoothSizes->widthImageNumber) + j;
 
                 ClickableLabel* lastFolderButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
 
@@ -648,7 +648,7 @@ void ImageBooth::updateImages() {
         for (int i = 1 + folderLinesNbr; i < 1 + imageLinesNbr + folderLinesNbr; i++) {
             QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
             for (int j = 0; j < lineLayout->count(); j++) {
-                int imageNbr = (lineNbr - foldersLineNumber + i - 1) * data->sizes->imagesBoothSizes->widthImageNumber + j;
+                int imageNbr = (lineNbr - foldersLineNumber + i - 1) * data->getSizesPtr()->imagesBoothSizes->widthImageNumber + j;
                 ClickableLabel* lastImageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
                 if (imageNbr >= data->getImagesDataPtr()->getCurrent()->size()) {
                     lastImageButton->hide();
@@ -669,8 +669,8 @@ void ImageBooth::updateImages() {
 
                     int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(imageNbr);
 
-                    auto it = std::find(data->imagesSelected.begin(), data->imagesSelected.end(), imageNumberInTotal);
-                    if (it != data->imagesSelected.end()) {
+                    auto it = std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal);
+                    if (it != data->getImagesSelectedPtr()->end()) {
                         imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
                     } else {
                         imageButton->resetBorder();
@@ -758,19 +758,19 @@ ClickableLabel* ImageBooth::createImageDelete() {
     imageDeleteNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(imageDeleteNew, &ClickableLabel::clicked, [this]() {
-        if (data->imagesSelected.empty()) {
+        if (data->getImagesSelectedPtr()->empty()) {
             showInformationMessage(this, "No image selected", "You need to select an image to delete it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = data->imagesSelected;
-        for (int i = 0; i < data->imagesSelected.size(); i++) {
-            if (data->isDeleted(data->imagesSelected.at(i))) {
-                data->unPreDeleteImage(data->imagesSelected.at(i));
+        std::vector<int> imagesSelectedBefore = *data->getImagesSelectedPtr();
+        for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
+            if (data->isDeleted(data->getImagesSelectedPtr()->at(i))) {
+                data->unPreDeleteImage(data->getImagesSelectedPtr()->at(i));
             } else {
-                data->preDeleteImage(data->imagesSelected.at(i));
+                data->preDeleteImage(data->getImagesSelectedPtr()->at(i));
             }
         }
-        data->imagesSelected.clear();
+        data->getImagesSelectedPtr()->clear();
         reload();
 
         data->setSaved(false);
@@ -879,16 +879,16 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
     imageRotateRightNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(imageRotateRightNew, &ClickableLabel::clicked, [this]() {
-        if (data->imagesSelected.empty()) {
+        if (data->getImagesSelectedPtr()->empty()) {
             showInformationMessage(this, "No image selected", "You need to select an image to rotate it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = data->imagesSelected;
-        for (int i = 0; i < data->imagesSelected.size(); i++) {
-            std::string extension = data->getImagesDataPtr()->get()->at(data->imagesSelected.at(i))->getImageExtension();
-            data->rotateRight(data->imagesSelected.at(i), extension, [this]() {}, false);
+        std::vector<int> imagesSelectedBefore = *data->getImagesSelectedPtr();
+        for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
+            std::string extension = data->getImagesDataPtr()->get()->at(data->getImagesSelectedPtr()->at(i))->getImageExtension();
+            data->rotateRight(data->getImagesSelectedPtr()->at(i), extension, [this]() {}, false);
         }
-        data->imagesSelected.clear();
+        data->getImagesSelectedPtr()->clear();
         reload();
 
         data->addAction(
@@ -932,16 +932,16 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
     imageRotateLeftNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(imageRotateLeftNew, &ClickableLabel::clicked, [this]() {
-        if (data->imagesSelected.empty()) {
+        if (data->getImagesSelectedPtr()->empty()) {
             showInformationMessage(this, "No image selected", "You need to select an image to rotate it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = data->imagesSelected;
-        for (int i = 0; i < data->imagesSelected.size(); i++) {
-            std::string extension = data->getImagesDataPtr()->get()->at(data->imagesSelected.at(i))->getImageExtension();
-            data->rotateLeft(data->imagesSelected.at(i), extension, [this]() {}, false);
+        std::vector<int> imagesSelectedBefore = *data->getImagesSelectedPtr();
+        for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
+            std::string extension = data->getImagesDataPtr()->get()->at(data->getImagesSelectedPtr()->at(i))->getImageExtension();
+            data->rotateLeft(data->getImagesSelectedPtr()->at(i), extension, [this]() {}, false);
         }
-        data->imagesSelected.clear();
+        data->getImagesSelectedPtr()->clear();
         reload();
 
         data->addAction(
@@ -985,17 +985,17 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
     imageMirrorUpDownNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(imageMirrorUpDownNew, &ClickableLabel::clicked, [this]() {
-        if (data->imagesSelected.empty()) {
+        if (data->getImagesSelectedPtr()->empty()) {
             showInformationMessage(this, "No image selected", "You need to select an image to mirror it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = data->imagesSelected;
+        std::vector<int> imagesSelectedBefore = *data->getImagesSelectedPtr();
 
-        for (int i = 0; i < data->imagesSelected.size(); i++) {
-            std::string extension = data->getImagesDataPtr()->get()->at(data->imagesSelected.at(i))->getImageExtension();
-            data->mirrorUpDown(data->imagesSelected.at(i), extension, [this]() {}, false);
+        for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
+            std::string extension = data->getImagesDataPtr()->get()->at(data->getImagesSelectedPtr()->at(i))->getImageExtension();
+            data->mirrorUpDown(data->getImagesSelectedPtr()->at(i), extension, [this]() {}, false);
         }
-        data->imagesSelected.clear();
+        data->getImagesSelectedPtr()->clear();
         reload();
 
         data->addAction(
@@ -1039,16 +1039,16 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
     imageMirrorLeftRightNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(imageMirrorLeftRightNew, &ClickableLabel::clicked, [this]() {
-        if (data->imagesSelected.empty()) {
+        if (data->getImagesSelectedPtr()->empty()) {
             showInformationMessage(this, "No image selected", "You need to select an image to mirror it");
             return;
         }
-        std::vector<int> imagesSelectedBefore = data->imagesSelected;
-        for (int i = 0; i < data->imagesSelected.size(); i++) {
-            std::string extension = data->getImagesDataPtr()->get()->at(data->imagesSelected.at(i))->getImageExtension();
-            data->mirrorLeftRight(data->imagesSelected.at(i), extension, [this]() {}, false);
+        std::vector<int> imagesSelectedBefore = *data->getImagesSelectedPtr();
+        for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
+            std::string extension = data->getImagesDataPtr()->get()->at(data->getImagesSelectedPtr()->at(i))->getImageExtension();
+            data->mirrorLeftRight(data->getImagesSelectedPtr()->at(i), extension, [this]() {}, false);
         }
-        data->imagesSelected.clear();
+        data->getImagesSelectedPtr()->clear();
         reload();
 
         data->addAction(
@@ -1112,11 +1112,11 @@ ClickableLabel* ImageBooth::createImageConversion() {
     imageConversionNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
-        if (data->imagesSelected.empty()) {
+        if (data->getImagesSelectedPtr()->empty()) {
             showInformationMessage(this, "No image selected", "You need to select an image to convert it");
             return;
         }
-        if (data->imagesSelected.size() > 0) {
+        if (data->getImagesSelectedPtr()->size() > 0) {
             QString selectedFormat = launchConversionDialog();
             if (selectedFormat != nullptr) {
                 QProgressDialog* progressDialog = new QProgressDialog(QString("Converting images : "), QString("Cancel"), 0, 3);
@@ -1124,20 +1124,19 @@ ClickableLabel* ImageBooth::createImageConversion() {
                 progressDialog->setAutoClose(false);
                 progressDialog->show();
 
-                for (int i = 0; i < data->imagesSelected.size(); i++) {
-                    QString inputImagePath = QString::fromStdString(data->getImagesDataPtr()->getImageData(data->imagesSelected.at(i))->getImagePath());
+                for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
+                    QString inputImagePath = QString::fromStdString(data->getImagesDataPtr()->getImageData(data->getImagesSelectedPtr()->at(i))->getImagePath());
                     if (progressDialog->wasCanceled()) {
                         break;
                     }
                     convertion(inputImagePath, selectedFormat, progressDialog);
-                    progressDialog->setLabelText(QString("Converting image %1/%2").arg(i + 1).arg(data->imagesSelected.size()));
+                    progressDialog->setLabelText(QString("Converting image %1/%2").arg(i + 1).arg(data->getImagesSelectedPtr()->size()));
                 }
                 progressDialog->close();
                 delete progressDialog;
 
-                data->imagesSelected.clear();
+                data->getImagesSelectedPtr()->clear();
                 reload();
-
             }
         }
         data->addAction(

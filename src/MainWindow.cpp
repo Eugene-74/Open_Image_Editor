@@ -20,11 +20,11 @@ MainWindow::MainWindow(std::shared_ptr<Data> dat, QWidget* parent)
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
     mainLayout = new QHBoxLayout(centralWidget);
-    mainLayout->setSpacing(data->sizes->imageEditorSizes->mainLayoutSpacing);
-    mainLayout->setContentsMargins(data->sizes->imageEditorSizes->mainLayoutMargins[0],
-                                   data->sizes->imageEditorSizes->mainLayoutMargins[1],
-                                   data->sizes->imageEditorSizes->mainLayoutMargins[2],
-                                   data->sizes->imageEditorSizes->mainLayoutMargins[3]);  // Marges autour des bords (gauche, haut, droite, bas)
+    mainLayout->setSpacing(data->getSizesPtr()->imageEditorSizes->mainLayoutSpacing);
+    mainLayout->setContentsMargins(data->getSizesPtr()->imageEditorSizes->mainLayoutMargins[0],
+                                   data->getSizesPtr()->imageEditorSizes->mainLayoutMargins[1],
+                                   data->getSizesPtr()->imageEditorSizes->mainLayoutMargins[2],
+                                   data->getSizesPtr()->imageEditorSizes->mainLayoutMargins[3]);  // Marges autour des bords (gauche, haut, droite, bas)
 
     switchLayout = new QHBoxLayout();
 

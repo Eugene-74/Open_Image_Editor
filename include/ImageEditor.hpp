@@ -125,9 +125,9 @@ class ImageEditor : public QMainWindow {
     QVBoxLayout* infoLayout;
     QVBoxLayout* editionLayout;
 
-    QSize* previewSize = &data->sizes->imageEditorSizes->previewSize;
-    QSize* actionSize = &data->sizes->imageEditorSizes->actionSize;
-    QSize* mainImageSize = &data->sizes->imageEditorSizes->mainImageSize;
+    QSize* previewSize = &data->getSizesPtr()->imageEditorSizes->previewSize;
+    QSize* actionSize = &data->getSizesPtr()->imageEditorSizes->actionSize;
+    QSize* mainImageSize = &data->getSizesPtr()->imageEditorSizes->mainImageSize;
 
     std::vector<ClickableLabel*> previewButtons;
 

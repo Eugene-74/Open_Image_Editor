@@ -45,17 +45,17 @@ InitialWindow::InitialWindow() {
 
     connect(this, &InitialWindow::reload, this, [this]() {
         if (imageEditor) {
-            data->sizes->update();
+            data->getSizesPtr()->update();
             clearImageEditor();
             createImageEditor(data);
         }
         if (imageBooth) {
-            data->sizes->update();
+            data->getSizesPtr()->update();
             clearImageBooth();
             createImageBooth(data);
         }
         if (mainWindow) {
-            data->sizes->update();
+            data->getSizesPtr()->update();
             clearMainWindow();
             createMainWindow(data);
         }
@@ -70,7 +70,7 @@ InitialWindow::InitialWindow() {
 
         *data->getImagesDataPtr() = imagesData;
 
-        data->deletedImagesData = deletedImagesData;
+        *data->getDeletedImagesDataPtr() = deletedImagesData;
         data->setDarkMode(isDarkMode());
 
         try {
@@ -107,7 +107,7 @@ InitialWindow::InitialWindow() {
         layout = new QVBoxLayout;
         windowLayout->addLayout(layout);
 
-        linkButton = &data->sizes->linkButton;
+        linkButton = &data->getSizesPtr()->linkButton;
 
         imageLanguage = createImageLanguage();
         imageLanguage->setAlignment(Qt::AlignLeft);
@@ -121,11 +121,11 @@ InitialWindow::InitialWindow() {
         connect(this, &InitialWindow::reload, centerText, [this, centerText]() {
             centerText->setText(Text::welcome());
             QFont font = centerText->font();
-            font.setPointSize(data.get()->sizes->fontSize);
+            font.setPointSize(data->getSizesPtr()->fontSize);
             centerText->setFont(font);
         });
         QFont font = centerText->font();
-        font.setPointSize(data.get()->sizes->fontSize);
+        font.setPointSize(data->getSizesPtr()->fontSize);
         centerText->setFont(font);
         data->setCenterTextLabel(centerText);
 
@@ -304,7 +304,7 @@ void startLog() {
  * @details This function is called when the window is closed. It checks if there are unsaved changes and prompts the user to save before quitting.
  */
 void InitialWindow::closeEvent(QCloseEvent* event) {
-    if (!data->getSaved() && data->deletedImagesData.get()->size() > 0) {
+    if (!data->getSaved() && data->getDeletedImagesDataPtr()->get()->size() > 0) {
         showQuestionMessage(this, "Do you want to save before quit ?",
                             [this, event](bool result) {
                                 if (imageEditor != nullptr) {
@@ -357,8 +357,8 @@ void InitialWindow::createImageEditor(std::shared_ptr<Data> data) {
  */
 void InitialWindow::createImageBooth(std::shared_ptr<Data> data) {
     qInfo() << "createImageBooth";
-    data->sizes->imagesBoothSizes->imagesPerLine = std::stoi(data->getOptionsConst().at("Sizes::imageBooth::ImagesPerLine").getValueConst());
-    data->sizes->update();
+    data->getSizesPtr()->imagesBoothSizes->imagesPerLine = std::stoi(data->getOptionsConst().at("Sizes::imageBooth::ImagesPerLine").getValueConst());
+    data->getSizesPtr()->update();
 
     imageBooth = new ImageBooth(data, this);
 
