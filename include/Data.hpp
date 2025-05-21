@@ -194,7 +194,7 @@ class Data : public std::enable_shared_from_this<Data> {
 
     QTimer* detectObjectTimer = new QTimer();
     int detectionWorking = 0;
-    std::deque<ImageData*> hasNotBeenDetected;
+    std::list<ImageData*> hasNotBeenDetected;
     std::mutex detectionMutex;
 
     Folders* findFirstFolderWithAllImagesSub(Folders* currentFolder);
@@ -205,4 +205,4 @@ class Data : public std::enable_shared_from_this<Data> {
     void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
 };
 
-cv::dnn::Net* load_net(std::string model);
+cv::dnn::Net load_net(std::string model);

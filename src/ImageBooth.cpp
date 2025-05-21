@@ -1,5 +1,6 @@
 #include "ImageBooth.hpp"
 
+#include <QApplication>
 #include <QCheckBox>
 #include <QDebug>
 #include <QHBoxLayout>
@@ -243,8 +244,6 @@ bool ImageBooth::isImageVisible(int imageIndex) {
  * @brief Create the first images in the image booth
  */
 void ImageBooth::createFirstImages() {
-    int foldersLineNumber = (getCurrentFoldersSize() / data->getSizesPtr()->imagesBoothSizes->widthImageNumber) + 1;
-
     for (int line = 0; line < maxVisibleLines; line++) {
         auto* lineLayout = new QHBoxLayout();
         lineLayout->setAlignment(Qt::AlignLeft);
@@ -257,7 +256,7 @@ void ImageBooth::createFirstImages() {
         int folderNumber = (line * imagePerLine) + nbrInLine;
 
         for (int i = 0; i < imagePerLine; i++) {
-            auto* imageButton = new ClickableLabel(data, Const::IconPath::FOLDER,
+            auto* imageButton = new ClickableLabel(data, Const::ImagePath::LOADING,
                                                    "", this, imageSize, false, 0, true);
             imageButton->hide();
             lineLayout->addWidget(imageButton);

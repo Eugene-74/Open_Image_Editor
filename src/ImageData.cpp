@@ -228,8 +228,6 @@ void ImageData::loadData() {
                 metaData.getLongitude() != -1) {
                 latitude = convertGpsCoordinateToDecimal(exifData["Exif.GPSInfo.GPSLatitude"].toString());
                 longitude = convertGpsCoordinateToDecimal(exifData["Exif.GPSInfo.GPSLongitude"].toString());
-            } else {
-                qWarning() << "GPS data not found in metadata.";
             }
 
             metaData.setDataLoaded(true);

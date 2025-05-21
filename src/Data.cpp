@@ -1752,15 +1752,15 @@ void Data::stopAllThreads() {
  * @param model The name of the model file (without extension)
  * @return The loaded network
  */
-cv::dnn::Net* load_net(std::string model) {
+cv::dnn::Net load_net(std::string model) {
     bool is_cuda = false;
     if (cv::cuda::getCudaEnabledDeviceCount() > 0) {
         is_cuda = true;
     }
 
-    cv::dnn::Net* result = new cv::dnn::Net();
+    cv::dnn::Net result;
     try {
-        *result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
+        result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
     } catch (const cv::Exception& e) {
         qWarning() << "Error loading model:" << QString::fromStdString(model) << " - " << e.what();
 
@@ -1771,23 +1771,19 @@ cv::dnn::Net* load_net(std::string model) {
         }
 
         try {
-            *result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
+            result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
         } catch (const cv::Exception& e) {
             qWarning() << "Error loading model:" << QString::fromStdString(model) << " - " << e.what();
             // showErrorMessage(nullptr, "Error with the model", "Error loading model\nThe model is broken.");
         }
     }
 
-    if (result->empty()) {
-        return nullptr;
-    }
-
     if (is_cuda) {
-        result->setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
-        result->setPreferableTarget(cv::dnn::DNN_TARGET_CUDA_FP16);
+        result.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
+        result.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA_FP16);
     } else {
-        result->setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
-        result->setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
+        result.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
+        result.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
     }
     return result;
 }
@@ -1845,8 +1841,8 @@ DetectedObjects* Data::detect(std::string imagePath, QImage image, std::string m
         return nullptr;
     }
 
-    cv::dnn::Net* net = load_net(model);
-    if (!net) {
+    cv::dnn::Net net = load_net(model);
+    if (net.empty()) {
         qWarning() << "Failed to load the model.";
         return nullptr;
     }
@@ -1861,14 +1857,14 @@ DetectedObjects* Data::detect(std::string imagePath, QImage image, std::string m
     auto input_image = format_yolov5(mat);
 
     cv::dnn::blobFromImage(input_image, blob, 1. / 255., cv::Size(Const::Yolo::INPUT_WIDTH, Const::Yolo::INPUT_HEIGHT), cv::Scalar(), true, false);
-    net->setInput(blob);
+    net.setInput(blob);
     std::vector<cv::Mat> outputs;
 
     auto start = std::chrono::high_resolution_clock::now();
-    net->forward(outputs, net->getUnconnectedOutLayersNames());
+    net.forward(outputs, net.getUnconnectedOutLayersNames());
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> detectionTime = end - start;
-    if (detectionTime.count() > 5) {
+    if (detectionTime.count() > 0) {
         qWarning() << "Detection time with " << QString::fromStdString(model) << ":" << detectionTime.count() << " seconds";
     }
 
@@ -1926,6 +1922,9 @@ DetectedObjects* Data::detect(std::string imagePath, QImage image, std::string m
         detectedObjectsMap[class_name].emplace_back(boxes[idx], confidences[idx]);
     }
     detectedObjects->setDetectedObjects(detectedObjectsMap);
+
+    // ABSOLUMENT necessaire sinon on a une memory leak
+    // delete net;
     return detectedObjects;
 }
 
@@ -2092,6 +2091,8 @@ std::vector<int>* Data::getImagesSelectedPtr() {
  * @brief Check if the objetcs has been detected and detect them if not
  */
 void Data::checkDetectObjects() {
+    // TODO memory leak
+
     for (auto imageData : this->getImagesDataPtr()->getConst()) {
         int i = 0;
         if (imageData->isDetectionStatusLoading()) {
@@ -2124,7 +2125,10 @@ void Data::checkDetectObjects() {
                     } else {
                         imageData->setDetectionStatusNotLoaded();
                     }
-                    unloadFromCache(imagePath);
+                    if (!unloadFromCache(imagePath)) {
+                        qWarning() << "Error unloading image from cache: " << QString::fromStdString(imagePath);
+                    }
+
                     detectionWorking--;
                 }
             });
