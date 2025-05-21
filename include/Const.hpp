@@ -50,7 +50,7 @@ const std::map<std::string, Option> DEFAULT_OPTIONS = {
     // {"Language", Option("text", "en")},
     {"Language", Option("list", "en|en|fr|es")},
 
-    {"Sizes::imageBooth::ImagesPerLine", Option("text", "10")}};
+    {"Sizes::imageBooth::ImagesPerLine", Option("int", "10")}};
 
 namespace Const {
 const int MAX_WORKING_THUMBNAIL = 100;

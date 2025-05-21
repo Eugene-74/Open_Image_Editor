@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDoubleSpinBox>
 #include <QFileDialog>
 #include <QGraphicsOpacityEffect>
 #include <QHBoxLayout>
@@ -12,6 +13,7 @@
 #include <QPropertyAnimation>
 #include <QPushButton>
 #include <QScreen>
+#include <QSpinBox>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -211,6 +213,21 @@ std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std:
             if (idx >= 0) comboBox->setCurrentIndex(idx);
             rowLayout->addWidget(comboBox);
             widgets[key] = comboBox;
+        } else if (option.getTypeConst() == "int") {
+            auto* spinBox = new QSpinBox();
+            spinBox->setMinimum(INT_MIN);
+            spinBox->setMaximum(INT_MAX);
+            spinBox->setValue(std::stoi(option.getValueConst()));
+            rowLayout->addWidget(spinBox);
+            widgets[key] = spinBox;
+        } else if (option.getTypeConst() == "float") {
+            auto* doubleSpinBox = new QDoubleSpinBox();
+            doubleSpinBox->setMinimum(-1e9);
+            doubleSpinBox->setMaximum(1e9);
+            doubleSpinBox->setDecimals(6);
+            doubleSpinBox->setValue(std::stod(option.getValueConst()));
+            rowLayout->addWidget(doubleSpinBox);
+            widgets[key] = doubleSpinBox;
         }
         layout->addLayout(rowLayout);
     }
@@ -252,6 +269,10 @@ std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std:
                     newValue += "|" + item;
                 }
                 results[key] = newValue;
+            } else if (QSpinBox* spinBox = qobject_cast<QSpinBox*>(widget)) {
+                results[key] = std::to_string(spinBox->value());
+            } else if (QDoubleSpinBox* doubleSpinBox = qobject_cast<QDoubleSpinBox*>(widget)) {
+                results[key] = std::to_string(doubleSpinBox->value());
             }
         }
     }
