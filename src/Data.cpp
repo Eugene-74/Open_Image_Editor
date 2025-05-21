@@ -807,7 +807,7 @@ void Data::createFolders(Folders* currentFolders, std::string folderPath) {
         fs::create_directories(initialFolderPath);
     }
 
-    for (auto& folder : currentFolders->folders) {
+    for (auto folder : *currentFolders->getFolders()) {
         folderPath = initialFolderPath + "/" + folder.getName();
         if (!fs::exists(folderPath)) {
             fs::create_directories(folderPath);
@@ -1611,9 +1611,9 @@ void Data::removeImageFromFolders(ImageData& imageData) {
         std::string token;
         bool run = true;
         while (run && std::getline(iss, token, '/')) {
-            auto it = std::find_if(currentFolderBis->folders.begin(), currentFolderBis->folders.end(),
+            auto it = std::find_if(currentFolderBis->getFolders()->begin(), currentFolderBis->getFolders()->end(),
                                    [&token](const Folders& f) { return f.getName() == token; });
-            if (it != currentFolderBis->folders.end()) {
+            if (it != currentFolderBis->getFoldersConst().end()) {
                 currentFolderBis = &(*it);
             } else {
                 currentFolderBis = nullptr;
@@ -1676,9 +1676,9 @@ Folders* Data::findFolderByPath(Folders& root, const std::string& path) {
         if (token.empty()) {
             continue;
         }
-        auto it = std::find_if(current->folders.begin(), current->folders.end(),
+        auto it = std::find_if(current->getFolders()->begin(), current->getFolders()->end(),
                                [&token](const Folders& f) { return f.getName() == token; });
-        if (it != current->folders.end()) {
+        if (it != current->getFoldersConst().end()) {
             current = &(*it);
         } else {
             return nullptr;
