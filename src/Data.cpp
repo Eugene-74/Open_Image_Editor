@@ -958,6 +958,8 @@ void Data::loadData() {
             options[key] = Option(type, value);
         }
         optionsFile.close();
+    } else {
+        options = DEFAULT_OPTIONS;
     }
 }
 
