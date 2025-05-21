@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QFileDialog>
 #include <QGraphicsOpacityEffect>
 #include <QHBoxLayout>
@@ -188,6 +189,28 @@ std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std:
                     lineEdit->setText(dirPath);
                 }
             });
+        } else if (option.getTypeConst() == "list") {
+            auto* comboBox = new QComboBox();
+            std::string valueStr = option.getValueConst();
+            size_t pos = valueStr.find('|');
+            std::string currentValue = valueStr.substr(0, pos);
+            std::vector<std::string> items;
+            if (pos != std::string::npos) {
+                std::string rest = valueStr.substr(pos + 1);
+                size_t start = 0, end;
+                while ((end = rest.find('|', start)) != std::string::npos) {
+                    items.push_back(rest.substr(start, end - start));
+                    start = end + 1;
+                }
+                items.push_back(rest.substr(start));
+            }
+            for (const auto& item : items) {
+                comboBox->addItem(QString::fromStdString(item));
+            }
+            int idx = comboBox->findText(QString::fromStdString(currentValue));
+            if (idx >= 0) comboBox->setCurrentIndex(idx);
+            rowLayout->addWidget(comboBox);
+            widgets[key] = comboBox;
         }
         layout->addLayout(rowLayout);
     }
@@ -210,6 +233,25 @@ std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std:
                 results[key] = checkBox->isChecked() ? "true" : "false";
             } else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(widget)) {
                 results[key] = lineEdit->text().toStdString();
+            } else if (QComboBox* comboBox = qobject_cast<QComboBox*>(widget)) {
+                std::string selected = comboBox->currentText().toStdString();
+                std::string valueStr = options.at(key).getValueConst();
+                size_t pos = valueStr.find('|');
+                std::vector<std::string> items;
+                if (pos != std::string::npos) {
+                    std::string rest = valueStr.substr(pos + 1);
+                    size_t start = 0, end;
+                    while ((end = rest.find('|', start)) != std::string::npos) {
+                        items.push_back(rest.substr(start, end - start));
+                        start = end + 1;
+                    }
+                    items.push_back(rest.substr(start));
+                }
+                std::string newValue = selected;
+                for (const auto& item : items) {
+                    newValue += "|" + item;
+                }
+                results[key] = newValue;
             }
         }
     }

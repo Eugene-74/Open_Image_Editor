@@ -47,7 +47,9 @@ const std::string IMAGESDATA_SAVE_PATH = APP_FILES.toStdString() + "/save." + AP
 const std::string OPTIONS_SAVE_PATH = APP_FILES.toStdString() + "/option." + APP_NAME;
 
 const std::map<std::string, Option> DEFAULT_OPTIONS = {
-    {"Language", Option("text", "en")},
+    // {"Language", Option("text", "en")},
+    {"Language", Option("list", "en|en|fr|es")},
+
     {"Sizes::imageBooth::ImagesPerLine", Option("text", "10")}};
 
 namespace Const {

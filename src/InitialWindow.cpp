@@ -497,7 +497,10 @@ void InitialWindow::showMainWindow() {
  * @return ClickableLabel* Pointer to the created ClickableLabel object
  */
 ClickableLabel* InitialWindow::createImageLanguage() {
-    QString language = QString::fromStdString(data->getOptionsConst().at("Language").getValueConst());
+    std::string valueStr = data->getOptionsConst().at("Language").getValueConst();
+    size_t pos = valueStr.find('|');
+    std::string currentValue = valueStr.substr(0, pos);
+    QString language = QString::fromStdString(currentValue);
     Text::translationManager.setLanguage(language.toStdString());
 
     if (language == "en") {
@@ -507,7 +510,7 @@ ClickableLabel* InitialWindow::createImageLanguage() {
     } else if (language == "es") {
         language = Const::IconPath::Language::ES;
     } else {
-        *(*data.get()->getOptionsPtr())["Language"].getValuePtr() = "en";
+        *(*data.get()->getOptionsPtr())["Language"].getValuePtr() = DEFAULT_OPTIONS.at("Language").getValueConst();
         language = Const::IconPath::Language::EN;
     }
 
@@ -607,8 +610,11 @@ void InitialWindow::openOption() {
     for (const auto& [key, value] : options) {
         *(*data->getOptionsPtr())[key].getValuePtr() = value;
     }
-
-    Text::translationManager.setLanguage(data->getOptionsConst().at("Language").getValueConst());
+    // TODO mettre en fonction dans la class Option -> getValue
+    std::string valueStr = data->getOptionsConst().at("Language").getValueConst();
+    size_t pos = valueStr.find('|');
+    std::string currentValue = valueStr.substr(0, pos);
+    QString language = QString::fromStdString(currentValue);
 
     emit reload();
 }
