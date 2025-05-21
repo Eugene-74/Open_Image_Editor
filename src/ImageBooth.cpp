@@ -14,6 +14,7 @@
 #include <QSpacerItem>
 #include <QTimer>
 
+#include "ClickableFolderLabel.hpp"
 #include "ClickableLabel.hpp"
 #include "Const.hpp"
 #include "Conversion.hpp"
@@ -619,10 +620,10 @@ void ImageBooth::updateImages() {
                         lineLayout->replaceWidget(lastFolderButton, folderButton);
                         lastFolderButton->deleteLater();
                     } else {
-                        auto* folderButton = new ClickableLabel(data, Const::IconPath::FOLDER,
-                                                                QString::fromStdString(data->getCurrentFolders()->getFolder(folderNbr - 1)->getName()),
-                                                                this, imageSize, false, 0, true);
-
+                        auto* folderButton = new ClickableFolderLabel(data, Const::IconPath::FOLDER,
+                                                                      QString::fromStdString(data->getCurrentFolders()->getFolder(folderNbr - 1)->getName()),
+                                                                      this, imageSize, false, 0, true);
+                        folderButton->setText(data->getCurrentFolders()->getFolder(folderNbr - 1)->getName());
                         int totalImages = 0;
                         auto* currentFolder = data->getCurrentFolders()->getFolder(folderNbr - 1);
                         if (currentFolder) {
