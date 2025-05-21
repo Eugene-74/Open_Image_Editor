@@ -2,11 +2,14 @@
 #include <QApplication>
 #include <QCursor>
 #include <QDebug>
+#include <QFile>
 #include <QGuiApplication>
 #include <QIcon>
+#include <QMessageBox>
 #include <QScreen>
 
 #include "InitialWindow.hpp"
+#include "Recover.hpp"
 #include "Text.hpp"
 
 /**
@@ -32,7 +35,9 @@ int main(int argc, char* argv[]) {
 
         return app.exec();
     } catch (const std::exception& e) {
+        deleteSave();
         qFatal() << "Exception caught:" << e.what();
+
     } catch (...) {
         qFatal() << "Unknown exception caught!";
     }
