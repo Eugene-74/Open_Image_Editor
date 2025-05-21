@@ -15,16 +15,17 @@ class MainWindow : public QMainWindow {
     MainWindow(std::shared_ptr<Data> dat, QWidget* parent = nullptr);
     ~MainWindow() {}
 
-    // TODO make private
-    std::shared_ptr<Data> data;
-    QHBoxLayout* mainLayout;
-    QHBoxLayout* switchLayout;
-
-    QSize* actionSize = &data->getSizesPtr()->mainWindowSizes->actionSize;
    signals:
     void switchToImageBooth();
     void switchToImageEditor();
 
    protected:
     void enterEvent(QEnterEvent* event) override;
+
+   private:
+    std::shared_ptr<Data> data;
+    QHBoxLayout* mainLayout;
+    QHBoxLayout* switchLayout;
+
+    QSize* actionSize = &data->getSizesPtr()->mainWindowSizes->actionSize;
 };
