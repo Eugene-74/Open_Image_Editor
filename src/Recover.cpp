@@ -9,9 +9,11 @@
 #include "Const.hpp"
 
 void deleteSave() {
-    qFatal() << "Deleting save folder and resterting application...";
+    qFatal() << "Deleting save file and resterting application...";
     QTimer::singleShot(1000, []() {
-        QProcess::startDetached("rm", QStringList() << "-rf" << QString::fromUtf8(SAVE_PATH));
+        // TODO mettre en const
+        QProcess::startDetached("rm", QStringList() << "-rf" << QString::fromUtf8(SAVE_PATH + "save.OpenImageEditor"));
         QProcess::startDetached(QCoreApplication::applicationFilePath());
     });
 }
+
