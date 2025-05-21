@@ -282,7 +282,7 @@ void MainImage::paintEvent(QPaintEvent* event) {
         painter.setPen(Qt::DashLine);
         painter.drawRect(QRect(cropStart, cropEnd));
     }
-    if (personsEditor && !data->getImagesDataPtr()->getCurrentImageData()->getDetectedObjects().empty()) {
+    if (this->getPersonsEditorConst() && !data->getImagesDataPtr()->getCurrentImageData()->getDetectedObjects().empty()) {
         std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects = data->getImagesDataPtr()->getCurrentImageData()->getDetectedObjects();
 
         // Calculate the scale factors
@@ -380,4 +380,20 @@ std::vector<QPoint> MainImage::adjustPointsForOrientation(const std::vector<QPoi
     }
 
     return adjustedPoints;
+}
+
+/**
+ * @brief Get the personsEditor status
+ * @return True if the personsEditor is enabled, false otherwise
+ */
+bool MainImage::getPersonsEditorConst() const {
+    return this->personsEditor;
+}
+
+/**
+ * @brief Set the personsEditor status
+ * @param personsEditor True to enable the personsEditor, false to disable it
+ */
+void MainImage::setPersonsEditor(bool personsEditor) {
+    this->personsEditor = personsEditor;
 }

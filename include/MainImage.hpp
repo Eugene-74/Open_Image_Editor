@@ -13,10 +13,10 @@ class MainImage : public QLabel {
     Q_OBJECT
 
    public:
-    //    TODO make private
-    bool personsEditor = false;
-
     explicit MainImage(std::shared_ptr<Data> data, const QString& i, QSize size = QSize(0, 0), bool setSize = true, bool personsEditor = false, bool square = false, bool force = false);
+
+    bool getPersonsEditorConst() const;
+    void setPersonsEditor(bool personsEditor);
 
    signals:
     void clicked();
@@ -32,6 +32,8 @@ class MainImage : public QLabel {
     void paintEvent(QPaintEvent* event) override;
 
    private:
+    bool personsEditor = false;
+
     QString imagePath;
     QSize mSize;
     bool setSize;

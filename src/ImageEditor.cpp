@@ -811,11 +811,11 @@ ClickableLabel* ImageEditor::createImagePersons() {
             personsEditor = true;
             imagePersonsNew->setBackground(Const::Color::DARK_RED, Const::Color::LIGHT_RED);
 
-            imageLabel->personsEditor = true;
+            imageLabel->setPersonsEditor(true);
         } else {
             personsEditor = false;
             imagePersonsNew->resetBackground();
-            imageLabel->personsEditor = false;
+            imageLabel->setPersonsEditor(false);
         }
         imageLabel->update();
     });
