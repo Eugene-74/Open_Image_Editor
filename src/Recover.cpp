@@ -12,9 +12,9 @@
 #include "Const.hpp"
 
 void recover() {
-    if (QFile(QString::fromUtf8(IMAGESDATA_SAVE_DATA_PATH)).exists()) {
+    if (QFile(QString::fromUtf8(IMAGESDATA_SAVE_PATH)).exists()) {
         deleteSaveFile();
-    } else if (QFile(QString::fromUtf8(SAVE_PATH)).exists()) {
+    } else if (QFile(APP_FILES).exists()) {
         deleteSaveFolder();
     } else {
         reDownloadApp();
@@ -24,7 +24,7 @@ void recover() {
 void deleteSaveFile() {
     qFatal() << "Deleting save file and restarting application...";
     QTimer::singleShot(1000, []() {
-        QProcess::startDetached("rm", QStringList() << "-rf" << QString::fromUtf8(IMAGESDATA_SAVE_DATA_PATH));
+        QProcess::startDetached("rm", QStringList() << "-rf" << QString::fromUtf8(IMAGESDATA_SAVE_PATH));
         QProcess::startDetached(QCoreApplication::applicationFilePath());
     });
 }
@@ -32,7 +32,7 @@ void deleteSaveFile() {
 void deleteSaveFolder() {
     qFatal() << "Deleting save folder and restarting application...";
     QTimer::singleShot(1000, []() {
-        QProcess::startDetached("rm", QStringList() << "-rf" << QString::fromUtf8(SAVE_PATH));
+        QProcess::startDetached("rm", QStringList() << "-rf" << APP_FILES);
         QProcess::startDetached(QCoreApplication::applicationFilePath());
     });
 }

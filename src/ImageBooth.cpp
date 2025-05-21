@@ -27,8 +27,6 @@
  */
 ImageBooth::ImageBooth(std::shared_ptr<Data> dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
-    parent->setWindowTitle(IMAGE_BOOTH_WINDOW_NAME);
-
     data->getImagesDataPtr()->getCurrent()->clear();
 
     imageQuality = Const::Thumbnail::POOR_QUALITY;
@@ -290,7 +288,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, imageQuality, true);
 
-    } else if (data->hasThumbnail(imagePath, IMAGE_BOOTH_IMAGE_POOR_QUALITY)) {
+    } else if (data->hasThumbnail(imagePath, Const::Thumbnail::POOR_QUALITY)) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, imageQuality, true);
     } else {

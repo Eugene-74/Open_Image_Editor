@@ -169,10 +169,10 @@ bool checkForUpdate() {
     if (!hasConnection()) {
         return false;
     }
-    if (!fs::exists(SAVE_PATH)) {
-        fs::create_directories(SAVE_PATH);
+    if (!fs::exists(APP_FILES.toStdString())) {
+        fs::create_directories(APP_FILES.toStdString());
     }
-    for (const auto& entry : fs::directory_iterator(SAVE_PATH)) {
+    for (const auto& entry : fs::directory_iterator(APP_FILES.toStdString())) {
         if (entry.path().extension() == ".exe") {
             fs::remove(entry.path());
         }
@@ -195,7 +195,7 @@ bool checkForUpdate() {
         showQuestionMessage(nullptr, "A new version of the application is available\nDo you want to open the download page?", [latestMajor, latestMinor, latestPatch](bool result) {
                                 if (result) {
                                     std::string downloadUrl = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/v" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
-                                    std::string outputPath = SAVE_PATH + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
+                                    std::string outputPath = APP_FILES.toStdString() + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
 
                                     QProgressDialog progressDialog;
                                     progressDialog.setLabelText("Downloading...");

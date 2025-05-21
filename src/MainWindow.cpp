@@ -15,8 +15,6 @@
  */
 MainWindow::MainWindow(std::shared_ptr<Data> dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
-    parent->setWindowTitle(MAIN_WINDOW_WINDOW_NAME);
-
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);
     mainLayout = new QHBoxLayout(centralWidget);

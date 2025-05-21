@@ -41,22 +41,10 @@ const int TIME_UNDO_VISUALISATION = 500;
 
 const int TIME_BEFORE_REZISE = 100;
 
-const QString IMAGE_EDITOR_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Editor Window";
-const QString IMAGE_BOOTH_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Booth Window";
-const QString MAIN_WINDOW_WINDOW_NAME = QString::fromStdString(APP_NAME) + " : Image Booth Window";
+const std::string THUMBNAIL_PATH = APP_FILES.toStdString() + "/thumbnails";
 
-const int IMAGE_BOOTH_IMAGE_QUALITY = 256;
-const int IMAGE_BOOTH_IMAGE_POOR_QUALITY = 16;
-
-#ifdef _WIN32
-const std::string SAVE_PATH = APPDATA_PATH.toStdString() + "/" + APP_NAME;
-#else
-const std::string SAVE_PATH = HOME_PATH.toStdString() + "/" + APP_NAME;
-#endif
-
-const std::string THUMBNAIL_PATH = SAVE_PATH + "/thumbnails";
-
-const std::string IMAGESDATA_SAVE_DATA_PATH = SAVE_PATH + "/save." + APP_NAME;
+const std::string IMAGESDATA_SAVE_PATH = APP_FILES.toStdString() + "/save." + APP_NAME;
+const std::string OPTIONS_SAVE_PATH = APP_FILES.toStdString() + "/option." + APP_NAME;
 
 const std::map<std::string, Option> DEFAULT_OPTIONS = {
     {"Language", Option("text", "en")},

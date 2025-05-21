@@ -35,8 +35,8 @@ int main(int argc, char* argv[]) {
 
         return app.exec();
     } catch (const std::exception& e) {
-        recover();
         qFatal() << "Exception caught:" << e.what();
+        recover();
 
     } catch (...) {
         qFatal() << "Unknown exception caught!";

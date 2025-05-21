@@ -45,7 +45,6 @@
 ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     : QMainWindow(parent), data(dat) {
     this->installEventFilter(this);
-    parent->setWindowTitle(IMAGE_EDITOR_WINDOW_NAME);
 
     QWidget* centralWidget = new QWidget(parent);
     setCentralWidget(centralWidget);

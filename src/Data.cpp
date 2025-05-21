@@ -822,20 +822,18 @@ void Data::createFolders(Folders* currentFolders, std::string folderPath) {
  */
 void Data::saveData() {
     qInfo() << "Saving data";
-
-    std::string filePath = IMAGESDATA_SAVE_DATA_PATH;
-    std::ofstream outFile(filePath, std::ios::binary);
+    std::ofstream outFile(IMAGESDATA_SAVE_PATH, std::ios::binary);
     if (!outFile) {
-        if (!fs::exists(fs::path(filePath).parent_path())) {
-            if (!fs::create_directories(fs::path(filePath).parent_path())) {
-                qCritical() << "Couldn't create directories for save file : " << fs::path(filePath).parent_path();
+        if (!fs::exists(fs::path(IMAGESDATA_SAVE_PATH).parent_path())) {
+            if (!fs::create_directories(fs::path(IMAGESDATA_SAVE_PATH).parent_path())) {
+                qCritical() << "Couldn't create directories for save file : " << fs::path(IMAGESDATA_SAVE_PATH).parent_path();
                 return;
             }
         }
 
-        outFile.open(filePath, std::ios::binary);
+        outFile.open(IMAGESDATA_SAVE_PATH, std::ios::binary);
         if (!outFile) {
-            qCritical() << "Couldn't open save file : " << filePath;
+            qCritical() << "Couldn't open save file : " << IMAGESDATA_SAVE_PATH;
             return;
         }
     }
@@ -854,23 +852,6 @@ void Data::saveData() {
         imageData->save(outFile);
     }
 
-    size_t optionsSize = options.size();
-    outFile.write(reinterpret_cast<const char*>(&optionsSize),
-                  sizeof(optionsSize));
-    for (const auto& [key, option] : options) {
-        size_t keySize = key.size();
-        outFile.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
-        outFile.write(key.c_str(), keySize);
-
-        size_t typeSize = option.getTypeConst().size();
-        outFile.write(reinterpret_cast<const char*>(&typeSize), sizeof(typeSize));
-        outFile.write(option.getTypeConst().c_str(), typeSize);
-
-        size_t valueSize = option.getValueConst().size();
-        outFile.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
-        outFile.write(option.getValueConst().c_str(), valueSize);
-    }
-
     rootFolders.save(outFile);
 
     std::string currentFolderPath = getFolderPath(currentFolder);
@@ -879,6 +860,36 @@ void Data::saveData() {
     outFile.write(currentFolderPath.c_str(), pathSize);
 
     outFile.close();
+
+    // Save options to a separate file
+    {
+        std::ofstream optionsFile(OPTIONS_SAVE_PATH, std::ios::binary);
+        if (!optionsFile) {
+            if (!fs::exists(fs::path(OPTIONS_SAVE_PATH).parent_path())) {
+                fs::create_directories(fs::path(OPTIONS_SAVE_PATH).parent_path());
+            }
+            optionsFile.open(OPTIONS_SAVE_PATH, std::ios::binary);
+            if (!optionsFile) {
+                qCritical() << "Couldn't open options save file : " << OPTIONS_SAVE_PATH;
+            }
+        }
+        size_t optionsSize = options.size();
+        optionsFile.write(reinterpret_cast<const char*>(&optionsSize), sizeof(optionsSize));
+        for (const auto& [key, option] : options) {
+            size_t keySize = key.size();
+            optionsFile.write(reinterpret_cast<const char*>(&keySize), sizeof(keySize));
+            optionsFile.write(key.c_str(), keySize);
+
+            size_t typeSize = option.getTypeConst().size();
+            optionsFile.write(reinterpret_cast<const char*>(&typeSize), sizeof(typeSize));
+            optionsFile.write(option.getTypeConst().c_str(), typeSize);
+
+            size_t valueSize = option.getValueConst().size();
+            optionsFile.write(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
+            optionsFile.write(option.getValueConst().c_str(), valueSize);
+        }
+        optionsFile.close();
+    }
     qInfo() << "data saved";
 }
 
@@ -886,66 +897,68 @@ void Data::saveData() {
  * @brief Load the data from a file
  */
 void Data::loadData() {
-    std::string filePath = IMAGESDATA_SAVE_DATA_PATH;
-    std::ifstream inFile(filePath, std::ios::binary);
-    if (!inFile) {
-        qCritical() << "Couldn't open load file : " << filePath;
-        return;
+    std::ifstream inFile(IMAGESDATA_SAVE_PATH, std::ios::binary);
+    if (inFile) {
+        model.load(inFile);
+
+        size_t imagesDataSize;
+        inFile.read(reinterpret_cast<char*>(&imagesDataSize), sizeof(imagesDataSize));
+        for (size_t i = 0; i < imagesDataSize; ++i) {
+            ImageData* imageData = new ImageData();
+            imageData->load(inFile);
+            imagesData.get()->push_back(imageData);
+        }
+
+        int index = 0;
+        for (auto* imageData : *imagesData.get()) {
+            imagesData.setImageMapValue(imageData->getImagePath(), imageData);
+            index++;
+        }
+
+        size_t deletedImagesDataSize;
+        inFile.read(reinterpret_cast<char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
+        for (size_t i = 0; i < deletedImagesDataSize; ++i) {
+            ImageData* imageData = new ImageData();
+            imageData->load(inFile);
+            deletedImagesData.get()->push_back(imageData);
+        }
+
+        rootFolders.load(inFile);
+
+        size_t pathSize;
+        inFile.read(reinterpret_cast<char*>(&pathSize), sizeof(pathSize));
+        std::string currentFolderPath(pathSize, '\0');
+        inFile.read(&currentFolderPath[0], pathSize);
+        currentFolder = findFolderByPath(rootFolders, currentFolderPath);
+
+        inFile.close();
     }
-
-    model.load(inFile);
-
-    size_t imagesDataSize;
-    inFile.read(reinterpret_cast<char*>(&imagesDataSize), sizeof(imagesDataSize));
-    for (size_t i = 0; i < imagesDataSize; ++i) {
-        ImageData* imageData = new ImageData();
-        imageData->load(inFile);
-        imagesData.get()->push_back(imageData);
+    if (!options.empty()) {
+        options.clear();
     }
+    std::ifstream optionsFile(OPTIONS_SAVE_PATH, std::ios::binary);
+    if (optionsFile) {
+        size_t optionsSize;
+        optionsFile.read(reinterpret_cast<char*>(&optionsSize), sizeof(optionsSize));
+        for (size_t i = 0; i < optionsSize; ++i) {
+            std::string key, type, value;
+            size_t keySize, typeSize, valueSize;
+            optionsFile.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
+            key.resize(keySize);
+            optionsFile.read(&key[0], keySize);
 
-    int index = 0;
-    for (auto* imageData : *imagesData.get()) {
-        imagesData.setImageMapValue(imageData->getImagePath(), imageData);
-        index++;
+            optionsFile.read(reinterpret_cast<char*>(&typeSize), sizeof(typeSize));
+            type.resize(typeSize);
+            optionsFile.read(&type[0], typeSize);
+
+            optionsFile.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
+            value.resize(valueSize);
+            optionsFile.read(&value[0], valueSize);
+
+            options[key] = Option(type, value);
+        }
+        optionsFile.close();
     }
-
-    size_t deletedImagesDataSize;
-    inFile.read(reinterpret_cast<char*>(&deletedImagesDataSize), sizeof(deletedImagesDataSize));
-    for (size_t i = 0; i < deletedImagesDataSize; ++i) {
-        ImageData* imageData = new ImageData();
-        imageData->load(inFile);
-        deletedImagesData.get()->push_back(imageData);
-    }
-
-    options.clear();
-    size_t optionsSize;
-    inFile.read(reinterpret_cast<char*>(&optionsSize), sizeof(optionsSize));
-    for (size_t i = 0; i < optionsSize; ++i) {
-        std::string key, type, value;
-        size_t keySize, typeSize, valueSize;
-        inFile.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
-        key.resize(keySize);
-        inFile.read(&key[0], keySize);
-
-        inFile.read(reinterpret_cast<char*>(&typeSize), sizeof(typeSize));
-        type.resize(typeSize);
-        inFile.read(&type[0], typeSize);
-
-        inFile.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
-        value.resize(valueSize);
-        inFile.read(&value[0], valueSize);
-
-        options[key] = Option(type, value);
-    }
-    rootFolders.load(inFile);
-
-    size_t pathSize;
-    inFile.read(reinterpret_cast<char*>(&pathSize), sizeof(pathSize));
-    std::string currentFolderPath(pathSize, '\0');
-    inFile.read(&currentFolderPath[0], pathSize);
-    currentFolder = findFolderByPath(rootFolders, currentFolderPath);
-
-    inFile.close();
 }
 
 /**
