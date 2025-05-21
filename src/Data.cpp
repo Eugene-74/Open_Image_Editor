@@ -1923,8 +1923,6 @@ DetectedObjects* Data::detect(std::string imagePath, QImage image, std::string m
     }
     detectedObjects->setDetectedObjects(detectedObjectsMap);
 
-    // ABSOLUMENT necessaire sinon on a une memory leak
-    // delete net;
     return detectedObjects;
 }
 
@@ -2091,8 +2089,6 @@ std::vector<int>* Data::getImagesSelectedPtr() {
  * @brief Check if the objetcs has been detected and detect them if not
  */
 void Data::checkDetectObjects() {
-    // TODO memory leak
-
     for (auto imageData : this->getImagesDataPtr()->getConst()) {
         int i = 0;
         if (imageData->isDetectionStatusLoading()) {
