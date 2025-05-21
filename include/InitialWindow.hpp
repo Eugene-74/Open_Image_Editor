@@ -79,5 +79,5 @@ class InitialWindow : public QMainWindow {
 
 bool isDarkMode();
 
-bool checkForUpdate(QProgressDialog* progressDialog);
+bool checkForUpdate();
 void startLog();

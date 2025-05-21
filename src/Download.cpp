@@ -62,11 +62,7 @@ int progressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownlo
  * @details This function is used to update the progress dialog during the download process.
  */
 int progressCallbackForContinuous(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded) {
-    QProgressDialog* progressDialog = static_cast<QProgressDialog*>(ptr);
     QApplication::processEvents();
-    if (progressDialog->wasCanceled()) {
-        return 1;  // Stop the download
-    }
     return 0;
 }
 
@@ -218,7 +214,7 @@ bool downloadFile(const std::string& url, const std::string& outputPath, QProgre
  * @return The latest GitHub tag as a string
  * @details This function uses the GitHub API to get the latest release tag from the specified repository.
  */
-std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
+std::string getLatestGitHubTag() {
     if (!hasConnection()) {
         return "0.0.0";
     }
@@ -253,10 +249,6 @@ std::string getLatestGitHubTag(QProgressDialog* progressDialog) {
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
         curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
-
-        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progressCallbackForContinuous);
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-        curl_easy_setopt(curl, CURLOPT_XFERINFODATA, progressDialog);
 
         res = curl_easy_perform(curl);
         if (res == CURLE_OPERATION_TIMEDOUT) {

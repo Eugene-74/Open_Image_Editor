@@ -148,20 +148,14 @@ InitialWindow::InitialWindow() {
         windowLayout->addLayout(bottomLayout);
 
         createMainWindow(data);
-        QProgressDialog progressDialog("Checking for updates...", nullptr, 0, 0, this);
-        progressDialog.setWindowModality(Qt::ApplicationModal);
-        QPushButton* cancelButton = new QPushButton("Cancel", &progressDialog);
-        QObject::connect(cancelButton, &QPushButton::clicked, &progressDialog, &QProgressDialog::cancel);
-        progressDialog.setCancelButton(cancelButton);
-        progressDialog.show();
-        progressDialog.move(0, 0);
-        QApplication::processEvents();
+
         if (hasConnection()) {
-            checkForUpdate(&progressDialog);
+            data->addThreadToFront([this]() {
+                checkForUpdate();
+            });
         } else {
             data->setCenterText("No internet connection, could not check for updates");
         }
-        progressDialog.close();
     });
 }
 
@@ -171,7 +165,7 @@ InitialWindow::InitialWindow() {
  * @return true if it's updating, false otherwise
  * @details This function checks for the latest version of the application on GitHub and compares it with the current version.
  */
-bool checkForUpdate(QProgressDialog* progressDialog) {
+bool checkForUpdate() {
     if (!hasConnection()) {
         return false;
     }
@@ -184,7 +178,7 @@ bool checkForUpdate(QProgressDialog* progressDialog) {
         }
     }
 
-    std::string latestTag = getLatestGitHubTag(progressDialog);
+    std::string latestTag = getLatestGitHubTag();
 
     int latestMajor = 0;
     int latestMinor = 0;
@@ -220,7 +214,7 @@ bool checkForUpdate(QProgressDialog* progressDialog) {
                                     
                                     QApplication::quit();
                                     
-                                } }, "Download last version", 0, 0);
+                                } }, "Download last version");
         return true;
     }
 
