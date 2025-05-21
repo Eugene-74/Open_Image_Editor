@@ -13,24 +13,6 @@ class QPoint;
 // class MetaData;
 
 class ImageData {
-   private:
-    enum class DetectionStatus {
-        NotLoaded,
-        Loading,
-        Loaded
-    };
-
-    MetaData metaData;
-    DetectedObjects detectedObjects;
-    Folders folders;
-    DetectionStatus detectionStatus = DetectionStatus::NotLoaded;
-
-    std::vector<std::vector<QPoint>> cropSizes;
-    int orientation;
-    long date = 0;
-    double latitude = 0.0;
-    double longitude = 0.0;
-
    public:
     ImageData();
     ImageData(const Folders folders);
@@ -109,4 +91,22 @@ class ImageData {
     void setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes);
 
     void clearMetaData();
+
+   private:
+    enum class DetectionStatus {
+        NotLoaded,
+        Loading,
+        Loaded
+    };
+
+    MetaData metaData;
+    DetectedObjects detectedObjects;
+    Folders folders;
+    DetectionStatus detectionStatus = DetectionStatus::NotLoaded;
+
+    std::vector<std::vector<QPoint>> cropSizes;
+    int orientation;
+    long date = 0;
+    double latitude = 0.0;
+    double longitude = 0.0;
 };

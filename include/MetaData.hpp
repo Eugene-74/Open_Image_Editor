@@ -7,6 +7,7 @@
 #include <QObject>
 class MetaData {
    public:
+    //  TODO make private
     bool dataLoaded = false;
 
     Exiv2::ExifData exifMetaData;

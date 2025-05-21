@@ -8,9 +8,6 @@ class QImage;
 class Data;
 
 class DetectedObjects {
-   private:
-    std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects;
-
    public:
     void save(std::ofstream& out) const;
     void load(std::ifstream& in);
@@ -19,6 +16,9 @@ class DetectedObjects {
     auto getDetectedObjectsConst() const -> std::map<std::string, std::vector<std::pair<cv::Rect, float>>>;
 
     void setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects);
+
+   private:
+    std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects;
 };
 
 bool isCudaAvailable();

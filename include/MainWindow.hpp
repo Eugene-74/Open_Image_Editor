@@ -15,6 +15,7 @@ class MainWindow : public QMainWindow {
     MainWindow(std::shared_ptr<Data> dat, QWidget* parent = nullptr);
     ~MainWindow() {}
 
+    // TODO make private
     std::shared_ptr<Data> data;
     QHBoxLayout* mainLayout;
     QHBoxLayout* switchLayout;
