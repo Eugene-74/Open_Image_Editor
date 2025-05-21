@@ -104,17 +104,17 @@ bool startLoadingImagesFromFolder(QWidget* parent, std::shared_ptr<Data> data, c
     progressDialog.show();
     QApplication::processEvents();
 
-    ImagesData* imagesData = data->getImagesData();
+    ImagesData* imagesData = data->getImagesDataPtr();
     Folders* rootFolder = data->getRootFolders();
 
     if (!addFilesToTree(rootFolder, imagesData, imagePaths, nbrImage, progressDialog)) {
         return false;
     }
 
-    data->imagesData = *imagesData;
+    *data->getImagesDataPtr() = *imagesData;
 
     // progressDialog.setValue(0);
-    // progressDialog.setMaximum(data->getImagesData()->get()->size());
+    // progressDialog.setMaximum(data->getImagesDataPtr()->get()->size());
     // progressDialog.setLabelText("Loading images thumbnail ...");
     // progressDialog.show();
     // QApplication::processEvents();
@@ -122,7 +122,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, std::shared_ptr<Data> data, c
     // if (!loadImagesThumbnail(data, progressDialog)) {
     //     return false;
     // }
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         qCritical() << "No images found in the selected folder";
         return false;
     }
@@ -137,7 +137,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, std::shared_ptr<Data> data, c
 //  * @return true if images were loaded successfully, false otherwise
 //  */
 // bool loadImagesThumbnail(std::shared_ptr<Data> data, QProgressDialog& progressDialog) {
-//     int totalImages = data->getImagesData()->get()->size();
+//     int totalImages = data->getImagesDataPtr()->get()->size();
 //     int imagesPerThread = IMAGE_PER_THREAD;
 //     int thumbnailsCreated = 0;
 
@@ -148,7 +148,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, std::shared_ptr<Data> data, c
 //         data->addThread([start, end, data]() {
 //             for (int i = start; i < end; ++i) {
 //                 // data->createAllThumbnailIfNotExists(imageData->getImagePath(), Const::Thumbnail::HIGHT_QUALITY);
-//                 ImageData* imageData = data->getImagesData()->get()->at(i);
+//                 ImageData* imageData = data->getImagesDataPtr()->get()->at(i);
 //                 data->createThumbnailIfNotExists(imageData->getImagePath(), 16);
 //                 data->createThumbnailIfNotExists(imageData->getImagePath(), 128);
 //                 data->createThumbnailIfNotExists(imageData->getImagePath(), 256);
@@ -171,7 +171,7 @@ bool startLoadingImagesFromFolder(QWidget* parent, std::shared_ptr<Data> data, c
 //         qInfo() << "starting count" << imageIndices.size();
 //         try {
 //             for (int index : imageIndices) {
-//                 ImageData* imageData = data->getImagesData()->getImageData(index);
+//                 ImageData* imageData = data->getImagesDataPtr()->getImageData(index);
 
 //                 bool allThumbnailsExist = true;
 //                 for (int thumbnailSize : Const::Thumbnail::THUMBNAIL_SIZES) {

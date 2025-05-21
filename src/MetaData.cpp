@@ -84,6 +84,21 @@ long MetaData::getTimestamp() {
 }
 
 /**
+ * @brief Get the timestamp string from the metadata
+ * @return The timestamp string in the format "yyyy-MM-dd HH:mm:ss"
+ */
+QString MetaData::getTimestampString() {
+    for (auto& entry : exifMetaData) {
+        if (entry.key() == "Exif.Image.DateTime") {
+            QString dateTimeStr = QString::fromStdString(entry.toString());
+            QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
+            return dateTime.toString("yyyy-MM-dd HH:mm:ss");
+        }
+    }
+    return "";
+}
+
+/**
  * @brief Set the Exif data
  * @param key The Exif key to set
  * @param newValue The new value to set for the Exif key

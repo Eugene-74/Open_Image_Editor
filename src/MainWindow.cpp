@@ -34,10 +34,10 @@ MainWindow::MainWindow(std::shared_ptr<Data> dat, QWidget* parent)
     addImages->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(switchToBooth, &ClickableLabel::clicked, this, [this]() {
-        if (data->imagesData.get()->size() <= 0) {
+        if (data->getImagesDataPtr()->get()->size() <= 0) {
             addImagesFromFolder(data, this);
         }
-        if (data->imagesData.get()->size() > 0) {
+        if (data->getImagesDataPtr()->get()->size() > 0) {
             switchToImageBooth();
         }
     });

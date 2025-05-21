@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include <QObject>
 class MetaData {
    public:
     bool dataLoaded = false;
@@ -33,6 +33,7 @@ class MetaData {
 
     int getImageOrientation();
     long getTimestamp();
+    QString getTimestampString();
 
     void setLatitude(double latitude);
     double getLatitude() const;

@@ -86,7 +86,7 @@ void Data::revocerDeletedImage(int imageNbr) {
  */
 void Data::removeDeletedImages() {
     for (const auto& deletedImage : *deletedImagesData.get()) {
-        ImageData* imageData = getImagesData()->getImageData(deletedImage->getImagePath());
+        ImageData* imageData = this->getImagesDataPtr()->getImageData(deletedImage->getImagePath());
 
         removeImageFromFolders(*imageData);
 
@@ -210,7 +210,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
 QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                              bool setSize, int thumbnail, bool force) {
     if (imagePath.at(0) == ':') {
-        if (darkMode) {
+        if (getDarkMode()) {
             std::string newPath = imagePath;
             newPath.insert(newPath.find_first_of(':') + 1, "/255-255-255-255");
             if (QResource(QString::fromStdString(newPath)).isValid()) {
@@ -1214,7 +1214,7 @@ void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
  */
 void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
     ImageData* imageData = imagesData.getImageData(nbr);
-    imageData = getImagesData()->getImageData(imageData->getImagePath());
+    imageData = this->getImagesDataPtr()->getImageData(imageData->getImagePath());
 
     if (!isTurnable(imageData->getImagePath())) {
         qWarning() << "Image not turnable : " << imageData->getImagePath();
@@ -1356,7 +1356,7 @@ void Data::mirrorUpDown(int nbr, std::string extension, std::function<void()> re
                 });
         }
     }
-    saved = false;
+    setSaved(false);
 }
 
 /**
@@ -1425,7 +1425,7 @@ void Data::mirrorLeftRight(int nbr, std::string extension, std::function<void()>
                 });
         }
     }
-    saved = false;
+    setSaved(false);
 }
 
 /**
@@ -1566,10 +1566,18 @@ Folders* Data::getCurrentFolders() {
 }
 
 /**
+ * @brief Set the current folder
+ * @param folder Folder to set as current
+ */
+void Data::setCurrentFolders(Folders* folder) {
+    this->currentFolder = folder;
+}
+
+/**
  * @brief Give you imagesData
  * @return Ptr to ImagesData
  */
-ImagesData* Data::getImagesData() {
+ImagesData* Data::getImagesDataPtr() {
     return &imagesData;
 }
 
@@ -1679,7 +1687,7 @@ void Data::clear() {
         std::lock_guard<std::mutex> lock(imageCacheMutex);
         imageCache->clear();
     }
-    saved = true;
+    setSaved(true);
 }
 
 /**
@@ -1946,17 +1954,17 @@ void Data::checkToUnloadImages(int center, int radius) {
  * @param thumbnailSize Size of the thumbnail to load
  */
 void Data::checkToLoadImages(int center, int radius, int thumbnailSize) {
-    if (getImagesData()->getCurrent()->size() == 0) {
+    if (getImagesDataPtr()->getCurrent()->size() == 0) {
         return;
     }
 
     std::unordered_set<std::string> loadedImages;
 
     int lowerBound = std::max(center - radius, 0);
-    int upperBound = std::min(center + radius, static_cast<int>(getImagesData()->getCurrent()->size() - 1));
+    int upperBound = std::min(center + radius, static_cast<int>(getImagesDataPtr()->getCurrent()->size() - 1));
 
     for (int i = lowerBound; i <= upperBound; ++i) {
-        loadInCacheAsync(getImagesData()->getImageDataInCurrent(i)->getImagePath(), nullptr, false, QSize(0, 0), thumbnailSize);
+        loadInCacheAsync(this->getImagesDataPtr()->getImageDataInCurrent(i)->getImagePath(), nullptr, false, QSize(0, 0), thumbnailSize);
     }
 }
 
@@ -2025,10 +2033,42 @@ void Data::setOptions(std::map<std::string, Option> options) {
 }
 
 /**
+ * @brief Get the saved status
+ * @return The saved status
+ */
+bool Data::getSaved() {
+    return this->saved;
+}
+
+/**
+ * @brief Set the saved status
+ * @param saved The saved status to set
+ */
+void Data::setSaved(bool saved) {
+    this->saved = saved;
+}
+
+/**
+ * @brief Get the dark mode status
+ * @return The dark mode status
+ */
+bool Data::getDarkMode() {
+    return this->darkMode;
+}
+
+/**
+ * @brief Set the dark mode status
+ * @param darkMode The dark mode status to set
+ */
+void Data::setDarkMode(bool darkMode) {
+    this->darkMode = darkMode;
+}
+
+/**
  * @brief Check if the objetcs has been detected and detect them if not
  */
 void Data::checkDetectObjects() {
-    for (auto imageData : getImagesData()->getConst()) {
+    for (auto imageData : this->getImagesDataPtr()->getConst()) {
         int i = 0;
         if (imageData->isDetectionStatusLoading()) {
             imageData->setDetectionStatusNotLoaded();
@@ -2085,7 +2125,7 @@ void Data::checkDetectObjects() {
  * @brief Check if the thumbnail exists and create it if not And detect objects if needed
  */
 void Data::checkThumbnailAndDetectObjects() {
-    for (auto imageData : getImagesData()->getConst()) {
+    for (auto imageData : this->getImagesDataPtr()->getConst()) {
         bool hasThumbnail = true;
         int i = 0;
         while (i < Const::Thumbnail::THUMBNAIL_SIZES.size() && hasThumbnail) {

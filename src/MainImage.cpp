@@ -209,21 +209,21 @@ void MainImage::cropImage() {
     this->setPixmap(QPixmap::fromImage(qImage).scaled(
         this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
-    if (data && data->imagesData.getCurrentImageData()) {
+    if (data && data->getImagesDataPtr()->getCurrentImageData()) {
         std::vector<QPoint> cropPoints = {
             QPoint(imageCropRect.left(), imageCropRect.top()),
             QPoint(imageCropRect.right(), imageCropRect.bottom())};
-        int orientation = data->imagesData.getCurrentImageData()->getOrientation();
+        int orientation = data->getImagesDataPtr()->getCurrentImageData()->getOrientation();
 
         std::vector<QPoint> adjustedCropPoints = adjustPointsForOrientation(cropPoints, orientation, qImageReel.size());
 
-        std::vector<std::vector<QPoint>> cropSizes = data->imagesData.getCurrentImageData()->getCropSizes();
+        std::vector<std::vector<QPoint>> cropSizes = data->getImagesDataPtr()->getCurrentImageData()->getCropSizes();
         cropSizes.push_back(adjustedCropPoints);
-        data->imagesData.getCurrentImageData()->setCropSizes(cropSizes);
+        data->getImagesDataPtr()->getCurrentImageData()->setCropSizes(cropSizes);
 
-        int nbr = data->getImagesData()->getImageNumber();
+        int nbr = data->getImagesDataPtr()->getImageNumber();
 
-        bool saved = data->saved;
+        bool saved = data->getSaved();
 
         data->addAction(
             [this, nbr, saved]() {
@@ -237,7 +237,7 @@ void MainImage::cropImage() {
                 // }
                 // QTimer::singleShot(time, [this, nbr, saved]() {
                 //     if (saved){
-                //         data->saved = true;
+                //         data->setSaved(true);
                 //     }
                 //     data->imagesData.getCurrentImageData()->cropSizes.pop_back();
                 //     // parent->reload();
@@ -254,7 +254,7 @@ void MainImage::cropImage() {
                 //     time = TIME_UNDO_VISUALISATION;
                 // }
                 // QTimer::singleShot(time, [this, nbr, adjustedCropPoints]() {
-                //     data->saved = false;
+                //     data->setSaved(false);
                 //     data->imagesData.getCurrentImageData()->cropSizes.push_back(adjustedCropPoints);
                 //     // parent->reload();
 
@@ -265,7 +265,7 @@ void MainImage::cropImage() {
     } else {
         qWarning() << "Erreur : data ou getCurrentImageData() est nul";
     }
-    data->saved = false;
+    data->setSaved(false);
 }
 
 /**
@@ -282,8 +282,8 @@ void MainImage::paintEvent(QPaintEvent* event) {
         painter.setPen(Qt::DashLine);
         painter.drawRect(QRect(cropStart, cropEnd));
     }
-    if (personsEditor && !data->imagesData.getCurrentImageData()->getDetectedObjects().empty()) {
-        std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects = data->imagesData.getCurrentImageData()->getDetectedObjects();
+    if (personsEditor && !data->getImagesDataPtr()->getCurrentImageData()->getDetectedObjects().empty()) {
+        std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects = data->getImagesDataPtr()->getCurrentImageData()->getDetectedObjects();
 
         // Calculate the scale factors
         QSize scaledPixmapSize = qImage.size();

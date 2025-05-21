@@ -41,26 +41,12 @@ class Actions {
 class Data : public std::enable_shared_from_this<Data> {
    public:
     QApplication* app;
-    ImagesData imagesData;
 
-    int imageNumber = 0;
     ImagesData deletedImagesData;
-
-#ifdef _WIN32
-    Folders rootFolders = Folders("");
-#else
-    Folders rootFolders = Folders("/");
-#endif
-    Folders* currentFolder = &rootFolders;
 
     Sizes* sizes = new Sizes();
 
-    bool saved = true;
-
     std::vector<int> imagesSelected;
-    std::vector<int> imagesDeleted;
-
-    bool darkMode = true;
 
     Data();
 
@@ -141,8 +127,9 @@ class Data : public std::enable_shared_from_this<Data> {
 
     Folders* getRootFolders();
     Folders* getCurrentFolders();
+    void setCurrentFolders(Folders* currentFolders);
 
-    ImagesData* getImagesData();
+    ImagesData* getImagesDataPtr();
     Folders* findFirstFolderWithAllImages();
     void removeImageFromFolders(ImageData& imageData);
     std::string getFolderPath(Folders* folder);
@@ -173,7 +160,25 @@ class Data : public std::enable_shared_from_this<Data> {
     std::map<std::string, Option>* getOptionsPtr();
     void setOptions(std::map<std::string, Option> options);
 
+    bool getSaved();
+    void setSaved(bool saved);
+
+    bool getDarkMode();
+    void setDarkMode(bool darkMode);
+
    private:
+#ifdef _WIN32
+    Folders rootFolders = Folders("");
+#else
+    Folders rootFolders = Folders("/");
+#endif
+    Folders* currentFolder = &rootFolders;
+
+    bool saved = true;
+    bool darkMode = true;
+
+    ImagesData imagesData;
+
     ThreadManager manager;
     QLabel* centerTextLabel;
     std::unordered_map<std::string, QImageAndPath>* imageCache = nullptr;

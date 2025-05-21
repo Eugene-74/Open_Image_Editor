@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QCalendarWidget>
+#include <QColor>
 #include <QComboBox>
 #include <QDateTime>
 #include <QDateTimeEdit>
@@ -178,7 +179,7 @@ void ImageEditor::nextImage(int nbr) {
     if (nbr < 0) {
         nbr = 0;
     }
-    data->imagesData.setImageNumber(data->imagesData.getImageNumber() + nbr);
+    data->getImagesDataPtr()->setImageNumber(data->getImagesDataPtr()->getImageNumber() + nbr);
     reload();
 }
 
@@ -190,7 +191,7 @@ void ImageEditor::previousImage(int nbr) {
     if (nbr < 0) {
         nbr = 0;
     }
-    data->imagesData.setImageNumber(data->imagesData.getImageNumber() - nbr);
+    data->getImagesDataPtr()->setImageNumber(data->getImagesDataPtr()->getImageNumber() - nbr);
     reload();
 }
 
@@ -201,7 +202,7 @@ void ImageEditor::reload() {
     checkCache();
 
     if (bigImage) {
-        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, personsEditor);
+        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, personsEditor);
 
         bigImageLabelNew->setFixedSize(data->sizes->imageEditorSizes->bigImage);
         connect(bigImageLabelNew, &MainImage::leftClicked, [this]() {
@@ -211,7 +212,7 @@ void ImageEditor::reload() {
         bigImageLabel->deleteLater();
         bigImageLabel = bigImageLabelNew;
     } else {
-        ImagesData* imagesData = &data->imagesData;
+        ImagesData* imagesData = data->getImagesDataPtr();
 
         updateButtons();
         updatePreview();
@@ -239,7 +240,7 @@ void ImageEditor::reload() {
  * @brief Initialise a preview of the images in the editor
  */
 void ImageEditor::createPreview() {
-    ImagesData* imagesData = &data->imagesData;
+    ImagesData* imagesData = data->getImagesDataPtr();
 
     if (imagesData->get()->size() <= 0) {
         return;
@@ -258,7 +259,7 @@ void ImageEditor::createPreview() {
  * @brief Update the preview of the images in the editor
  */
 void ImageEditor::updatePreview() {
-    ImagesData* imagesData = &data->imagesData;
+    ImagesData* imagesData = data->getImagesDataPtr();
 
     if (imagesData->get()->size() <= 0) {
         return;
@@ -267,7 +268,7 @@ void ImageEditor::updatePreview() {
     std::vector<std::string> imagePaths;
 
     int currentImageNumber = imagesData->getImageNumber();
-    int totalImages = data->imagesData.getCurrent()->size();
+    int totalImages = data->getImagesDataPtr()->getCurrent()->size();
 
     int under = 0;
     for (int i = PREVIEW_NBR; i > 0; --i) {
@@ -367,18 +368,18 @@ void ImageEditor::createButtons() {
  * @brief Update the buttons in the image editor based on the current image state
  */
 void ImageEditor::updateButtons() {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return;
     } else if (bigImage) {
         return;
     }
 
     if (nameEdit) {
-        nameEdit->setText(QString::fromStdString(data->imagesData.getCurrentImageData()->getImageName()));
+        nameEdit->setText(QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImageName()));
     }
 
     if (dateEdit) {
-        ImagesData* imagesData = &data->imagesData;
+        ImagesData* imagesData = data->getImagesDataPtr();
         ImageData* imageData = imagesData->getCurrentImageData();
         Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
 
@@ -392,7 +393,7 @@ void ImageEditor::updateButtons() {
     }
 
     if (imageRotateRight) {
-        if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
+        if (!isTurnable(data->getImagesDataPtr()->getCurrentImageData()->getImagePath())) {
             imageRotateRight->setDisabled(true);
         } else {
             if (!imageRotateRight->isEnabled())
@@ -401,7 +402,7 @@ void ImageEditor::updateButtons() {
     }
 
     if (imageRotateLeft) {
-        if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
+        if (!isTurnable(data->getImagesDataPtr()->getCurrentImageData()->getImagePath())) {
             imageRotateLeft->setDisabled(true);
         } else {
             if (!imageRotateLeft->isEnabled())
@@ -409,7 +410,7 @@ void ImageEditor::updateButtons() {
         }
     }
     if (imageMirrorLeftRight) {
-        if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
+        if (!isMirrorable(data->getImagesDataPtr()->getCurrentImageData()->getImagePath())) {
             imageMirrorLeftRight->setDisabled(true);
         } else {
             if (!imageMirrorLeftRight->isEnabled())
@@ -417,7 +418,7 @@ void ImageEditor::updateButtons() {
         }
     }
     if (imageMirrorUpDown) {
-        if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
+        if (!isMirrorable(data->getImagesDataPtr()->getCurrentImageData()->getImagePath())) {
             imageMirrorUpDown->setDisabled(true);
         } else {
             if (!imageMirrorUpDown->isEnabled())
@@ -425,14 +426,14 @@ void ImageEditor::updateButtons() {
         }
     }
     if (imageDelete) {
-        if (data->isDeleted(data->imagesData.getImageNumberInTotal())) {
+        if (data->isDeleted(data->getImagesDataPtr()->getImageNumberInTotal())) {
             imageDelete->setBackground(Const::Color::DARK_RED, Const::Color::LIGHT_RED);
         } else {
             imageDelete->resetBackground();
         }
     }
     if (buttonImageBefore) {
-        if (data->imagesData.getImageNumber() == 0) {
+        if (data->getImagesDataPtr()->getImageNumber() == 0) {
             buttonImageBefore->setDisabled(true);
         } else {
             buttonImageBefore->setEnabled(true);
@@ -442,7 +443,7 @@ void ImageEditor::updateButtons() {
     reloadImageLabel();
 
     if (buttonImageNext) {
-        if (data->imagesData.getImageNumber() == data->imagesData.getCurrent()->size() - 1) {
+        if (data->getImagesDataPtr()->getImageNumber() == data->getImagesDataPtr()->getCurrent()->size() - 1) {
             buttonImageNext->setDisabled(true);
         } else {
             buttonImageNext->setEnabled(true);
@@ -450,8 +451,8 @@ void ImageEditor::updateButtons() {
     }
 
     if (imagePersons) {
-        if (data->imagesData.getCurrentImageData()->isDetectionStatusLoaded()) {
-            imagePersons->setLogoNumber(data->imagesData.getCurrentImageData()->getDetectedObjects()["person"].size());
+        if (data->getImagesDataPtr()->getCurrentImageData()->isDetectionStatusLoaded()) {
+            imagePersons->setLogoNumber(data->getImagesDataPtr()->getCurrentImageData()->getDetectedObjects()["person"].size());
         } else {
             imagePersons->setLogoNumber(-1);
         }
@@ -589,14 +590,14 @@ void ImageEditor::unHide() {
  * @return A pointer to the ClickableLabel object representing the delete button
  */
 ClickableLabel* ImageEditor::createImageDelete() {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* imageDeleteNew = new ClickableLabel(data, Const::IconPath::DELETE_ICON, Text::Tooltip::ImageEditor::delete_tip(), this, actionSize);
     imageDeleteNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
-    if (data->isDeleted(data->imagesData.getImageNumberInTotal())) {
+    if (data->isDeleted(data->getImagesDataPtr()->getImageNumberInTotal())) {
         imageDeleteNew->setBackground(Const::Color::DARK_RED, Const::Color::LIGHT_RED);
     }
     connect(imageDeleteNew, &ClickableLabel::clicked, [this]() {
@@ -611,7 +612,7 @@ ClickableLabel* ImageEditor::createImageDelete() {
  * @return A pointer to the ClickableLabel object representing the save button
  */
 ClickableLabel* ImageEditor::createImageSave() {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
@@ -630,7 +631,7 @@ ClickableLabel* ImageEditor::createImageSave() {
  * @return A pointer to the ClickableLabel object representing the export button
  */
 ClickableLabel* ImageEditor::createImageExport() {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
@@ -652,7 +653,7 @@ ClickableLabel* ImageEditor::createImageRotateRight() {
     ClickableLabel* imageRotateRightNew = new ClickableLabel(data, Const::IconPath::ROTATE_RIGHT, Text::Tooltip::ImageEditor::rotate_right(), this, actionSize);
     imageRotateRightNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
-    if (!isTurnable(data->getImagesData()->getCurrentImageData()->getImagePath())) {
+    if (!isTurnable(data->getImagesDataPtr()->getCurrentImageData()->getImagePath())) {
         imageRotateRightNew->setDisabled(true);
     } else {
         if (!imageRotateRightNew->isEnabled())
@@ -669,14 +670,14 @@ ClickableLabel* ImageEditor::createImageRotateRight() {
  * @return A pointer to the ClickableLabel object representing the rotate left button
  */
 ClickableLabel* ImageEditor::createImageRotateLeft() {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* imageRotateLeftNew = new ClickableLabel(data, Const::IconPath::ROTATE_LEFT, Text::Tooltip::ImageEditor::rotate_left(), this, actionSize);
     imageRotateLeftNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
-    if (!isTurnable(data->imagesData.getCurrentImageData()->getImagePath())) {
+    if (!isTurnable(data->getImagesDataPtr()->getCurrentImageData()->getImagePath())) {
         imageRotateLeftNew->setDisabled(true);
     } else {
         if (!imageRotateLeftNew->isEnabled())
@@ -693,14 +694,14 @@ ClickableLabel* ImageEditor::createImageRotateLeft() {
  * @return A pointer to the ClickableLabel object representing the mirror up-down button
  */
 ClickableLabel* ImageEditor::createImageMirrorUpDown() {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* imageMirrorUpDownNew = new ClickableLabel(data, Const::IconPath::MIRROR_UP_DOWN, Text::Tooltip::ImageEditor::mirror_up_down(), this, actionSize);
     imageMirrorUpDownNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
-    if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
+    if (!isMirrorable(data->getImagesDataPtr()->getCurrentImageData()->getImagePath())) {
         imageMirrorUpDownNew->setDisabled(true);
     } else {
         if (!imageMirrorUpDownNew->isEnabled())
@@ -717,14 +718,14 @@ ClickableLabel* ImageEditor::createImageMirrorUpDown() {
  * @return A pointer to the ClickableLabel object representing the mirror left-right button
  */
 ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* imageMirrorLeftRightNew = new ClickableLabel(data, Const::IconPath::MIRROR_LEFT_RIGHT, Text::Tooltip::ImageEditor::mirror_left_right(), this, actionSize);
     imageMirrorLeftRightNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
-    if (!isMirrorable(data->imagesData.getCurrentImageData()->getImagePath())) {
+    if (!isMirrorable(data->getImagesDataPtr()->getCurrentImageData()->getImagePath())) {
         imageMirrorLeftRightNew->setDisabled(true);
 
     } else {
@@ -742,7 +743,7 @@ ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
  * @return A pointer to the ClickableLabel object representing the edit EXIF button
  */
 ClickableLabel* ImageEditor::createImageEditExif() {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
@@ -772,7 +773,7 @@ ClickableLabel* ImageEditor::createImageEditExif() {
  * @return A pointer to the ClickableLabel object representing the conversion button
  */
 ClickableLabel* ImageEditor::createImageConversion() {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
@@ -780,7 +781,7 @@ ClickableLabel* ImageEditor::createImageConversion() {
     imageConversionNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
-        launchConversionDialogAndConvert(QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()));
+        launchConversionDialogAndConvert(QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()));
     });
 
     return imageConversionNew;
@@ -791,7 +792,7 @@ ClickableLabel* ImageEditor::createImageConversion() {
  * @return A pointer to the ClickableLabel object representing the persons editor button
  */
 ClickableLabel* ImageEditor::createImagePersons() {
-    if (data->getImagesData()->get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
@@ -799,8 +800,8 @@ ClickableLabel* ImageEditor::createImagePersons() {
     imagePersonsNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
     imagePersonsNew->addLogo(QColor::fromString(Const::Color::DARK_RED), QColor::fromString(Const::Color::WHITE));
 
-    if (data->imagesData.getCurrentImageData()->isDetectionStatusLoaded()) {
-        imagePersonsNew->setLogoNumber(data->imagesData.getCurrentImageData()->getDetectedObjects()["person"].size());
+    if (data->getImagesDataPtr()->getCurrentImageData()->isDetectionStatusLoaded()) {
+        imagePersonsNew->setLogoNumber(data->getImagesDataPtr()->getCurrentImageData()->getDetectedObjects()["person"].size());
     } else {
         imagePersonsNew->setLogoNumber(-1);
     }
@@ -873,22 +874,22 @@ ClickableLabel* ImageEditor::createImagePersons() {
             const std::string modelName = selectedModel.split(" - ").first().toStdString();
             data->getModelPtr()->setModelName(modelName);
 
-            ImageData* imageData = data->imagesData.getCurrentImageData();
-            int imageNbr = data->imagesData.getImageNumber();
-            QImage image = data->loadImageNormal(nullptr, data->imagesData.getCurrentImageData()->getImagePath(), QSize(0, 0), false);
+            ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
+            int imageNbr = data->getImagesDataPtr()->getImageNumber();
+            QImage image = data->loadImageNormal(nullptr, data->getImagesDataPtr()->getCurrentImageData()->getImagePath(), QSize(0, 0), false);
             image = data->rotateQImage(image, imageData);
-            std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
+            std::string currentImagePath = data->getImagesDataPtr()->getCurrentImageData()->getImagePath();
 
             QPointer<ImageEditor> self = this;
             detectObjectsAsync(data, currentImagePath, image, [self, imageNbr, currentImagePath](DetectedObjects detectedObject) {
                 if (!self.isNull()) {
-                    ImageData* imageData = self->data->getImagesData()->getImageData(currentImagePath);
+                    ImageData* imageData = self->data->getImagesDataPtr()->getImageData(currentImagePath);
 
                     if (imageData) {
                         imageData->setDetectedObjects(detectedObject.getDetectedObjects());
                         imageData->setDetectionStatusLoaded();
                     }
-                    if (self->data->imagesData.getImageNumber() == imageNbr) {
+                    if (self->data->getImagesDataPtr()->getImageNumber() == imageNbr) {
                         if (self->imagePersons) {
                             self->imagePersons->setLogoNumber(detectedObject.getDetectedObjects()["person"].size());
 
@@ -927,14 +928,14 @@ ClickableLabel* ImageEditor::createImagePersons() {
  * @return A pointer to the ClickableLabel object representing the previous image button
  */
 ClickableLabel* ImageEditor::createImageBefore() {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* buttonImageBeforeNew = new ClickableLabel(data, Const::IconPath::BEFORE, "", this, actionSize);
     buttonImageBeforeNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
-    if (data->imagesData.getImageNumber() == 0) {
+    if (data->getImagesDataPtr()->getImageNumber() == 0) {
         buttonImageBeforeNew->setDisabled(true);
     }
 
@@ -948,14 +949,14 @@ ClickableLabel* ImageEditor::createImageBefore() {
  * @return A pointer to the ClickableLabel object representing the next image button
  */
 ClickableLabel* ImageEditor::createImageNext() {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* buttonImageNextNew = new ClickableLabel(data, Const::IconPath::NEXT, "", this, actionSize);
     buttonImageNextNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
-    if (data->imagesData.getImageNumber() == data->imagesData.getCurrent()->size() - 1) {
+    if (data->getImagesDataPtr()->getImageNumber() == data->getImagesDataPtr()->getCurrent()->size() - 1) {
         buttonImageNextNew->setDisabled(true);
     }
 
@@ -973,14 +974,14 @@ ClickableLabel* ImageEditor::createImageNext() {
  * @return The ClickableLabel for the preview
  */
 ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int imageNbr) {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* previewButton = new ClickableLabel(data, QString::fromStdString(imagePath), "", this, previewSize, false, Const::Thumbnail::NORMAL_QUALITY, false);
     previewButton->setInitialBorder(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
     connect(previewButton, &ClickableLabel::leftClicked, [this, imageNbr]() {
-        data->imagesData.setImageNumber(imageNbr);
+        data->getImagesDataPtr()->setImageNumber(imageNbr);
         reload();
     });
 
@@ -992,15 +993,15 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int image
  * @return The widget it self with is a MainImage
  */
 MainImage* ImageEditor::createImageLabel() {
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
-    MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), *mainImageSize, false, personsEditor);
+    MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), *mainImageSize, false, personsEditor);
 
-    std::string currentImagePath = data->imagesData.getCurrentImageData()->getImagePath();
+    std::string currentImagePath = data->getImagesDataPtr()->getCurrentImageData()->getImagePath();
 
-    ImageData* imageData = data->imagesData.getCurrentImageData();
+    ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
 
     connect(imageLabelNew, &MainImage::imageCropted, [this]() {
         updatePreview();
@@ -1016,10 +1017,10 @@ MainImage* ImageEditor::createImageLabel() {
         }
     });
 
-    int imageNbr = data->imagesData.getImageNumber();
+    int imageNbr = data->getImagesDataPtr()->getImageNumber();
     if (imageData->isDetectionStatusNotLoaded()) {
         imageData->setDetectionStatusLoading();
-        QImage image = data->loadImageNormal(nullptr, data->imagesData.getCurrentImageData()->getImagePath(), QSize(0, 0), false);
+        QImage image = data->loadImageNormal(nullptr, data->getImagesDataPtr()->getCurrentImageData()->getImagePath(), QSize(0, 0), false);
 
         image = data->rotateQImage(image, imageData);
 
@@ -1027,13 +1028,13 @@ MainImage* ImageEditor::createImageLabel() {
 
         detectObjectsAsync(data, currentImagePath, image, [self, imageNbr, currentImagePath](DetectedObjects detectedObject) {
             if (!self.isNull()) {
-                ImageData* imageData = self->data->getImagesData()->getImageData(currentImagePath);
+                ImageData* imageData = self->data->getImagesDataPtr()->getImageData(currentImagePath);
 
                 if (imageData) {
                     imageData->setDetectedObjects(detectedObject.getDetectedObjects());
                     imageData->setDetectionStatusLoaded();
                 }
-                if (self->data->imagesData.getImageNumber() == imageNbr) {
+                if (self->data->getImagesDataPtr()->getImageNumber() == imageNbr) {
                     if (self->imagePersons) {
                         self->imagePersons->setLogoNumber(detectedObject.getDetectedObjects()["person"].size());
 
@@ -1151,7 +1152,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
                 rotateLeft();
             } else if (event->modifiers() & Qt::MetaModifier) {
                 imageRotateLeft->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
-                data->getImagesData()->setImageNumber(data->imagesData.get()->size() - 1);
+                data->getImagesDataPtr()->setImageNumber(data->getImagesDataPtr()->get()->size() - 1);
                 reload();
             } else {
                 if (dateEdit->hasFocus()) {
@@ -1172,7 +1173,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
                 rotateRight();
             } else if (event->modifiers() & Qt::MetaModifier) {
                 imageRotateLeft->setBackground(CLICK_BACKGROUND_COLOR, CLICK_BACKGROUND_COLOR);
-                data->getImagesData()->setImageNumber(data->imagesData.get()->size() - 1);
+                data->getImagesDataPtr()->setImageNumber(data->getImagesDataPtr()->get()->size() - 1);
                 reload();
             } else {
                 if (dateEdit->hasFocus()) {
@@ -1184,7 +1185,7 @@ void ImageEditor::keyReleaseEvent(QKeyEvent* event) {
             break;
         case Qt::Key_End:
             imageRotateLeft->setBackground(BACKGROUND_COLOR, BACKGROUND_COLOR);
-            data->getImagesData()->setImageNumber(data->imagesData.get()->size() - 1);
+            data->getImagesDataPtr()->setImageNumber(data->getImagesDataPtr()->get()->size() - 1);
             reload();
             break;
 
@@ -1263,20 +1264,20 @@ void ImageEditor::wheelEvent(QWheelEvent* event) {
  * @details This function updates the image number and removes deleted images from the data.
  */
 void ImageEditor::saveImage() {
-    int id = data->getImagesData()->getImageNumber();
+    int id = data->getImagesDataPtr()->getImageNumber();
     for (int i = 0; i <= id; ++i) {
-        if (data->isDeleted(data->getImagesData()->getImageNumberInTotal(i))) {
+        if (data->isDeleted(data->getImagesDataPtr()->getImageNumberInTotal(i))) {
             id--;
         }
     }
-    data->imagesData.setImageNumber(id);
+    data->getImagesDataPtr()->setImageNumber(id);
     data->removeDeletedImages();
-    if (data->imagesData.get()->size() <= 0) {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
         switchToMainWindow();
     }
     data->saveData();
 
-    data->saved = true;
+    data->setSaved(true);
 
     reload();
 }
@@ -1305,23 +1306,23 @@ void ImageEditor::exportImage() {
  * @brief (Pre)Delete the current image
  */
 void ImageEditor::deleteImage() {
-    int nbr = data->imagesData.getImageNumber();
-    int nbrInTotal = data->getImagesData()->getImageDataId(data->getImagesData()->getImageDataInCurrent(nbr)->getImagePathConst());
-    bool saved = data->saved;
+    int nbr = data->getImagesDataPtr()->getImageNumber();
+    int nbrInTotal = data->getImagesDataPtr()->getImageDataId(data->getImagesDataPtr()->getImageDataInCurrent(nbr)->getImagePathConst());
+    bool saved = data->getSaved();
 
     if (data->isDeleted(nbrInTotal)) {
         data->unPreDeleteImage(nbrInTotal);
         data->addAction(
             [this, nbrInTotal, saved]() {
                 int time = 0;
-                if (data->getImagesData()->getImageNumberInTotal() != nbrInTotal) {
-                    data->getImagesData()->setImageNumber(nbrInTotal);
+                if (data->getImagesDataPtr()->getImageNumberInTotal() != nbrInTotal) {
+                    data->getImagesDataPtr()->setImageNumber(nbrInTotal);
                     reload();
                     time = TIME_UNDO_VISUALISATION;
                 }
                 QTimer::singleShot(time, [this, nbrInTotal, saved]() {
                     if (saved) {
-                        data->saved = true;
+                        data->setSaved(true);
                     }
                     data->preDeleteImage(nbrInTotal);
                     reload();
@@ -1329,13 +1330,13 @@ void ImageEditor::deleteImage() {
             },
             [this, nbrInTotal]() {
                 int time = 0;
-                if (data->getImagesData()->getImageNumberInTotal() != nbrInTotal) {
-                    data->getImagesData()->setImageNumber(nbrInTotal);
+                if (data->getImagesDataPtr()->getImageNumberInTotal() != nbrInTotal) {
+                    data->getImagesDataPtr()->setImageNumber(nbrInTotal);
                     reload();
                     time = TIME_UNDO_VISUALISATION;
                 }
                 QTimer::singleShot(time, [this, nbrInTotal]() {
-                    data->saved = false;
+                    data->setSaved(false);
                     data->unPreDeleteImage(nbrInTotal);
                 });
             });
@@ -1346,14 +1347,14 @@ void ImageEditor::deleteImage() {
         data->addAction(
             [this, nbrInTotal, saved]() {
                 int time = 0;
-                if (data->getImagesData()->getImageNumberInTotal() != nbrInTotal) {
-                    data->getImagesData()->setImageNumber(nbrInTotal);
+                if (data->getImagesDataPtr()->getImageNumberInTotal() != nbrInTotal) {
+                    data->getImagesDataPtr()->setImageNumber(nbrInTotal);
                     reload();
                     time = TIME_UNDO_VISUALISATION;
                 }
                 QTimer::singleShot(time, [this, nbrInTotal, saved]() {
                     if (saved) {
-                        data->saved = true;
+                        data->setSaved(true);
                     }
                     data->unPreDeleteImage(nbrInTotal);
                     reload();
@@ -1361,20 +1362,20 @@ void ImageEditor::deleteImage() {
             },
             [this, nbrInTotal]() {
                 int time = 0;
-                if (data->getImagesData()->getImageNumberInTotal() != nbrInTotal) {
-                    data->getImagesData()->setImageNumber(nbrInTotal);
+                if (data->getImagesDataPtr()->getImageNumberInTotal() != nbrInTotal) {
+                    data->getImagesDataPtr()->setImageNumber(nbrInTotal);
                     reload();
                     time = TIME_UNDO_VISUALISATION;
                 }
                 QTimer::singleShot(time, [this, nbrInTotal]() {
-                    data->saved = false;
+                    data->setSaved(false);
                     data->preDeleteImage(nbrInTotal);
                     reload();
                 });
             });
         updateButtons();
     }
-    data->saved = false;
+    data->setSaved(false);
 }
 
 /**
@@ -1382,7 +1383,7 @@ void ImageEditor::deleteImage() {
  * @details This function retrieves the metadata from the current image and populates the corresponding fields in the UI.
  */
 void ImageEditor::populateMetadataFields() {
-    ImagesData* imagesData = &data->imagesData;
+    ImagesData* imagesData = data->getImagesDataPtr();
     ImageData* imageData = imagesData->getCurrentImageData();
     Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
 
@@ -1394,14 +1395,16 @@ void ImageEditor::populateMetadataFields() {
         dateEdit->setDateTime(dateTime);
     }
 
-    double latitude = imageData->getLatitude();
-    double longitude = imageData->getLongitude();
-    editGeo->setImageData(imageData);
-    if (latitude == 0 && longitude == 0) {
-        editGeo->removeMapPoint();
-    } else {
-        editGeo->moveMapPoint(latitude, longitude);
-        editGeo->setMapCenter(latitude, longitude);
+    if (mapEditor) {
+        double latitude = imageData->getLatitude();
+        double longitude = imageData->getLongitude();
+        editGeo->setImageData(imageData);
+        if (latitude == 0 && longitude == 0) {
+            editGeo->removeMapPoint();
+        } else {
+            editGeo->moveMapPoint(latitude, longitude);
+            editGeo->setMapCenter(latitude, longitude);
+        }
     }
 }
 
@@ -1410,14 +1413,31 @@ void ImageEditor::populateMetadataFields() {
  * @details This function retrieves the values from the metadata fields and saves them to the current image's metadata.
  */
 void ImageEditor::validateMetadata() {
-    ImagesData* imagesData = &data->imagesData;
+    ImagesData* imagesData = data->getImagesDataPtr();
     ImageData* imageData = imagesData->getCurrentImageData();
     MetaData* metaData = imageData->getMetaDataPtr();
 
+    QString lastDate = metaData->getTimestampString();
+
     QString dateTimeStr = dateEdit->dateTime().toString("yyyy:MM:dd HH:mm:ss");
     metaData->modifyExifValue("Exif.Image.DateTime", dateTimeStr.toStdString());
-
     imageData->saveMetaData();
+
+    data.get()->addAction(
+        [this, lastDate, metaData]() {
+            metaData->modifyExifValue("Exif.Image.DateTime", lastDate.toStdString());
+            data->getImagesDataPtr()->getCurrentImageData()->saveMetaData();
+
+            // reload();
+            populateMetadataFields();
+        },
+        [this, dateTimeStr, metaData]() {
+            metaData->modifyExifValue("Exif.Image.DateTime", dateTimeStr.toStdString());
+            data->getImagesDataPtr()->getCurrentImageData()->saveMetaData();
+
+            // reload();
+            populateMetadataFields();
+        });
 }
 
 /**
@@ -1432,20 +1452,20 @@ void ImageEditor::startImageOpen() {
     connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
         QPointer<ImageEditor> self = this;
         if (self && data != nullptr) {
-            data->loadInCacheAsync(data->imagesData.getCurrentImageData()->getImagePath(), [self]() {
+            data->loadInCacheAsync(data->getImagesDataPtr()->getCurrentImageData()->getImagePath(), [self]() {
                 if (self) {
                     self->reloadImageLabel();
                 } }, false, QSize(0, 0), 0, true);
 
             imageOpenTimer->stop();
             for (int i = 0; i < PRE_LOAD_RADIUS; i++) {
-                if (data->imagesData.getImageNumber() - (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() - (i + 1) >= 0) {
-                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() - (i + 1))->getImagePath(), nullptr,
+                if (data->getImagesDataPtr()->getImageNumber() - (i + 1) < data->getImagesDataPtr()->getCurrent()->size() && data->getImagesDataPtr()->getImageNumber() - (i + 1) >= 0) {
+                    data->loadInCacheAsync(data->getImagesDataPtr()->getImageDataInCurrent(data->getImagesDataPtr()->getImageNumber() - (i + 1))->getImagePath(), nullptr,
                                            false, QSize(0, 0), 0, true);
                 }
 
-                if (data->imagesData.getImageNumber() + (i + 1) < data->imagesData.getCurrent()->size() && data->imagesData.getImageNumber() + (i + 1) >= 0) {
-                    data->loadInCacheAsync(data->imagesData.getImageDataInCurrent(data->imagesData.getImageNumber() + (i + 1))->getImagePath(), nullptr,
+                if (data->getImagesDataPtr()->getImageNumber() + (i + 1) < data->getImagesDataPtr()->getCurrent()->size() && data->getImagesDataPtr()->getImageNumber() + (i + 1) >= 0) {
+                    data->loadInCacheAsync(data->getImagesDataPtr()->getImageDataInCurrent(data->getImagesDataPtr()->getImageNumber() + (i + 1))->getImagePath(), nullptr,
                                            false, QSize(0, 0), 0, true);
                 }
             }
@@ -1473,7 +1493,7 @@ void ImageEditor::stopImageOpen() {
  * @details This function checks the loaded images in the cache and unloads any images that are not currently being used.
  */
 void ImageEditor::checkLoadedImage() {
-    data->checkToUnloadImages(data->getImagesData()->getImageNumber(), PRE_LOAD_RADIUS);
+    data->checkToUnloadImages(data->getImagesDataPtr()->getImageNumber(), PRE_LOAD_RADIUS);
 }
 
 /**
@@ -1489,12 +1509,12 @@ void ImageEditor::checkCache() {
  * @details This function rotates the current image to the left and updates the image label.
  */
 void ImageEditor::rotateLeft() {
-    ImageData* imageData = data->getImagesData()->getCurrentImageData();
+    ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
     imageData->clearDetectedObjects();
 
     std::string extension = imageData->getImageExtension();
-    int nbr = data->getImagesData()->getImageNumber();
-    int imageInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
+    int nbr = data->getImagesDataPtr()->getImageNumber();
+    int imageInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
     data->rotateLeft(imageInTotal, extension, [this]() { reload(); });
 }
 
@@ -1503,12 +1523,12 @@ void ImageEditor::rotateLeft() {
  * @details This function rotates the current image to the right and updates the image label.
  */
 void ImageEditor::rotateRight() {
-    ImageData* imageData = data->getImagesData()->getCurrentImageData();
+    ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
     imageData->clearDetectedObjects();
 
     std::string extension = imageData->getImageExtension();
-    int nbr = data->getImagesData()->getImageNumber();
-    int imageInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
+    int nbr = data->getImagesDataPtr()->getImageNumber();
+    int imageInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
 
     data->rotateRight(imageInTotal, extension, [this]() { reload(); });
 }
@@ -1518,12 +1538,12 @@ void ImageEditor::rotateRight() {
  * @details This function mirrors the current image up-down and updates the image label.
  */
 void ImageEditor::mirrorUpDown() {
-    ImageData* imageData = data->getImagesData()->getCurrentImageData();
+    ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
     imageData->clearDetectedObjects();
 
     std::string extension = imageData->getImageExtension();
-    int nbr = data->getImagesData()->getImageNumber();
-    int imageInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
+    int nbr = data->getImagesDataPtr()->getImageNumber();
+    int imageInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
 
     data->mirrorUpDown(imageInTotal, extension, [this]() { reload(); });
 }
@@ -1533,11 +1553,11 @@ void ImageEditor::mirrorUpDown() {
  * @details This function mirrors the current image left-right and updates the image label.
  */
 void ImageEditor::mirrorLeftRight() {
-    ImageData* imageData = data->getImagesData()->getCurrentImageData();
+    ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
     imageData->clearDetectedObjects();
     std::string extension = imageData->getImageExtension();
-    int nbr = data->getImagesData()->getImageNumber();
-    int imageInTotal = data->getImagesData()->getImageNumberInTotal(nbr);
+    int nbr = data->getImagesDataPtr()->getImageNumber();
+    int imageInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
 
     data->mirrorLeftRight(imageInTotal, extension, [this]() { reload(); });
 }
@@ -1550,7 +1570,7 @@ void ImageEditor::openBigImageLabel() {
     bigImage = true;
     hide();
 
-    bigImageLabel = new MainImage(data, QString::fromStdString(data->imagesData.getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, personsEditor);
+    bigImageLabel = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), (data->sizes->imageEditorSizes->bigImage), false, personsEditor);
     bigImageLabel->setFixedSize(data->sizes->imageEditorSizes->bigImage);
 
     mainLayout->addWidget(bigImageLabel);
@@ -1627,7 +1647,7 @@ bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
  * @return A pointer to the MapWidget object
  */
 MapWidget* ImageEditor::createMapWidget() {
-    ImageData* imageData = data.get()->getImagesData()->getCurrentImageData();
+    ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
 
     MapWidget* mapWidget = new MapWidget(this, imageData);
     if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
@@ -1635,7 +1655,7 @@ MapWidget* ImageEditor::createMapWidget() {
         mapWidget->moveMapPoint(imageData->getLatitude(), imageData->getLongitude());
     }
     data->addThreadToFront([this, mapWidget]() {
-        for (ImageData* imageData : data->getImagesData()->getConst()) {
+        for (ImageData* imageData : data->getImagesDataPtr()->getConst()) {
             if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
                 mapWidget->addMapPointForOthers(imageData->getLatitude(), imageData->getLongitude());
             }

@@ -68,9 +68,10 @@ InitialWindow::InitialWindow() {
         ImagesData imagesData(std::vector<ImageData*>{});
         ImagesData deletedImagesData(std::vector<ImageData*>{});
 
-        data->imagesData = imagesData;
+        *data->getImagesDataPtr() = imagesData;
+
         data->deletedImagesData = deletedImagesData;
-        data->darkMode = isDarkMode();
+        data->setDarkMode(isDarkMode());
 
         try {
             data->loadData();
@@ -81,8 +82,8 @@ InitialWindow::InitialWindow() {
 
         data->checkThumbnailAndDetectObjects();
 
-        if (!data->currentFolder) {
-            data->currentFolder = data->findFirstFolderWithAllImages();
+        if (data->getCurrentFolders() == nullptr) {
+            data->setCurrentFolders(data->findFirstFolderWithAllImages());
         }
 
         const QList<QScreen*> screens = QGuiApplication::screens();
@@ -303,7 +304,7 @@ void startLog() {
  * @details This function is called when the window is closed. It checks if there are unsaved changes and prompts the user to save before quitting.
  */
 void InitialWindow::closeEvent(QCloseEvent* event) {
-    if (!data->saved && data->deletedImagesData.get()->size() > 0) {
+    if (!data->getSaved() && data->deletedImagesData.get()->size() > 0) {
         showQuestionMessage(this, "Do you want to save before quit ?",
                             [this, event](bool result) {
                                 if (imageEditor != nullptr) {
