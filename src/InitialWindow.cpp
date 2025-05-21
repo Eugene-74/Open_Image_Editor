@@ -243,9 +243,9 @@ void startLog() {
     std::tm* now_tm = std::localtime(&now);
 
     QString logFileName = QString(APP_FILES + "/logs/%1-%2-%3.log")
-                              .arg(now_tm->tm_mday, 2, 10, QChar('0'))
+                              .arg(now_tm->tm_year + 1900)
                               .arg(now_tm->tm_mon + 1, 2, 10, QChar('0'))
-                              .arg(now_tm->tm_year + 1900);
+                              .arg(now_tm->tm_mday, 2, 10, QChar('0'));
     static QFile logFile(logFileName);
     if (!logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
         qCritical() << "Could not open log file for writing:" << logFile.errorString();
