@@ -4,6 +4,7 @@ Text.NAME:Name
 Text.DATE:Date
 Text.GEOLOCATION:Geolocation
 Text.Tooltip.LANGUAGE:Change the app language
+Text.Tooltip.WIFI:Desactivate or Activate the download (useful when you have low connection)
 Text.Tooltip.DISCORD:Open the app discord
 Text.Tooltip.GITHUB:Open the app github
 Text.Tooltip.PARAMETER:Open the parameters

@@ -58,12 +58,14 @@ class InitialWindow : public QMainWindow {
 
     ClickableLabel* imageLanguage;
 
+    ClickableLabel* imageWifi;
     ClickableLabel* imageDiscord;
     ClickableLabel* imageGithub;
     ClickableLabel* imageOption;
 
     ClickableLabel* createImageLanguage();
 
+    ClickableLabel* createImageWifi();
     ClickableLabel* createImageDiscord();
     ClickableLabel* createImageGithub();
     ClickableLabel* createImageOption();

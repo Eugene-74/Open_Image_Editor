@@ -113,6 +113,7 @@ InitialWindow::InitialWindow() {
         imageLanguage = createImageLanguage();
         imageLanguage->setAlignment(Qt::AlignLeft);
 
+        imageWifi = createImageWifi();
         imageDiscord = createImageDiscord();
         imageGithub = createImageGithub();
         imageOption = createImageOption();
@@ -139,6 +140,7 @@ InitialWindow::InitialWindow() {
         languageLayout->addWidget(imageLanguage);
         languageLayout->setAlignment(Qt::AlignLeft);
 
+        linkLayout->addWidget(imageWifi);
         linkLayout->addWidget(imageDiscord);
         linkLayout->addWidget(imageGithub);
         linkLayout->addWidget(imageOption);
@@ -149,7 +151,7 @@ InitialWindow::InitialWindow() {
 
         createMainWindow(data);
 
-        if (hasConnection()) {
+        if (data->getConnectionEnabled()) {
             data->addThreadToFront([this]() {
                 checkForUpdate();
             });
@@ -529,6 +531,38 @@ ClickableLabel* InitialWindow::createImageLanguage() {
     });
 
     return newImageLanguage;
+}
+
+ClickableLabel* InitialWindow::createImageWifi() {
+    // TODO marche pas
+    ClickableLabel* newImageWifi;
+    if (data->getConnectionEnabled()) {
+        newImageWifi = new ClickableLabel(data, Const::IconPath::WIFI, Text::Tooltip::wifi(), this, linkButton, false, 0, true);
+        connect(newImageWifi, &ClickableLabel::clicked, [this]() {
+            data->setConnectionEnabled(false);
+            reload();
+        });
+    } else {
+        newImageWifi = new ClickableLabel(data, Const::IconPath::NO_WIFI, Text::Tooltip::wifi(), this, linkButton, false, 0, true);
+        connect(newImageWifi, &ClickableLabel::clicked, [this]() {
+            if (hasConnection()) {
+                data->setConnectionEnabled(true);
+                reload();
+            } else {
+                data->setCenterText("Could not find any connection, please check your internet connection");
+                qWarning() << "Could not find any connection";
+            }
+        });
+    }
+    newImageWifi->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
+
+    connect(this, &InitialWindow::reload, newImageWifi, [this]() {
+        ClickableLabel* newImageWifi = createImageWifi();
+        linkLayout->replaceWidget(imageWifi, newImageWifi);
+        imageWifi->deleteLater();
+        imageWifi = newImageWifi;
+    });
+    return newImageWifi;
 }
 
 /**

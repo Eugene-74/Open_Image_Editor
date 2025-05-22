@@ -47,7 +47,6 @@ const std::string IMAGESDATA_SAVE_PATH = APP_FILES.toStdString() + "/save." + AP
 const std::string OPTIONS_SAVE_PATH = APP_FILES.toStdString() + "/option." + APP_NAME;
 
 const std::map<std::string, Option> DEFAULT_OPTIONS = {
-    // {"Language", Option("text", "en")},
     {"Language", Option("list", "en|en|fr|es")},
 
     {"Sizes::imageBooth::ImagesPerLine", Option("int", "10")}};
@@ -146,6 +145,8 @@ static const QString NEXT = ":/icons/next.png";
 static const QString IMAGE_BOOTH = ":/icons/imageBooth.png";
 static const QString ADD_IMAGES = ":/icons/addImages.png";
 
+static const QString WIFI = ":/icons/wifi.png";
+static const QString NO_WIFI = ":/icons/noWifi.png";
 static const QString DISCORD = ":/icons/discord.png";
 static const QString GITHUB = ":/icons/github.png";
 static const QString OPTION = ":/icons/option.png";

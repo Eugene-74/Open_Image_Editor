@@ -164,7 +164,10 @@ class Data : public std::enable_shared_from_this<Data> {
 
     Sizes* getSizesPtr();
 
-   private:
+    bool getConnectionEnabled();
+    void setConnectionEnabled(bool connectionEnabled);
+    bool checkConnection() ;
+       private:
 #ifdef _WIN32
     Folders rootFolders = Folders("");
 #else
@@ -174,6 +177,7 @@ class Data : public std::enable_shared_from_this<Data> {
 
     bool saved = true;
     bool darkMode = true;
+    bool connectionEnabled = true;
 
     ImagesData imagesData;
     ImagesData deletedImagesData;
@@ -203,6 +207,6 @@ class Data : public std::enable_shared_from_this<Data> {
 
     void createFolders(Folders* currentFolders, std::string path);
     void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
-};
+    };
 
 cv::dnn::Net load_net(std::string model);

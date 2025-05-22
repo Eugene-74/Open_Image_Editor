@@ -9,9 +9,9 @@
  * @return true if connected, false otherwise
  */
 bool hasConnection() {
-    QNetworkAccessManager manager;
+    QNetworkAccessManager* manager = new QNetworkAccessManager();
     QNetworkRequest request(QUrl("https://www.google.com"));
-    QNetworkReply* reply = manager.get(request);
+    QNetworkReply* reply = manager->get(request);
 
     QEventLoop loop;
     QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
@@ -24,6 +24,7 @@ bool hasConnection() {
     }
 
     reply->deleteLater();
+    manager->deleteLater();
 
     return connected;
 }

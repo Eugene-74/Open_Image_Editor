@@ -34,6 +34,7 @@ namespace fs = std::filesystem;
  * @details This function opens a file dialog to select a folder and adds all images from that folder and it's sub folders to the data structure.
  */
 void addImagesFromFolder(std::shared_ptr<Data> data, QWidget* parent) {
+    // TODO ajouter des options comme le fait de garder ou non l'ancienne save
     data->stopAllThreads();
 
     QProgressDialog progressDialog(parent);

@@ -1017,7 +1017,7 @@ MainImage* ImageEditor::createImageLabel() {
     });
 
     int imageNbr = data->getImagesDataPtr()->getImageNumber();
-    if (imageData->isDetectionStatusNotLoaded()) {
+    if (imageData->isDetectionStatusNotLoaded() && data->getConnectionEnabled()) {
         imageData->setDetectionStatusLoading();
         QImage image = data->loadImageNormal(nullptr, data->getImagesDataPtr()->getCurrentImageData()->getImagePath(), QSize(0, 0), false);
 

@@ -2104,12 +2104,38 @@ std::vector<int>* Data::getImagesSelectedPtr() {
     return &this->imagesSelected;
 }
 
+bool Data::checkConnection() {
+    if (hasConnection()) {
+        if (!getConnectionEnabled()) {
+            setConnectionEnabled(true);
+        }
+        return true;
+    }
+    return false;
+}
+
+/**
+ * @brief Get the connection enabled status
+ * @return The connection enabled status
+ */
+bool Data::getConnectionEnabled() {
+    return this->connectionEnabled;
+}
+
+/**
+ * @brief Set the connection enabled status
+ * @param connectionEnabled The connection enabled status to set
+ */
+void Data::setConnectionEnabled(bool connectionEnabled) {
+    this->connectionEnabled = connectionEnabled;
+}
+
 /**
  * @brief Check if the objetcs has been detected and detect them if not
  */
 void Data::checkDetectObjects() {
     this->addHeavyThreadToFront([this]() {
-        if (!downloadModelIfNotExists("yolov5n.onnx")) {
+        if (this->getConnectionEnabled() && !downloadModelIfNotExists("yolov5n.onnx")) {
             qInfo() << "yolov5n could not be downloaded cheking in 1 min";
             // TODO translate
             this->setCenterText("the model yolov5n could not be downloaded cheking in 1 min");

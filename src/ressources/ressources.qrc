@@ -1,34 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="">
-        <file>icons/before.png</file>
-        <file>icons/next.png</file>
-        <file>icons/rotateLeft.png</file>
-        <file>icons/rotateRight.png</file>
-        <file>icons/delete.png</file>
-        <file>icons/save.png</file>
-        <file>icons/export.png</file>
-        <file>icons/mirrorUpDown.png</file> 
-        <file>icons/mirrorLeftRight.png</file>
-        <file>icons/conversion.png</file>
-        <file>icons/editFilters.png</file>
-        <file>icons/map.png</file>
-        <file>icons/editPersons.png</file>
-        <file>icons/folder.png</file>
-        <file>icons/allImages.png</file>
-        <file>icons/back.png</file>
-
-
-
-
-
-
-        <file>icons/imageBooth.png</file>
-        <file>icons/addImages.png</file>
-
-
-        <file>icons/discord.png</file>
-        <file>icons/github.png</file>
-        <file>icons/option.png</file>
+        <file>icons/noWifi.png</file>
         <file>icons/icon.ico</file>
 
         <file>icons/fr.png</file>
@@ -67,11 +39,13 @@
         <file>255-255-255-255/icons/addImages.png</file>
 
 
+        <file>255-255-255-255/icons/wifi.png</file>
         <file>255-255-255-255/icons/discord.png</file>
         <file>255-255-255-255/icons/github.png</file>
         <file>255-255-255-255/icons/option.png</file>
 
         <file>255-255-255-255/icons/icon.ico</file>
+
 
 
 
@@ -102,6 +76,7 @@
         <file>0-0-0-255/icons/addImages.png</file>
 
 
+        <file>0-0-0-255/icons/wifi.png</file>
         <file>0-0-0-255/icons/discord.png</file>
         <file>0-0-0-255/icons/github.png</file>
         <file>0-0-0-255/icons/option.png</file>

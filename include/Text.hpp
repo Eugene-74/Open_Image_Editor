@@ -31,6 +31,9 @@ inline QString language() {
     return translationManager.translateQ("Text.Tooltip.LANGUAGE");
 }
 
+inline QString wifi() {
+    return translationManager.translateQ("Text.Tooltip.WIFI");
+}
 inline QString discord() {
     return translationManager.translateQ("Text.Tooltip.DISCORD");
 }

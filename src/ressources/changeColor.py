@@ -49,3 +49,5 @@ createIconsAndImages(r,g,b,a)
 
 r,g,b,a=255,255,255,255
 createIconsAndImages(r,g,b,a)
+
+print("Icons and images have been created in the folders src/ressources/0-0-0-255/icons and src/ressources/255-255-255-255/icons")
