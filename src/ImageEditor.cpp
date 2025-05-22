@@ -6,6 +6,7 @@
 #include <QComboBox>
 #include <QDateTime>
 #include <QDateTimeEdit>
+#include <QDesktopServices>
 #include <QFrame>
 #include <QFuture>
 #include <QHBoxLayout>
@@ -937,12 +938,13 @@ ClickableLabel* ImageEditor::createImageGimp() {
 
     ClickableLabel* imageGimpNew = new ClickableLabel(data, Const::IconPath::GIMP, Text::Tooltip::ImageEditor::gimp(), this, actionSize);
     imageGimpNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
-    if (!Gimp::exist()) {
-        imageGimpNew->setDisabled(true);
-    }
 
     connect(imageGimpNew, &ClickableLabel::clicked, [this]() {
-        Gimp::launchWithImage(QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()).toStdWString());
+        if (Gimp::exist()) {
+            Gimp::launchWithImage(QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()).toStdWString());
+        } else {
+            QDesktopServices::openUrl(QUrl("https://www.gimp.org/downloads/"));
+        }
     });
 
     return imageGimpNew;
