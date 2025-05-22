@@ -4,6 +4,7 @@ Text.NAME:Nom
 Text.DATE:Date
 Text.GEOLOCATION:Géolocalisation
 Text.Tooltip.LANGUAGE:Changer la langue de l'application
+Text.Tooltip.WIFI:
 Text.Tooltip.DISCORD:Ouvrir le discord de l'application
 Text.Tooltip.GITHUB:Ouvrir le github de l'application
 Text.Tooltip.PARAMETER:Ouvrir les paramètres
@@ -33,3 +34,4 @@ Text.Tooltip.ImageEditor.MIRROR_LEFT_RIGHT:Inverser GAUCHE-DROITE l'image
 Text.Tooltip.ImageEditor.MAP:Modifier les données de carte de l'image
 Text.Tooltip.ImageEditor.EDIT_PERSONS:Modifier les données des personnes de l'image
 Text.Tooltip.ImageEditor.CONVERSION:Convertir l'image
+Text.Tooltip.ImageEditor.GIMP:

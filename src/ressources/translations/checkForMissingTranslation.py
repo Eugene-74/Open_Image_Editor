@@ -55,20 +55,26 @@ class TranslationEditor:
                     w.writerow([key, ""])
         if not path: return
         self.lang_file = path; self.lang_data.clear()
+        # Charger toutes les clés/valeurs existantes
         with open(path, encoding='utf-8', newline='') as f:
-            for row in csv.reader(f, delimiter=':'):  # Utilisation de ':' comme délimiteur
-                if len(row) == 2:  # Vérifie que la ligne contient exactement 2 colonnes
+            for row in csv.reader(f, delimiter=':'):
+                if len(row) == 2:
                     key, val = row
                     self.lang_data[key] = val
 
         hasMissingKey = False
+        # Ajouter uniquement les clés manquantes sans écraser les autres
         for key in self.en_data:
             if key not in self.lang_data:
                 self.lang_data[key] = ""
                 hasMissingKey = True
         if hasMissingKey:
+            # Sauvegarder toutes les clés (anciennes + nouvelles)
+            with open(path, 'w', encoding='utf-8', newline='') as f:
+                w = csv.writer(f, delimiter=':')
+                for key in self.en_data:
+                    w.writerow([key, self.lang_data.get(key, "")])
             messagebox.showinfo("Succès", "Le fichier viens d'etre corriger (manque de key).")
-            self.save_lang()
 
         self.refresh()
 
