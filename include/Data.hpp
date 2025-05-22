@@ -200,10 +200,10 @@ class Data : public std::enable_shared_from_this<Data> {
     std::list<ImageData*> hasNotBeenDetected;
     std::mutex detectionMutex;
 
-    Folders* findFirstFolderWithAllImagesSub(Folders* currentFolder);
     std::vector<Actions> lastActions = {};
     std::vector<Actions> lastActionsDone = {};
 
+    Folders* findFirstFolderWithAllImagesSub(Folders* currentFolder);
     void createFolders(Folders* currentFolders, std::string path);
     void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);
     };
