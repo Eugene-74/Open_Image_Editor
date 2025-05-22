@@ -34,3 +34,4 @@ Text.Tooltip.ImageEditor.MIRROR_LEFT_RIGHT:Mirror LEFT-RIGHT the image
 Text.Tooltip.ImageEditor.MAP:Edit map data of the image
 Text.Tooltip.ImageEditor.EDIT_PERSONS:Edit persons data of the image
 Text.Tooltip.ImageEditor.CONVERSION:Convert the image
+Text.Tooltip.ImageEditor.GIMP:Open the image in GIMP

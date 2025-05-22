@@ -31,6 +31,7 @@
 #include "Const.hpp"
 #include "Conversion.hpp"
 #include "Download.hpp"
+#include "Gimp.hpp"
 #include "LoadImage.hpp"
 #include "MainImage.hpp"
 #include "ObjectRecognition.hpp"
@@ -336,11 +337,14 @@ void ImageEditor::createButtons() {
     imageConversion = createImageConversion();
 
     imagePersons = createImagePersons();
+    imageGimp = createImageGimp();
 
     actionButtonLayout->addWidget(imageRotateRight);
     actionButtonLayout->addWidget(imageRotateLeft);
     actionButtonLayout->addWidget(imageMirrorLeftRight);
     actionButtonLayout->addWidget(imageMirrorUpDown);
+    actionButtonLayout->addWidget(imageGimp);
+
     actionButtonLayout->addWidget(imageDelete);
     actionButtonLayout->addWidget(imageSave);
     actionButtonLayout->addWidget(imageExport);
@@ -920,6 +924,28 @@ ClickableLabel* ImageEditor::createImagePersons() {
     });
 
     return imagePersonsNew;
+}
+
+/**
+ * @brief Create a button to open the image on Gimp
+ * @return A pointer to the ClickableLabel object representing the Gimp
+ */
+ClickableLabel* ImageEditor::createImageGimp() {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageGimpNew = new ClickableLabel(data, Const::IconPath::GIMP, Text::Tooltip::ImageEditor::gimp(), this, actionSize);
+    imageGimpNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
+    if (!Gimp::exist()) {
+        imageGimpNew->setDisabled(true);
+    }
+
+    connect(imageGimpNew, &ClickableLabel::clicked, [this]() {
+        Gimp::launchWithImage(QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()).toStdWString());
+    });
+
+    return imageGimpNew;
 }
 
 /**

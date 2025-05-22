@@ -89,6 +89,7 @@ class ImageEditor : public QMainWindow {
 
     ClickableLabel* createImageEditExif();
     ClickableLabel* createImagePersons();
+    ClickableLabel* createImageGimp();
 
     ClickableLabel* createImageBefore();
     ClickableLabel* createImageNext();
@@ -148,6 +149,7 @@ class ImageEditor : public QMainWindow {
 
     ClickableLabel* imageEditExif;
     ClickableLabel* imagePersons;
+    ClickableLabel* imageGimp;
 
     QTimer* imageOpenTimer = new QTimer(this);
 

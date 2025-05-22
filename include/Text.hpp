@@ -130,6 +130,9 @@ inline QString edit_persons() {
 inline QString conversion() {
     return translationManager.translateQ("Text.Tooltip.ImageEditor.CONVERSION");
 }
+inline QString gimp() {
+    return translationManager.translateQ("Text.Tooltip.ImageEditor.GIMP");
+}
 };  // namespace ImageEditor
 };  // namespace Tooltip
 };  // namespace Text

@@ -131,6 +131,7 @@ static const QString ROTATE_LEFT = ":/icons/rotateLeft.png";
 static const QString MIRROR_UP_DOWN = ":/icons/mirrorUpDown.png";
 static const QString MIRROR_LEFT_RIGHT = ":/icons/mirrorLeftRight.png";
 static const QString CONVERSION = ":/icons/conversion.png";
+static const QString GIMP = ":/icons/gimp.png";
 static const QString MAP = ":/icons/map.png";
 static const QString EDIT_PERSONS = ":/icons/editPersons.png";
 static const QString EDIT_FILTERS = ":/icons/editFilters.png";

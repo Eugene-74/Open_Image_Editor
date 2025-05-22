@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="">
+        <file>icons/gimp.png</file>
         <file>icons/noWifi.png</file>
         <file>icons/icon.ico</file>
 
