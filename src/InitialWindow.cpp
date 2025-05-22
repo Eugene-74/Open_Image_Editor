@@ -499,10 +499,9 @@ void InitialWindow::showMainWindow() {
  * @return ClickableLabel* Pointer to the created ClickableLabel object
  */
 ClickableLabel* InitialWindow::createImageLanguage() {
-    std::string valueStr = data->getOptionsConst().at("Language").getValueConst();
-    size_t pos = valueStr.find('|');
-    std::string currentValue = valueStr.substr(0, pos);
+    std::string currentValue = data->getOptionsConst().at("Language").getValueFromList();
     QString language = QString::fromStdString(currentValue);
+
     Text::translationManager.setLanguage(language.toStdString());
 
     if (language == "en") {
@@ -645,9 +644,7 @@ void InitialWindow::openOption() {
         *(*data->getOptionsPtr())[key].getValuePtr() = value;
     }
     // TODO mettre en fonction dans la class Option -> getValue
-    std::string valueStr = data->getOptionsConst().at("Language").getValueConst();
-    size_t pos = valueStr.find('|');
-    std::string currentValue = valueStr.substr(0, pos);
+    std::string currentValue = data->getOptionsConst().at("Language").getValueFromList();
     QString language = QString::fromStdString(currentValue);
 
     emit reload();

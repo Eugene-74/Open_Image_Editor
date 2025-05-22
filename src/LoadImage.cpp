@@ -18,6 +18,7 @@
 #include <thread>
 #include <vector>
 
+#include "Box.hpp"
 #include "Const.hpp"
 #include "Data.hpp"
 #include "FileSelector.hpp"
@@ -34,7 +35,15 @@ namespace fs = std::filesystem;
  * @details This function opens a file dialog to select a folder and adds all images from that folder and it's sub folders to the data structure.
  */
 void addImagesFromFolder(std::shared_ptr<Data> data, QWidget* parent) {
-    // TODO ajouter des options comme le fait de garder ou non l'ancienne save
+    std::map<std::string, std::string> option = showOptionsDialog(parent, "Add images from folder", {
+
+                                                                                                        // TODO translate
+                                                                                                        {"Keep old save", Option("bool", "true")},
+                                                                                                    });
+    if (option["Keep old save"] == "false") {
+        data->getImagesDataPtr()->clear();
+        data->saveData();
+    }
     data->stopAllThreads();
 
     QProgressDialog progressDialog(parent);

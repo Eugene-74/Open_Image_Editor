@@ -23,7 +23,6 @@
 class ImageData;
 class QApplication;
 class Option;
-class Option;
 
 class QImageAndPath {
    public:

@@ -8,6 +8,10 @@ class Option {
     std::string* getTypePtr();
     std::string getValueConst() const;
     std::string* getValuePtr();
+    int getIntValue() const;
+    double getFloatValue() const;
+    bool getBoolValue() const;
+    std::string getValueFromList() const;
 
     Option() = default;
     Option(const std::string& type, const std::string& value)
