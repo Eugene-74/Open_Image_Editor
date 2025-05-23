@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Folders.hpp"
+#include "LoadingStatus.hpp"
 #include "MetaData.hpp"
 #include "ObjectRecognition.hpp"
 
@@ -37,8 +38,11 @@ class ImageData {
     std::string get() const;
 
     std::map<std::string, std::vector<std::pair<cv::Rect, float>>> getDetectedObjects();
+    std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>>* getDetectedFacesPtr();
+    std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>> getDetectedFacesConst() const;
     void setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects);
     void clearDetectedObjects();
+    void detectFaces();
 
     void setDate(long date);
     long getDate() const;
@@ -101,8 +105,10 @@ class ImageData {
    private:
         MetaData metaData;
     DetectedObjects detectedObjects;
+
     Folders folders;
     DetectionStatus detectionStatus = DetectionStatus::NotLoaded;
+    LoadingStatus faceDetectionStatus;
 
     std::vector<std::vector<QPoint>> cropSizes;
     int orientation;

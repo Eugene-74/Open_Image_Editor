@@ -15,10 +15,15 @@ class DetectedObjects {
     auto getDetectedObjects() -> std::map<std::string, std::vector<std::pair<cv::Rect, float>>>;
     auto getDetectedObjectsConst() const -> std::map<std::string, std::vector<std::pair<cv::Rect, float>>>;
 
+    auto getDetectedFacesPtr() -> std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>>*;
+    auto getDetectedFacesConst() const -> std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>>;
+
     void setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects);
+    void detectFaces(std::string imagePath);
 
    private:
     std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects;
+    std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>> detectedFaces;
 };
 
 bool isCudaAvailable();

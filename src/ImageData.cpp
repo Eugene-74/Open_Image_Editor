@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include "Const.hpp"
+#include "FacesRecognition.hpp"
 #include "GPS_Conversion.hpp"
 #include "Verification.hpp"
 
@@ -279,6 +280,22 @@ std::map<std::string, std::vector<std::pair<cv::Rect, float>>> ImageData::getDet
 }
 
 /**
+ * @brief Get the detected faces
+ * @return A map of detected faces with their bounding boxes and confidence scores
+ */
+std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>>* ImageData::getDetectedFacesPtr() {
+    return detectedObjects.getDetectedFacesPtr();
+}
+
+/**
+ * @brief Get the detected faces
+ * @return A map of detected faces with their bounding boxes and confidence scores
+ */
+std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>> ImageData::getDetectedFacesConst() const {
+    return detectedObjects.getDetectedFacesConst();
+}
+
+/**
  * @brief Set the detected objects for the image
  * @param detectedObjects A map of detected objects with their bounding boxes and confidence scores
  */
@@ -315,6 +332,7 @@ void ImageData::save(std::ofstream& out) const {
     }
 
     out.write(reinterpret_cast<const char*>(&detectionStatus), sizeof(detectionStatus));
+    faceDetectionStatus.save(out);
 
     detectedObjects.save(out);
 }
@@ -344,7 +362,7 @@ void ImageData::load(std::ifstream& in) {
     }
 
     in.read(reinterpret_cast<char*>(&detectionStatus), sizeof(detectionStatus));
-
+    faceDetectionStatus.load(in);
     detectedObjects.load(in);
 }
 
@@ -504,4 +522,35 @@ void ImageData::setLongitude(double longitude) {
  */
 double ImageData::getLongitude() const {
     return longitude;
+}
+
+void ImageData::detectFaces() {
+    if (faceDetectionStatus.isStatusNotLoaded()) {
+        faceDetectionStatus.setStatusLoading();
+        if (detectedObjects.getDetectedFacesPtr()->size() > 0) {
+            return;
+        }
+        detectedObjects.detectFaces(this->getImagePath());
+
+        auto* faces = detectedObjects.getDetectedFacesPtr();
+        for (auto& faceData : *faces) {
+            cv::Mat img = cv::imread(this->getImagePath());
+            if (img.empty()) {
+                qWarning() << "Failed to load image for embedding extraction:" << QString::fromStdString(this->getImagePath());
+                continue;
+            }
+            cv::Rect faceRect = faceData.first.first;
+            cv::Mat faceROI;
+            try {
+                faceROI = img(faceRect).clone();
+            } catch (...) {
+                qWarning() << "Invalid face rectangle for cropping.";
+                continue;
+            }
+            cv::Mat embedding = detectEmbedding(faceROI);
+            faceData.second = embedding;
+            qDebug() << "Face detected with embedding size:" << embedding.size().width << "x" << embedding.size().height;
+        }
+        faceDetectionStatus.setStatusLoaded();
+    }
 }

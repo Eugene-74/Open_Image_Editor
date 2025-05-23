@@ -315,6 +315,21 @@ void MainImage::paintEvent(QPaintEvent* event) {
                 painter.drawText(qRect.topLeft(), QString::fromStdString(key) + " " + QString::number(confidence * 100, 'f', 2) + "%");
             }
         }
+        auto detectedFaces = data->getImagesDataPtr()->getCurrentImageData()->getDetectedFacesPtr();
+        for (const auto& [rect_conf, faceMat] : *detectedFaces) {
+            const auto& [rect, confidence] = rect_conf;
+            // Adjust the rectangle coordinates
+            int adjustedX = static_cast<int>(rect.x * xScale) + xOffset;
+            int adjustedY = static_cast<int>(rect.y * yScale) + yOffset;
+            int adjustedWidth = static_cast<int>(rect.width * xScale);
+            int adjustedHeight = static_cast<int>(rect.height * yScale);
+
+            QRect qRect(adjustedX, adjustedY, adjustedWidth, adjustedHeight);
+
+            painter.setPen(Qt::green);
+            painter.drawRect(qRect);
+            painter.drawText(qRect.topLeft(), QString("Face %1%").arg(confidence * 100, 0, 'f', 2));
+        }
     }
 }
 

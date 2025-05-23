@@ -32,6 +32,7 @@
 #include "Const.hpp"
 #include "Conversion.hpp"
 #include "Download.hpp"
+#include "FacesRecognition.hpp"
 #include "Gimp.hpp"
 #include "LoadImage.hpp"
 #include "MainImage.hpp"
@@ -1043,6 +1044,34 @@ MainImage* ImageEditor::createImageLabel() {
             openBigImageLabel();
         }
     });
+
+    if (imageData->isDetectionStatusLoaded()) {
+        data->addHeavyThread([this, imageData]() {
+            imageData->detectFaces();
+
+            // Compare les embeddings de cette imageData avec ceux des autres ImageData
+            auto* faces = imageData->getDetectedFacesPtr();
+            if (faces && !faces->empty()) {
+                const auto& allImages = data->getImagesDataPtr()->getConst();
+                for (size_t i = 0; i < faces->size(); ++i) {
+                    const cv::Mat& embedding1 = (*faces)[i].second;
+                    for (const auto* otherImage : allImages) {
+                        if (otherImage == imageData) continue;
+                        auto otherFaces = otherImage->getDetectedFacesConst();
+                        if (otherFaces.empty()) continue;
+                        for (size_t j = 0; j < otherFaces.size(); ++j) {
+                            const cv::Mat& embedding2 = otherFaces[j].second;
+                            if (!embedding1.empty() && !embedding2.empty()) {
+                                double similarity = cosineSimilarity(embedding1, embedding2);
+                                qDebug() << "Cosine similarity between face" << i << " from" << imageData->getImagePath() << "and image" << QString::fromStdString(otherImage->getImageName())
+                                         << "face" << j << ":" << similarity;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     int imageNbr = data->getImagesDataPtr()->getImageNumber();
     if (imageData->isDetectionStatusNotLoaded() && data->getConnectionEnabled()) {

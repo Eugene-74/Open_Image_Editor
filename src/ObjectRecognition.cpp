@@ -8,6 +8,7 @@
 
 #include "Data.hpp"
 #include "Download.hpp"
+#include "FacesRecognition.hpp"
 
 /**
  * @brief Save the detected objects to a file
@@ -27,6 +28,24 @@ void DetectedObjects::save(std::ofstream& out) const {
             out.write(reinterpret_cast<const char*>(&rect), sizeof(rect));
             out.write(reinterpret_cast<const char*>(&confidence), sizeof(confidence));
         }
+    }
+    // Save detectedFaces
+    size_t facesSize = detectedFaces.size();
+    out.write(reinterpret_cast<const char*>(&facesSize), sizeof(facesSize));
+    for (const auto& face : detectedFaces) {
+        // Save rect and confidence
+        out.write(reinterpret_cast<const char*>(&face.first.first), sizeof(face.first.first));
+        out.write(reinterpret_cast<const char*>(&face.first.second), sizeof(face.first.second));
+        // Save cv::Mat (personROI)
+        const cv::Mat& mat = face.second;
+        int rows = mat.rows, cols = mat.cols, type = mat.type();
+        out.write(reinterpret_cast<const char*>(&rows), sizeof(rows));
+        out.write(reinterpret_cast<const char*>(&cols), sizeof(cols));
+        out.write(reinterpret_cast<const char*>(&type), sizeof(type));
+        size_t dataSize = mat.total() * mat.elemSize();
+        out.write(reinterpret_cast<const char*>(&dataSize), sizeof(dataSize));
+        if (dataSize > 0)
+            out.write(reinterpret_cast<const char*>(mat.data), dataSize);
     }
 }
 
@@ -50,6 +69,29 @@ void DetectedObjects::load(std::ifstream& in) {
             in.read(reinterpret_cast<char*>(&vec[j]), sizeof(vec[j]));
         }
         detectedObjects[key] = vec;
+    }
+    // Load detectedFaces
+    size_t facesSize;
+    in.read(reinterpret_cast<char*>(&facesSize), sizeof(facesSize));
+    detectedFaces.clear();
+    for (size_t i = 0; i < facesSize; ++i) {
+        std::pair<cv::Rect, float> faceInfo;
+        in.read(reinterpret_cast<char*>(&faceInfo.first), sizeof(faceInfo.first));
+        in.read(reinterpret_cast<char*>(&faceInfo.second), sizeof(faceInfo.second));
+        int rows, cols, type;
+        in.read(reinterpret_cast<char*>(&rows), sizeof(rows));
+        in.read(reinterpret_cast<char*>(&cols), sizeof(cols));
+        in.read(reinterpret_cast<char*>(&type), sizeof(type));
+        size_t dataSize;
+        in.read(reinterpret_cast<char*>(&dataSize), sizeof(dataSize));
+        cv::Mat mat;
+        if (dataSize > 0) {
+            std::vector<uchar> buffer(dataSize);
+            in.read(reinterpret_cast<char*>(buffer.data()), dataSize);
+            mat.create(rows, cols, type);
+            std::memcpy(mat.data, buffer.data(), dataSize);
+        }
+        detectedFaces.emplace_back(faceInfo, mat);
     }
 }
 
@@ -161,4 +203,50 @@ void DetectedObjects::setDetectedObjects(const std::map<std::string, std::vector
  */
 void DetectedObjects::clear() {
     detectedObjects.clear();
+}
+
+void DetectedObjects::detectFaces(std::string imagePath) {
+    cv::Mat image = cv::imread(imagePath);
+    if (image.empty()) {
+        qWarning() << "Failed to load image for face detection";
+        return;
+    }
+
+    auto it = detectedObjects.find("person");
+    if (it == detectedObjects.end()) {
+        qWarning() << "No 'person' objects detected";
+        return;
+    }
+    const auto& persons = it->second;
+    for (const auto& [rect, confidence] : persons) {
+        cv::Rect validRect = rect & cv::Rect(0, 0, image.cols, image.rows);
+        if (validRect.width > 0 && validRect.height > 0) {
+            cv::Mat personROI = image(validRect).clone();
+            auto faceResults = getFaceRect(personROI);
+            for (const auto& faceResult : faceResults) {
+                if (faceResult.second > 0) {
+                    cv::Rect adjustedRect = faceResult.first;
+                    adjustedRect.x += validRect.x;
+                    adjustedRect.y += validRect.y;
+                    detectedFaces.emplace_back(std::make_pair(std::make_pair(adjustedRect, faceResult.second), cv::Mat()));
+                }
+            }
+        }
+    }
+}
+
+/**
+ * @brief Get the detected faces
+ * @return A map of detected faces with their bounding boxes and confidence scores
+ */
+std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>>* DetectedObjects::getDetectedFacesPtr() {
+    return &this->detectedFaces;
+}
+
+/**
+ * @brief Get the detected faces
+ * @return A map of detected faces with their bounding boxes and confidence scores
+ */
+std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>> DetectedObjects::getDetectedFacesConst() const {
+    return this->detectedFaces;
 }
