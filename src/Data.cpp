@@ -26,6 +26,7 @@
 #include "Download.hpp"
 #include "Network.hpp"
 #include "ObjectRecognition.hpp"
+#include "Text.hpp"
 #include "Verification.hpp"
 
 namespace fs = std::filesystem;
@@ -1655,7 +1656,7 @@ void Data::removeImageFromFolders(ImageData& imageData) {
  * @return The absolute path of the folder
  */
 std::string Data::getFolderPath(Folders* folder) {
-    // TODO  deplacer dans FOLDERS
+    // TODO Cree une sous class data pour les dossiers
     if (folder == &rootFolders) {
         return "/";
     }
@@ -1859,9 +1860,8 @@ DetectedObjects* Data::detect(std::string imagePath, QImage image, std::string m
 
     cv::dnn::Net net = load_net(model);
     if (net.empty()) {
-        qWarning() << "Failed to load the model.";
-        // TODO translate
-        this->setCenterText("Failed to load the model");
+        qWarning() << "Failed to load the model";
+        this->setCenterText(Text::Error::failedLoadModel().toStdString());
 
         return nullptr;
     }
@@ -2137,8 +2137,7 @@ void Data::checkDetectObjects() {
     this->addHeavyThreadToFront([this]() {
         if (this->getConnectionEnabled() && !downloadModelIfNotExists("yolov5n.onnx")) {
             qInfo() << "yolov5n could not be downloaded cheking in 1 min";
-            // TODO translate
-            this->setCenterText("the model yolov5n could not be downloaded cheking in 1 min");
+            this->setCenterText(Text::Error::failedDownloadModel().toStdString());
 
             QTimer::singleShot(Const::Time::MIN_1, [this]() {
                 checkDetectObjects();

@@ -533,7 +533,6 @@ ClickableLabel* InitialWindow::createImageLanguage() {
 }
 
 ClickableLabel* InitialWindow::createImageWifi() {
-    // TODO marche pas
     ClickableLabel* newImageWifi;
     if (data->getConnectionEnabled()) {
         newImageWifi = new ClickableLabel(data, Const::IconPath::WIFI, Text::Tooltip::wifi(), this, linkButton, false, 0, true);
@@ -542,7 +541,7 @@ ClickableLabel* InitialWindow::createImageWifi() {
             reload();
         });
     } else {
-        newImageWifi = new ClickableLabel(data, Const::IconPath::NO_WIFI, Text::Tooltip::wifi(), this, linkButton, false, 0, true);
+        newImageWifi = new ClickableLabel(data, Const::IconPath::NO_WIFI, Text::Tooltip::noWifi(), this, linkButton, false, 0, true);
         connect(newImageWifi, &ClickableLabel::clicked, [this]() {
             if (hasConnection()) {
                 data->setConnectionEnabled(true);
@@ -643,7 +642,6 @@ void InitialWindow::openOption() {
     for (const auto& [key, value] : options) {
         *(*data->getOptionsPtr())[key].getValuePtr() = value;
     }
-    // TODO mettre en fonction dans la class Option -> getValue
     std::string currentValue = data->getOptionsConst().at("Language").getValueFromList();
     QString language = QString::fromStdString(currentValue);
 

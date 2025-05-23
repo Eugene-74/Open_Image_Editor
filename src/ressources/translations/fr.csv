@@ -5,6 +5,7 @@ Text.DATE:Date
 Text.GEOLOCATION:Géolocalisation
 Text.Tooltip.LANGUAGE:Changer la langue de l'application
 Text.Tooltip.WIFI:
+Text.Tooltip.NO_WIFI:
 Text.Tooltip.DISCORD:Ouvrir le discord de l'application
 Text.Tooltip.GITHUB:Ouvrir le github de l'application
 Text.Tooltip.PARAMETER:Ouvrir les paramètres
@@ -35,3 +36,6 @@ Text.Tooltip.ImageEditor.MAP:Modifier les données de carte de l'image
 Text.Tooltip.ImageEditor.EDIT_PERSONS:Modifier les données des personnes de l'image
 Text.Tooltip.ImageEditor.CONVERSION:Convertir l'image
 Text.Tooltip.ImageEditor.GIMP:
+Text.Tooltip.Error.FAILED_LOAD_MODEL:
+Text.Tooltip.Error.FAILED_DOWNLOAD_MODEL:
+Text.Tooltip.Error.KEEP_OLD_SAVE:

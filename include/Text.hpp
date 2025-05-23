@@ -34,6 +34,9 @@ inline QString language() {
 inline QString wifi() {
     return translationManager.translateQ("Text.Tooltip.WIFI");
 }
+inline QString noWifi() {
+    return translationManager.translateQ("Text.Tooltip.NO_WIFI");
+}
 inline QString discord() {
     return translationManager.translateQ("Text.Tooltip.DISCORD");
 }
@@ -135,4 +138,19 @@ inline QString gimp() {
 }
 };  // namespace ImageEditor
 };  // namespace Tooltip
+namespace Error {
+inline QString failedLoadModel() {
+    return translationManager.translateQ("Text.Error.FAILED_LOAD_MODEL");
+}
+inline QString failedDownloadModel() {
+    return translationManager.translateQ("Text.Error.FAILED_DOWNLOAD_MODEL");
+}
+};  // namespace Error
+namespace Option {
+namespace Loading {
+inline QString keepOldSave() {
+    return translationManager.translateQ("Text.Tooltip.Option.Loading.KEEP_OLD_SAVE");
+}
+}  // namespace Loading
+}  // namespace Option
 };  // namespace Text

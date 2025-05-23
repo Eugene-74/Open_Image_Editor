@@ -4,7 +4,8 @@ Text.NAME:Name
 Text.DATE:Date
 Text.GEOLOCATION:Geolocation
 Text.Tooltip.LANGUAGE:Change the app language
-Text.Tooltip.WIFI:Desactivate or Activate the download (useful when you have low connection)
+Text.Tooltip.WIFI:Desactivate the downloads (useful when you have low connection)
+Text.Tooltip.NO_WIFI:Activate the downloads
 Text.Tooltip.DISCORD:Open the app discord
 Text.Tooltip.GITHUB:Open the app github
 Text.Tooltip.PARAMETER:Open the parameters
@@ -35,3 +36,6 @@ Text.Tooltip.ImageEditor.MAP:Edit map data of the image
 Text.Tooltip.ImageEditor.EDIT_PERSONS:Edit persons data of the image
 Text.Tooltip.ImageEditor.CONVERSION:Convert the image
 Text.Tooltip.ImageEditor.GIMP:Open the image in GIMP
+Text.Tooltip.Error.FAILED_LOAD_MODEL:Failed to load the model
+Text.Tooltip.Error.FAILED_DOWNLOAD_MODEL:The model yolov5n could not be downloaded cheking in 1 min
+Text.Tooltip.Option.Loading.KEEP_OLD_SAVE:Keep the old save

@@ -24,6 +24,7 @@
 #include "FileSelector.hpp"
 #include "Folders.hpp"
 #include "ImagesData.hpp"
+#include "Text.hpp"
 #include "Verification.hpp"
 
 namespace fs = std::filesystem;
@@ -38,8 +39,7 @@ void addImagesFromFolder(std::shared_ptr<Data> data, QWidget* parent) {
     if (data->getImagesDataPtr()->get()->size() > 0) {
         std::map<std::string, std::string> option = showOptionsDialog(parent, "Add images from folder",
                                                                       {
-                                                                          // TODO translate
-                                                                          {"Keep old save", Option("bool", "true")},
+                                                                          {Text::Option::Loading::keepOldSave().toStdString(), Option("bool", "true")},
                                                                       });
         if (option["Keep old save"] == "false") {
             std::remove(IMAGESDATA_SAVE_PATH.c_str());
