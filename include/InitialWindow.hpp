@@ -43,7 +43,7 @@ class InitialWindow : public QMainWindow {
     void clearWindows();
 
    private:
-    QSize* linkButton;
+    QSize linkButton;
 
     QTimer* resizeTimer;
     ImageEditor* imageEditor = nullptr;
@@ -54,7 +54,11 @@ class InitialWindow : public QMainWindow {
 
     QHBoxLayout* languageLayout;
     QHBoxLayout* linkLayout;
+    QHBoxLayout* topLayout;
     QWidget* centralWidget;
+
+    ClickableLabel* imageHome;
+    ClickableLabel* imageBack;
 
     ClickableLabel* imageLanguage;
 
@@ -62,6 +66,9 @@ class InitialWindow : public QMainWindow {
     ClickableLabel* imageDiscord;
     ClickableLabel* imageGithub;
     ClickableLabel* imageOption;
+
+    ClickableLabel* createImageHome();
+    ClickableLabel* createImageBack();
 
     ClickableLabel* createImageLanguage();
 

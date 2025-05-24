@@ -604,7 +604,7 @@ void ImageBooth::updateImages() {
                             folderButton->addLogo(QColor::fromString(Const::Color::GREEN), QColor::fromString(Const::Color::DARK), data->getImagesDataPtr()->get()->size());
                         } else {
                             folderButton = new ClickableLabel(data, Const::IconPath::BACK,
-                                                              Text::Tooltip::back() + " : " + QString::fromStdString(data->getCurrentFolders()->getParent()->getName()),
+                                                              Text::Tooltip::back_folder() + " : " + QString::fromStdString(data->getCurrentFolders()->getParent()->getName()),
                                                               this, imageSize, false, 0, true);
                         }
 

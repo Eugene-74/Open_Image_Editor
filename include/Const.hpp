@@ -146,6 +146,8 @@ static const QString NEXT = ":/icons/next.png";
 static const QString IMAGE_BOOTH = ":/icons/imageBooth.png";
 static const QString ADD_IMAGES = ":/icons/addImages.png";
 
+static const QString HOME = ":/icons/home.png";
+
 static const QString WIFI = ":/icons/wifi.png";
 static const QString NO_WIFI = ":/icons/noWifi.png";
 static const QString DISCORD = ":/icons/discord.png";

@@ -1,6 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="">
-        <file>icons/gimp.png</file>
         <file>icons/noWifi.png</file>
         <file>icons/icon.ico</file>
 
@@ -21,6 +20,7 @@
         <file>255-255-255-255/icons/next.png</file>
         <file>255-255-255-255/icons/rotateLeft.png</file>
         <file>255-255-255-255/icons/rotateRight.png</file>
+        <file>255-255-255-255/icons/gimp.png</file>
         <file>255-255-255-255/icons/delete.png</file>
         <file>255-255-255-255/icons/save.png</file>
         <file>255-255-255-255/icons/export.png</file>
@@ -36,9 +36,11 @@
 
 
 
+
         <file>255-255-255-255/icons/imageBooth.png</file>
         <file>255-255-255-255/icons/addImages.png</file>
 
+        <file>255-255-255-255/icons/home.png</file>
 
         <file>255-255-255-255/icons/wifi.png</file>
         <file>255-255-255-255/icons/discord.png</file>
@@ -56,6 +58,7 @@
         <file>0-0-0-255/icons/next.png</file>
         <file>0-0-0-255/icons/rotateLeft.png</file>
         <file>0-0-0-255/icons/rotateRight.png</file>
+        <file>0-0-0-255/icons/gimp.png</file>
         <file>0-0-0-255/icons/delete.png</file>
         <file>0-0-0-255/icons/save.png</file>
         <file>0-0-0-255/icons/export.png</file>
@@ -76,6 +79,7 @@
         <file>0-0-0-255/icons/imageBooth.png</file>
         <file>0-0-0-255/icons/addImages.png</file>
 
+        <file>0-0-0-255/icons/home.png</file>
 
         <file>0-0-0-255/icons/wifi.png</file>
         <file>0-0-0-255/icons/discord.png</file>

@@ -99,16 +99,26 @@ InitialWindow::InitialWindow() {
 
         setWindowTitle("OpenImageEditor : Initial Window");
 
+        
         QVBoxLayout* windowLayout = new QVBoxLayout();
-
+        
         centralWidget = new QWidget(this);
         centralWidget->setLayout(windowLayout);
         setCentralWidget(centralWidget);
 
+        topLayout = new QHBoxLayout();
+        topLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        windowLayout->addLayout(topLayout);
+        imageHome = createImageHome();
+        imageBack = createImageBack();
+
+        topLayout->addWidget(imageHome);
+        topLayout->addWidget(imageBack);
+
         layout = new QVBoxLayout;
         windowLayout->addLayout(layout);
 
-        linkButton = &data->getSizesPtr()->linkButton;
+        linkButton = data->getSizesPtr()->linkButton / 2;
 
         imageLanguage = createImageLanguage();
         imageLanguage->setAlignment(Qt::AlignLeft);
@@ -494,6 +504,83 @@ void InitialWindow::showMainWindow() {
     createMainWindow(data);
 }
 
+ClickableLabel* InitialWindow::createImageHome() {
+    ClickableLabel* newImageHome = new ClickableLabel(data, Const::IconPath::HOME, Text::Tooltip::home(), this, &linkButton, false, 0, true);
+    newImageHome->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
+
+    connect(newImageHome, &ClickableLabel::clicked, [this]() {
+        showMainWindow();
+        if (imageEditor) {
+            data->addAction(
+                [this]() {
+                    showImageEditor();
+                },
+                [this]() {
+                    showMainWindow();
+                });
+        } else if (imageBooth) {
+            data->addAction(
+                [this]() {
+                    showImageBooth();
+                },
+                [this]() {
+                    showMainWindow();
+                });
+        }
+    });
+
+    connect(this, &InitialWindow::reload, newImageHome, [this]() {
+        ClickableLabel* newImageHome = createImageHome();
+        topLayout->replaceWidget(imageHome, newImageHome);
+        imageHome->deleteLater();
+        imageHome = newImageHome;
+    });
+
+    return newImageHome;
+}
+
+ClickableLabel* InitialWindow::createImageBack() {
+    ClickableLabel* newImageBack = new ClickableLabel(data, Const::IconPath::BACK, Text::Tooltip::back_folder(), this, &linkButton, false, 0, true);
+    newImageBack->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
+
+    connect(newImageBack, &ClickableLabel::clicked, [this]() {
+        if (imageEditor) {
+            showImageBooth();
+            data->addAction(
+                [this]() {
+                    showImageEditor();
+                },
+                [this]() {
+                    showImageBooth();
+                });
+        } else if (imageBooth) {
+            showMainWindow();
+            data->addAction(
+                [this]() {
+                    showImageBooth();
+                },
+                [this]() {
+                    showMainWindow();
+                });
+        }
+    });
+
+    connect(this, &InitialWindow::reload, newImageBack, [this]() {
+        ClickableLabel* newImageBack = createImageBack();
+        topLayout->replaceWidget(imageBack, newImageBack);
+        imageBack->deleteLater();
+        imageBack = newImageBack;
+    });
+
+    if (mainWindow) {
+        newImageBack->setVisible(false);
+    } else {
+        newImageBack->setVisible(true);
+    }
+
+    return newImageBack;
+}
+
 /**
  * @brief Create language image label
  * @return ClickableLabel* Pointer to the created ClickableLabel object
@@ -515,7 +602,7 @@ ClickableLabel* InitialWindow::createImageLanguage() {
         language = Const::IconPath::Language::EN;
     }
 
-    ClickableLabel* newImageLanguage = new ClickableLabel(data, language, Text::Tooltip::language(), this, linkButton, false, 0, true);
+    ClickableLabel* newImageLanguage = new ClickableLabel(data, language, Text::Tooltip::language(), this, &linkButton, false, 0, true);
     newImageLanguage->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(newImageLanguage, &ClickableLabel::clicked, [this]() {
@@ -535,13 +622,13 @@ ClickableLabel* InitialWindow::createImageLanguage() {
 ClickableLabel* InitialWindow::createImageWifi() {
     ClickableLabel* newImageWifi;
     if (data->getConnectionEnabled()) {
-        newImageWifi = new ClickableLabel(data, Const::IconPath::WIFI, Text::Tooltip::wifi(), this, linkButton, false, 0, true);
+        newImageWifi = new ClickableLabel(data, Const::IconPath::WIFI, Text::Tooltip::wifi(), this, &linkButton, false, 0, true);
         connect(newImageWifi, &ClickableLabel::clicked, [this]() {
             data->setConnectionEnabled(false);
             reload();
         });
     } else {
-        newImageWifi = new ClickableLabel(data, Const::IconPath::NO_WIFI, Text::Tooltip::noWifi(), this, linkButton, false, 0, true);
+        newImageWifi = new ClickableLabel(data, Const::IconPath::NO_WIFI, Text::Tooltip::noWifi(), this, &linkButton, false, 0, true);
         connect(newImageWifi, &ClickableLabel::clicked, [this]() {
             if (hasConnection()) {
                 data->setConnectionEnabled(true);
@@ -570,7 +657,7 @@ ClickableLabel* InitialWindow::createImageWifi() {
  * @details It also sets up a signal to handle the reload event and update the label accordingly.
  */
 ClickableLabel* InitialWindow::createImageDiscord() {
-    ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Text::Tooltip::discord(), this, linkButton, false, 0, true);
+    ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Text::Tooltip::discord(), this, &linkButton, false, 0, true);
     newImageDiscord->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(newImageDiscord, &ClickableLabel::clicked, [this]() {
@@ -594,7 +681,7 @@ ClickableLabel* InitialWindow::createImageDiscord() {
  * @details It also sets up a signal to handle the reload event and update the label accordingly.
  */
 ClickableLabel* InitialWindow::createImageGithub() {
-    ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Text::Tooltip::github(), this, linkButton, false, 0, true);
+    ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Text::Tooltip::github(), this, &linkButton, false, 0, true);
     newImageGithub->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(newImageGithub, &ClickableLabel::clicked, [this]() {
@@ -611,7 +698,7 @@ ClickableLabel* InitialWindow::createImageGithub() {
     return newImageGithub;
 }
 ClickableLabel* InitialWindow::createImageOption() {
-    ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Text::Tooltip::option(), this, linkButton, false, 0, true);
+    ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Text::Tooltip::option(), this, &linkButton, false, 0, true);
     newImageOption->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(newImageOption, &ClickableLabel::clicked, [this]() {

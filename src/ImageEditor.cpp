@@ -388,12 +388,19 @@ void ImageEditor::updateButtons() {
         ImageData* imageData = imagesData->getCurrentImageData();
         Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
 
+        if (data->getDarkMode()) {
+            dateEdit->setStyleSheet("QDateTimeEdit { color: white; }");
+        } else {
+            dateEdit->setStyleSheet("QDateTimeEdit { color: black; }");
+        }
+
         if (exifData["Exif.Image.DateTime"].count() != 0) {
             QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
             QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
             dateEdit->setDateTime(dateTime);
         } else {
             dateEdit->setDateTime(QDateTime::currentDateTime());
+            dateEdit->setStyleSheet("QDateTimeEdit { color: red; }");
         }
     }
 
@@ -1421,12 +1428,20 @@ void ImageEditor::populateMetadataFields() {
     ImageData* imageData = imagesData->getCurrentImageData();
     Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
 
-    dateEdit->setDateTime(QDateTime::currentDateTime());
+    if (data->getDarkMode()) {
+        dateEdit->setStyleSheet("QDateTimeEdit { color: white; }");
+    } else {
+        dateEdit->setStyleSheet("QDateTimeEdit { color: black; }");
+    }
 
     if (exifData["Exif.Image.DateTime"].count() != 0) {
         QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
         QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
         dateEdit->setDateTime(dateTime);
+
+    } else {
+        dateEdit->setDateTime(QDateTime::currentDateTime());
+        dateEdit->setStyleSheet("QDateTimeEdit { color: red; }");
     }
 
     if (mapEditor) {

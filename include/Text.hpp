@@ -57,8 +57,16 @@ inline QString add_images() {
     return translationManager.translateQ("Text.Tooltip.ADD_IMAGES");
 }
 
-inline QString back() {
-    return translationManager.translateQ("Text.Tooltip.BACK");
+inline QString back_folder() {
+    return translationManager.translateQ("Text.Tooltip.BACK_FOLDER");
+}
+
+inline QString back_window() {
+    return translationManager.translateQ("Text.Tooltip.BACK_FOLDER");
+}
+
+inline QString home() {
+    return translationManager.translateQ("Text.Tooltip.HOME");
 }
 
 namespace ImageBooth {

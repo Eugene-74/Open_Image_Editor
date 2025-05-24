@@ -12,7 +12,9 @@ Text.Tooltip.PARAMETER:Open the parameters
 Text.Tooltip.OPEN_IMAGE_BOOTH:See all the images
 Text.Tooltip.OPEN_IMAGE_EDITOR:Edit image one by one
 Text.Tooltip.ADD_IMAGES:Add images to the app
-Text.Tooltip.BACK:Go to last folder
+Text.Tooltip.BACK_FOLDER:Go to last folder
+Text.Tooltip.BACK_WINDOW:Go to last window
+Text.Tooltip.HOME:Go to home window
 Text.Tooltip.ImageBooth.DELETE_TIP:Delete the selected images
 Text.Tooltip.ImageBooth.SAVE:Save modification
 Text.Tooltip.ImageBooth.EXPORT:Export the selected images
