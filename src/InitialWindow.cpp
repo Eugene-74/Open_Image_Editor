@@ -482,6 +482,8 @@ void InitialWindow::showImageEditor() {
     qInfo() << "showImageEditor";
     clearWindows();
     createImageEditor(data);
+
+    imageBack->setVisible(true);
 }
 
 /**
@@ -492,6 +494,8 @@ void InitialWindow::showImageBooth() {
     qInfo() << "showImageBooth";
     clearWindows();
     createImageBooth(data);
+
+    imageBack->setVisible(true);
 }
 
 /**
@@ -502,6 +506,8 @@ void InitialWindow::showMainWindow() {
     qInfo() << "showMainWindow";
     clearWindows();
     createMainWindow(data);
+
+    imageBack->setVisible(false);
 }
 
 ClickableLabel* InitialWindow::createImageHome() {
