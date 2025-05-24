@@ -41,8 +41,9 @@ void addImagesFromFolder(std::shared_ptr<Data> data, QWidget* parent) {
                                                                       {
                                                                           {Text::Option::Loading::keepOldSave().toStdString(), Option("bool", "true")},
                                                                       });
-        if (option["Keep old save"] == "false") {
-            std::remove(IMAGESDATA_SAVE_PATH.c_str());
+        if (option[Text::Option::Loading::keepOldSave().toStdString()] == "false") {
+            qDebug() << "Removing old save";
+            fs::remove(IMAGESDATA_SAVE_PATH);
 
             data->loadData();  // ouvre les options par exemple
         }

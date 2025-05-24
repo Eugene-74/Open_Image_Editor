@@ -1741,6 +1741,9 @@ void Data::clear() {
     options.clear();
     lastActions.clear();
     lastActionsDone.clear();
+    personIdNames.clear();
+    deletedImagesData.clear();
+
     {
         std::lock_guard<std::mutex> lock(imageCacheMutex);
         imageCache->clear();
