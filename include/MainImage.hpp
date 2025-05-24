@@ -29,9 +29,13 @@ class MainImage : public QLabel {
     void mouseReleaseEvent(QMouseEvent* event) override;
 
     void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseDoubleClickEvent(QMouseEvent* event) override;
+
     void paintEvent(QPaintEvent* event) override;
 
    private:
+    bool inFace(QPoint point);
+
     bool personsEditor = false;
 
     QString imagePath;
@@ -59,11 +63,12 @@ class MainImage : public QLabel {
     std::vector<QPoint> adjustPointsForOrientation(const std::vector<QPoint>& points, int orientation, QSize imageSize);
 
    public:
-    void updateStyleSheet();
+        //    TODO make private
+        void updateStyleSheet();
 
-    QString border_color = QString::fromStdString(Const::Color::TRANSPARENT1);
-    QString hover_border_color = QString::fromStdString(Const::Color::TRANSPARENT1);
+        QString border_color = QString::fromStdString(Const::Color::TRANSPARENT1);
+        QString hover_border_color = QString::fromStdString(Const::Color::TRANSPARENT1);
 
-    QString background_color = QString::fromStdString(Const::Color::TRANSPARENT1);
-    QString hover_background_color = QString::fromStdString(Const::Color::TRANSPARENT1);
+        QString background_color = QString::fromStdString(Const::Color::TRANSPARENT1);
+        QString hover_background_color = QString::fromStdString(Const::Color::TRANSPARENT1);
 };

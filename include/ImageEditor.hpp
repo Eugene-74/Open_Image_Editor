@@ -88,7 +88,8 @@ class ImageEditor : public QMainWindow {
     ClickableLabel* createImageConversion();
 
     ClickableLabel* createImageEditExif();
-    ClickableLabel* createImagePersons();
+    ClickableLabel* createImageDetection();
+
     ClickableLabel* createImageGimp();
 
     ClickableLabel* createImageBefore();

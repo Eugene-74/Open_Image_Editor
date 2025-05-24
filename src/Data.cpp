@@ -24,6 +24,7 @@
 #include "Conversion.hpp"
 #include "Data.hpp"
 #include "Download.hpp"
+#include "FacesRecognition.hpp"
 #include "Network.hpp"
 #include "ObjectRecognition.hpp"
 #include "Text.hpp"
@@ -2178,75 +2179,128 @@ void Data::setPersonIdNames(std::map<int, std::string> personIdNames) {
 }
 
 /**
+ * @brief Check if the faces has been detected and detect them if not
+ */
+void Data::checkDetectFaces() {
+    // if (this->getConnectionEnabled() && !downloadModelIfNotExists("yolov5n.onnx")) {
+    //     qInfo() << "yolov5n could not be downloaded cheking in 1 min";
+    //     this->setCenterText(Text::Error::failedDownloadModel().toStdString());
+
+    // QTimer::singleShot(Const::Time::MIN_1, [this]() {
+    //     checkDetectFaces();
+    // });
+
+    //     return;
+    // }
+    for (auto imageData : this->getImagesDataPtr()->getConst()) {
+        if (imageData->getFaceDetectionStatus().isStatusLoading()) {
+            imageData->getFaceDetectionStatus().setStatusNotLoaded();
+        }
+        if (!imageData->getFaceDetectionStatus().isStatusLoaded()) {
+            hasNotBeenDetectedFaces.push_back(imageData);
+        }
+    }
+    QObject::connect(detectFacesTimer, &QTimer::timeout, [this]() {
+        if (hasNotBeenDetectedFaces.size() == 0) {
+            detectFacesTimer->stop();
+            qInfo() << "all faces detection done";
+            return;
+        }
+        while (detectionFacesWorking < Const::MAX_WORKING_DETECTION) {
+            detectionFacesWorking++;
+            ImageData* imageData = hasNotBeenDetectedFaces.front();
+            // TODO corriger car si on en charge au debut plusieur d'une meme personne il peut pas les comparer
+            // TODO par exemple mutex qui attend qu'on est tout comparer
+            addHeavyThread([this, imageData]() {
+                this->detectAndRecognizeFaces(imageData);
+            });
+            {
+                std::lock_guard<std::mutex> lock(detectionFacesMutex);
+
+                hasNotBeenDetectedFaces.pop_front();
+            }
+            if (hasNotBeenDetectedFaces.size() == 0) {
+                detectFacesTimer->stop();
+
+                qInfo() << "all faces detection done";
+                return;
+            }
+        }
+    });
+    detectFacesTimer->start(0);
+    detectFacesTimer->setInterval(Const::WORKING_DETECTION_TIME);
+}
+
+/**
  * @brief Check if the objetcs has been detected and detect them if not
  */
 void Data::checkDetectObjects() {
-    this->addHeavyThreadToFront([this]() {
-        if (this->getConnectionEnabled() && !downloadModelIfNotExists("yolov5n.onnx")) {
-            qInfo() << "yolov5n could not be downloaded cheking in 1 min";
-            this->setCenterText(Text::Error::failedDownloadModel().toStdString());
+    if (this->getConnectionEnabled() && !downloadModelIfNotExists("yolov5n.onnx")) {
+        qInfo() << "yolov5n could not be downloaded cheking in 1 min";
+        this->setCenterText(Text::Error::failedDownloadModel().toStdString());
 
-            QTimer::singleShot(Const::Time::MIN_1, [this]() {
-                checkDetectObjects();
-            });
+        QTimer::singleShot(Const::Time::MIN_1, [this]() {
+            checkDetectObjects();
+        });
 
+        return;
+    }
+    for (auto imageData : this->getImagesDataPtr()->getConst()) {
+        if (imageData->isDetectionStatusLoading()) {
+            imageData->setDetectionStatusNotLoaded();
+        }
+        if (!imageData->isDetectionStatusLoaded()) {
+            hasNotBeenDetected.push_back(imageData);
+        }
+    }
+    QObject::connect(detectObjectTimer, &QTimer::timeout, [this]() {
+        if (hasNotBeenDetected.size() == 0) {
+            detectObjectTimer->stop();
+            qInfo() << "all detection done";
+            checkDetectFaces();
             return;
         }
-        for (auto imageData : this->getImagesDataPtr()->getConst()) {
-            int i = 0;
-            if (imageData->isDetectionStatusLoading()) {
-                imageData->setDetectionStatusNotLoaded();
+        while (detectionWorking < Const::MAX_WORKING_DETECTION) {
+            detectionWorking++;
+            ImageData* imageData = hasNotBeenDetected.front();
+            addHeavyThread([this, imageData]() {
+                if (imageData) {
+                    std::string imagePath = imageData->getImagePath();
+                    QImage image = this->loadImageNormal(nullptr, imagePath, QSize(0, 0), false, 0, true);
+                    image = rotateQImage(image, imageData);
+                    std::string modelName = "yolov5n";
+
+                    DetectedObjects* detectedObjects = this->detect(imagePath, image, modelName);
+                    if (detectedObjects) {
+                        imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
+                        imageData->setDetectionStatusLoaded();
+                    } else {
+                        imageData->setDetectionStatusNotLoaded();
+                    }
+                    if (!unloadFromCache(imagePath)) {
+                        qWarning() << "Error unloading image from cache: " << QString::fromStdString(imagePath);
+                    }
+
+                    detectionWorking--;
+                }
+            });
+            {
+                std::lock_guard<std::mutex> lock(detectionMutex);
+
+                hasNotBeenDetected.pop_front();
             }
-            if (!imageData->isDetectionStatusLoaded()) {
-                hasNotBeenDetected.push_back(imageData);
-            }
-        }
-        QObject::connect(detectObjectTimer, &QTimer::timeout, [this]() {
             if (hasNotBeenDetected.size() == 0) {
                 detectObjectTimer->stop();
+
                 qInfo() << "all detection done";
+                checkDetectFaces();
+
                 return;
             }
-            while (detectionWorking < Const::MAX_WORKING_DETECTION) {
-                detectionWorking++;
-                ImageData* imageData = hasNotBeenDetected.front();
-                addHeavyThread([this, imageData]() {
-                    if (imageData) {
-                        std::string imagePath = imageData->getImagePath();
-                        QImage image = this->loadImageNormal(nullptr, imagePath, QSize(0, 0), false, 0, true);
-                        image = rotateQImage(image, imageData);
-                        std::string modelName = "yolov5n";
-
-                        DetectedObjects* detectedObjects = this->detect(imagePath, image, modelName);
-                        if (detectedObjects) {
-                            imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
-                            imageData->setDetectionStatusLoaded();
-                        } else {
-                            imageData->setDetectionStatusNotLoaded();
-                        }
-                        if (!unloadFromCache(imagePath)) {
-                            qWarning() << "Error unloading image from cache: " << QString::fromStdString(imagePath);
-                        }
-
-                        detectionWorking--;
-                    }
-                });
-                {
-                    std::lock_guard<std::mutex> lock(detectionMutex);
-
-                    hasNotBeenDetected.pop_front();
-                }
-                if (hasNotBeenDetected.size() == 0) {
-                    detectObjectTimer->stop();
-
-                    qInfo() << "all detection done";
-                    return;
-                }
-            }
-        });
-        detectObjectTimer->start(Const::WORKING_DETECTION_TIME);
-        detectObjectTimer->setInterval(Const::WORKING_DETECTION_TIME);
+        }
     });
+    detectObjectTimer->start(0);
+    detectObjectTimer->setInterval(Const::WORKING_DETECTION_TIME);
 }
 
 /**
@@ -2294,6 +2348,55 @@ void Data::checkThumbnailAndDetectObjects() {
             }
         }
     });
-    thumbnailTimer->start(Const::WORKING_THUMBNAIL_TIME);
+    thumbnailTimer->start(0);
     thumbnailTimer->setInterval(Const::WORKING_THUMBNAIL_TIME);
+}
+
+void Data::detectAndRecognizeFaces(ImageData* imageData) {
+    // qDebug() << "Detecting faces in image:" << QString::fromStdString(imageData->getImagePath());
+    imageData->detectFaces();
+    // qDebug() << "Detecting faces done";
+
+    auto* faces = imageData->getDetectedFacesPtr();
+    if (faces && !faces->empty()) {
+        const auto& allImages = this->getImagesDataPtr()->getConst();
+        for (size_t i = 0; i < faces->size(); ++i) {
+            const cv::Mat& embedding1 = *(*faces)[i].getEmbeddingPtr();
+            for (const auto* otherImage : allImages) {
+                if (otherImage == imageData) continue;
+                auto otherFaces = otherImage->getDetectedFacesConst();
+                if (otherFaces.empty()) continue;
+                for (size_t j = 0; j < otherFaces.size(); ++j) {
+                    const cv::Mat& embedding2 = *otherFaces[j].getEmbeddingPtr();
+                    if (!embedding1.empty() && !embedding2.empty()) {
+                        double similarity = cosineSimilarity(embedding1, embedding2);
+                        qDebug() << "Cosine similarity between face" << i << " from" << imageData->getImagePath() << "and image" << QString::fromStdString(otherImage->getImageName())
+                                 << "face" << j << ":" << similarity;
+                        if (similarity > 0.6) {
+                            if (*((*faces)[i].getPersonIdPtr()) == -1) {
+                                *((*faces)[i].getPersonIdPtr()) = *otherFaces[j].getPersonIdPtr();
+                                qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is recognized as face" << j << "from" << QString::fromStdString(otherImage->getImageName());
+                            } else {
+                                qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is already recognized";
+                            }
+                        }
+                    }
+                }
+            }
+            if (*((*faces)[i].getPersonIdPtr()) == -1) {
+                qDebug() << "Face" << i << "from" << imageData->getImagePath() << "is not recognized";
+                *((*faces)[i].getPersonIdPtr()) = this->getPersonIdNames().size();
+                auto* personIdNames = this->getPersonIdNamesPtr();
+                (*personIdNames)[personIdNames->size()] = "Unknown n°" + std::to_string(this->getPersonIdNames().size());
+            }
+        }
+    }
+    // qDebug() << "Detecting faces recognition done";
+
+    // Affiche la map data->getPersonIdNames()
+    // const auto& personIdNames = data->getPersonIdNames();
+    // qDebug() << "Contenu de data->getPersonIdNames() :";
+    // for (const auto& pair : personIdNames) {
+    //     qDebug() << "ID:" << pair.first << "Nom:" << QString::fromStdString(pair.second);
+    // }
 }

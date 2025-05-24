@@ -105,7 +105,7 @@ class ImageData {
     LoadingStatus getFaceDetectionStatus() const;
 
    private:
-        MetaData metaData;
+    MetaData metaData;
     DetectedObjects detectedObjects;
 
     Folders folders;

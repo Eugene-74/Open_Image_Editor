@@ -1,6 +1,7 @@
 #include "MainImage.hpp"
 
 #include <QApplication>
+#include <QInputDialog>
 #include <QMouseEvent>
 #include <QPainter>
 
@@ -95,9 +96,17 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
         } else {
             if (cropping) {
             } else {
-                emit leftClicked();
-                hover_background_color = QString::fromStdString(CLICK_BACKGROUND_COLOR);
-                updateStyleSheet();
+                if (inFace(event->pos())) {
+                    qDebug() << "Clicked on a face";
+                    // QTimer::singleShot(QApplication::doubleClickInterval(), this, [this]() {
+                    //     emit leftClicked();
+                    // });
+                } else {
+                    qDebug() << "Clicked on the image";
+                    emit leftClicked();
+                    hover_background_color = QString::fromStdString(CLICK_BACKGROUND_COLOR);
+                    updateStyleSheet();
+                }
             }
         }
     }
@@ -153,7 +162,9 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
                 }
             } else {
                 if (!drawingRectangle) {
-                    emit leftClicked();
+                    if (!inFace(event->pos())) {
+                        emit leftClicked();
+                    }
                 }
                 hover_background_color = QString::fromStdString(HOVER_BACKGROUND_COLOR);
                 updateStyleSheet();
@@ -427,4 +438,79 @@ bool MainImage::getPersonsEditorConst() const {
  */
 void MainImage::setPersonsEditor(bool personsEditor) {
     this->personsEditor = personsEditor;
+}
+
+/**
+ * @brief Handle double-click events
+ * @param event Pointer to the mouse event
+ * @details This function is called when the widget is double-clicked. It opens a dialog to enter the name of the detected face.
+ */
+void MainImage::mouseDoubleClickEvent(QMouseEvent* event) {
+    if (!personsEditor) return;
+
+    auto detectedFaces = data->getImagesDataPtr()->getCurrentImageData()->getDetectedFacesPtr();
+    if (!detectedFaces) return;
+
+    QSize scaledPixmapSize = qImage.size();
+    scaledPixmapSize.scale(this->size(), Qt::KeepAspectRatio);
+    double xScale = static_cast<double>(scaledPixmapSize.width()) / qImage.width();
+    double yScale = static_cast<double>(scaledPixmapSize.height()) / qImage.height();
+    int xOffset = (this->width() - scaledPixmapSize.width()) / 2;
+    int yOffset = (this->height() - scaledPixmapSize.height()) / 2;
+
+    for (auto& faceData : *detectedFaces) {
+        cv::Rect rect = faceData.getFaceRect();
+        int adjustedX = static_cast<int>(rect.x * xScale) + xOffset;
+        int adjustedY = static_cast<int>(rect.y * yScale) + yOffset;
+        int adjustedWidth = static_cast<int>(rect.width * xScale);
+        int adjustedHeight = static_cast<int>(rect.height * yScale);
+        QRect qRect(adjustedX, adjustedY, adjustedWidth, adjustedHeight);
+
+        if (qRect.contains(event->pos())) {
+            bool ok = false;
+            QString currentName;
+            int personId = faceData.getPersonIdConst();
+            const auto& personIdNames = data->getPersonIdNames();
+            auto it = personIdNames.find(personId);
+            if (it != personIdNames.end()) {
+                currentName = QString::fromStdString(it->second);
+            }
+            // TODO translate
+            QString name = QInputDialog::getText(this, "Nom du visage", "Entrer le nom :", QLineEdit::Normal, currentName, &ok);
+            if (ok && !name.isEmpty()) {
+                auto* personIdNamesPtr = data->getPersonIdNamesPtr();
+                (*personIdNamesPtr)[personId] = name.toStdString();
+                update();
+            }
+            break;
+        }
+    }
+}
+
+bool MainImage::inFace(QPoint point) {
+    bool clickedOnFace = false;
+    if (personsEditor) {
+        auto detectedFaces = data->getImagesDataPtr()->getCurrentImageData()->getDetectedFacesPtr();
+        if (detectedFaces) {
+            QSize scaledPixmapSize = qImage.size();
+            scaledPixmapSize.scale(this->size(), Qt::KeepAspectRatio);
+            double xScale = static_cast<double>(scaledPixmapSize.width()) / qImage.width();
+            double yScale = static_cast<double>(scaledPixmapSize.height()) / qImage.height();
+            int xOffset = (this->width() - scaledPixmapSize.width()) / 2;
+            int yOffset = (this->height() - scaledPixmapSize.height()) / 2;
+            for (const auto& faceData : *detectedFaces) {
+                cv::Rect rect = faceData.getFaceRect();
+                int adjustedX = static_cast<int>(rect.x * xScale) + xOffset;
+                int adjustedY = static_cast<int>(rect.y * yScale) + yOffset;
+                int adjustedWidth = static_cast<int>(rect.width * xScale);
+                int adjustedHeight = static_cast<int>(rect.height * yScale);
+                QRect qRect(adjustedX, adjustedY, adjustedWidth, adjustedHeight);
+                if (qRect.contains(point)) {
+                    clickedOnFace = true;
+                    break;
+                }
+            }
+        }
+    }
+    return clickedOnFace;
 }

@@ -43,6 +43,7 @@ class DetectedObjects {
    private:
     std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects;
     std::vector<DetectedFaces> detectedFaces;
+    int modelUsed;
 };
 
 bool isCudaAvailable();

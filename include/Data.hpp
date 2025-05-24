@@ -138,6 +138,7 @@ class Data : public std::enable_shared_from_this<Data> {
 
     void checkThumbnailAndDetectObjects();
     void checkDetectObjects();
+    void checkDetectFaces();
 
     void checkToUnloadImages(int center, int radius);
     void checkToLoadImages(int center, int radius, int thumbnailSize = 0);
@@ -165,13 +166,14 @@ class Data : public std::enable_shared_from_this<Data> {
 
     bool getConnectionEnabled();
     void setConnectionEnabled(bool connectionEnabled);
-    bool checkConnection() ;
+    bool checkConnection();
 
     std::map<int, std::string> getPersonIdNames() const;
     std::map<int, std::string>* getPersonIdNamesPtr();
     void setPersonIdNames(std::map<int, std::string> personIdNames);
 
-   private:
+    void detectAndRecognizeFaces(ImageData* imageData) ;
+       private:
 #ifdef _WIN32
     Folders rootFolders = Folders("");
 #else
@@ -205,6 +207,11 @@ class Data : public std::enable_shared_from_this<Data> {
     int detectionWorking = 0;
     std::list<ImageData*> hasNotBeenDetected;
     std::mutex detectionMutex;
+
+    QTimer* detectFacesTimer = new QTimer();
+    int detectionFacesWorking = 0;
+    std::list<ImageData*> hasNotBeenDetectedFaces;
+    std::mutex detectionFacesMutex;
 
     std::vector<Actions> lastActions = {};
     std::vector<Actions> lastActionsDone = {};
