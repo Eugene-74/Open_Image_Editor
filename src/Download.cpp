@@ -87,7 +87,6 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
  * @note This function must be called from an other thread than the main thread.
  */
 bool downloadModelIfNotExists(const std::string& modelName, std::string tag) {
-    qDebug() << "Downloading model: " << QString::fromStdString(modelName);
     if (!hasConnection()) {
         return false;
     }

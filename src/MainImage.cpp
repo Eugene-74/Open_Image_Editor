@@ -96,13 +96,7 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
         } else {
             if (cropping) {
             } else {
-                if (inFace(event->pos())) {
-                    qDebug() << "Clicked on a face";
-                    // QTimer::singleShot(QApplication::doubleClickInterval(), this, [this]() {
-                    //     emit leftClicked();
-                    // });
-                } else {
-                    qDebug() << "Clicked on the image";
+                if (!inFace(event->pos())) {
                     emit leftClicked();
                     hover_background_color = QString::fromStdString(CLICK_BACKGROUND_COLOR);
                     updateStyleSheet();
