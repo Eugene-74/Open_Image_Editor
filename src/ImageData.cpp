@@ -579,3 +579,4 @@ void ImageData::detectFaces() {
         faceDetectionStatus.setStatusLoaded();
     }
 }
+
