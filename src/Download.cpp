@@ -4,6 +4,7 @@
 
 #include <QApplication>
 #include <QPushButton>
+#include <QThread>
 #include <filesystem>
 #include <fstream>
 
@@ -112,9 +113,8 @@ bool downloadModel(const std::string& modelName, std::string tag) {
     }
 
     bool result = false;
-    QMetaObject::invokeMethod(QApplication::instance(), [&]() {
-        const std::string url = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/yolov5/" + std::string(modelName);
-        qInfo() << "Downloading model from URL: " << QString::fromStdString(url) << " to path: " << QString::fromStdString(modelName);
+    if (QThread::currentThread() == QApplication::instance()->thread()) {
+        const std::string url = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/" + tag + "/" + std::string(modelName);
         const std::string modelOutputPath = APP_FILES.toStdString() + "/" + modelName;
 
         QProgressDialog progressDialog("Downloading " + QString::fromStdString(modelName), nullptr, 0, 100);
@@ -125,8 +125,22 @@ bool downloadModel(const std::string& modelName, std::string tag) {
         progressDialog.setValue(0);
         progressDialog.show();
         QApplication::processEvents();
-        qInfo() << "Downloading model from URL 2: " << QString::fromStdString(url) << " to path: " << QString::fromStdString(modelName);
-        result = downloadFile(url, modelOutputPath, &progressDialog); }, Qt::BlockingQueuedConnection);
+        result = downloadFile(url, modelOutputPath, &progressDialog);
+    } else {
+        QMetaObject::invokeMethod(QApplication::instance(), [&]() {
+            const std::string url = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/" + tag + "/" + std::string(modelName);
+            const std::string modelOutputPath = APP_FILES.toStdString() + "/" + modelName;
+
+            QProgressDialog progressDialog("Downloading " + QString::fromStdString(modelName), nullptr, 0, 100);
+            progressDialog.setWindowModality(Qt::ApplicationModal);
+            QPushButton* cancelButton = new QPushButton("Cancel", &progressDialog);
+            QObject::connect(cancelButton, &QPushButton::clicked, &progressDialog, &QProgressDialog::cancel);
+            progressDialog.setCancelButton(cancelButton);
+            progressDialog.setValue(0);
+            progressDialog.show();
+            QApplication::processEvents();
+            result = downloadFile(url, modelOutputPath, &progressDialog); }, Qt::BlockingQueuedConnection);
+    }
     return result;
 }
 

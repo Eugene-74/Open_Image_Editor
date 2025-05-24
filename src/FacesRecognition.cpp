@@ -3,6 +3,9 @@
 #include <QDebug>
 #include <iostream>
 
+#include "Const.hpp"
+#include "Download.hpp"
+
 std::vector<std::pair<cv::Rect, double>> getFaceRect(cv::Mat img) {
     if (img.empty()) {
         std::cerr << "Erreur lors du chargement de l'image." << std::endl;
@@ -13,9 +16,27 @@ std::vector<std::pair<cv::Rect, double>> getFaceRect(cv::Mat img) {
     cv::cvtColor(img, gray, cv::COLOR_BGR2GRAY);
 
     cv::CascadeClassifier faceCascade;
-    if (!faceCascade.load("C:/Users/eugen/AppData/Local/OpenImageEditor/haarcascade_frontalface_alt2.xml")) {
-        std::cerr << "Erreur lors du chargement du classificateur en cascade." << std::endl;
-        return {std::make_pair(cv::Rect(), 0.0)};
+
+    try {
+        if (!faceCascade.load("C:/Users/eugen/AppData/Local/OpenImageEditor/haarcascade_frontalface_alt2.xml")) {
+            std::cerr << "Erreur lors du chargement du classificateur en cascade." << std::endl;
+            return {std::make_pair(cv::Rect(), 0.0)};
+        }
+    } catch (const cv::Exception& e) {
+        qWarning() << "Error loading model:" << "haarcascade_frontalface_alt2.xml - " << e.what();
+
+        if (!downloadModel("haarcascade_frontalface_alt2.xml", "haarcascade")) {
+            qWarning() << "Failed to download model: haarcascade_frontalface_alt2.xml";
+        }
+
+        try {
+            if (!faceCascade.load("C:/Users/eugen/AppData/Local/OpenImageEditor/haarcascade_frontalface_alt2.xml")) {
+                std::cerr << "Erreur lors du chargement du classificateur en cascade." << std::endl;
+                return {std::make_pair(cv::Rect(), 0.0)};
+            }
+        } catch (const cv::Exception& e) {
+            qWarning() << "Error loading model: haarcascade_frontalface_alt2.xml - " << e.what();
+        }
     }
 
     std::vector<cv::Rect> faces;
@@ -51,7 +72,22 @@ cv::Mat detectEmbedding(cv::Mat face) {
 
     cv::Mat blob = cv::dnn::blobFromImage(face, 1.0 / 128, cv::Size(112, 112), cv::Scalar(127.5, 127.5, 127.5), true, false);
 
-    cv::dnn::Net net = cv::dnn::readNetFromONNX("C:/Users/eugen/AppData/Local/OpenImageEditor/arcface.onnx");
+    cv::dnn::Net net;
+    try {
+        net = cv::dnn::readNetFromONNX(APP_FILES.toStdString() + "/" + "/arcface.onnx");
+    } catch (const cv::Exception& e) {
+        qWarning() << "Error loading model:" << "arcface.onnx - " << e.what();
+
+        if (!downloadModel("arcface.onnx", "arcface")) {
+            qWarning() << "Failed to download model: arcface.onnx";
+        }
+
+        try {
+            net = cv::dnn::readNetFromONNX(APP_FILES.toStdString() + "/" + "/arcface.onnx");
+        } catch (const cv::Exception& e) {
+            qWarning() << "Error loading model:" << "arcface.onnx - " << e.what();
+        }
+    }
 
     net.setInput(blob);
     cv::Mat embedding = net.forward();
