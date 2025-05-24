@@ -2182,7 +2182,7 @@ void Data::setPersonIdNames(std::map<int, std::string> personIdNames) {
  * @brief Check if the faces has been detected and detect them if not
  */
 void Data::checkDetectFaces() {
-    if (this->getConnectionEnabled() && !downloadModelIfNotExists("arcface.onnx", "arcface")) {
+    if (this->getConnectionEnabled() && !downloadModelIfNotExists("arcface.onnx", "arcface") && !downloadModelIfNotExists("haarcascade_frontalface_alt2.xml", "haarcascade")) {
         qInfo() << "arcface could not be downloaded cheking in 1 min";
         this->setCenterText(Text::Error::failedDownloadModel().toStdString());
 
