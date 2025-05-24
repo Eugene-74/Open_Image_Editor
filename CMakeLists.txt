@@ -135,118 +135,21 @@ if(WIN32)
             target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs)
         endif()
     endif()
-
-endif()
-
-# elseif(UNIX)
-#     message(STATUS "Configuring for Linux")
-#     # Configuration C++
-#     set(CMAKE_CXX_STANDARD 17)
-#     set(CMAKE_CXX_STANDARD_REQUIRED True)
-#     set(CMAKE_AUTOMOC ON)
-#     set(CMAKE_AUTORCC ON)
-#     set(CMAKE_AUTOUIC ON)
-
-#     # Configuration Qt dynamique
-#     set(Qt6_USE_STATIC_LIBS OFF)
-#     set(Qt6_USE_STATIC_RUNTIME OFF)
-
-#     # Définir la variable d'environnement
-#     set(ENV{QTFRAMEWORK_BYPASS_LICENSE_CHECK} "1")
-
-#     # Chemin Qt
-#     find_program(QMAKE_EXECUTABLE NAMES qmake)
-#     get_filename_component(QT_BIN_DIR ${QMAKE_EXECUTABLE} DIRECTORY)
-#     get_filename_component(QT_ROOT_DIR ${QT_BIN_DIR} DIRECTORY)
-#     set(CMAKE_PREFIX_PATH "${QT_ROOT_DIR}/lib/cmake")
-
-#     # Ajout du répertoire pour FindExiv2.cmake
-#     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-
-#     # Trouver les packages
-#     find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
-#     find_package(OpenCV REQUIRED)
-#     find_package(Exiv2 REQUIRED)
-
-#     # Inclure les répertoires d'en-têtes
-#     include_directories(${OpenCV_INCLUDE_DIRS})
-#     include_directories(${EXIV2_INCLUDE_DIRS})
-
-#     # Utiliser ccache si disponible
-#     find_program(CCACHE_PROGRAM ccache)
-#     if(CCACHE_PROGRAM)
-#         set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
-#         set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
-#     endif()
-
-#     # Sources et en-têtes
-#     file(GLOB_RECURSE SOURCES "src/*.cpp")
-#     file(GLOB_RECURSE HEADERS "src/*.hpp")
-#     set(RESOURCE_FILES src/ressources/ressources.qrc)
-
-#     # Génération Qt
-#     qt6_wrap_cpp(MOC_SOURCES ${HEADERS})
-#     qt6_add_resources(QRC_SOURCES ${RESOURCE_FILES})
-
-#     add_library(OpenImageEditorLib STATIC ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
-
-#     # Lier les bibliothèques nécessaires à la bibliothèque principale
-#     target_link_libraries(OpenImageEditorLib 
-#         PRIVATE
-#         Qt6::Core
-#         Qt6::Gui
-#         Qt6::Widgets
-#         CURL::libcurl 
-#         jsoncpp_lib
-#         dlib::dlib
-#         ${OpenCV_LIBS}
-#         ${EXIV2_LIBRARIES}
-#         ${HEIF_LIBRARIES}
-#     )
-
-#     # Créer l'exécutable principal et le lier à la bibliothèque principale
-#     add_executable(${PROJECT_NAME} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
-#     target_link_libraries(${PROJECT_NAME} PRIVATE OpenImageEditorLib)
-
-#     # Support GCC filesystem
-#     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-#         target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs)
-#     endif()
-
-# endif()
-
-
-
-# set(CMAKE_CXX_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
-# set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "-lgcov")
-
-# Ajouter les options de couverture dans les CFLAGS et CXXFLAGS
-# if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-#     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
-# endif()
-
-
-# if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_COVERAGE}")
-# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXE_LINKER_FLAGS_COVERAGE}")
-# endif()
-
-
-# -------------------CREATE TESTS------------------------
-if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Test")
-    enable_testing()
-
-    find_package(GTest REQUIRED)
-    include_directories(${GTEST_INCLUDE_DIRS})
-
-    include_directories(${CMAKE_SOURCE_DIR}/src)
-
-    file(GLOB TEST_SOURCES "tests/*.cpp")
-
-    add_executable(runTests ${TEST_SOURCES})
-
-    target_link_libraries(runTests ${GTEST_LIBRARIES} pthread OpenImageEditorLib)
-
-    add_test(NAME runTests COMMAND runTests)
+    
+    # -------------------CREATE TESTS------------------------
+    if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Test")
+        enable_testing()
+    
+        find_package(GTest REQUIRED)
+        include_directories(${GTEST_INCLUDE_DIRS})
+        include_directories(${CMAKE_SOURCE_DIR}/src)
+    
+        file(GLOB TEST_SOURCES "tests/*.cpp")
+    
+        add_executable(runTests ${TEST_SOURCES} ${QRC_SOURCES})
+        
+        target_link_libraries(runTests PRIVATE ${GTEST_LIBRARIES} OpenImageEditorLib)
+    
+        add_test(NAME runTests COMMAND runTests)
+    endif()
 endif()
