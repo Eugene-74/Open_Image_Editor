@@ -283,7 +283,7 @@ std::map<std::string, std::vector<std::pair<cv::Rect, float>>> ImageData::getDet
  * @brief Get the detected faces
  * @return A map of detected faces with their bounding boxes and confidence scores
  */
-std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>>* ImageData::getDetectedFacesPtr() {
+std::vector<DetectedFaces>* ImageData::getDetectedFacesPtr() {
     return detectedObjects.getDetectedFacesPtr();
 }
 
@@ -291,7 +291,7 @@ std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>>* ImageData::getDetec
  * @brief Get the detected faces
  * @return A map of detected faces with their bounding boxes and confidence scores
  */
-std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>> ImageData::getDetectedFacesConst() const {
+std::vector<DetectedFaces> ImageData::getDetectedFacesConst() const {
     return detectedObjects.getDetectedFacesConst();
 }
 
@@ -524,6 +524,19 @@ double ImageData::getLongitude() const {
     return longitude;
 }
 
+/**
+ * @brief Get the face detection status
+ * @return The face detection status
+ */
+LoadingStatus ImageData::getFaceDetectionStatus() const {
+    return this->faceDetectionStatus;
+}
+
+/**
+ * @brief Detect faces in the image and extract embeddings
+ * @details This function uses the detectedObjects to find faces in the image and extracts embeddings for each face.
+ *          It sets the face detection status to loading while processing and updates it to loaded once done.
+ */
 void ImageData::detectFaces() {
     if (faceDetectionStatus.isStatusNotLoaded()) {
         faceDetectionStatus.setStatusLoading();
@@ -539,7 +552,7 @@ void ImageData::detectFaces() {
                 qWarning() << "Failed to load image for embedding extraction:" << QString::fromStdString(this->getImagePath());
                 continue;
             }
-            cv::Rect faceRect = faceData.first.first;
+            cv::Rect faceRect = faceData.getFaceRect();
             cv::Mat faceROI;
             try {
                 faceROI = img(faceRect).clone();
@@ -548,7 +561,7 @@ void ImageData::detectFaces() {
                 continue;
             }
             cv::Mat embedding = detectEmbedding(faceROI);
-            faceData.second = embedding;
+            *faceData.getEmbeddingPtr() = embedding;
             qDebug() << "Face detected with embedding size:" << embedding.size().width << "x" << embedding.size().height;
         }
         faceDetectionStatus.setStatusLoaded();

@@ -316,8 +316,12 @@ void MainImage::paintEvent(QPaintEvent* event) {
             }
         }
         auto detectedFaces = data->getImagesDataPtr()->getCurrentImageData()->getDetectedFacesPtr();
-        for (const auto& [rect_conf, faceMat] : *detectedFaces) {
-            const auto& [rect, confidence] = rect_conf;
+        const auto& personIdNames = data->getPersonIdNames();
+        for (const auto& faceData : *detectedFaces) {
+            cv::Rect rect = faceData.getFaceRect();
+            float confidence = faceData.getConfidence();
+            int personId = faceData.getPersonIdConst();
+
             // Adjust the rectangle coordinates
             int adjustedX = static_cast<int>(rect.x * xScale) + xOffset;
             int adjustedY = static_cast<int>(rect.y * yScale) + yOffset;
@@ -328,7 +332,19 @@ void MainImage::paintEvent(QPaintEvent* event) {
 
             painter.setPen(Qt::green);
             painter.drawRect(qRect);
-            painter.drawText(qRect.topLeft(), QString("Face %1%").arg(confidence * 100, 0, 'f', 2));
+
+            QString label;
+            if (personId != -1) {
+                auto it = personIdNames.find(personId);
+                if (it != personIdNames.end()) {
+                    label = QString::fromStdString(it->second);
+                } else {
+                    label = QString("ID %1").arg(personId);
+                }
+            } else {
+                label = QString("Face %1%").arg(confidence * 100, 0, 'f', 2);
+            }
+            painter.drawText(qRect.topLeft(), label);
         }
     }
 }

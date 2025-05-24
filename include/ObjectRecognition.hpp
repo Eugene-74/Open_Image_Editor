@@ -7,6 +7,25 @@
 class QImage;
 class Data;
 
+class DetectedFaces {
+   public:
+    DetectedFaces(const cv::Rect& faceRect, float confidence, const cv::Mat& embedding = cv::Mat(), int personId = -1)
+        : faceRect(faceRect), confidence(confidence), embedding(embedding), personId(personId) {}
+
+    cv::Rect getFaceRect() const;
+    float getConfidence() const;
+    cv::Mat* getEmbeddingPtr();
+    int* getPersonIdPtr();
+    int getPersonIdConst() const;
+
+   private:
+    cv::Rect faceRect;
+    float confidence;
+
+    cv::Mat embedding;
+    int personId;
+};
+
 class DetectedObjects {
    public:
     void save(std::ofstream& out) const;
@@ -15,15 +34,15 @@ class DetectedObjects {
     auto getDetectedObjects() -> std::map<std::string, std::vector<std::pair<cv::Rect, float>>>;
     auto getDetectedObjectsConst() const -> std::map<std::string, std::vector<std::pair<cv::Rect, float>>>;
 
-    auto getDetectedFacesPtr() -> std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>>*;
-    auto getDetectedFacesConst() const -> std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>>;
+    auto getDetectedFacesPtr() -> std::vector<DetectedFaces>*;
+    auto getDetectedFacesConst() const -> std::vector<DetectedFaces>;
 
     void setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects);
     void detectFaces(std::string imagePath);
 
    private:
     std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects;
-    std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>> detectedFaces;
+    std::vector<DetectedFaces> detectedFaces;
 };
 
 bool isCudaAvailable();

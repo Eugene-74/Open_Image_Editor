@@ -1045,7 +1045,7 @@ MainImage* ImageEditor::createImageLabel() {
         }
     });
 
-    if (imageData->isDetectionStatusLoaded()) {
+    if (imageData->isDetectionStatusLoaded() && imageData->getFaceDetectionStatus().isStatusNotLoaded()) {
         data->addHeavyThread([this, imageData]() {
             imageData->detectFaces();
 
@@ -1054,21 +1054,41 @@ MainImage* ImageEditor::createImageLabel() {
             if (faces && !faces->empty()) {
                 const auto& allImages = data->getImagesDataPtr()->getConst();
                 for (size_t i = 0; i < faces->size(); ++i) {
-                    const cv::Mat& embedding1 = (*faces)[i].second;
+                    const cv::Mat& embedding1 = *(*faces)[i].getEmbeddingPtr();
                     for (const auto* otherImage : allImages) {
                         if (otherImage == imageData) continue;
                         auto otherFaces = otherImage->getDetectedFacesConst();
                         if (otherFaces.empty()) continue;
                         for (size_t j = 0; j < otherFaces.size(); ++j) {
-                            const cv::Mat& embedding2 = otherFaces[j].second;
+                            const cv::Mat& embedding2 = *otherFaces[j].getEmbeddingPtr();
                             if (!embedding1.empty() && !embedding2.empty()) {
                                 double similarity = cosineSimilarity(embedding1, embedding2);
                                 qDebug() << "Cosine similarity between face" << i << " from" << imageData->getImagePath() << "and image" << QString::fromStdString(otherImage->getImageName())
                                          << "face" << j << ":" << similarity;
+                                if (similarity > 0.6) {
+                                    if (*((*faces)[i].getPersonIdPtr()) == -1) {
+                                        *((*faces)[i].getPersonIdPtr()) = *otherFaces[j].getPersonIdPtr();
+                                        qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is recognized as face" << j << "from" << QString::fromStdString(otherImage->getImageName());
+                                    } else {
+                                        qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is already recognized";
+                                    }
+                                }
                             }
                         }
                     }
+                    if (*((*faces)[i].getPersonIdPtr()) == -1) {
+                        qDebug() << "Face" << i << "from" << imageData->getImagePath() << "is not recognized";
+                        *((*faces)[i].getPersonIdPtr()) = data->getPersonIdNames().size();
+                        auto* personIdNames = data->getPersonIdNamesPtr();
+                        (*personIdNames)[personIdNames->size()] = "Unknown n:" + std::to_string(data->getPersonIdNames().size());
+                    }
                 }
+            }
+            // Affiche la map data->getPersonIdNames()
+            const auto& personIdNames = data->getPersonIdNames();
+            qDebug() << "Contenu de data->getPersonIdNames() :";
+            for (const auto& pair : personIdNames) {
+                qDebug() << "ID:" << pair.first << "Nom:" << QString::fromStdString(pair.second);
             }
         });
     }

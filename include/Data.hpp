@@ -166,7 +166,12 @@ class Data : public std::enable_shared_from_this<Data> {
     bool getConnectionEnabled();
     void setConnectionEnabled(bool connectionEnabled);
     bool checkConnection() ;
-       private:
+
+    std::map<int, std::string> getPersonIdNames() const;
+    std::map<int, std::string>* getPersonIdNamesPtr();
+    void setPersonIdNames(std::map<int, std::string> personIdNames);
+
+   private:
 #ifdef _WIN32
     Folders rootFolders = Folders("");
 #else
@@ -183,6 +188,7 @@ class Data : public std::enable_shared_from_this<Data> {
     Sizes sizes;
 
     std::vector<int> imagesSelected;
+    std::map<int, std::string> personIdNames;
 
     ThreadManager manager;
     QLabel* centerTextLabel;

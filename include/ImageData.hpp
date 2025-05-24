@@ -38,8 +38,8 @@ class ImageData {
     std::string get() const;
 
     std::map<std::string, std::vector<std::pair<cv::Rect, float>>> getDetectedObjects();
-    std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>>* getDetectedFacesPtr();
-    std::vector<std::pair<std::pair<cv::Rect, float>, cv::Mat>> getDetectedFacesConst() const;
+    std::vector<DetectedFaces>* getDetectedFacesPtr();
+    std::vector<DetectedFaces> getDetectedFacesConst() const;
     void setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects);
     void clearDetectedObjects();
     void detectFaces();
@@ -101,6 +101,8 @@ class ImageData {
     void setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes);
 
     void clearMetaData();
+
+    LoadingStatus getFaceDetectionStatus() const;
 
    private:
         MetaData metaData;

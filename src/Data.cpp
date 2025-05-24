@@ -860,6 +860,16 @@ void Data::saveData() {
     outFile.write(reinterpret_cast<const char*>(&pathSize), sizeof(pathSize));
     outFile.write(currentFolderPath.c_str(), pathSize);
 
+    // Save personIdNames map
+    size_t personIdNamesSize = personIdNames.size();
+    outFile.write(reinterpret_cast<const char*>(&personIdNamesSize), sizeof(personIdNamesSize));
+    for (const auto& [id, name] : personIdNames) {
+        outFile.write(reinterpret_cast<const char*>(&id), sizeof(id));
+        size_t nameSize = name.size();
+        outFile.write(reinterpret_cast<const char*>(&nameSize), sizeof(nameSize));
+        outFile.write(name.c_str(), nameSize);
+    }
+
     outFile.close();
 
     // Save options to a separate file
@@ -931,6 +941,20 @@ void Data::loadData() {
         std::string currentFolderPath(pathSize, '\0');
         inFile.read(&currentFolderPath[0], pathSize);
         currentFolder = findFolderByPath(rootFolders, currentFolderPath);
+
+        // Load personIdNames map
+        size_t personIdNamesSize;
+        inFile.read(reinterpret_cast<char*>(&personIdNamesSize), sizeof(personIdNamesSize));
+        for (size_t i = 0; i < personIdNamesSize; ++i) {
+            int id;
+            size_t nameSize;
+            std::string name;
+            inFile.read(reinterpret_cast<char*>(&id), sizeof(id));
+            inFile.read(reinterpret_cast<char*>(&nameSize), sizeof(nameSize));
+            name.resize(nameSize);
+            inFile.read(&name[0], nameSize);
+            personIdNames[id] = name;
+        }
 
         inFile.close();
     }
@@ -2128,6 +2152,29 @@ bool Data::getConnectionEnabled() {
  */
 void Data::setConnectionEnabled(bool connectionEnabled) {
     this->connectionEnabled = connectionEnabled;
+}
+
+/**
+ * @brief Get the person ID names (const)
+ * @return The person ID names
+ */
+std::map<int, std::string> Data::getPersonIdNames() const {
+    return this->personIdNames;
+}
+/**
+ * @brief Get the person ID names (ptr)
+ * @return The person ID names
+ */
+std::map<int, std::string>* Data::getPersonIdNamesPtr() {
+    return &this->personIdNames;
+}
+
+/**
+ * @brief Set the person ID names
+ * @param personIdNames The person ID names to set
+ */
+void Data::setPersonIdNames(std::map<int, std::string> personIdNames) {
+    this->personIdNames = personIdNames;
 }
 
 /**
