@@ -255,19 +255,58 @@ std::vector<DetectedFaces> DetectedObjects::getDetectedFacesConst() const {
     return this->detectedFaces;
 }
 
+/**
+ * @brief Get the face rectangle
+ * @return The rectangle representing the detected face
+ */
 cv::Rect DetectedFaces::getFaceRect() const {
     return faceRect;
 }
+
+/**
+ * @brief Get the confidence score of the detected face
+ * @return The confidence score
+ */
 float DetectedFaces::getConfidence() const {
     return confidence;
 }
+
+/**
+ * @brief Get the embedding matrix pointer
+ * @return Pointer to the embedding matrix
+ */
 cv::Mat* DetectedFaces::getEmbeddingPtr() {
     return &embedding;
 }
+
+/**
+ * @brief Get the person ID pointer
+ * @return Pointer to the person ID
+ */
 int* DetectedFaces::getPersonIdPtr() {
     return &personId;
 }
 
+/**
+ * @brief Get the person ID (const version)
+ * @return The person ID
+ */
 int DetectedFaces::getPersonIdConst() const {
     return personId;
+}
+
+/**
+ * @brief Get the model used for detection
+ * @return The name of the model used
+ */
+std::string DetectedObjects::getModelUsed() const {
+    return this->modelUsed;
+}
+
+/**
+ * @brief Set the model used for detection
+ * @param modelName The name of the model to set
+ */
+void DetectedObjects::setModelUsed(const std::string& modelName) {
+    this->modelUsed = modelName;
 }

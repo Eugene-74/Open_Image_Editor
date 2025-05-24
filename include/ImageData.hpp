@@ -37,84 +37,85 @@ class ImageData {
     
     std::string get() const;
 
-    std::map<std::string, std::vector<std::pair<cv::Rect, float>>> getDetectedObjects();
-    std::vector<DetectedFaces>* getDetectedFacesPtr();
-    std::vector<DetectedFaces> getDetectedFacesConst() const;
-    void setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects);
-    void clearDetectedObjects();
-    void detectFaces();
+    DetectedObjects getDetectedObjectsWithAll() ;
+        std::map<std::string, std::vector<std::pair<cv::Rect, float>>> getDetectedObjects();
+        std::vector<DetectedFaces>* getDetectedFacesPtr();
+        std::vector<DetectedFaces> getDetectedFacesConst() const;
+        void setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects);
+        void clearDetectedObjects();
+        void detectFaces();
 
-    void setDate(long date);
-    long getDate() const;
-    
-    void setOrientation(int orientation);
-    int getOrientation() const;
+        void setDate(long date);
+        long getDate() const;
 
-    void setLatitude(double latitude);
-    double getLatitude() const;
+        void setOrientation(int orientation);
+        int getOrientation() const;
 
-    void setLongitude(double longitude);
-    double getLongitude() const;
+        void setLatitude(double latitude);
+        double getLatitude() const;
 
-    // DetectionStatus getDetectionStatus() const;
-    void setDetectionStatus(DetectionStatus detectionStatus);
-    void setDetectionStatusLoading();
-    void setDetectionStatusNotLoaded();
-    void setDetectionStatusLoaded();
-    bool isDetectionStatusLoading();
-    bool isDetectionStatusNotLoaded();
-    bool isDetectionStatusLoaded();
+        void setLongitude(double longitude);
+        double getLongitude() const;
 
-    MetaData* getMetaDataPtr();
-    MetaData getMetaData() const;
-    void setMetaData(const MetaData& metaData);
+        // DetectionStatus getDetectionStatus() const;
+        void setDetectionStatus(DetectionStatus detectionStatus);
+        void setDetectionStatusLoading();
+        void setDetectionStatusNotLoaded();
+        void setDetectionStatusLoaded();
+        bool isDetectionStatusLoading();
+        bool isDetectionStatusNotLoaded();
+        bool isDetectionStatusLoaded();
 
-    std::vector<Folders> getFolders();
+        MetaData* getMetaDataPtr();
+        MetaData getMetaData() const;
+        void setMetaData(const MetaData& metaData);
 
-    void addFolder(const std::string& toAddFolder);
+        std::vector<Folders> getFolders();
 
-    void addFolders(const std::vector<std::string>& toAddFolders);
+        void addFolder(const std::string& toAddFolder);
 
-    std::string getImageName() const;
+        void addFolders(const std::vector<std::string>& toAddFolders);
 
-    std::string getImagePath();
-    std::string getImagePathConst() const;
+        std::string getImageName() const;
 
-    std::string getImageExtension();
+        std::string getImagePath();
+        std::string getImagePathConst() const;
 
-    void setExifMetaData(const Exiv2::ExifData& toAddMetaData);
+        std::string getImageExtension();
 
-    void loadData();
+        void setExifMetaData(const Exiv2::ExifData& toAddMetaData);
 
-    void saveMetaData();
+        void loadData();
 
-    int getImageOrientation();
+        void saveMetaData();
 
-    void turnImage(int rotation);
+        int getImageOrientation();
 
-    void save(std::ofstream& out) const;
-    void load(std::ifstream& in);
+        void turnImage(int rotation);
 
-    void setOrCreateExifData();
+        void save(std::ofstream & out) const;
+        void load(std::ifstream & in);
 
-    std::vector<std::vector<QPoint>> getCropSizes() const;
-    void setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes);
+        void setOrCreateExifData();
 
-    void clearMetaData();
+        std::vector<std::vector<QPoint>> getCropSizes() const;
+        void setCropSizes(const std::vector<std::vector<QPoint>>& cropSizes);
 
-    LoadingStatus getFaceDetectionStatus() const;
+        void clearMetaData();
 
-   private:
-    MetaData metaData;
-    DetectedObjects detectedObjects;
+        LoadingStatus getFaceDetectionStatus() const;
 
-    Folders folders;
-    DetectionStatus detectionStatus = DetectionStatus::NotLoaded;
-    LoadingStatus faceDetectionStatus;
+       private:
+        MetaData metaData;
+        DetectedObjects detectedObjects;
 
-    std::vector<std::vector<QPoint>> cropSizes;
-    int orientation;
-    long date = 0;
-    double latitude = 0.0;
-    double longitude = 0.0;
-};
+        Folders folders;
+        DetectionStatus detectionStatus = DetectionStatus::NotLoaded;
+        LoadingStatus faceDetectionStatus;
+
+        std::vector<std::vector<QPoint>> cropSizes;
+        int orientation;
+        long date = 0;
+        double latitude = 0.0;
+        double longitude = 0.0;
+    };

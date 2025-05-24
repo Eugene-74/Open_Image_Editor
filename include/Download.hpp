@@ -5,8 +5,8 @@
 #include <QProgressDialog>
 #include <string>
 
-bool downloadModelIfNotExists(const std::string& modelName);
-bool downloadModel(const std::string& modelName);
+bool downloadModelIfNotExists(const std::string& modelName, std::string tag);
+bool downloadModel(const std::string& modelName, std::string tag);
 
 bool downloadFileIfNotExists(const std::string& url, const std::string& outputPath, QProgressDialog* progressDialog);
 bool downloadFile(const std::string& url, const std::string& outputPath, QProgressDialog* progressDialog);

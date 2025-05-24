@@ -85,7 +85,7 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
  * @return true if the download was successful, false otherwise
  * @note This function must be called from an other thread than the main thread.
  */
-bool downloadModelIfNotExists(const std::string& modelName) {
+bool downloadModelIfNotExists(const std::string& modelName, std::string tag) {
     qDebug() << "Downloading model: " << QString::fromStdString(modelName);
     if (!hasConnection()) {
         return false;
@@ -97,7 +97,7 @@ bool downloadModelIfNotExists(const std::string& modelName) {
         return true;
     }
 
-    return downloadModel(modelName);
+    return downloadModel(modelName, tag);
 }
 
 /**
@@ -106,7 +106,7 @@ bool downloadModelIfNotExists(const std::string& modelName) {
  * @return true if the download was successful, false otherwise
  * @note This function must be called from an other thread than the main thread.
  */
-bool downloadModel(const std::string& modelName) {
+bool downloadModel(const std::string& modelName, std::string tag) {
     if (!hasConnection()) {
         return false;
     }

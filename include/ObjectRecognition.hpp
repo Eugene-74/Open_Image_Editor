@@ -40,10 +40,13 @@ class DetectedObjects {
     void setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects);
     void detectFaces(std::string imagePath);
 
+    std::string getModelUsed() const;
+    void setModelUsed(const std::string& modelName);
+
    private:
     std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects;
     std::vector<DetectedFaces> detectedFaces;
-    int modelUsed;
+    std::string modelUsed;
 };
 
 bool isCudaAvailable();

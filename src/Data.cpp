@@ -1807,7 +1807,7 @@ cv::dnn::Net load_net(std::string model) {
         qWarning() << "Error loading model:" << QString::fromStdString(model) << " - " << e.what();
 
         // showWarningMessage(nullptr, "Error with the model", "Error loading model\nThe model will be downloaded again.");
-        if (!downloadModel(model + ".onnx")) {
+        if (!downloadModel(model + ".onnx", "yolov5")) {
             qWarning() << "Failed to download model: " << QString::fromStdString(model);
             // showErrorMessage(nullptr, "Error with the model", "Error downloading model\nThe model could not be downloaded.");
         }
@@ -1836,7 +1836,7 @@ cv::dnn::Net load_net(std::string model) {
  */
 std::vector<std::string> load_class_list() {
     std::vector<std::string> class_list;
-    downloadModelIfNotExists("coco.names");
+    downloadModelIfNotExists("coco.names", "yolov5");
     std::ifstream ifs(APP_FILES.toStdString() + "/coco.names");
     std::string line;
     while (getline(ifs, line)) {
@@ -1966,7 +1966,7 @@ DetectedObjects* Data::detect(std::string imagePath, QImage image, std::string m
         detectedObjectsMap[class_name].emplace_back(boxes[idx], confidences[idx]);
     }
     detectedObjects->setDetectedObjects(detectedObjectsMap);
-
+    detectedObjects->setModelUsed(model);
     return detectedObjects;
 }
 
@@ -2182,16 +2182,16 @@ void Data::setPersonIdNames(std::map<int, std::string> personIdNames) {
  * @brief Check if the faces has been detected and detect them if not
  */
 void Data::checkDetectFaces() {
-    // if (this->getConnectionEnabled() && !downloadModelIfNotExists("yolov5n.onnx")) {
-    //     qInfo() << "yolov5n could not be downloaded cheking in 1 min";
-    //     this->setCenterText(Text::Error::failedDownloadModel().toStdString());
+    if (this->getConnectionEnabled() && !downloadModelIfNotExists("arcface.onnx", "arcface")) {
+        qInfo() << "arcface could not be downloaded cheking in 1 min";
+        this->setCenterText(Text::Error::failedDownloadModel().toStdString());
 
-    // QTimer::singleShot(Const::Time::MIN_1, [this]() {
-    //     checkDetectFaces();
-    // });
+        QTimer::singleShot(Const::Time::MIN_1, [this]() {
+            checkDetectFaces();
+        });
 
-    //     return;
-    // }
+        return;
+    }
     for (auto imageData : this->getImagesDataPtr()->getConst()) {
         if (imageData->getFaceDetectionStatus().isStatusLoading()) {
             imageData->getFaceDetectionStatus().setStatusNotLoaded();
@@ -2235,7 +2235,7 @@ void Data::checkDetectFaces() {
  * @brief Check if the objetcs has been detected and detect them if not
  */
 void Data::checkDetectObjects() {
-    if (this->getConnectionEnabled() && !downloadModelIfNotExists("yolov5n.onnx")) {
+    if (this->getConnectionEnabled() && !downloadModelIfNotExists("yolov5n.onnx", "yolov5")) {
         qInfo() << "yolov5n could not be downloaded cheking in 1 min";
         this->setCenterText(Text::Error::failedDownloadModel().toStdString());
 

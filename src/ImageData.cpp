@@ -275,6 +275,18 @@ void ImageData::setOrCreateExifData() {
     metaData.setOrCreateExifData(getImagePath());
 }
 
+/**
+ * @brief Get the detected objects with all information
+ * @return A DetectedObjects object containing all detected objects
+ */
+DetectedObjects ImageData::getDetectedObjectsWithAll() {
+    return detectedObjects;
+}
+
+/**
+ * @brief Get the detected objects
+ * @return A map of detected objects with their bounding boxes and confidence scores
+ */
 std::map<std::string, std::vector<std::pair<cv::Rect, float>>> ImageData::getDetectedObjects() {
     return detectedObjects.getDetectedObjects();
 }

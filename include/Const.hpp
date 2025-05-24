@@ -187,3 +187,11 @@ const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = 
 
 const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = Const::Color::GREEN;
 const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = Const::Color::GREEN;
+
+const std::map<std::string, int> YOLOV5_MODEL_QUALITY = {
+    {"yolov5n.onnx", 1},  // nano
+    {"yolov5s.onnx", 2},  // small
+    {"yolov5m.onnx", 3},  // medium
+    {"yolov5l.onnx", 4},  // large
+    {"yolov5x.onnx", 5}   // xlarge
+};
