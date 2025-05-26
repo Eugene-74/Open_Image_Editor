@@ -9,6 +9,7 @@
 #include "Data.hpp"
 #include "Download.hpp"
 #include "FacesRecognition.hpp"
+#include "ImageData.hpp"
 
 /**
  * @brief Save the detected objects to a file
@@ -207,10 +208,10 @@ void DetectedObjects::clear() {
     detectedObjects.clear();
 }
 
-void DetectedObjects::detectFaces(std::string imagePath) {
-    // TODO utiliser LOAD IMAGE NORMAL pour les HEIC ET HEIF
-
-    cv::Mat image = cv::imread(imagePath);
+void DetectedObjects::detectFaces(ImageData imageData) {
+    std::string imagePath = imageData.getImagePathConst();
+    QImage qImage = loadAnImageWithRotation(imageData, 0);
+    cv::Mat image = QImageToCvMat(qImage);
 
     if (image.empty()) {
         qWarning() << "Failed to load image for face detection" << QString::fromStdString(imagePath);

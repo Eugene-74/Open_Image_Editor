@@ -554,7 +554,7 @@ void ImageData::detectFaces() {
         if (detectedObjects.getDetectedFacesPtr()->size() > 0) {
             return;
         }
-        detectedObjects.detectFaces(this->getImagePath());
+        detectedObjects.detectFaces(*this);
 
         auto* faces = detectedObjects.getDetectedFacesPtr();
         for (auto& faceData : *faces) {

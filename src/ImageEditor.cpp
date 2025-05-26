@@ -889,7 +889,7 @@ ClickableLabel* ImageEditor::createImageDetection() {
             ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
             int imageNbr = data->getImagesDataPtr()->getImageNumber();
             QImage image = data->loadImageNormal(data->getImagesDataPtr()->getCurrentImageData()->getImagePath());
-            image = data->rotateQImage(image, imageData);
+            image = rotateQImage(image, imageData);
             std::string currentImagePath = data->getImagesDataPtr()->getCurrentImageData()->getImagePath();
 
             QPointer<ImageEditor> self = this;
@@ -1038,7 +1038,9 @@ MainImage* ImageEditor::createImageLabel() {
 
     if (imageData->isDetectionStatusLoaded() && imageData->getFaceDetectionStatus().isStatusNotLoaded()) {
         data->addHeavyThread([this, imageData]() {
-            data->detectAndRecognizeFaces(imageData);
+            if (imageData->getFaceDetectionStatus().isStatusNotLoaded()) {
+                data->detectAndRecognizeFaces(imageData);
+            }
         });
     }
 
@@ -1047,7 +1049,7 @@ MainImage* ImageEditor::createImageLabel() {
         imageData->setDetectionStatusLoading();
         QImage image = data->loadImageNormal(data->getImagesDataPtr()->getCurrentImageData()->getImagePath());
 
-        image = data->rotateQImage(image, imageData);
+        image = rotateQImage(image, imageData);
 
         QPointer<ImageEditor> self = this;
 

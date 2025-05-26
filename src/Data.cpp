@@ -209,50 +209,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
  * @param force Set if the image should be loaded even if it is already in the cache
  * @return QImage object containing the image data
  */
-QImage Data::loadAnImage(std::string imagePath, int thumbnail, bool force) {
-    std::string imagePathbis = imagePath;
-
-    QImage image;
-
-    if (!fs::exists(imagePath)) {
-        qCritical() << "Error: The specified path does not exist: " << QString::fromStdString(imagePath);
-        image.load(Const::ImagePath::ERROR_PATH);
-        return image;
-    }
-
-    if (isHeicOrHeif(imagePathbis)) {
-        if (thumbnail == 0) {
-            image = readHeicAndHeif(imagePathbis);
-        } else {
-            qWarning() << "Thumbnail not supported for HEIC/HEIF images";
-        }
-
-        // } else if (isRaw(imagePathbis)) {
-        //     if (thumbnail == 0) {
-        //         image = readRaw(imagePathbis);
-        //     } else {
-        //         qWarning() << "Thumbnail not supported for RAW images";
-        //     }
-    } else {
-        image.load(QString::fromStdString(imagePathbis));
-    }
-
-    if (image.isNull()) {
-        qCritical() << "Could not open or find the image : " << imagePathbis;
-        image.load(Const::ImagePath::ERROR_PATH);
-        return image;
-    }
-    return image;
-}
-
-/**
- * @brief Load an image from a path
- * @param imagePath Path to the image
- * @param thumbnail Thumbnail size (0 for no thumbnail)
- * @param force Set if the image should be loaded even if it is already in the cache
- * @return QImage object containing the image data
- */
-QImage Data::loadAnImageFromRessources(std::string imagePath, int thumbnail, bool force) {
+QImage Data::loadAnImageFromRessources(std::string imagePath, int thumbnail) {
     QImage image;
     if (getDarkMode()) {
         std::string newPath = imagePath;
@@ -283,12 +240,12 @@ QImage Data::loadImageNormal(std::string imagePath, int thumbnail, bool force) {
     QImage image;
     std::string thumbnailPath = imagePath;
 
-    if (getImageFromCache(imagePath) != nullptr) {
+    if (getImageFromCache(imagePath) != nullptr && !force) {
         image = *getImageFromCache(imagePath);
 
         return image;
     } else if (imagePath.at(0) == ':') {
-        image = loadAnImageFromRessources(imagePath, thumbnail, force);
+        image = loadAnImageFromRessources(imagePath, thumbnail);
     } else {
         for (int size : Const::Thumbnail::THUMBNAIL_SIZES) {
             if (thumbnail == size) {
@@ -302,10 +259,10 @@ QImage Data::loadImageNormal(std::string imagePath, int thumbnail, bool force) {
             }
         }
 
-        image = loadAnImage(thumbnailPath, thumbnail, force);
+        image = loadAnImage(thumbnailPath, thumbnail);
     }
 
-    addImageInCache(imagePath, thumbnailPath, image);
+    this->addImageInCache(imagePath, thumbnailPath, image);
 
     return image;
 }
@@ -761,7 +718,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
  * @return Rotated image
  * @details The rotation is done according to the Exif orientation tag
  */
-QImage Data::rotateQImage(QImage image, ImageData* imageData) {
+QImage rotateQImage(QImage image, ImageData* imageData) {
     if (imageData != nullptr) {
         int orientation = imageData->getOrientation();
 
@@ -2398,4 +2355,60 @@ void Data::detectAndRecognizeFaces(ImageData* imageData) {
         }
         imageData->getFaceDetectionStatus().setStatusLoaded();
     }
+}
+
+/**
+ * @brief Load an image from a path with it's exif rotation
+ * @param imagePath Path to the image
+ * @param thumbnail Thumbnail size (0 for no thumbnail)
+ * @param force Set if the image should be loaded even if it is already in the cache
+ * @return QImage object containing the image data
+ */
+QImage loadAnImageWithRotation(ImageData imageData, int thumbnail) {
+    std::string imagePath = imageData.getImagePathConst();
+    QImage image = loadAnImage(imagePath, thumbnail);
+    image = rotateQImage(image, &imageData);
+    return image;
+}
+
+/**
+ * @brief Load an image from a path
+ * @param imagePath Path to the image
+ * @param thumbnail Thumbnail size (0 for no thumbnail)
+ * @return QImage object containing the image data
+ */
+QImage loadAnImage(std::string imagePath, int thumbnail) {
+    std::string imagePathbis = imagePath;
+
+    QImage image;
+
+    if (!fs::exists(imagePath)) {
+        qCritical() << "Error: The specified path does not exist: " << QString::fromStdString(imagePath);
+        image.load(Const::ImagePath::ERROR_PATH);
+        return image;
+    }
+
+    if (isHeicOrHeif(imagePathbis)) {
+        if (thumbnail == 0) {
+            image = readHeicAndHeif(imagePathbis);
+        } else {
+            qWarning() << "Thumbnail not supported for HEIC/HEIF images";
+        }
+
+        // } else if (isRaw(imagePathbis)) {
+        //     if (thumbnail == 0) {
+        //         image = readRaw(imagePathbis);
+        //     } else {
+        //         qWarning() << "Thumbnail not supported for RAW images";
+        //     }
+    } else {
+        image.load(QString::fromStdString(imagePathbis));
+    }
+
+    if (image.isNull()) {
+        qCritical() << "Could not open or find the image : " << imagePathbis;
+        image.load(Const::ImagePath::ERROR_PATH);
+        return image;
+    }
+    return image;
 }

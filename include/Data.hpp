@@ -55,11 +55,10 @@ class Data : public std::enable_shared_from_this<Data> {
 
     DetectedObjects* detect(std::string imagePath, QImage image, std::string model);
 
-    QImage loadAnImage(std::string imagePath, int thumbnail, bool force);
     QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool rotation = true, bool square = false, bool crop = true, bool force = false);
     QImage loadImageNormal(std::string imagePath, int thumbnail = 0, bool force = false);
 
-    QImage loadAnImageFromRessources(std::string imagePath, int thumbnail, bool force);
+    QImage loadAnImageFromRessources(std::string imagePath, int thumbnail);
 
     std::mutex imageCacheMutex;
     bool loadInCache(std::string imagePath, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
@@ -119,7 +118,6 @@ class Data : public std::enable_shared_from_this<Data> {
     void realMirror(int nbr, bool UpDown, std::function<void()> reload);
 
     void clearActions();
-    QImage rotateQImage(QImage image, ImageData* imageData);
 
     Folders* getRootFolders();
     Folders* getCurrentFolders();
@@ -230,3 +228,8 @@ class Data : public std::enable_shared_from_this<Data> {
     };
 
 cv::dnn::Net load_net(std::string model);
+
+QImage rotateQImage(QImage image, ImageData* imageData);
+
+QImage loadAnImage(std::string imagePath, int thumbnail);
+QImage loadAnImageWithRotation(ImageData imageData, int thumbnail);

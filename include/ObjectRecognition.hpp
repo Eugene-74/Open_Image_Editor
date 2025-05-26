@@ -6,6 +6,7 @@
 // Forward declaration
 class QImage;
 class Data;
+class ImageData;
 
 class DetectedFaces {
    public:
@@ -38,7 +39,7 @@ class DetectedObjects {
     auto getDetectedFacesConst() const -> std::vector<DetectedFaces>;
 
     void setDetectedObjects(const std::map<std::string, std::vector<std::pair<cv::Rect, float>>>& detectedObjects);
-    void detectFaces(std::string imagePath);
+    void detectFaces(ImageData imageData);
 
     std::string getModelUsed() const;
     void setModelUsed(const std::string& modelName);
