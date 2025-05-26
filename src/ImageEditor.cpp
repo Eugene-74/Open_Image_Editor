@@ -1036,13 +1036,13 @@ MainImage* ImageEditor::createImageLabel() {
         }
     });
 
-    if (imageData->isDetectionStatusLoaded() && imageData->getFaceDetectionStatus().isStatusNotLoaded()) {
-        data->addHeavyThread([this, imageData]() {
-            if (imageData->getFaceDetectionStatus().isStatusNotLoaded()) {
-                data->detectAndRecognizeFaces(imageData);
-            }
-        });
-    }
+    // if (imageData->isDetectionStatusLoaded() && imageData->getFaceDetectionStatus().isStatusNotLoaded()) {
+    //     data->addHeavyThread([this, imageData]() {
+    //         if (imageData->getFaceDetectionStatus().isStatusNotLoaded()) {
+    //             data->detectAndRecognizeFaces(imageData);
+    //         }
+    //     });
+    // }
 
     int imageNbr = data->getImagesDataPtr()->getImageNumber();
     if (imageData->isDetectionStatusNotLoaded() && data->getConnectionEnabled()) {
