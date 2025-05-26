@@ -265,14 +265,14 @@ std::string getLatestGitHubTag() {
 
         res = curl_easy_perform(curl);
         if (res == CURLE_OPERATION_TIMEDOUT) {
-            showWarningMessage(nullptr, "Could not check for update (low connexion)", "Checking for updates");
+            // showWarningMessage(nullptr, "Could not check for update (low connexion)", "Checking for updates");
             qWarning() << "Error : Could not check for update (low connexion) : " << curl_easy_strerror(res);
             curl_easy_cleanup(curl);
             return "";
         }
         if (res != CURLE_OK) {
             qWarning() << "curl_easy_perform() failed: " << curl_easy_strerror(res);
-            showWarningMessage(nullptr, "Something went wrong", "Checking for updates");
+            // showWarningMessage(nullptr, "Something went wrong", "Checking for updates");
 
             curl_easy_cleanup(curl);
             return "";

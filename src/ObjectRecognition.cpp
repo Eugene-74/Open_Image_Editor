@@ -216,27 +216,29 @@ void DetectedObjects::detectFaces(std::string imagePath) {
         return;
     }
 
-    auto it = detectedObjects.find("person");
-    if (it == detectedObjects.end()) {
-        qWarning() << "No 'person' objects detected";
-        return;
-    }
-    const auto& persons = it->second;
-    for (const auto& [rect, confidence] : persons) {
-        cv::Rect validRect = rect & cv::Rect(0, 0, image.cols, image.rows);
-        if (validRect.width > 0 && validRect.height > 0) {
-            cv::Mat personROI = image(validRect).clone();
-            auto faceResults = getFaceRect(personROI);
-            for (const auto& faceResult : faceResults) {
-                if (faceResult.second > 0) {
-                    cv::Rect adjustedRect = faceResult.first;
-                    adjustedRect.x += validRect.x;
-                    adjustedRect.y += validRect.y;
-                    detectedFaces.emplace_back(DetectedFaces(adjustedRect, faceResult.second));
-                }
-            }
+    // auto it = detectedObjects.find("person");
+    // if (it == detectedObjects.end()) {
+    //     qWarning() << "No 'person' objects detected";
+    //     return;
+    // }
+    // const auto& persons = it->second;
+    // for (const auto& [rect, confidence] : persons) {
+    //     cv::Rect validRect = rect & cv::Rect(0, 0, image.cols, image.rows);
+    // if (validRect.width > 0 && validRect.height > 0) {
+    // cv::Mat personROI = image(validRect).clone();
+    cv::Mat personROI = image;
+
+    auto faceResults = getFaceRect(personROI);
+    for (const auto& faceResult : faceResults) {
+        if (faceResult.second > 0) {
+            cv::Rect adjustedRect = faceResult.first;
+            // adjustedRect.x += validRect.x;
+            // adjustedRect.y += validRect.y;
+            detectedFaces.emplace_back(DetectedFaces(adjustedRect, faceResult.second));
         }
     }
+    //     }
+    // }
 }
 
 /**
