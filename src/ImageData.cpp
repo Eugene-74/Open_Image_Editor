@@ -551,7 +551,6 @@ LoadingStatus ImageData::getFaceDetectionStatus() const {
  */
 void ImageData::detectFaces() {
     if (faceDetectionStatus.isStatusNotLoaded()) {
-        faceDetectionStatus.setStatusLoading();
         if (detectedObjects.getDetectedFacesPtr()->size() > 0) {
             return;
         }
@@ -576,7 +575,5 @@ void ImageData::detectFaces() {
             *faceData.getEmbeddingPtr() = embedding;
             qDebug() << "Face detected with embedding size:" << embedding.size().width << "x" << embedding.size().height;
         }
-        faceDetectionStatus.setStatusLoaded();
     }
 }
-

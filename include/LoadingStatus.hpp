@@ -10,7 +10,6 @@ class LoadingStatus {
     };
 
    public:
-    void setStatus(LoadingStatusType status);
     void setStatusLoading();
     void setStatusNotLoaded();
     void setStatusLoaded();
@@ -21,5 +20,6 @@ class LoadingStatus {
     void load(std::ifstream& in);
 
    private:
+    void setStatus(LoadingStatusType status);
     LoadingStatusType status = LoadingStatusType::NotLoaded;
 };

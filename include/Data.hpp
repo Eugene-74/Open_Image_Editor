@@ -216,6 +216,8 @@ class Data : public std::enable_shared_from_this<Data> {
     std::vector<Actions> lastActions = {};
     std::vector<Actions> lastActionsDone = {};
 
+    std::mutex detectAndRecognizeFacesMutex;
+
     Folders* findFirstFolderWithAllImagesSub(Folders* currentFolder);
     void createFolders(Folders* currentFolders, std::string path);
     void copyTo(Folders rootFolders, std::string destinationPath, bool dateInName);

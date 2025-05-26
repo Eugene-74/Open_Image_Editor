@@ -2355,104 +2355,63 @@ void Data::checkThumbnailAndDetectObjects() {
     thumbnailTimer->setInterval(Const::WORKING_THUMBNAIL_TIME);
 }
 
-// #include <dlib/cuda/cuda_dlib.h>
-// #include <dlib/dnn.h>
-// #include <dlib/image_processing/frontal_face_detector.h>
-// #include <dlib/opencv.h>
-
-// #include <opencv2/opencv.hpp>
-// void detectFacesCUDA(std::string imagePath, QImage image) {
-//     cv::Mat mat = QImageToCvMat(image);
-
-//     int newSize = std::max(1, std::min(mat.cols, mat.rows) / 1000);
-//     float invNewSize = 1.0f / newSize;
-
-//     cv::Mat resizedMat;
-//     cv::resize(mat, resizedMat, cv::Size(), invNewSize, invNewSize);
-
-//     cv::Mat gray;
-//     cv::cvtColor(resizedMat, gray, cv::COLOR_BGR2GRAY);
-
-//     dlib::cv_image<unsigned char> dlibImage(gray);
-
-//     // // Use CUDA for face detection
-//     qDebug() << "working";
-//     static std::mutex detector_mutex;
-//     static std::unique_ptr<dlib::frontal_face_detector> detector_ptr;
-//     {
-//         std::lock_guard<std::mutex> lock(detector_mutex);
-//         if (!detector_ptr) {
-//             detector_ptr = std::make_unique<dlib::frontal_face_detector>(dlib::get_frontal_face_detector());
-//         }
-//     }
-//     qDebug() << "working 1";
-//     std::vector<dlib::rectangle> dets;
-//     {
-//         std::lock_guard<std::mutex> lock(detector_mutex);
-//         dets = (*detector_ptr)(dlibImage);
-//     }
-
-//     qDebug() << "Number of faces detected: " << dets.size();
-
-//     // for (const auto& d : dets) {
-//     //     cv::Rect face;
-//     //     face.x = d.left() * newSize;
-//     //     face.y = d.top() * newSize;
-//     //     face.width = d.width() * newSize;
-//     //     face.height = d.height() * newSize;
-//     // }
-//     // qDebug() << "working 2";
-// }
-
 void Data::detectAndRecognizeFaces(ImageData* imageData) {
     if (!downloadModelIfNotExists("arcface.onnx", "arcface") || !downloadModelIfNotExists("haarcascade_frontalface_alt2.xml", "haarcascade")) {
         return;
     }
+    imageData->getFaceDetectionStatus().setStatusLoading();
     imageData->detectFaces();
 
-    auto* faces = imageData->getDetectedFacesPtr();
-    if (faces && !faces->empty()) {
-        const auto& allImages = this->getImagesDataPtr()->getConst();
-        for (size_t i = 0; i < faces->size(); ++i) {
-            const cv::Mat& embedding1 = *(*faces)[i].getEmbeddingPtr();
-            for (const auto* otherImage : allImages) {
-                if (otherImage == imageData) continue;
-                auto otherFaces = otherImage->getDetectedFacesConst();
-                if (otherFaces.empty()) continue;
-                for (size_t j = 0; j < otherFaces.size(); ++j) {
-                    const cv::Mat& embedding2 = *otherFaces[j].getEmbeddingPtr();
-                    if (!embedding1.empty() && !embedding2.empty()) {
-                        double similarity = cosineSimilarity(embedding1, embedding2);
-                        qDebug() << "Cosine similarity between face" << i << " from" << imageData->getImagePath() << "and image" << QString::fromStdString(otherImage->getImageName())
-                                 << "face" << j << ":" << similarity;
-                        if (similarity > 0.6) {
-                            if (*((*faces)[i].getPersonIdPtr()) == -1) {
-                                *((*faces)[i].getPersonIdPtr()) = *otherFaces[j].getPersonIdPtr();
-                                qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is recognized as face" << j << "from" << QString::fromStdString(otherImage->getImageName());
-                            } else {
-                                qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is already recognized";
+    {
+        std::lock_guard<std::mutex> lock(detectAndRecognizeFacesMutex);
+        // Keep detecting sync
+
+        auto* faces = imageData->getDetectedFacesPtr();
+        if (faces && !faces->empty()) {
+            const auto& allImages = this->getImagesDataPtr()->getConst();
+            for (size_t i = 0; i < faces->size(); ++i) {
+                const cv::Mat& embedding1 = *(*faces)[i].getEmbeddingPtr();
+                for (const auto* otherImage : allImages) {
+                    if (otherImage == imageData) continue;
+                    auto otherFaces = otherImage->getDetectedFacesConst();
+                    if (otherFaces.empty()) continue;
+                    for (size_t j = 0; j < otherFaces.size(); ++j) {
+                        const cv::Mat& embedding2 = *otherFaces[j].getEmbeddingPtr();
+                        if (!embedding1.empty() && !embedding2.empty()) {
+                            double similarity = cosineSimilarity(embedding1, embedding2);
+                            qDebug() << "Cosine similarity between face" << i << " from" << imageData->getImagePath() << "and image" << QString::fromStdString(otherImage->getImageName())
+                                     << "face" << j << ":" << similarity;
+                            if (similarity > 0.6) {
+                                if (*((*faces)[i].getPersonIdPtr()) == -1) {
+                                    *((*faces)[i].getPersonIdPtr()) = *otherFaces[j].getPersonIdPtr();
+                                    qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is recognized as face" << j << "from" << QString::fromStdString(otherImage->getImageName());
+                                } else {
+                                    qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is already recognized";
+                                }
                             }
                         }
                     }
                 }
-            }
-            if (*((*faces)[i].getPersonIdPtr()) == -1) {
-                qDebug() << "Face" << i << "from" << imageData->getImagePath() << "is not recognized";
-                *((*faces)[i].getPersonIdPtr()) = this->getPersonIdNames().size();
-                auto* personIdNames = this->getPersonIdNamesPtr();
-                (*personIdNames)[personIdNames->size()] = "Unknown n°" + std::to_string(this->getPersonIdNames().size());
+                if (*((*faces)[i].getPersonIdPtr()) == -1) {
+                    qDebug() << "Face" << i << "from" << imageData->getImagePath() << "is not recognized";
+                    *((*faces)[i].getPersonIdPtr()) = this->getPersonIdNames().size();
+                    auto* personIdNames = this->getPersonIdNamesPtr();
+                    (*personIdNames)[personIdNames->size()] = "Unknown n°" + std::to_string(this->getPersonIdNames().size());
+                }
             }
         }
-    }
-    // qDebug() << "Faces detection detect";
-    // QImage img = this->loadImageNormal(nullptr, imageData->getImagePath(), QSize(0, 0), false, 0, true);
-    // detectFacesCUDA(imageData->getImagePath(), img);
-    // qDebug() << "Detecting faces recognition ...";
+        imageData->getFaceDetectionStatus().setStatusLoaded();
 
-    // Affiche la map data->getPersonIdNames()
-    // const auto& personIdNames = data->getPersonIdNames();
-    // qDebug() << "Contenu de data->getPersonIdNames() :";
-    // for (const auto& pair : personIdNames) {
-    //     qDebug() << "ID:" << pair.first << "Nom:" << QString::fromStdString(pair.second);
-    // }
+        // qDebug() << "Faces detection detect";
+        // QImage img = this->loadImageNormal(nullptr, imageData->getImagePath(), QSize(0, 0), false, 0, true);
+        // detectFacesCUDA(imageData->getImagePath(), img);
+        // qDebug() << "Detecting faces recognition ...";
+
+        // Affiche la map data->getPersonIdNames()
+        // const auto& personIdNames = data->getPersonIdNames();
+        // qDebug() << "Contenu de data->getPersonIdNames() :";
+        // for (const auto& pair : personIdNames) {
+        //     qDebug() << "ID:" << pair.first << "Nom:" << QString::fromStdString(pair.second);
+        // }
+    }
 }
