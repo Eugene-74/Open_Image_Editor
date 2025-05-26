@@ -8,7 +8,7 @@
 
 std::vector<std::pair<cv::Rect, double>> getFaceRect(cv::Mat img) {
     if (img.empty()) {
-        std::cerr << "Erreur lors du chargement de l'image." << std::endl;
+        qWarning() << "Error loading image";
         return {std::make_pair(cv::Rect(), 0.0)};
     }
 
@@ -18,24 +18,24 @@ std::vector<std::pair<cv::Rect, double>> getFaceRect(cv::Mat img) {
     cv::CascadeClassifier faceCascade;
 
     try {
-        if (!faceCascade.load("C:/Users/eugen/AppData/Local/OpenImageEditor/haarcascade_frontalface_alt2.xml")) {
-            std::cerr << "Erreur lors du chargement du classificateur en cascade." << std::endl;
+        if (!faceCascade.load(APP_FILES.toStdString() + "/" + Const::Model::Haarcascade::NAME)) {
+            qWarning() << "Error loading cascade classifier";
             return {std::make_pair(cv::Rect(), 0.0)};
         }
     } catch (const cv::Exception& e) {
-        qWarning() << "Error loading model:" << "haarcascade_frontalface_alt2.xml - " << e.what();
+        qWarning() << "Error loading model:" << Const::Model::Haarcascade::NAME << " - " << e.what();
 
-        if (!downloadModel("haarcascade_frontalface_alt2.xml", "haarcascade")) {
-            qWarning() << "Failed to download model: haarcascade_frontalface_alt2.xml";
+        if (!downloadModel(Const::Model::Haarcascade::NAME, Const::Model::Haarcascade::GITHUB_TAG)) {
+            qWarning() << "Failed to download model: " << Const::Model::Haarcascade::NAME;
         }
 
         try {
-            if (!faceCascade.load("C:/Users/eugen/AppData/Local/OpenImageEditor/haarcascade_frontalface_alt2.xml")) {
-                std::cerr << "Erreur lors du chargement du classificateur en cascade." << std::endl;
+            if (!faceCascade.load(APP_FILES.toStdString() + "/" + Const::Model::Haarcascade::NAME)) {
+                qWarning() << "Error loading cascade classifier";
                 return {std::make_pair(cv::Rect(), 0.0)};
             }
         } catch (const cv::Exception& e) {
-            qWarning() << "Error loading model: haarcascade_frontalface_alt2.xml - " << e.what();
+            qWarning() << "Error loading model: " << Const::Model::Haarcascade::NAME << " - " << e.what();
         }
     }
 
@@ -74,18 +74,18 @@ cv::Mat detectEmbedding(cv::Mat face) {
 
     cv::dnn::Net net;
     try {
-        net = cv::dnn::readNetFromONNX(APP_FILES.toStdString() + "/" + "/arcface.onnx");
+        net = cv::dnn::readNetFromONNX(APP_FILES.toStdString() + "/" + "/" + Const::Model::Arcface::NAME);
     } catch (const cv::Exception& e) {
-        qWarning() << "Error loading model:" << "arcface.onnx - " << e.what();
+        qWarning() << "Error loading model:" << Const::Model::Arcface::NAME << " - " << e.what();
 
-        if (!downloadModel("arcface.onnx", "arcface")) {
-            qWarning() << "Failed to download model: arcface.onnx";
+        if (!downloadModel(Const::Model::Arcface::NAME, "arcface")) {
+            qWarning() << "Failed to download model: " << Const::Model::Arcface::NAME;
         }
 
         try {
-            net = cv::dnn::readNetFromONNX(APP_FILES.toStdString() + "/" + "/arcface.onnx");
+            net = cv::dnn::readNetFromONNX(APP_FILES.toStdString() + "/" + Const::Model::Arcface::NAME);
         } catch (const cv::Exception& e) {
-            qWarning() << "Error loading model:" << "arcface.onnx - " << e.what();
+            qWarning() << "Error loading model:" << Const::Model::Arcface::NAME << " - " << e.what();
         }
     }
 

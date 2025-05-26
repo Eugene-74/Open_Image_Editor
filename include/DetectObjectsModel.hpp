@@ -16,5 +16,5 @@ class DetectObjectsModel {
    private:
     float confidence = Const::Yolo::CONFIDENCE_THRESHOLD;
     std::vector<std::string> classNames;
-    std::string modelName = "yolov5n";
+    std::string modelName = Const::Model::YoloV5::Names::N;
 };

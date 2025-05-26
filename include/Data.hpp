@@ -55,8 +55,11 @@ class Data : public std::enable_shared_from_this<Data> {
 
     DetectedObjects* detect(std::string imagePath, QImage image, std::string model);
 
+    QImage loadAnImage(std::string imagePath, int thumbnail, bool force);
     QImage loadImage(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool rotation = true, bool square = false, bool crop = true, bool force = false);
-    QImage loadImageNormal(QWidget* parent, std::string imagePath, QSize size, bool setSize, int thumbnail = 0, bool force = false);
+    QImage loadImageNormal(std::string imagePath, int thumbnail = 0, bool force = false);
+
+    QImage loadAnImageFromRessources(std::string imagePath, int thumbnail, bool force);
 
     std::mutex imageCacheMutex;
     bool loadInCache(std::string imagePath, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
@@ -65,7 +68,9 @@ class Data : public std::enable_shared_from_this<Data> {
     bool unloadFromCache(std::string imagePath);
 
     bool isInCache(std::string imagePath);
-    bool getLoadedImage(std::string imagePath, QImage& image);
+    // bool getLoadedImage(std::string imagePath, QImage& image);
+    QImage* getImageFromCache(std::string imagePath);
+    void addImageInCache(const std::string& imagePath, const std::string& thumbnailPath, const QImage& image);
 
     void createThumbnailAsync(const std::string& imagePath, const int maxDim, std::function<void(bool)> callback = nullptr);
     void createAllThumbnailsAsync(const std::string& imagePath, std::function<void(bool)> callback = nullptr, bool toFront = false);
@@ -172,8 +177,9 @@ class Data : public std::enable_shared_from_this<Data> {
     std::map<int, std::string>* getPersonIdNamesPtr();
     void setPersonIdNames(std::map<int, std::string> personIdNames);
 
-    void detectAndRecognizeFaces(ImageData* imageData) ;
-       private:
+    void detectAndRecognizeFaces(ImageData* imageData);
+
+   private:
 #ifdef _WIN32
     Folders rootFolders = Folders("");
 #else

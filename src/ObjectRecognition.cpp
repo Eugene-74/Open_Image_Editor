@@ -209,6 +209,7 @@ void DetectedObjects::clear() {
 
 void DetectedObjects::detectFaces(std::string imagePath) {
     // TODO utiliser LOAD IMAGE NORMAL pour les HEIC ET HEIF
+
     cv::Mat image = cv::imread(imagePath);
 
     if (image.empty()) {

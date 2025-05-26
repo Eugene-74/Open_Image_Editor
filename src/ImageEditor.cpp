@@ -888,7 +888,7 @@ ClickableLabel* ImageEditor::createImageDetection() {
 
             ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
             int imageNbr = data->getImagesDataPtr()->getImageNumber();
-            QImage image = data->loadImageNormal(nullptr, data->getImagesDataPtr()->getCurrentImageData()->getImagePath(), QSize(0, 0), false);
+            QImage image = data->loadImageNormal(data->getImagesDataPtr()->getCurrentImageData()->getImagePath());
             image = data->rotateQImage(image, imageData);
             std::string currentImagePath = data->getImagesDataPtr()->getCurrentImageData()->getImagePath();
 
@@ -913,22 +913,6 @@ ClickableLabel* ImageEditor::createImageDetection() {
                         }
                     }
                 } }, true);
-            // data->addHeavyThread([=]() {
-            //     ImageData* imageData = data->imagesData.getCurrentImageData();
-            //     if (imageData) {
-            //         // QImage qImage(QString::fromStdString(imageData->getImagePath()));
-            //         QImage qImage = data->loadImageNormal(nullptr, imageData->getImagePath(), QSize(0, 0), false);
-            //         qImage = data->rotateQImage(qImage, imageData);
-
-            //         DetectedObjects* detectedObjects = data->detect(imageData->getImagePath(), qImage, data->getModelConst().getModelName());
-            //         if (detectedObjects) {
-            //             imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
-            //         }
-            //         qInfo() << "Object detection re-run with model:" << QString::fromStdString(data->getModelConst().getModelName());
-            //     }
-
-            //     QMetaObject::invokeMethod(this, [this]() { reload(); }, Qt::QueuedConnection);
-            // });
         }
     });
 
@@ -1061,7 +1045,7 @@ MainImage* ImageEditor::createImageLabel() {
     int imageNbr = data->getImagesDataPtr()->getImageNumber();
     if (imageData->isDetectionStatusNotLoaded() && data->getConnectionEnabled()) {
         imageData->setDetectionStatusLoading();
-        QImage image = data->loadImageNormal(nullptr, data->getImagesDataPtr()->getCurrentImageData()->getImagePath(), QSize(0, 0), false);
+        QImage image = data->loadImageNormal(data->getImagesDataPtr()->getCurrentImageData()->getImagePath());
 
         image = data->rotateQImage(image, imageData);
 

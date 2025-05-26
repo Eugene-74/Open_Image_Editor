@@ -166,8 +166,10 @@ QImage Data::loadImageFromVideo(std::string videoPath, int frameNumber) {
 QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
                        bool setSize, int thumbnail, bool rotation,
                        bool square, bool crop, bool force) {
-    QImage image = loadImageNormal(parent, imagePath, size, setSize, thumbnail, force);
-
+    QImage image = loadImageNormal(imagePath, thumbnail, force);
+    if (setSize) {
+        image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    }
     ImageData* imageData = imagesData.getImageData(imagePath);
     if (crop && imageData != nullptr && !imageData->getCropSizes().empty()) {
         std::vector<QPoint> cropPoints = imageData->getCropSizes().back();
@@ -201,77 +203,97 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
 }
 
 /**
- * @brief Load an image from a path and put it in the cache
- * @param parent Parent widget
+ * @brief Load an image from a path
  * @param imagePath Path to the image
- * @param size Size of the image
- * @param setSize Set if the image should be resized
  * @param thumbnail Thumbnail size (0 for no thumbnail)
  * @param force Set if the image should be loaded even if it is already in the cache
  * @return QImage object containing the image data
  */
-QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
-                             bool setSize, int thumbnail, bool force) {
-    if (imagePath.at(0) == ':') {
-        if (getDarkMode()) {
-            std::string newPath = imagePath;
-            newPath.insert(newPath.find_first_of(':') + 1, "/255-255-255-255");
-            if (QResource(QString::fromStdString(newPath)).isValid()) {
-                imagePath = newPath;
-            }
-
-        } else {
-            std::string newPath = imagePath;
-            newPath.insert(newPath.find_first_of(':') + 1, "/0-0-0-255");
-            if (QResource(QString::fromStdString(newPath)).isValid()) {
-                imagePath = newPath;
-            }
-        }
-    }
-
-    {
-        std::lock_guard<std::mutex> lock(imageCacheMutex);
-        auto it = imageCache->find(imagePath);
-        if (it != imageCache->end()) {
-            return it->second.image;
-        }
-
-        if (!force) {
-            for (int i = Const::Thumbnail::THUMBNAIL_SIZES.size() - 1; i >= 0; --i) {
-                int size = Const::Thumbnail::THUMBNAIL_SIZES[i];
-
-                it = imageCache->find(getThumbnailPath(imagePath, size));
-                if (it != imageCache->end()) {
-                    // qInfo() << "Image found in cache " << size << ": " << QString::fromStdString(imagePath);
-                    return it->second.image;
-                }
-            }
-        }
-    }
-
+QImage Data::loadAnImage(std::string imagePath, int thumbnail, bool force) {
     std::string imagePathbis = imagePath;
 
     QImage image;
 
-    if (imagePath.at(0) == ':') {
-        // qInfo() << "Loading image from resource: " << QString::fromStdString(imagePath);
-        QResource ressource(QString::fromStdString(imagePath));
-        if (ressource.isValid()) {
-            image.load(QString::fromStdString(imagePath));
+    if (!fs::exists(imagePath)) {
+        qCritical() << "Error: The specified path does not exist: " << QString::fromStdString(imagePath);
+        image.load(Const::ImagePath::ERROR_PATH);
+        return image;
+    }
+
+    if (isHeicOrHeif(imagePathbis)) {
+        if (thumbnail == 0) {
+            image = readHeicAndHeif(imagePathbis);
+        } else {
+            qWarning() << "Thumbnail not supported for HEIC/HEIF images";
+        }
+
+        // } else if (isRaw(imagePathbis)) {
+        //     if (thumbnail == 0) {
+        //         image = readRaw(imagePathbis);
+        //     } else {
+        //         qWarning() << "Thumbnail not supported for RAW images";
+        //     }
+    } else {
+        image.load(QString::fromStdString(imagePathbis));
+    }
+
+    if (image.isNull()) {
+        qCritical() << "Could not open or find the image : " << imagePathbis;
+        image.load(Const::ImagePath::ERROR_PATH);
+        return image;
+    }
+    return image;
+}
+
+/**
+ * @brief Load an image from a path
+ * @param imagePath Path to the image
+ * @param thumbnail Thumbnail size (0 for no thumbnail)
+ * @param force Set if the image should be loaded even if it is already in the cache
+ * @return QImage object containing the image data
+ */
+QImage Data::loadAnImageFromRessources(std::string imagePath, int thumbnail, bool force) {
+    QImage image;
+    if (getDarkMode()) {
+        std::string newPath = imagePath;
+        newPath.insert(newPath.find_first_of(':') + 1, "/255-255-255-255");
+        if (QResource(QString::fromStdString(newPath)).isValid()) {
+            imagePath = newPath;
         }
 
     } else {
-        // qInfo() << "Loading image from file: " << QString::fromStdString(imagePath);
-        if (!fs::exists(imagePath)) {
-            qCritical() << "Error: The specified path does not exist: " << QString::fromStdString(imagePath);
-            image.load(Const::ImagePath::ERROR_PATH);
-            return image;
+        std::string newPath = imagePath;
+        newPath.insert(newPath.find_first_of(':') + 1, "/0-0-0-255");
+        if (QResource(QString::fromStdString(newPath)).isValid()) {
+            imagePath = newPath;
         }
+    }
+    image.load(QString::fromStdString(imagePath));
+    return image;
+}
 
+/**
+ * @brief Load an image from a path and put it in the cache
+ * @param imagePath Path to the image
+ * @param thumbnail Thumbnail size (0 for no thumbnail)
+ * @param force Set if the image should be loaded even if it is already in the cache
+ * @return QImage object containing the image data
+ */
+QImage Data::loadImageNormal(std::string imagePath, int thumbnail, bool force) {
+    QImage image;
+    std::string thumbnailPath = imagePath;
+
+    if (getImageFromCache(imagePath) != nullptr) {
+        image = *getImageFromCache(imagePath);
+
+        return image;
+    } else if (imagePath.at(0) == ':') {
+        image = loadAnImageFromRessources(imagePath, thumbnail, force);
+    } else {
         for (int size : Const::Thumbnail::THUMBNAIL_SIZES) {
             if (thumbnail == size) {
                 if (hasThumbnail(imagePath, size)) {
-                    imagePathbis = getThumbnailPath(imagePath, size);
+                    thumbnailPath = getThumbnailPath(imagePath, size);
                 } else {
                     for (int sizeBis : Const::Thumbnail::THUMBNAIL_SIZES) {
                         createThumbnailIfNotExists(imagePath, sizeBis);
@@ -279,53 +301,11 @@ QImage Data::loadImageNormal(QWidget* parent, std::string imagePath, QSize size,
                 }
             }
         }
-        if (isVideo(imagePath)) {
-            // qInfo() << "Loading video: " << QString::fromStdString(imagePath);
-            image = loadImageFromVideo(imagePath);
-        } else {
-            if (isHeicOrHeif(imagePathbis)) {
-                if (thumbnail == 0) {
-                    // qInfo() << "Loading HEIC/HEIF image: " << QString::fromStdString(imagePathbis);
-                    image = readHeicAndHeif(imagePathbis);
-                } else {
-                    qWarning() << "Thumbnail not supported for HEIC/HEIF images";
-                }
 
-            } else if (isRaw(imagePathbis)) {
-                if (thumbnail == 0) {
-                    image = readRaw(imagePathbis);
-                } else {
-                    qWarning() << "Thumbnail not supported for RAW images";
-                }
-            } else {
-                // qInfo() << "Loading image: " << QString::fromStdString(imagePathbis);
-                image.load(QString::fromStdString(imagePathbis));
-            }
-        }
-
-        if (image.isNull()) {
-            qCritical() << "Could not open or find the image : " << imagePathbis;
-            image.load(Const::ImagePath::ERROR_PATH);
-            return image;
-        }
-
-        if (setSize) {
-            image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        }
+        image = loadAnImage(thumbnailPath, thumbnail, force);
     }
-    {
-        std::lock_guard<std::mutex> lock(imageCacheMutex);
-        (*imageCache)[imagePathbis].image = image;
-        (*imageCache)[imagePathbis].imagePath = imagePath;
-        size_t cacheSize = 0;
 
-        for (const auto& pair : *imageCache) {
-            cacheSize += pair.second.image.sizeInBytes();
-        }
-        if (static_cast<double>(cacheSize) / (1024 * 1024) > 5000) {
-            qCritical() << "Image cache size: " << static_cast<double>(cacheSize) / (1024 * 1024) << " MB";
-        }
-    }
+    addImageInCache(imagePath, thumbnailPath, image);
 
     return image;
 }
@@ -343,7 +323,7 @@ void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callbac
         auto self = std::weak_ptr<Data>(shared_from_this());
         addHeavyThreadToFront([self, callback, imagePath, setSize, size, force, thumbnail]() {
             if (auto sharedSelf = self.lock()) {
-                QImage image = sharedSelf->loadImageNormal(nullptr, imagePath, size, setSize, thumbnail, force);
+                QImage image = sharedSelf->loadImageNormal(imagePath, thumbnail, force);
 
                 if (callback) {
                     QMetaObject::invokeMethod(QApplication::instance(), callback, Qt::QueuedConnection);
@@ -370,7 +350,7 @@ bool Data::loadInCache(const std::string imagePath, bool setSize,
         return true;
     }
     try {
-        loadImageNormal(nullptr, imagePath, size, setSize, 0, true);
+        loadImageNormal(imagePath, 0, true);
     } catch (const std::exception& e) {
         qCritical() << "loadInCache : " << e.what();
     }
@@ -399,16 +379,31 @@ bool Data::isInCache(std::string imagePath) {
  * @param image image to get
  * @return true if the image is in the cache false otherwise
  */
-bool Data::getLoadedImage(std::string imagePath, QImage& image) {
+QImage* Data::getImageFromCache(std::string imagePath) {
     {
         std::lock_guard<std::mutex> lock(imageCacheMutex);
 
         auto it = imageCache->find(imagePath);
         if (it != imageCache->end()) {
-            image = it->second.image;
-            return true;
+            return &it->second.image;
         }
-        return false;
+        return nullptr;
+    }
+}
+
+void Data::addImageInCache(const std::string& imagePath, const std::string& thumbnailPath, const QImage& image) {
+    {
+        std::lock_guard<std::mutex> lock(imageCacheMutex);
+        (*imageCache)[thumbnailPath].image = image;
+        (*imageCache)[thumbnailPath].imagePath = imagePath;
+        size_t cacheSize = 0;
+
+        for (const auto& pair : *imageCache) {
+            cacheSize += pair.second.image.sizeInBytes();
+        }
+        if (static_cast<double>(cacheSize) / (1024 * 1024) > 5000) {
+            qCritical() << "Image cache size: " << static_cast<double>(cacheSize) / (1024 * 1024) << " MB";
+        }
     }
 }
 
@@ -492,7 +487,7 @@ bool Data::createThumbnail(const std::string& imagePath, const int maxDim) {
     try {
         QImage image;
         if (isImage(imagePath) || isVideo(imagePath)) {
-            image = loadImageNormal(nullptr, imagePath, QSize(0, 0), false, 0);
+            image = loadImageNormal(imagePath, 0);
         } else {
             return false;
         }
@@ -1805,18 +1800,18 @@ cv::dnn::Net load_net(std::string model) {
 
     cv::dnn::Net result;
     try {
-        result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
+        result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model);
     } catch (const cv::Exception& e) {
         qWarning() << "Error loading model:" << QString::fromStdString(model) << " - " << e.what();
 
         // showWarningMessage(nullptr, "Error with the model", "Error loading model\nThe model will be downloaded again.");
-        if (!downloadModel(model + ".onnx", "yolov5")) {
+        if (!downloadModel(model, Const::Model::YoloV5::GITHUB_TAG)) {
             qWarning() << "Failed to download model: " << QString::fromStdString(model);
             // showErrorMessage(nullptr, "Error with the model", "Error downloading model\nThe model could not be downloaded.");
         }
 
         try {
-            result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model + ".onnx");
+            result = cv::dnn::readNet(APP_FILES.toStdString() + "/" + model);
         } catch (const cv::Exception& e) {
             qWarning() << "Error loading model:" << QString::fromStdString(model) << " - " << e.what();
             // showErrorMessage(nullptr, "Error with the model", "Error loading model\nThe model is broken.");
@@ -1839,8 +1834,8 @@ cv::dnn::Net load_net(std::string model) {
  */
 std::vector<std::string> load_class_list() {
     std::vector<std::string> class_list;
-    downloadModelIfNotExists("coco.names", "yolov5");
-    std::ifstream ifs(APP_FILES.toStdString() + "/coco.names");
+    downloadModelIfNotExists(Const::Model::YoloV5::Names::CLASS, Const::Model::YoloV5::GITHUB_TAG);
+    std::ifstream ifs(APP_FILES.toStdString() + "/" + Const::Model::YoloV5::Names::CLASS);
     std::string line;
     while (getline(ifs, line)) {
         class_list.push_back(line);
@@ -1876,7 +1871,7 @@ cv::Mat format_yolov5(const cv::Mat& source) {
  * @brief Detect objects in an image using a YOLOv5 model
  * @param imagePath Path to the image file
  * @param image The image to process
- * @param model The name of the model file (without extension)
+ * @param model The name of the model file
  * @return A DetectedObjects object containing the detected objects
  */
 DetectedObjects* Data::detect(std::string imagePath, QImage image, std::string model) {
@@ -2185,7 +2180,7 @@ void Data::setPersonIdNames(std::map<int, std::string> personIdNames) {
  * @brief Check if the faces has been detected and detect them if not
  */
 void Data::checkDetectFaces() {
-    if (this->getConnectionEnabled() && (!downloadModelIfNotExists("arcface.onnx", "arcface") || !downloadModelIfNotExists("haarcascade_frontalface_alt2.xml", "haarcascade"))) {
+    if (this->getConnectionEnabled() && (!downloadModelIfNotExists(Const::Model::Arcface::NAME, Const::Model::Arcface::GITHUB_TAG) || !downloadModelIfNotExists(Const::Model::Haarcascade::NAME, Const::Model::Haarcascade::GITHUB_TAG))) {
         qInfo() << "arcface could not be downloaded cheking in 1 min";
         this->setCenterText(Text::Error::failedDownloadModel().toStdString());
 
@@ -2238,7 +2233,7 @@ void Data::checkDetectFaces() {
  * @brief Check if the objetcs has been detected and detect them if not
  */
 void Data::checkDetectObjects() {
-    if (this->getConnectionEnabled() && !downloadModelIfNotExists("yolov5n.onnx", "yolov5")) {
+    if (this->getConnectionEnabled() && !downloadModelIfNotExists(Const::Model::YoloV5::Names::N, Const::Model::YoloV5::GITHUB_TAG)) {
         qInfo() << "yolov5n could not be downloaded cheking in 1 min";
         this->setCenterText(Text::Error::failedDownloadModel().toStdString());
 
@@ -2269,9 +2264,9 @@ void Data::checkDetectObjects() {
             addHeavyThread([this, imageData]() {
                 if (imageData) {
                     std::string imagePath = imageData->getImagePath();
-                    QImage image = this->loadImageNormal(nullptr, imagePath, QSize(0, 0), false, 0, true);
+                    QImage image = this->loadImageNormal(imagePath, 0, true);
                     image = rotateQImage(image, imageData);
-                    std::string modelName = "yolov5n";
+                    std::string modelName = Const::Model::YoloV5::Names::N;
 
                     DetectedObjects* detectedObjects = this->detect(imagePath, image, modelName);
                     if (detectedObjects) {
@@ -2356,7 +2351,7 @@ void Data::checkThumbnailAndDetectObjects() {
 }
 
 void Data::detectAndRecognizeFaces(ImageData* imageData) {
-    if (!downloadModelIfNotExists("arcface.onnx", "arcface") || !downloadModelIfNotExists("haarcascade_frontalface_alt2.xml", "haarcascade")) {
+    if (!downloadModelIfNotExists(Const::Model::Arcface::NAME, Const::Model::Arcface::GITHUB_TAG) || !downloadModelIfNotExists(Const::Model::Haarcascade::NAME, Const::Model::Haarcascade::GITHUB_TAG)) {
         return;
     }
     imageData->getFaceDetectionStatus().setStatusLoading();
@@ -2379,21 +2374,22 @@ void Data::detectAndRecognizeFaces(ImageData* imageData) {
                         const cv::Mat& embedding2 = *otherFaces[j].getEmbeddingPtr();
                         if (!embedding1.empty() && !embedding2.empty()) {
                             double similarity = cosineSimilarity(embedding1, embedding2);
-                            qDebug() << "Cosine similarity between face" << i << " from" << imageData->getImagePath() << "and image" << QString::fromStdString(otherImage->getImageName())
-                                     << "face" << j << ":" << similarity;
+                            // qDebug() << "Cosine similarity between face" << i << " from" << imageData->getImagePath() << "and image" << QString::fromStdString(otherImage->getImageName())
+                            //          << "face" << j << ":" << similarity;
                             if (similarity > 0.6) {
                                 if (*((*faces)[i].getPersonIdPtr()) == -1) {
                                     *((*faces)[i].getPersonIdPtr()) = *otherFaces[j].getPersonIdPtr();
-                                    qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is recognized as face" << j << "from" << QString::fromStdString(otherImage->getImageName());
-                                } else {
-                                    qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is already recognized";
+                                    // qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is recognized as face" << j << "from" << QString::fromStdString(otherImage->getImageName());
                                 }
+                                // else {
+                                //     qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is already recognized";
+                                // }
                             }
                         }
                     }
                 }
                 if (*((*faces)[i].getPersonIdPtr()) == -1) {
-                    qDebug() << "Face" << i << "from" << imageData->getImagePath() << "is not recognized";
+                    // qDebug() << "Face" << i << "from" << imageData->getImagePath() << "is not recognized";
                     *((*faces)[i].getPersonIdPtr()) = this->getPersonIdNames().size();
                     auto* personIdNames = this->getPersonIdNamesPtr();
                     (*personIdNames)[personIdNames->size()] = "Unknown n°" + std::to_string(this->getPersonIdNames().size());
@@ -2401,17 +2397,5 @@ void Data::detectAndRecognizeFaces(ImageData* imageData) {
             }
         }
         imageData->getFaceDetectionStatus().setStatusLoaded();
-
-        // qDebug() << "Faces detection detect";
-        // QImage img = this->loadImageNormal(nullptr, imageData->getImagePath(), QSize(0, 0), false, 0, true);
-        // detectFacesCUDA(imageData->getImagePath(), img);
-        // qDebug() << "Detecting faces recognition ...";
-
-        // Affiche la map data->getPersonIdNames()
-        // const auto& personIdNames = data->getPersonIdNames();
-        // qDebug() << "Contenu de data->getPersonIdNames() :";
-        // for (const auto& pair : personIdNames) {
-        //     qDebug() << "ID:" << pair.first << "Nom:" << QString::fromStdString(pair.second);
-        // }
     }
 }

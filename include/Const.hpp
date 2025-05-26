@@ -26,8 +26,6 @@ const QString APP_FILES = APPDATA_PATH + "/" + QString::fromStdString(APP_NAME);
 
 const QString DOWNLOAD_PATH = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
 
-const std::vector<std::string> filesToDownload = {"coco.names", "yolov5n.onnx", "yolov5s.onnx", "yolov5m.onnx", "yolov5l.onnx", "yolov5x.onnx"};
-
 const int PREVIEW_NBR = 3;
 const int PRE_LOAD_RADIUS = 5;  // on en precharge 2 de plus comme ça l'utilisateut ne vois meme pas les images charger
 const int TIME_BEFORE_FULL_QUALITY = 200;
@@ -175,6 +173,43 @@ static const std::string DARK_RED = "#700c13";
 static const std::string LIGHT_RED = "#F00c13";
 
 };  // namespace Color
+namespace Model {
+namespace YoloV5 {
+
+static const std::string GITHUB_TAG = "yolov5";
+
+namespace Names {
+static const std::string CLASS = "class.names";
+
+static const std::string N = "yolov5n.onnx";
+static const std::string S = "yolov5s.onnx";
+static const std::string M = "yolov5m.onnx";
+static const std::string L = "yolov5l.onnx";
+static const std::string X = "yolov5x.onnx";
+};  // namespace Names
+const std::map<std::string, int> QUALITY = {
+    {Const::Model::YoloV5::Names::N, 1},  // nano
+    {Const::Model::YoloV5::Names::S, 2},  // small
+    {Const::Model::YoloV5::Names::M, 3},  // medium
+    {Const::Model::YoloV5::Names::L, 4},  // large
+    {Const::Model::YoloV5::Names::X, 5}   // xlarge
+};
+};  // namespace YoloV5
+namespace Arcface {
+static const std::string GITHUB_TAG = "arcface";
+
+static const std::string NAME = "arcface.onnx";
+
+};  // namespace Arcface
+
+namespace Haarcascade {
+static const std::string GITHUB_TAG = "haarcascade";
+
+static const std::string NAME = "haarcascade_frontalface_alt2.xml";
+
+};  // namespace Haarcascade
+};  // namespace Model
+
 };  // namespace Const
 
 const std::string CLICK_BACKGROUND_COLOR = Const::Color::GRAY;
@@ -190,10 +225,3 @@ const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = 
 const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = Const::Color::GREEN;
 const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = Const::Color::GREEN;
 
-const std::map<std::string, int> YOLOV5_MODEL_QUALITY = {
-    {"yolov5n.onnx", 1},  // nano
-    {"yolov5s.onnx", 2},  // small
-    {"yolov5m.onnx", 3},  // medium
-    {"yolov5l.onnx", 4},  // large
-    {"yolov5x.onnx", 5}   // xlarge
-};

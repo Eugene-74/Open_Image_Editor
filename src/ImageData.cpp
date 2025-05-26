@@ -573,7 +573,6 @@ void ImageData::detectFaces() {
             }
             cv::Mat embedding = detectEmbedding(faceROI);
             *faceData.getEmbeddingPtr() = embedding;
-            qDebug() << "Face detected with embedding size:" << embedding.size().width << "x" << embedding.size().height;
         }
     }
 }
