@@ -2164,8 +2164,6 @@ void Data::checkDetectFaces() {
         while (detectionFacesWorking < Const::MAX_WORKING_DETECTION) {
             detectionFacesWorking++;
             ImageData* imageData = hasNotBeenDetectedFaces.front();
-            // TODO corriger car si on en charge au debut plusieur d'une meme personne il peut pas les comparer
-            // TODO par exemple mutex qui attend qu'on est tout comparer
             addHeavyThread([this, imageData]() {
                 this->detectAndRecognizeFaces(imageData);
             });
