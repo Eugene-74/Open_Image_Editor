@@ -143,6 +143,10 @@ void showQuestionMessage(QWidget* parent, const std::string& text, std::function
  * @return Map of selected options
  */
 std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std::string& windowName, const std::map<std::string, Option>& options) {
+    // Inverse l'ordre des options
+    std::vector<std::pair<std::string, Option>> reversedOptions(options.begin(), options.end());
+    std::reverse(reversedOptions.begin(), reversedOptions.end());
+
     QDialog dialog(parent);
     dialog.setWindowTitle(QString::fromStdString(windowName));
     auto* layout = new QVBoxLayout(&dialog);

@@ -16,8 +16,14 @@ class DetectedFaces {
     cv::Rect getFaceRect() const;
     float getConfidence() const;
     cv::Mat* getEmbeddingPtr();
+    cv::Mat getEmbeddingConst() const;
+
     int* getPersonIdPtr();
     int getPersonIdConst() const;
+
+    bool operator==(const DetectedFaces& other) const {
+        return faceRect == other.faceRect && confidence == other.confidence && personId == other.personId;
+    }
 
    private:
     cv::Rect faceRect;

@@ -71,4 +71,7 @@ class MainImage : public QLabel {
 
         QString background_color = QString::fromStdString(Const::Color::TRANSPARENT1);
         QString hover_background_color = QString::fromStdString(Const::Color::TRANSPARENT1);
+
+       private:
+        int lastSelectedFaceIndex = -1;
 };

@@ -30,26 +30,27 @@ void DetectedObjects::save(std::ofstream& out) const {
             out.write(reinterpret_cast<const char*>(&confidence), sizeof(confidence));
         }
     }
-    // size_t facesSize = detectedFaces.size();
-    // out.write(reinterpret_cast<const char*>(&facesSize), sizeof(facesSize));
-    // for (const auto& face : detectedFaces) {
-    //     cv::Rect faceRect = face.getFaceRect();
-    //     out.write(reinterpret_cast<const char*>(&faceRect), sizeof(faceRect));
-    //     float confidence = face.getConfidence();
-    //     out.write(reinterpret_cast<const char*>(&confidence), sizeof(confidence));
-    //     int personId = *face.getPersonIdPtr();
-    //     out.write(reinterpret_cast<const char*>(&personId), sizeof(personId));
-    //     int rows = face.getEmbedding().rows;
-    //     int cols = face.getEmbedding().cols;
-    //     int type = face.getEmbedding().type();
-    //     out.write(reinterpret_cast<const char*>(&rows), sizeof(rows));
-    //     out.write(reinterpret_cast<const char*>(&cols), sizeof(cols));
-    //     out.write(reinterpret_cast<const char*>(&type), sizeof(type));
-    //     if (rows > 0 && cols > 0) {
-    //         size_t dataSize = face.getEmbedding().total() * face.getEmbedding().elemSize();
-    //         out.write(reinterpret_cast<const char*>(face.getEmbedding().data), dataSize);
-    //     }
-    // }
+    size_t facesSize = detectedFaces.size();
+    out.write(reinterpret_cast<const char*>(&facesSize), sizeof(facesSize));
+    for (const auto& face : detectedFaces) {
+        cv::Rect rect = face.getFaceRect();
+        float confidence = face.getConfidence();
+        int personId = face.getPersonIdConst();
+        out.write(reinterpret_cast<const char*>(&rect), sizeof(rect));
+        out.write(reinterpret_cast<const char*>(&confidence), sizeof(confidence));
+        out.write(reinterpret_cast<const char*>(&personId), sizeof(personId));
+        const cv::Mat embedding = face.getEmbeddingConst();
+        int rows = embedding.rows;
+        int cols = embedding.cols;
+        int type = embedding.type();
+        out.write(reinterpret_cast<const char*>(&rows), sizeof(rows));
+        out.write(reinterpret_cast<const char*>(&cols), sizeof(cols));
+        out.write(reinterpret_cast<const char*>(&type), sizeof(type));
+        if (rows > 0 && cols > 0) {
+            size_t dataSize = embedding.total() * embedding.elemSize();
+            out.write(reinterpret_cast<const char*>(embedding.data), dataSize);
+        }
+    }
 }
 
 /**
@@ -73,29 +74,28 @@ void DetectedObjects::load(std::ifstream& in) {
         }
         detectedObjects[key] = vec;
     }
-    // size_t facesSize;
-    // in.read(reinterpret_cast<char*>(&facesSize), sizeof(facesSize));
-    // detectedFaces.clear();
-    // for (size_t i = 0; i < facesSize; ++i) {
-    //     cv::Rect rect;
-    //     float confidence;
-    //     int personId;
-    //     in.read(reinterpret_cast<char*>(&rect), sizeof(rect));
-    //     in.read(reinterpret_cast<char*>(&confidence), sizeof(confidence));
-    //     in.read(reinterpret_cast<char*>(&personId), sizeof(personId));
-    //     int rows, cols, type;
-    //     in.read(reinterpret_cast<char*>(&rows), sizeof(rows));
-    //     in.read(reinterpret_cast<char*>(&cols), sizeof(cols));
-    //     in.read(reinterpret_cast<char*>(&type), sizeof(type));
-    //     cv::Mat embedding;
-    //     if (rows > 0 && cols > 0) {
-    //         embedding.create(rows, cols, type);
-    //         size_t dataSize = embedding.total() * embedding.elemSize();
-    //         in.read(reinterpret_cast<char*>(embedding.data), dataSize);
-    //     }
-    //     DetectedFaces face(rect, confidence, embedding, personId);
-    //     detectedFaces.push_back(face);
-    // }
+    size_t facesSize;
+    in.read(reinterpret_cast<char*>(&facesSize), sizeof(facesSize));
+    detectedFaces.clear();
+    for (size_t i = 0; i < facesSize; ++i) {
+        cv::Rect rect;
+        float confidence;
+        int personId;
+        in.read(reinterpret_cast<char*>(&rect), sizeof(rect));
+        in.read(reinterpret_cast<char*>(&confidence), sizeof(confidence));
+        in.read(reinterpret_cast<char*>(&personId), sizeof(personId));
+        int rows, cols, type;
+        in.read(reinterpret_cast<char*>(&rows), sizeof(rows));
+        in.read(reinterpret_cast<char*>(&cols), sizeof(cols));
+        in.read(reinterpret_cast<char*>(&type), sizeof(type));
+        cv::Mat embedding;
+        if (rows > 0 && cols > 0) {
+            embedding.create(rows, cols, type);
+            size_t dataSize = embedding.total() * embedding.elemSize();
+            in.read(reinterpret_cast<char*>(embedding.data), dataSize);
+        }
+        detectedFaces.emplace_back(rect, confidence, embedding, personId);
+    }
 }
 
 /**
@@ -282,6 +282,14 @@ float DetectedFaces::getConfidence() const {
  */
 cv::Mat* DetectedFaces::getEmbeddingPtr() {
     return &embedding;
+}
+
+/**
+ * @brief Get the embedding matrix pointer
+ * @return The embedding matrix
+ */
+cv::Mat DetectedFaces::getEmbeddingConst() const {
+    return embedding;
 }
 
 /**

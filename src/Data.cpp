@@ -2347,7 +2347,23 @@ void Data::detectAndRecognizeFaces(ImageData* imageData) {
                     // qDebug() << "Face" << i << "from" << imageData->getImagePath() << "is not recognized";
                     *((*faces)[i].getPersonIdPtr()) = this->getPersonIdNames().size();
                     auto* personIdNames = this->getPersonIdNamesPtr();
-                    (*personIdNames)[personIdNames->size()] = "Unknown n°" + std::to_string(this->getPersonIdNames().size());
+
+                    int unknownIndex = static_cast<int>(this->getPersonIdNames().size());
+                    std::string baseName = "Unknown n°";
+                    std::string newName;
+                    bool exists = true;
+                    while (exists) {
+                        newName = baseName + std::to_string(unknownIndex);
+                        exists = false;
+                        for (const auto& [id, name] : *personIdNames) {
+                            if (name == newName) {
+                                exists = true;
+                                ++unknownIndex;
+                                break;
+                            }
+                        }
+                    }
+                    (*personIdNames)[unknownIndex] = newName;
                 }
             }
         }

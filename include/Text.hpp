@@ -144,6 +144,7 @@ inline QString conversion() {
 inline QString gimp() {
     return translationManager.translateQ("Text.Tooltip.ImageEditor.GIMP");
 }
+
 };  // namespace ImageEditor
 };  // namespace Tooltip
 namespace Error {
@@ -155,6 +156,14 @@ inline QString failedDownloadModel() {
 }
 };  // namespace Error
 namespace Option {
+namespace ImageEditor {
+inline QString renameFaceWindow() {
+    return translationManager.translateQ("Text.Tooltip.ImageEditor.RENAME_FACE_WINDOW");
+}
+inline QString renameFace() {
+    return translationManager.translateQ("Text.Tooltip.ImageEditor.RENAME_FACE");
+}
+};  // namespace ImageEditor
 namespace Loading {
 inline QString keepOldSave() {
     return translationManager.translateQ("Text.Tooltip.Option.Loading.KEEP_OLD_SAVE");

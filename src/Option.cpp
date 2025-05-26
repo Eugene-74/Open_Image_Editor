@@ -1,5 +1,6 @@
 #include "Option.hpp"
 
+// TODO cree un type pour l'entreee et la sortie pour mieux gerer tout ca
 /**
  * @brief Get the type of the option as a constant string.
  * @return The type of the option.
