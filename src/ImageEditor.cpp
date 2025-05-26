@@ -883,7 +883,7 @@ ClickableLabel* ImageEditor::createImageDetection() {
             selectedModel = selectedModel.remove(QRegularExpression("<[^>]*>"));  // Remove HTML tags
             qInfo() << "Selected YOLO Model:" << selectedModel;
 
-            const std::string modelName = selectedModel.split(" - ").first().toStdString();
+            const std::string modelName = selectedModel.split(" - ").first().toStdString() + ".onnx";
             data->getModelPtr()->setModelName(modelName);
 
             ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
