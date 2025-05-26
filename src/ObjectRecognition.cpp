@@ -206,6 +206,7 @@ void DetectedObjects::setDetectedObjects(const std::map<std::string, std::vector
  */
 void DetectedObjects::clear() {
     detectedObjects.clear();
+    detectedFaces.clear();
 }
 
 void DetectedObjects::detectFaces(ImageData imageData) {

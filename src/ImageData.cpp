@@ -321,6 +321,7 @@ void ImageData::setDetectedObjects(const std::map<std::string, std::vector<std::
 void ImageData::clearDetectedObjects() {
     detectedObjects.clear();
     setDetectionStatusNotLoaded();
+    getFaceDetectionStatus().setStatusNotLoaded();
 }
 
 /**

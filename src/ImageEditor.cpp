@@ -1072,6 +1072,7 @@ MainImage* ImageEditor::createImageLabel() {
                         }
                     }
                 }
+                self->data->detectAndRecognizeFaces(imageData);
             }
         });
     }
