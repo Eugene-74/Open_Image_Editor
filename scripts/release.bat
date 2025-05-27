@@ -12,7 +12,6 @@ cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=ccache -
 
 cmake --build . 
 
-TODO remettre les tests (marche pas)
 ctest --output-on-failure
 if %errorlevel% neq 0 (
     echo Tests failed, aborting execution.
