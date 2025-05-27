@@ -116,7 +116,6 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
                 }
                 if (clickedFaceIndex != -1) {
                     if (lastSelectedFaceIndex == clickedFaceIndex) {
-                        // Ouvrir le menu d'options (ancienne logique du double-clic)
                         auto& faceData = (*detectedFaces)[clickedFaceIndex];
                         bool ok = false;
                         QString currentName;
@@ -133,11 +132,11 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
                             }
                             std::string namesString = "none|none|" + nameList.join("|").toStdString();
                             std::map<std::string, Option> option = {
-                                {"rename", Option("text", currentName.toStdString())},
-                                {"delete", Option("bool", "false")},
-                                {"merge with", Option("list", namesString)}};
+                                {Text::Option::ImageEditor::renameFace().toStdString(), Option("text", currentName.toStdString())},
+                                {Text::Option::ImageEditor::deleteFace().toStdString(), Option("bool", "false")},
+                                {Text::Option::ImageEditor::mergeFace().toStdString(), Option("list", namesString)}};
                             std::map<std::string, std::string> optionDone = showOptionsDialog(this, "Face options", option);
-                            if (optionDone["delete"] == "true") {
+                            if (optionDone[Text::Option::ImageEditor::deleteFace().toStdString()] == "true") {
                                 auto it = std::find(detectedFaces->begin(), detectedFaces->end(), faceData);
                                 if (it != detectedFaces->end()) {
                                     detectedFaces->erase(it);
@@ -145,13 +144,13 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
                                 update();
                                 lastSelectedFaceIndex = -1;
                                 return;
-                            } else if (!optionDone["rename"].empty()) {
+                            } else if (!optionDone[Text::Option::ImageEditor::renameFace().toStdString()].empty()) {
                                 auto* personIdNamesPtr = data->getPersonIdNamesPtr();
-                                (*personIdNamesPtr)[personId] = optionDone["rename"];
+                                (*personIdNamesPtr)[personId] = optionDone[Text::Option::ImageEditor::renameFace().toStdString()];
                                 update();
                             }
-                            if (!optionDone["merge with"].empty()) {
-                                std::string mergeWithName = optionDone["merge with"];
+                            if (!optionDone[Text::Option::ImageEditor::mergeFace().toStdString()].empty()) {
+                                std::string mergeWithName = optionDone[Text::Option::ImageEditor::mergeFace().toStdString()];
                                 size_t pipePos = mergeWithName.find('|');
                                 if (pipePos != std::string::npos) {
                                     mergeWithName = mergeWithName.substr(0, pipePos);
@@ -184,7 +183,6 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
                         return;
                     } else {
                         lastSelectedFaceIndex = clickedFaceIndex;
-                        // Optionnel : feedback visuel pour montrer la sélection
                         update();
                         return;
                     }
@@ -193,7 +191,7 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
                 }
             }
         }
-        // ...existing code for cropping and autres clics...
+
         if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
             if (!drawingRectangle) {
                 emit ctrlLeftClicked();
@@ -548,113 +546,9 @@ void MainImage::setPersonsEditor(bool personsEditor) {
 }
 
 /**
- * @brief Handle mouse move events
- * @param event Pointer to the mouse event
- * @details This function is called when the mouse is moved over the widget. It updates the hover background color and style sheet.
+ * @param point The point to check if it is within a detected face rectangle
+ * @return True if the point is within a detected face rectangle, false otherwise
  */
-void MainImage::mouseDoubleClickEvent(QMouseEvent* event) {
-    if (!personsEditor) return;
-
-    auto detectedFaces = data->getImagesDataPtr()->getCurrentImageData()->getDetectedFacesPtr();
-    if (!detectedFaces) return;
-
-    QSize scaledPixmapSize = qImage.size();
-    scaledPixmapSize.scale(this->size(), Qt::KeepAspectRatio);
-    double xScale = static_cast<double>(scaledPixmapSize.width()) / qImage.width();
-    double yScale = static_cast<double>(scaledPixmapSize.height()) / qImage.height();
-    int xOffset = (this->width() - scaledPixmapSize.width()) / 2;
-    int yOffset = (this->height() - scaledPixmapSize.height()) / 2;
-
-    for (auto& faceData : *detectedFaces) {
-        cv::Rect rect = faceData.getFaceRect();
-        int adjustedX = static_cast<int>(rect.x * xScale) + xOffset;
-        int adjustedY = static_cast<int>(rect.y * yScale) + yOffset;
-        int adjustedWidth = static_cast<int>(rect.width * xScale);
-        int adjustedHeight = static_cast<int>(rect.height * yScale);
-        QRect qRect(adjustedX, adjustedY, adjustedWidth, adjustedHeight);
-
-        if (qRect.contains(event->pos())) {
-            bool ok = false;
-            QString currentName;
-            int personId = faceData.getPersonIdConst();
-            const auto& personIdNames = data->getPersonIdNames();
-            auto it = personIdNames.find(personId);
-            if (it != personIdNames.end()) {
-                currentName = QString::fromStdString(it->second);
-
-                // Crée une liste des noms existants sans currentName
-                QStringList nameList;
-                for (const auto& [id, nameStr] : personIdNames) {
-                    if (QString::fromStdString(nameStr) != currentName) {
-                        nameList << QString::fromStdString(nameStr);
-                    }
-                }
-                std::string namesString = "none|none|" + nameList.join("|").toStdString();
-
-                std::map<std::string, Option> option = {
-                    {"rename", Option("text", currentName.toStdString())},
-                    {"delete", Option("bool", "false")},
-                    {"merge with", Option("list", namesString)}
-                    // TODO un merge someone from a list of names
-                    // {"un merge", Option("bool", "false")}
-
-                };
-                lastSelectedFaceIndex = -1;
-                std::map<std::string, std::string>
-                    optionDone = showOptionsDialog(this, "Face options", option);
-                if (optionDone["delete"] == "true") {
-                    auto it = std::find(detectedFaces->begin(), detectedFaces->end(), faceData);
-                    if (it != detectedFaces->end()) {
-                        detectedFaces->erase(it);
-                    }
-                    update();
-
-                    return;
-                } else if (!optionDone["rename"].empty()) {
-                    auto* personIdNamesPtr = data->getPersonIdNamesPtr();
-                    (*personIdNamesPtr)[personId] = optionDone["rename"];
-                    update();
-                }
-                if (!optionDone["merge with"].empty()) {
-                    std::string mergeWithName = optionDone["merge with"];
-                    size_t pipePos = mergeWithName.find('|');
-                    if (pipePos != std::string::npos) {
-                        mergeWithName = mergeWithName.substr(0, pipePos);
-                    }
-                    // qDebug() << "Merge with name:" << QString::fromStdString(mergeWithName) << "for person ID:" << personId;
-                    if (mergeWithName != "none") {
-                        // Trouver l'id correspondant au nom mergeWithName
-                        int mergeWithId = -1;
-                        for (const auto& [id, nameStr] : personIdNames) {
-                            if (nameStr == mergeWithName) {
-                                mergeWithId = id;
-                                break;
-                            }
-                        }
-                        qDebug() << "Merge with ID:" << mergeWithId << "for person ID:" << personId;
-                        if (mergeWithId != -1 && mergeWithId != personId) {
-                            // Remplacer tous les visages ayant mergeWithId par personId
-                            for (ImageData* imageData : *data->getImagesDataPtr()->get()) {
-                                auto otherDetectedFaces = imageData->getDetectedFacesPtr();
-
-                                for (auto& otherFace : *otherDetectedFaces) {
-                                    if (otherFace.getPersonIdConst() == mergeWithId) {
-                                        *otherFace.getPersonIdPtr() = personId;
-                                    }
-                                }
-                            }
-                            // Supprimer le nom de mergeWithId de la map
-                            auto* personIdNamesPtr = data->getPersonIdNamesPtr();
-                            personIdNamesPtr->erase(mergeWithId);
-                            update();
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 bool MainImage::inFace(QPoint point) {
     bool clickedOnFace = false;
     if (personsEditor) {

@@ -29,7 +29,6 @@ class MainImage : public QLabel {
     void mouseReleaseEvent(QMouseEvent* event) override;
 
     void mouseMoveEvent(QMouseEvent* event) override;
-    void mouseDoubleClickEvent(QMouseEvent* event) override;
 
     void paintEvent(QPaintEvent* event) override;
 

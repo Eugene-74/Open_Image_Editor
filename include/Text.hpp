@@ -157,11 +157,17 @@ inline QString failedDownloadModel() {
 };  // namespace Error
 namespace Option {
 namespace ImageEditor {
-inline QString renameFaceWindow() {
-    return translationManager.translateQ("Text.Tooltip.ImageEditor.RENAME_FACE_WINDOW");
+inline QString editionFaceWindow() {
+    return translationManager.translateQ("Text.Option.ImageEditor.EDITION_FACE_WINDOW");
 }
 inline QString renameFace() {
-    return translationManager.translateQ("Text.Tooltip.ImageEditor.RENAME_FACE");
+    return translationManager.translateQ("Text.Option.ImageEditor.RENAME_FACE");
+}
+inline QString deleteFace() {
+    return translationManager.translateQ("Text.Option.ImageEditor.DELETE_FACE");
+}
+inline QString mergeFace() {
+    return translationManager.translateQ("Text.Option.ImageEditor.MERGE_FACE");
 }
 };  // namespace ImageEditor
 namespace Loading {

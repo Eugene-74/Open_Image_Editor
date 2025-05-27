@@ -38,8 +38,10 @@ Text.Tooltip.ImageEditor.MAP:Edit map data of the image
 Text.Tooltip.ImageEditor.EDIT_PERSONS:Edit persons data of the image
 Text.Tooltip.ImageEditor.CONVERSION:Convert the image
 Text.Tooltip.ImageEditor.GIMP:Open the image in GIMP
-Text.Tooltip.ImageEditor.RENAME_FACE_WINDOW:Name the face
-Text.Tooltip.ImageEditor.RENAME_FACE:Enter the name
 Text.Tooltip.Error.FAILED_LOAD_MODEL:Failed to load the model
 Text.Tooltip.Error.FAILED_DOWNLOAD_MODEL:The model could not be downloaded cheking in 1 min
 Text.Tooltip.Option.Loading.KEEP_OLD_SAVE:Keep the old save
+Text.Option.ImageEditor.EDITION_FACE_WINDOW:Name the face
+Text.Option.ImageEditor.RENAME_FACE:Enter the name
+Text.Option.ImageEditor.DELETE_FACE:Delete
+Text.Option.ImageEditor.MERGE_FACE:Merge with
