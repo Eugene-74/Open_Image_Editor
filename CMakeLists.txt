@@ -102,7 +102,7 @@ if(WIN32)
 
     qt6_wrap_cpp(MOC_SOURCES ${INCLUDE_HEADERS})
 
-    add_library(OpenImageEditorLib ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
+    add_library(OpenImageEditorLib ${SOURCES} ${MOC_SOURCES} ${QM_FILES})
     
     target_link_libraries(OpenImageEditorLib 
         PRIVATE
@@ -145,8 +145,9 @@ if(WIN32)
         include_directories(${CMAKE_SOURCE_DIR}/src)
     
         file(GLOB TEST_SOURCES "tests/*.cpp")
-    
-        add_executable(runTests ${TEST_SOURCES} ${QRC_SOURCES})
+        list(FILTER SOURCES EXCLUDE REGEX ".*/Main\.cpp$")
+        # add_executable(runTests ${TEST_SOURCES} ${QRC_SOURCES} )
+        add_executable(runTests ${TEST_SOURCES} ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${QM_FILES})
         
         target_link_libraries(runTests PRIVATE ${GTEST_LIBRARIES} OpenImageEditorLib)
     
