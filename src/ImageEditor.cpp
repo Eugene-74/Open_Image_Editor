@@ -150,27 +150,16 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     editionLayout->addLayout(previewButtonLayout);
     mainLayout->addLayout(infoLayout);
 
-    createButtons();
-    updateButtons();
-
-    createPreview();
-    updatePreview();
-
     editGeo = createMapWidget();
 
     infoLayout->addWidget(new QLabel(Text::geolocation() + " : ", this));
     infoLayout->addWidget(editGeo);
 
-    if (mapEditor && !bigImage) {
-        populateMetadataFields();
-    } else {
-        for (int i = 0; i < infoLayout->count(); ++i) {
-            QWidget* widget = infoLayout->itemAt(i)->widget();
-            if (widget) {
-                widget->hide();
-            }
-        }
-    }
+    createButtons();
+    updateButtons();
+
+    createPreview();
+    updatePreview();
 }
 
 /**
@@ -219,17 +208,14 @@ void ImageEditor::reload() {
         updateButtons();
         updatePreview();
 
-        if (mapEditor && !bigImage) {
-            imagesData->getCurrentImageData()->loadData();
-            populateMetadataFields();
-        } else {
-            for (int i = 0; i < infoLayout->count(); ++i) {
-                QWidget* widget = infoLayout->itemAt(i)->widget();
-                if (widget) {
-                    widget->hide();
-                }
-            }
-        }
+        // if (bigImage || mapEditor) {
+        //     for (int i = 0; i < infoLayout->count(); ++i) {
+        //         QWidget* widget = infoLayout->itemAt(i)->widget();
+        //         if (widget) {
+        //             widget->hide();
+        //         }
+        //     }
+        // }
 
         if (imagesData->get()->size() <= 0) {
             addImagesFromFolder(data, this);
@@ -378,6 +364,16 @@ void ImageEditor::updateButtons() {
     } else if (bigImage) {
         return;
     }
+    data->getImagesDataPtr()->getCurrentImageData()->loadData();
+
+    if (!mapEditor) {
+        for (int i = 0; i < infoLayout->count(); ++i) {
+            QWidget* widget = infoLayout->itemAt(i)->widget();
+            if (widget) {
+                widget->hide();
+            }
+        }
+    }
 
     if (nameEdit) {
         nameEdit->setText(QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImageName()));
@@ -398,10 +394,16 @@ void ImageEditor::updateButtons() {
             QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
             QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
             dateEdit->setDateTime(dateTime);
+            if (!dateTime.isValid()) {
+                dateEdit->setDateTime(QDateTime::currentDateTime());
+                dateEdit->setStyleSheet("QDateTimeEdit { color: red; }");
+            }
         } else {
+            qDebug() << "current RED" << QDateTime::currentDateTime();
             dateEdit->setDateTime(QDateTime::currentDateTime());
             dateEdit->setStyleSheet("QDateTimeEdit { color: red; }");
         }
+        dateEdit->update();
     }
 
     if (imageRotateRight) {
@@ -1292,6 +1294,7 @@ void ImageEditor::wheelEvent(QWheelEvent* event) {
  * @details This function updates the image number and removes deleted images from the data.
  */
 void ImageEditor::saveImage() {
+    // Move image Id when deleting images
     int id = data->getImagesDataPtr()->getImageNumber();
     for (int i = 0; i <= id; ++i) {
         if (data->isDeleted(data->getImagesDataPtr()->getImageNumberInTotal(i))) {
@@ -1299,6 +1302,7 @@ void ImageEditor::saveImage() {
         }
     }
     data->getImagesDataPtr()->setImageNumber(id);
+
     data->removeDeletedImages();
     if (data->getImagesDataPtr()->get()->size() <= 0) {
         switchToMainWindow();
@@ -1410,39 +1414,42 @@ void ImageEditor::deleteImage() {
  * @brief Populate the metadata fields with data from the current image
  * @details This function retrieves the metadata from the current image and populates the corresponding fields in the UI.
  */
-void ImageEditor::populateMetadataFields() {
-    ImagesData* imagesData = data->getImagesDataPtr();
-    ImageData* imageData = imagesData->getCurrentImageData();
-    Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
+// void ImageEditor::populateMetadataFields() {
+//     ImagesData* imagesData = data->getImagesDataPtr();
+//     ImageData* imageData = imagesData->getCurrentImageData();
+//     Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
 
-    if (data->getDarkMode()) {
-        dateEdit->setStyleSheet("QDateTimeEdit { color: white; }");
-    } else {
-        dateEdit->setStyleSheet("QDateTimeEdit { color: black; }");
-    }
+//     if (data->getDarkMode()) {
+//         dateEdit->setStyleSheet("QDateTimeEdit { color: white; }");
+//     } else {
+//         dateEdit->setStyleSheet("QDateTimeEdit { color: black; }");
+//     }
 
-    if (exifData["Exif.Image.DateTime"].count() != 0) {
-        QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
-        QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
-        dateEdit->setDateTime(dateTime);
+//     if (exifData["Exif.Image.DateTime"].count() != 0) {
+//         QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
+//         QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
+//         if (dateTime.date() == QDate::currentDate()) {
+//             dateEdit->setStyleSheet("QDateTimeEdit { color: red; }");
+//         }
+//         dateEdit->setDateTime(dateTime);
+//     } else {
+//         dateEdit->setDateTime(QDateTime::currentDateTime());
+//         dateEdit->setStyleSheet("QDateTimeEdit { color: red; }");
+//     }
+//     dateEdit->update();
 
-    } else {
-        dateEdit->setDateTime(QDateTime::currentDateTime());
-        dateEdit->setStyleSheet("QDateTimeEdit { color: red; }");
-    }
-
-    if (mapEditor) {
-        double latitude = imageData->getLatitude();
-        double longitude = imageData->getLongitude();
-        editGeo->setImageData(imageData);
-        if (latitude == 0 && longitude == 0) {
-            editGeo->removeMapPoint();
-        } else {
-            editGeo->moveMapPoint(latitude, longitude);
-            editGeo->setMapCenter(latitude, longitude);
-        }
-    }
-}
+//     if (mapEditor) {
+//         double latitude = imageData->getLatitude();
+//         double longitude = imageData->getLongitude();
+//         editGeo->setImageData(imageData);
+//         if (latitude == 0 && longitude == 0) {
+//             editGeo->removeMapPoint();
+//         } else {
+//             editGeo->moveMapPoint(latitude, longitude);
+//             editGeo->setMapCenter(latitude, longitude);
+//         }
+//     }
+// }
 
 /**
  * @brief Validate and save the metadata fields
@@ -1463,16 +1470,12 @@ void ImageEditor::validateMetadata() {
         [this, lastDate, metaData]() {
             metaData->modifyExifValue("Exif.Image.DateTime", lastDate.toStdString());
             data->getImagesDataPtr()->getCurrentImageData()->saveMetaData();
-
-            // reload();
-            populateMetadataFields();
+            reload();
         },
         [this, dateTimeStr, metaData]() {
             metaData->modifyExifValue("Exif.Image.DateTime", dateTimeStr.toStdString());
             data->getImagesDataPtr()->getCurrentImageData()->saveMetaData();
-
-            // reload();
-            populateMetadataFields();
+            reload();
         });
 }
 

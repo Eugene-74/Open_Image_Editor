@@ -824,7 +824,7 @@ ClickableLabel* ImageBooth::createImageSave() {
     imageSaveNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(imageSaveNew, &ClickableLabel::clicked, [this]() {
-        // TODO mettre en fonction
+        // Move image Id when deleting images
         int id = data->getImagesDataPtr()->getImageNumber();
         for (int i = 0; i <= id; ++i) {
             if (data->isDeleted(data->getImagesDataPtr()->getImageNumberInTotal(i))) {
@@ -832,6 +832,7 @@ ClickableLabel* ImageBooth::createImageSave() {
             }
         }
         data->getImagesDataPtr()->setImageNumber(id);
+
         data->removeDeletedImages();
         if (data->getImagesDataPtr()->get()->size() <= 0) {
             switchToMainWindow();
