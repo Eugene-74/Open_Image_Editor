@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include "Const.hpp"
+#include "Data.hpp"
 #include "FacesRecognition.hpp"
 #include "GPS_Conversion.hpp"
 #include "Verification.hpp"
@@ -559,7 +560,15 @@ void ImageData::detectFaces() {
 
         auto* faces = detectedObjects.getDetectedFacesPtr();
         for (auto& faceData : *faces) {
-            cv::Mat img = cv::imread(this->getImagePath());
+            QImage qImage = loadAnImageWithRotation(*this, 0);
+            cv::Mat img = QImageToCvMat(qImage);
+            // Ensure the image has 3 channels (BGR) for DNN
+            if (img.channels() == 4) {
+                cv::cvtColor(img, img, cv::COLOR_BGRA2BGR);
+            } else if (img.channels() == 1) {
+                cv::cvtColor(img, img, cv::COLOR_GRAY2BGR);
+            }
+            // cv::Mat img = cv::imread(this->getImagePath());
             if (img.empty()) {
                 qWarning() << "Failed to load image for embedding extraction:" << QString::fromStdString(this->getImagePath());
                 continue;
