@@ -833,11 +833,11 @@ ClickableLabel* ImageEditor::createImageDetection() {
     });
 
     connect(imagePersonsNew, &ClickableLabel::rightClicked, [this, imagePersonsNew]() {
-        QStringList yoloModels = {"yolov5n - Nano model, fastest but less accurate",
-                                  "yolov5s - Small model, good balance of speed and accuracy",
-                                  "yolov5m - Medium model, more accurate but slower",
-                                  "yolov5l - Large model, higher accuracy, slower",
-                                  "yolov5x - Extra-large model, most accurate but slowest"};
+        QStringList yoloModels = {"yolov5n.onnx - Nano model, fastest but less accurate",
+                                  "yolov5s.onnx - Small model, good balance of speed and accuracy",
+                                  "yolov5m.onnx - Medium model, more accurate but slower",
+                                  "yolov5l.onnx - Large model, higher accuracy, slower",
+                                  "yolov5x.onnx - Extra-large model, most accurate but slowest"};
         QString currentModel = QString::fromStdString(data->getModelConst().getModelName());
         for (int i = 0; i < yoloModels.size(); ++i) {
             if (yoloModels[i].startsWith(currentModel)) {

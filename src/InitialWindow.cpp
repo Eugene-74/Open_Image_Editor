@@ -484,6 +484,7 @@ void InitialWindow::showImageEditor() {
     createImageEditor(data);
 
     imageBack->setVisible(true);
+    imageHome->setVisible(true);
 }
 
 /**
@@ -496,6 +497,7 @@ void InitialWindow::showImageBooth() {
     createImageBooth(data);
 
     imageBack->setVisible(true);
+    imageHome->setVisible(true);
 }
 
 /**
@@ -508,6 +510,7 @@ void InitialWindow::showMainWindow() {
     createMainWindow(data);
 
     imageBack->setVisible(false);
+    imageHome->setVisible(false);
 }
 
 ClickableLabel* InitialWindow::createImageHome() {
@@ -541,6 +544,12 @@ ClickableLabel* InitialWindow::createImageHome() {
         imageHome->deleteLater();
         imageHome = newImageHome;
     });
+
+    if (mainWindow) {
+        newImageHome->setVisible(false);
+    } else {
+        newImageHome->setVisible(true);
+    }
 
     return newImageHome;
 }

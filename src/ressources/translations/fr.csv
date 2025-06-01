@@ -12,7 +12,9 @@ Text.Tooltip.PARAMETER:Ouvrir les paramètres
 Text.Tooltip.OPEN_IMAGE_BOOTH:Voir toutes les images
 Text.Tooltip.OPEN_IMAGE_EDITOR:Modifier les images une par une
 Text.Tooltip.ADD_IMAGES:Ajouter des images à l'application
-Text.Tooltip.BACK:Revenir au dernier dossier
+Text.Tooltip.BACK_FOLDER:
+Text.Tooltip.BACK_WINDOW:
+Text.Tooltip.HOME:
 Text.Tooltip.ImageBooth.DELETE_TIP:Supprimer les images sélectionnées
 Text.Tooltip.ImageBooth.SAVE:Enregistrer les modifications
 Text.Tooltip.ImageBooth.EXPORT:Exporter les images sélectionnées
@@ -36,6 +38,10 @@ Text.Tooltip.ImageEditor.MAP:Modifier les données de carte de l'image
 Text.Tooltip.ImageEditor.EDIT_PERSONS:Modifier les données des personnes de l'image
 Text.Tooltip.ImageEditor.CONVERSION:Convertir l'image
 Text.Tooltip.ImageEditor.GIMP:
-Text.Tooltip.Error.FAILED_LOAD_MODEL:
-Text.Tooltip.Error.FAILED_DOWNLOAD_MODEL:
-Text.Tooltip.Error.KEEP_OLD_SAVE:
+Text.Error.FAILED_LOAD_MODEL:
+Text.Error.FAILED_DOWNLOAD_MODEL:
+Text.Option.Loading.KEEP_OLD_SAVE:
+Text.Option.ImageEditor.EDITION_FACE_WINDOW:
+Text.Option.ImageEditor.RENAME_FACE:
+Text.Option.ImageEditor.DELETE_FACE:
+Text.Option.ImageEditor.MERGE_FACE:

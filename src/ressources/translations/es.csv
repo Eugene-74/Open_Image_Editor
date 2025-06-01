@@ -4,13 +4,17 @@ Text.NAME:Nombre
 Text.DATE:Fecha
 Text.GEOLOCATION:Geolocalización
 Text.Tooltip.LANGUAGE:Cambiar el idioma de la aplicación
+Text.Tooltip.WIFI:
+Text.Tooltip.NO_WIFI:
 Text.Tooltip.DISCORD:Abrir el discord de la aplicación
 Text.Tooltip.GITHUB:Abrir el github de la aplicación
 Text.Tooltip.PARAMETER:Abrir los parámetros
 Text.Tooltip.OPEN_IMAGE_BOOTH:Ver todas las imágenes
 Text.Tooltip.OPEN_IMAGE_EDITOR:Editar imágenes una por una
 Text.Tooltip.ADD_IMAGES:Agregar imágenes a la aplicación
-Text.Tooltip.BACK:Volver a la última carpeta
+Text.Tooltip.BACK_FOLDER:
+Text.Tooltip.BACK_WINDOW:
+Text.Tooltip.HOME:
 Text.Tooltip.ImageBooth.DELETE_TIP:Eliminar las imágenes seleccionadas
 Text.Tooltip.ImageBooth.SAVE:Guardar modificaciones
 Text.Tooltip.ImageBooth.EXPORT:Exportar las imágenes seleccionadas
@@ -33,3 +37,11 @@ Text.Tooltip.ImageEditor.MIRROR_LEFT_RIGHT:Reflejar IZQUIERDA-DERECHA la imagen
 Text.Tooltip.ImageEditor.MAP:Editar los datos del mapa de la imagen
 Text.Tooltip.ImageEditor.EDIT_PERSONS:Editar los datos de las personas de la imagen
 Text.Tooltip.ImageEditor.CONVERSION:Convertir la imagen
+Text.Tooltip.ImageEditor.GIMP:
+Text.Error.FAILED_LOAD_MODEL:
+Text.Error.FAILED_DOWNLOAD_MODEL:
+Text.Option.Loading.KEEP_OLD_SAVE:
+Text.Option.ImageEditor.EDITION_FACE_WINDOW:
+Text.Option.ImageEditor.RENAME_FACE:
+Text.Option.ImageEditor.DELETE_FACE:
+Text.Option.ImageEditor.MERGE_FACE:

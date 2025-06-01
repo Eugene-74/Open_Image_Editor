@@ -1863,8 +1863,10 @@ DetectedObjects* Data::detect(std::string imagePath, QImage image, std::string m
     net.forward(outputs, net.getUnconnectedOutLayersNames());
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> detectionTime = end - start;
-    if (detectionTime.count() > 0) {
+    if (detectionTime.count() > 3000) {
         qWarning() << "Detection time with " << QString::fromStdString(model) << ":" << detectionTime.count() << " seconds";
+    } else {
+        qInfo() << "Detection time with " << QString::fromStdString(model) << ":" << detectionTime.count() << " seconds";
     }
 
     float x_factor = input_image.cols / Const::Yolo::INPUT_WIDTH;

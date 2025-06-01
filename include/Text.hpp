@@ -172,7 +172,7 @@ inline QString mergeFace() {
 };  // namespace ImageEditor
 namespace Loading {
 inline QString keepOldSave() {
-    return translationManager.translateQ("Text.Tooltip.Option.Loading.KEEP_OLD_SAVE");
+    return translationManager.translateQ("Text.Option.Loading.KEEP_OLD_SAVE");
 }
 }  // namespace Loading
 }  // namespace Option
