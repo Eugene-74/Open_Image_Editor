@@ -2150,11 +2150,17 @@ void Data::checkDetectFaces() {
         return;
     }
     for (auto imageData : this->getImagesDataPtr()->getConst()) {
-        if (imageData->getFaceDetectionStatus().isStatusLoading()) {
-            imageData->getFaceDetectionStatus().setStatusNotLoaded();
-        }
-        if (!imageData->getFaceDetectionStatus().isStatusLoaded()) {
-            hasNotBeenDetectedFaces.push_back(imageData);
+        if (imageData) {
+            if (imageData->getFaceDetectionStatus().isStatusLoading()) {
+                imageData->getFaceDetectionStatus().setStatusNotLoaded();
+            }
+            if (!imageData->getFaceDetectionStatus().isStatusLoaded()) {
+                hasNotBeenDetectedFaces.push_back(imageData);
+            } else {
+                qWarning() << "Image" << QString::fromStdString(imageData->getImagePath()) << "has already been detected faces";
+            }
+        } else {
+            qWarning() << "ImageData is null in checkDetectFaces";
         }
     }
     QObject::connect(detectFacesTimer, &QTimer::timeout, [this]() {
@@ -2167,18 +2173,23 @@ void Data::checkDetectFaces() {
             detectionFacesWorking++;
             ImageData* imageData = hasNotBeenDetectedFaces.front();
             addHeavyThread([this, imageData]() {
+                auto start = std::chrono::high_resolution_clock::now();
                 this->detectAndRecognizeFaces(imageData);
+                auto end = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> elapsed = end - start;
+                qInfo() << "detectAndRecognizeFaces execution time:" << elapsed.count() << "seconds";
+                detectionFacesWorking--;
             });
             {
                 std::lock_guard<std::mutex> lock(detectionFacesMutex);
 
                 hasNotBeenDetectedFaces.pop_front();
-            }
-            if (hasNotBeenDetectedFaces.size() == 0) {
-                detectFacesTimer->stop();
+                if (hasNotBeenDetectedFaces.size() == 0) {
+                    detectFacesTimer->stop();
 
-                qInfo() << "all faces detection done";
-                return;
+                    qInfo() << "all faces detection done";
+                    return;
+                }
             }
         }
     });
@@ -2235,9 +2246,8 @@ void Data::checkDetectObjects() {
                     if (!unloadFromCache(imagePath)) {
                         qWarning() << "Error unloading image from cache: " << QString::fromStdString(imagePath);
                     }
-
-                    detectionWorking--;
                 }
+                detectionWorking--;
             });
             {
                 std::lock_guard<std::mutex> lock(detectionMutex);
@@ -2311,6 +2321,7 @@ void Data::detectAndRecognizeFaces(ImageData* imageData) {
     if (!downloadModelIfNotExists(Const::Model::Arcface::NAME, Const::Model::Arcface::GITHUB_TAG) || !downloadModelIfNotExists(Const::Model::Haarcascade::NAME, Const::Model::Haarcascade::GITHUB_TAG)) {
         return;
     }
+
     imageData->getFaceDetectionStatus().setStatusLoading();
     imageData->detectFaces();
 

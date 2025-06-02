@@ -399,7 +399,6 @@ void ImageEditor::updateButtons() {
                 dateEdit->setStyleSheet("QDateTimeEdit { color: red; }");
             }
         } else {
-            qDebug() << "current RED" << QDateTime::currentDateTime();
             dateEdit->setDateTime(QDateTime::currentDateTime());
             dateEdit->setStyleSheet("QDateTimeEdit { color: red; }");
         }
@@ -885,7 +884,7 @@ ClickableLabel* ImageEditor::createImageDetection() {
             selectedModel = selectedModel.remove(QRegularExpression("<[^>]*>"));  // Remove HTML tags
             qInfo() << "Selected YOLO Model:" << selectedModel;
 
-            const std::string modelName = selectedModel.split(" - ").first().toStdString() + ".onnx";
+            const std::string modelName = selectedModel.split(" - ").first().toStdString();
             data->getModelPtr()->setModelName(modelName);
 
             ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
@@ -914,6 +913,7 @@ ClickableLabel* ImageEditor::createImageDetection() {
                             }
                         }
                     }
+                    self->data->detectAndRecognizeFaces(imageData);
                 } }, true);
         }
     });
