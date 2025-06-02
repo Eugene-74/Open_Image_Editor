@@ -167,13 +167,13 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
                                         for (ImageData* imageData : *data->getImagesDataPtr()->get()) {
                                             auto otherDetectedFaces = imageData->getDetectedFacesPtr();
                                             for (auto& otherFace : *otherDetectedFaces) {
-                                                if (otherFace.getPersonIdConst() == mergeWithId) {
-                                                    *otherFace.getPersonIdPtr() = personId;
+                                                if (otherFace.getPersonIdConst() == personId) {
+                                                    *otherFace.getPersonIdPtr() = mergeWithId;
                                                 }
                                             }
                                         }
                                         auto* personIdNamesPtr = data->getPersonIdNamesPtr();
-                                        personIdNamesPtr->erase(mergeWithId);
+                                        personIdNamesPtr->erase(personId);
                                         update();
                                     }
                                 }
