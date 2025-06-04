@@ -11,6 +11,8 @@
 #include <mutex>
 #include <opencv2/face.hpp>
 #include <string>
+
+#include <QProgressBar>
 #include <vector>
 
 #include "DetectObjectsModel.hpp"
@@ -177,6 +179,9 @@ class Data : public std::enable_shared_from_this<Data> {
 
     void detectAndRecognizeFaces(ImageData* imageData);
 
+    QProgressBar* getDetectionProgressBarPtr();
+    void setDetectionProgressBarPtr(QProgressBar* detectionProgressBar);
+
    private:
 #ifdef _WIN32
     Folders rootFolders = Folders("");
@@ -192,6 +197,8 @@ class Data : public std::enable_shared_from_this<Data> {
     ImagesData imagesData;
     ImagesData deletedImagesData;
     Sizes sizes;
+
+    QProgressBar* detectionProgressBar = nullptr;
 
     std::vector<int> imagesSelected;
     std::map<int, std::string> personIdNames;

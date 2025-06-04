@@ -99,9 +99,8 @@ InitialWindow::InitialWindow() {
 
         setWindowTitle("OpenImageEditor : Initial Window");
 
-        
         QVBoxLayout* windowLayout = new QVBoxLayout();
-        
+
         centralWidget = new QWidget(this);
         centralWidget->setLayout(windowLayout);
         setCentralWidget(centralWidget);
@@ -122,6 +121,9 @@ InitialWindow::InitialWindow() {
 
         imageLanguage = createImageLanguage();
         imageLanguage->setAlignment(Qt::AlignLeft);
+
+        detectionProgressBar = createDetectionProgressBar();
+        data->setDetectionProgressBarPtr(detectionProgressBar);
 
         imageWifi = createImageWifi();
         imageDiscord = createImageDiscord();
@@ -149,6 +151,8 @@ InitialWindow::InitialWindow() {
 
         languageLayout->addWidget(imageLanguage);
         languageLayout->setAlignment(Qt::AlignLeft);
+
+        linkLayout->addWidget(detectionProgressBar);
 
         linkLayout->addWidget(imageWifi);
         linkLayout->addWidget(imageDiscord);
@@ -634,7 +638,16 @@ ClickableLabel* InitialWindow::createImageLanguage() {
     return newImageLanguage;
 }
 
-ClickableLabel* InitialWindow::createImageWifi() {
+QProgressBar* InitialWindow::createDetectionProgressBar() {
+    QProgressBar* newDetectionProgressBar = new QProgressBar();
+    newDetectionProgressBar->setAlignment(Qt::AlignCenter);
+    newDetectionProgressBar->hide();
+
+    return newDetectionProgressBar;
+}
+
+ClickableLabel*
+InitialWindow::createImageWifi() {
     ClickableLabel* newImageWifi;
     if (data->getConnectionEnabled()) {
         newImageWifi = new ClickableLabel(data, Const::IconPath::WIFI, Text::Tooltip::wifi(), this, &linkButton, false, 0, true);

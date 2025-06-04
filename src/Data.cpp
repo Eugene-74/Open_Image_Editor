@@ -1696,6 +1696,10 @@ void Data::clear() {
     personIdNames.clear();
     deletedImagesData.clear();
 
+    thumbnailTimer->disconnect();
+    detectObjectTimer->disconnect();
+    detectFacesTimer->disconnect();
+
     {
         std::lock_guard<std::mutex> lock(imageCacheMutex);
         imageCache->clear();
@@ -2149,6 +2153,13 @@ void Data::checkDetectFaces() {
 
         return;
     }
+
+    this->getDetectionProgressBarPtr()->show();
+    this->getDetectionProgressBarPtr()->setMinimum(0);
+    this->getDetectionProgressBarPtr()->setMaximum(this->getImagesDataPtr()->getConst().size());
+    this->getDetectionProgressBarPtr()->setValue(0);
+    this->getDetectionProgressBarPtr()->setStyleSheet("QProgressBar::chunk { background-color: #00FF00; }");
+
     for (auto imageData : this->getImagesDataPtr()->getConst()) {
         if (imageData) {
             if (imageData->getFaceDetectionStatus().isStatusLoading()) {
@@ -2157,7 +2168,7 @@ void Data::checkDetectFaces() {
             if (!imageData->getFaceDetectionStatus().isStatusLoaded()) {
                 hasNotBeenDetectedFaces.push_back(imageData);
             } else {
-                qWarning() << "Image" << QString::fromStdString(imageData->getImagePath()) << "has already been detected faces";
+                this->getDetectionProgressBarPtr()->setValue(this->getDetectionProgressBarPtr()->value() + 1);
             }
         } else {
             qWarning() << "ImageData is null in checkDetectFaces";
@@ -2167,6 +2178,8 @@ void Data::checkDetectFaces() {
         if (hasNotBeenDetectedFaces.size() == 0) {
             detectFacesTimer->stop();
             qInfo() << "all faces detection done";
+            this->getDetectionProgressBarPtr()->hide();
+
             return;
         }
         while (detectionFacesWorking < Const::MAX_WORKING_DETECTION) {
@@ -2184,12 +2197,21 @@ void Data::checkDetectFaces() {
                 std::lock_guard<std::mutex> lock(detectionFacesMutex);
 
                 hasNotBeenDetectedFaces.pop_front();
+
+                // TODO faire au bon moment pour eviter d'avoir 100 d'avance
+                this->getDetectionProgressBarPtr()->setValue(this->getDetectionProgressBarPtr()->value() + 1);
+
                 if (hasNotBeenDetectedFaces.size() == 0) {
                     detectFacesTimer->stop();
 
                     qInfo() << "all faces detection done";
+
+                    this->getDetectionProgressBarPtr()->hide();
+
                     return;
                 }
+
+
             }
         }
     });
@@ -2201,6 +2223,12 @@ void Data::checkDetectFaces() {
  * @brief Check if the objetcs has been detected and detect them if not
  */
 void Data::checkDetectObjects() {
+    this->getDetectionProgressBarPtr()->show();
+    this->getDetectionProgressBarPtr()->setMinimum(0);
+    this->getDetectionProgressBarPtr()->setMaximum(this->getImagesDataPtr()->getConst().size());
+    this->getDetectionProgressBarPtr()->setValue(0);
+    this->getDetectionProgressBarPtr()->setStyleSheet("QProgressBar::chunk { background-color: #FF0000; } QProgressBar { text-align: center; }");
+
     if (this->getConnectionEnabled() && !downloadModelIfNotExists(Const::Model::YoloV5::Names::N, Const::Model::YoloV5::GITHUB_TAG)) {
         qInfo() << "yolov5n could not be downloaded cheking in 1 min";
         this->setCenterText(Text::Error::failedDownloadModel().toStdString());
@@ -2217,6 +2245,8 @@ void Data::checkDetectObjects() {
         }
         if (!imageData->isDetectionStatusLoaded()) {
             hasNotBeenDetected.push_back(imageData);
+        } else {
+            this->getDetectionProgressBarPtr()->setValue(this->getDetectionProgressBarPtr()->value() + 1);
         }
     }
     QObject::connect(detectObjectTimer, &QTimer::timeout, [this]() {
@@ -2224,6 +2254,8 @@ void Data::checkDetectObjects() {
             detectObjectTimer->stop();
             qInfo() << "all detection done";
             checkDetectFaces();
+            // this->getDetectionProgressBarPtr()->hide();
+
             return;
         }
         while (detectionWorking < Const::MAX_WORKING_DETECTION) {
@@ -2253,12 +2285,16 @@ void Data::checkDetectObjects() {
                 std::lock_guard<std::mutex> lock(detectionMutex);
 
                 hasNotBeenDetected.pop_front();
+                // TODO faire au bon moment pour eviter d'avoir 100 d'avance
+                this->getDetectionProgressBarPtr()->setValue(this->getDetectionProgressBarPtr()->value() + 1);
             }
             if (hasNotBeenDetected.size() == 0) {
                 detectObjectTimer->stop();
 
                 qInfo() << "all detection done";
                 checkDetectFaces();
+
+                // this->getDetectionProgressBarPtr()->hide();
 
                 return;
             }
@@ -2303,6 +2339,7 @@ void Data::checkThumbnailAndDetectObjects() {
                 std::lock_guard<std::mutex> lock(thumbnailMutex);
 
                 hasNoThumbnail.pop_front();
+
             }
             if (hasNoThumbnail.size() == 0) {
                 thumbnailTimer->stop();
@@ -2438,4 +2475,20 @@ QImage loadAnImage(std::string imagePath, int thumbnail) {
         return image;
     }
     return image;
+}
+
+/**
+ * @brief Get the detection progress bar pointer
+ * @return Pointer to the detection progress bar
+ */
+QProgressBar* Data::getDetectionProgressBarPtr() {
+    return detectionProgressBar;
+}
+
+/**
+ * @brief Set the detection progress bar pointer
+ * @param detectionProgressBar Pointer to the detection progress bar
+ */
+void Data::setDetectionProgressBarPtr(QProgressBar* detectionProgressBar) {
+    this->detectionProgressBar = detectionProgressBar;
 }

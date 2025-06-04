@@ -3,6 +3,7 @@
 #include <curl/curl.h>
 
 #include <QMainWindow>
+#include <QProgressBar>
 
 // Forward declarations
 class Data;
@@ -62,6 +63,8 @@ class InitialWindow : public QMainWindow {
 
     ClickableLabel* imageLanguage;
 
+    QProgressBar* detectionProgressBar;
+
     ClickableLabel* imageWifi;
     ClickableLabel* imageDiscord;
     ClickableLabel* imageGithub;
@@ -71,6 +74,8 @@ class InitialWindow : public QMainWindow {
     ClickableLabel* createImageBack();
 
     ClickableLabel* createImageLanguage();
+
+    QProgressBar* createDetectionProgressBar();
 
     ClickableLabel* createImageWifi();
     ClickableLabel* createImageDiscord();
