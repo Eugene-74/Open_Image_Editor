@@ -103,7 +103,7 @@ class ImageData {
 
         void clearMetaData();
 
-        LoadingStatus getFaceDetectionStatus() const;
+        LoadingStatus* getFaceDetectionStatusPtr();
 
        private:
         MetaData metaData;

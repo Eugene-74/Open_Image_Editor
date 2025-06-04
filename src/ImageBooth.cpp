@@ -288,12 +288,10 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
     if (data->isInCache(data->getThumbnailPath(imagePath, imageQuality)) || imagePath.rfind(":", 0) == 0) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, imageQuality, true);
-
     } else if (data->hasThumbnail(imagePath, Const::Thumbnail::POOR_QUALITY)) {
         imageButton = new ClickableLabel(data, QString::fromStdString(imagePath),
                                          "", this, imageSize, false, imageQuality, true);
     } else {
-        qWarning() << "no thumbnail found, creating it for : " << imagePath;
         imageButton = new ClickableLabel(data, Const::ImagePath::LOADING,
                                          "", this, imageSize, false, 0, true);
         QPointer<ImageBooth> self = this;
@@ -315,6 +313,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                 }
             } }, true);
     }
+
     imageButton->setInitialBorder(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
@@ -574,111 +573,111 @@ ClickableLabel* ImageBooth::getClickableLabelIfExist(int imageNbr) {
  * @brief Update the images in the image booth
  */
 void ImageBooth::updateImages() {
-    try {
-        int spacerHeight = scrollArea->verticalScrollBar()->value();
-        int imageHeight = data->getSizesPtr()->imagesBoothSizes->realImageSize.height();
-        spacerHeight = (spacerHeight / imageHeight) * imageHeight;
+    int spacerHeight = scrollArea->verticalScrollBar()->value();
+    int imageHeight = data->getSizesPtr()->imagesBoothSizes->realImageSize.height();
+    spacerHeight = (spacerHeight / imageHeight) * imageHeight;
 
-        int foldersLineNumber = (getCurrentFoldersSize() / data->getSizesPtr()->imagesBoothSizes->widthImageNumber) + 1;
-        int lineNbr = spacerHeight / imageHeight;
+    int foldersLineNumber = (getCurrentFoldersSize() / data->getSizesPtr()->imagesBoothSizes->widthImageNumber) + 1;
+    int lineNbr = spacerHeight / imageHeight;
 
-        int folderLinesNbr = std::min(std::max(foldersLineNumber - lineNbr, 0), maxVisibleLines);
-        int imageLinesNbr = std::min(std::max(maxVisibleLines - folderLinesNbr, 0), maxVisibleLines);
+    int folderLinesNbr = std::min(std::max(foldersLineNumber - lineNbr, 0), maxVisibleLines);
+    int imageLinesNbr = std::min(std::max(maxVisibleLines - folderLinesNbr, 0), maxVisibleLines);
 
-        for (int i = 1; i < 1 + folderLinesNbr; i++) {
-            QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
-            for (int j = 0; j < lineLayout->count(); j++) {
-                int folderNbr = ((lineNbr + i - 1) * data->getSizesPtr()->imagesBoothSizes->widthImageNumber) + j;
+    for (int i = 1; i < 1 + folderLinesNbr; i++) {
+        QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
+        for (int j = 0; j < lineLayout->count(); j++) {
+            int folderNbr = ((lineNbr + i - 1) * data->getSizesPtr()->imagesBoothSizes->widthImageNumber) + j;
 
-                ClickableLabel* lastFolderButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
+            ClickableLabel* lastFolderButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
 
-                if (folderNbr < getCurrentFoldersSize()) {
-                    if (folderNbr == 0) {
+            if (folderNbr < getCurrentFoldersSize()) {
+                if (folderNbr == 0) {
+                    std::string firstFolderName = data->findFirstFolderWithAllImages()->getName();
+
+                    ClickableLabel* folderButton;
+                    if (data->getCurrentFolders()->getName() == firstFolderName) {
+                        folderButton = new ClickableLabel(data, Const::IconPath::ALL_IMAGES,
+                                                          Text::Tooltip::ImageBooth::all_images(),
+                                                          this, imageSize, false, 0, true);
+                        folderButton->addLogo(QColor::fromString(Const::Color::GREEN), QColor::fromString(Const::Color::DARK), data->getImagesDataPtr()->get()->size());
+                    } else {
+                        folderButton = new ClickableLabel(data, Const::IconPath::BACK,
+                                                          Text::Tooltip::back_folder() + " : " + QString::fromStdString(data->getCurrentFolders()->getParent()->getName()),
+                                                          this, imageSize, false, 0, true);
+                    }
+
+                    connect(folderButton, &ClickableLabel::leftClicked, [this]() {
                         std::string firstFolderName = data->findFirstFolderWithAllImages()->getName();
 
-                        ClickableLabel* folderButton;
                         if (data->getCurrentFolders()->getName() == firstFolderName) {
-                            folderButton = new ClickableLabel(data, Const::IconPath::ALL_IMAGES,
-                                                              Text::Tooltip::ImageBooth::all_images(),
-                                                              this, imageSize, false, 0, true);
-                            folderButton->addLogo(QColor::fromString(Const::Color::GREEN), QColor::fromString(Const::Color::DARK), data->getImagesDataPtr()->get()->size());
+                            openFolder(-1);
                         } else {
-                            folderButton = new ClickableLabel(data, Const::IconPath::BACK,
-                                                              Text::Tooltip::back_folder() + " : " + QString::fromStdString(data->getCurrentFolders()->getParent()->getName()),
-                                                              this, imageSize, false, 0, true);
+                            openFolder(-2);
                         }
-
-                        connect(folderButton, &ClickableLabel::leftClicked, [this]() {
-                            std::string firstFolderName = data->findFirstFolderWithAllImages()->getName();
-
-                            if (data->getCurrentFolders()->getName() == firstFolderName) {
-                                openFolder(-1);
-                            } else {
-                                openFolder(-2);
-                            }
-                        });
-                        lineLayout->replaceWidget(lastFolderButton, folderButton);
-                        lastFolderButton->deleteLater();
-                    } else {
-                        auto* folderButton = new ClickableFolderLabel(data, Const::IconPath::FOLDER,
-                                                                      QString::fromStdString(data->getCurrentFolders()->getFolder(folderNbr - 1)->getName()),
-                                                                      this, imageSize, false, 0, true);
-                        folderButton->setText(data->getCurrentFolders()->getFolder(folderNbr - 1)->getName());
-                        int totalImages = 0;
-                        auto* currentFolder = data->getCurrentFolders()->getFolder(folderNbr - 1);
-                        if (currentFolder) {
-                            countImagesInFolder(currentFolder, totalImages);
-                        }
-                        folderButton->addLogo(QColor::fromString(Const::Color::GREEN), QColor::fromString(Const::Color::DARK), totalImages);
-
-                        connect(folderButton, &ClickableLabel::leftClicked, [this, folderNbr]() {
-                            openFolder(folderNbr - 1);
-                        });
-                        lineLayout->replaceWidget(lastFolderButton, folderButton);
-                        lastFolderButton->deleteLater();
-                    }
-
+                    });
+                    lineLayout->replaceWidget(lastFolderButton, folderButton);
+                    lastFolderButton->deleteLater();
                 } else {
-                    lastFolderButton->hide();
+                    auto* folderButton = new ClickableFolderLabel(data, Const::IconPath::FOLDER,
+                                                                  QString::fromStdString(data->getCurrentFolders()->getFolder(folderNbr - 1)->getName()),
+                                                                  this, imageSize, false, 0, true);
+                    folderButton->setText(data->getCurrentFolders()->getFolder(folderNbr - 1)->getName());
+                    int totalImages = 0;
+                    auto* currentFolder = data->getCurrentFolders()->getFolder(folderNbr - 1);
+                    if (currentFolder) {
+                        countImagesInFolder(currentFolder, totalImages);
+                    }
+                    folderButton->addLogo(QColor::fromString(Const::Color::GREEN), QColor::fromString(Const::Color::DARK), totalImages);
+
+                    connect(folderButton, &ClickableLabel::leftClicked, [this, folderNbr]() {
+                        openFolder(folderNbr - 1);
+                    });
+                    lineLayout->replaceWidget(lastFolderButton, folderButton);
+                    lastFolderButton->deleteLater();
+                }
+
+            } else {
+                lastFolderButton->hide();
+            }
+        }
+    }
+    // TODO opti trop long
+    for (int i = 1 + folderLinesNbr; i < 1 + imageLinesNbr + folderLinesNbr; i++) {
+        QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
+        for (int j = 0; j < lineLayout->count(); j++) {
+            int imageNbr = (lineNbr - foldersLineNumber + i - 1) * data->getSizesPtr()->imagesBoothSizes->widthImageNumber + j;
+            ClickableLabel* lastImageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
+            if (imageNbr >= data->getImagesDataPtr()->getCurrent()->size()) {
+                lastImageButton->hide();
+            } else {
+                std::string imagePath;
+                ClickableLabel* imageButton;
+                if (data->getImagesDataPtr()->getImageDataInCurrent(imageNbr)) {
+                    imagePath = data->getImagesDataPtr()->getImageDataInCurrent(imageNbr)->getImagePath();
+                    // auto start = std::chrono::high_resolution_clock::now();
+                    imageButton = createImage(imagePath, imageNbr);
+                    // auto end = std::chrono::high_resolution_clock::now();
+                    // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+                    // qDebug() << "onScroll() execution time:" << duration << "ms";
+                } else {
+                    imageButton = new ClickableLabel(data, Const::ImagePath::ERROR_PATH,
+                                                     "", this, imageSize, false, 0, true);
+                }
+
+                lineLayout->replaceWidget(lastImageButton, imageButton);
+
+                lastImageButton->deleteLater();
+
+                int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(imageNbr);
+
+                auto it = std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal);
+                if (it != data->getImagesSelectedPtr()->end()) {
+                    imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
+                } else {
+                    imageButton->resetBorder();
                 }
             }
         }
-        for (int i = 1 + folderLinesNbr; i < 1 + imageLinesNbr + folderLinesNbr; i++) {
-            QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
-            for (int j = 0; j < lineLayout->count(); j++) {
-                int imageNbr = (lineNbr - foldersLineNumber + i - 1) * data->getSizesPtr()->imagesBoothSizes->widthImageNumber + j;
-                ClickableLabel* lastImageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
-                if (imageNbr >= data->getImagesDataPtr()->getCurrent()->size()) {
-                    lastImageButton->hide();
-                } else {
-                    std::string imagePath;
-                    ClickableLabel* imageButton;
-                    if (data->getImagesDataPtr()->getImageDataInCurrent(imageNbr)) {
-                        imagePath = data->getImagesDataPtr()->getImageDataInCurrent(imageNbr)->getImagePath();
-                        imageButton = createImage(imagePath, imageNbr);
-                    } else {
-                        imageButton = new ClickableLabel(data, Const::ImagePath::ERROR_PATH,
-                                                         "", this, imageSize, false, 0, true);
-                    }
-
-                    lineLayout->replaceWidget(lastImageButton, imageButton);
-
-                    lastImageButton->deleteLater();
-
-                    int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(imageNbr);
-
-                    auto it = std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal);
-                    if (it != data->getImagesSelectedPtr()->end()) {
-                        imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
-                    } else {
-                        imageButton->resetBorder();
-                    }
-                }
-            }
-        }
-
-    } catch (const std::exception& e) {
-        qCritical() << "update : " << e.what();
     }
 }
 
@@ -1268,7 +1267,11 @@ void ImageBooth::openFiltersPopup() {
  * @brief reload the images of the scroll area of imageBooth window
  */
 void ImageBooth::reload() {
+    // auto start = std::chrono::high_resolution_clock::now();
     updateImages();
+    // auto end = std::chrono::high_resolution_clock::now();
+    // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    // qDebug() << "reload() execution time:" << duration << "ms";
 }
 
 /**

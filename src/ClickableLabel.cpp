@@ -37,6 +37,7 @@ ClickableLabel::ClickableLabel(std::shared_ptr<Data> data, const QString& imageP
 
     if (isImage(imagePath.toStdString()) || isVideo(imagePath.toStdString())) {
         qImage = data->loadImage(this, imagePath.toStdString(), *sizePtr, setSize, thumbnail, true, square, true, force);
+
     } else {
         qImage = QImage();
     }
@@ -50,12 +51,10 @@ ClickableLabel::ClickableLabel(std::shared_ptr<Data> data, const QString& imageP
 
     if (setSize)
         setFixedSize(*sizePtr);
-    // resize(*sizePtr);
     else {
         QSize scaledSize = qImage.size();
         scaledSize.scale(*sizePtr, Qt::KeepAspectRatio);
         setFixedSize(scaledSize);
-        // resize(scaledSize);
     }
 
     this->setAlignment(Qt::AlignCenter);

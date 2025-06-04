@@ -167,6 +167,7 @@ QImage Data::loadImage(QWidget* parent, std::string imagePath, QSize size,
                        bool setSize, int thumbnail, bool rotation,
                        bool square, bool crop, bool force) {
     QImage image = loadImageNormal(imagePath, thumbnail, force);
+
     if (setSize) {
         image = image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
@@ -240,11 +241,7 @@ QImage Data::loadImageNormal(std::string imagePath, int thumbnail, bool force) {
     QImage image;
     std::string thumbnailPath = imagePath;
 
-    if (getImageFromCache(imagePath) != nullptr && !force) {
-        image = *getImageFromCache(imagePath);
-
-        return image;
-    } else if (imagePath.at(0) == ':') {
+    if (imagePath.at(0) == ':') {
         image = loadAnImageFromRessources(imagePath, thumbnail);
     } else {
         for (int size : Const::Thumbnail::THUMBNAIL_SIZES) {
@@ -259,7 +256,12 @@ QImage Data::loadImageNormal(std::string imagePath, int thumbnail, bool force) {
             }
         }
 
-        image = loadAnImage(thumbnailPath, thumbnail);
+        image = getImageFromCacheConst(thumbnailPath);
+        if (!image.isNull() && !force) {
+            return image;
+        } else {
+            image = loadAnImage(thumbnailPath, thumbnail);
+        }
     }
 
     this->addImageInCache(imagePath, thumbnailPath, image);
@@ -276,7 +278,9 @@ QImage Data::loadImageNormal(std::string imagePath, int thumbnail, bool force) {
  * @param force Force the image to be loaded
  */
 void Data::loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize, QSize size, int thumbnail, bool force) {
-    if (!isInCache(imagePath)) {
+    std::string thumbnailPath = getThumbnailPath(imagePath, thumbnail);
+
+    if (!isInCache(thumbnailPath)) {
         auto self = std::weak_ptr<Data>(shared_from_this());
         addHeavyThreadToFront([self, callback, imagePath, setSize, size, force, thumbnail]() {
             if (auto sharedSelf = self.lock()) {
@@ -321,13 +325,13 @@ bool Data::loadInCache(const std::string imagePath, bool setSize,
  * @return true if the image is in cache false otherwise
  */
 bool Data::isInCache(std::string imagePath) {
-    std::unordered_map<std::string, QImageAndPath>::iterator it;
     {
         std::lock_guard<std::mutex> lock(imageCacheMutex);
 
+        std::unordered_map<std::string, QImageAndPath>::iterator it;
         it = imageCache->find(imagePath);
+        return it != imageCache->end();
     }
-    return it != imageCache->end();
 }
 
 /**
@@ -348,9 +352,28 @@ QImage* Data::getImageFromCache(std::string imagePath) {
     }
 }
 
+/**
+ * @brief Get if an image is loaded in the cache and return it
+ * @param imagePath Path to the image
+ * @param image image to get
+ * @return true if the image is in the cache false otherwise
+ */
+QImage Data::getImageFromCacheConst(std::string imagePath) const {
+    {
+        std::lock_guard<std::mutex> lock(imageCacheMutex);
+
+        auto it = imageCache->find(imagePath);
+        if (it != imageCache->end()) {
+            return it->second.image;
+        }
+        return QImage();
+    }
+}
+
 void Data::addImageInCache(const std::string& imagePath, const std::string& thumbnailPath, const QImage& image) {
     {
         std::lock_guard<std::mutex> lock(imageCacheMutex);
+
         (*imageCache)[thumbnailPath].image = image;
         (*imageCache)[thumbnailPath].imagePath = imagePath;
         size_t cacheSize = 0;
@@ -444,6 +467,7 @@ bool Data::createThumbnail(const std::string& imagePath, const int maxDim) {
     try {
         QImage image;
         if (isImage(imagePath) || isVideo(imagePath)) {
+            qDebug() << "createThumbnail";
             image = loadImageNormal(imagePath, 0);
         } else {
             return false;
@@ -564,6 +588,9 @@ void Data::createAllThumbnail(const std::string& imagePath, const int size) {
  */
 std::string Data::getThumbnailPath(const std::string& imagePath,
                                    const int size) {
+    if (size <= 0) {
+        return imagePath;
+    }
     std::hash<std::string> hasher;
     size_t hashValue = hasher(fs::path(imagePath).filename().string());
     std::string extension = ".webp";
@@ -1043,6 +1070,7 @@ void Data::sortCurrentImagesData() {
 void Data::clearCache() {
     {
         std::lock_guard<std::mutex> lock(imageCacheMutex);
+
         imageCache->clear();
     }
 }
@@ -1702,6 +1730,7 @@ void Data::clear() {
 
     {
         std::lock_guard<std::mutex> lock(imageCacheMutex);
+
         imageCache->clear();
     }
     setSaved(true);
@@ -2154,20 +2183,12 @@ void Data::checkDetectFaces() {
         return;
     }
 
-    this->getDetectionProgressBarPtr()->show();
-    this->getDetectionProgressBarPtr()->setMinimum(0);
-    this->getDetectionProgressBarPtr()->setMaximum(this->getImagesDataPtr()->getConst().size());
-    this->getDetectionProgressBarPtr()->setValue(0);
-    this->getDetectionProgressBarPtr()->setStyleSheet("QProgressBar::chunk { background-color: #00FF00; }");
-    // TODO translate
-    this->getDetectionProgressBarPtr()->setToolTip("Detecting faces...");
-
     for (auto imageData : this->getImagesDataPtr()->getConst()) {
         if (imageData) {
-            if (imageData->getFaceDetectionStatus().isStatusLoading()) {
-                imageData->getFaceDetectionStatus().setStatusNotLoaded();
+            if (imageData->getFaceDetectionStatusPtr()->isStatusLoading()) {
+                imageData->getFaceDetectionStatusPtr()->setStatusNotLoaded();
             }
-            if (!imageData->getFaceDetectionStatus().isStatusLoaded()) {
+            if (!imageData->getFaceDetectionStatusPtr()->isStatusLoaded()) {
                 hasNotBeenDetectedFaces.push_back(imageData);
             } else {
                 this->getDetectionProgressBarPtr()->setValue(this->getDetectionProgressBarPtr()->value() + 1);
@@ -2175,6 +2196,16 @@ void Data::checkDetectFaces() {
         } else {
             qWarning() << "ImageData is null in checkDetectFaces";
         }
+    }
+
+    if (hasNotBeenDetectedFaces.size() != 0) {
+        this->getDetectionProgressBarPtr()->show();
+        this->getDetectionProgressBarPtr()->setMinimum(0);
+        this->getDetectionProgressBarPtr()->setMaximum(this->getImagesDataPtr()->getConst().size());
+        this->getDetectionProgressBarPtr()->setValue(0);
+        this->getDetectionProgressBarPtr()->setStyleSheet("QProgressBar::chunk { background-color: #00FF00; }");
+        // TODO translate
+        this->getDetectionProgressBarPtr()->setToolTip("Detecting faces...");
     }
     QObject::connect(detectFacesTimer, &QTimer::timeout, [this]() {
         if (hasNotBeenDetectedFaces.size() == 0) {
@@ -2184,7 +2215,7 @@ void Data::checkDetectFaces() {
                 this->getDetectionProgressBarPtr()->hide();
             }
         } else {
-            while (detectionFacesWorking < Const::MAX_WORKING_DETECTION) {
+            while (detectionFacesWorking < Const::MAX_WORKING_DETECTION && hasNotBeenDetectedFaces.size() > 0) {
                 detectionFacesWorking++;
                 ImageData* imageData = hasNotBeenDetectedFaces.front();
                 addHeavyThread([this, imageData]() {
@@ -2209,13 +2240,6 @@ void Data::checkDetectFaces() {
  * @brief Check if the objetcs has been detected and detect them if not
  */
 void Data::checkDetectObjects() {
-    this->getDetectionProgressBarPtr()->show();
-    this->getDetectionProgressBarPtr()->setMinimum(0);
-    this->getDetectionProgressBarPtr()->setMaximum(this->getImagesDataPtr()->getConst().size());
-    this->getDetectionProgressBarPtr()->setValue(0);
-    this->getDetectionProgressBarPtr()->setStyleSheet("QProgressBar::chunk { background-color: #FF0000; } QProgressBar { text-align: center; }");
-    // TODO translate
-    this->getDetectionProgressBarPtr()->setToolTip("Detecting objects...");
     if (!this->getConnectionEnabled() && !downloadModelIfNotExists(Const::Model::YoloV5::Names::N, Const::Model::YoloV5::GITHUB_TAG)) {
         qInfo() << "yolov5n could not be downloaded cheking in 1 min";
         this->setCenterText(Text::Error::failedDownloadModel().toStdString());
@@ -2236,11 +2260,21 @@ void Data::checkDetectObjects() {
             this->getDetectionProgressBarPtr()->setValue(this->getDetectionProgressBarPtr()->value() + 1);
         }
     }
+    if (hasNotBeenDetected.size() != 0) {
+        this->getDetectionProgressBarPtr()->show();
+        this->getDetectionProgressBarPtr()->setMinimum(0);
+        this->getDetectionProgressBarPtr()->setMaximum(this->getImagesDataPtr()->getConst().size());
+        this->getDetectionProgressBarPtr()->setValue(0);
+        this->getDetectionProgressBarPtr()->setStyleSheet("QProgressBar::chunk { background-color: #FF0000; } QProgressBar { text-align: center; }");
+        // TODO translate
+        this->getDetectionProgressBarPtr()->setToolTip("Detecting objects...");
+    }
     QObject::connect(detectObjectTimer, &QTimer::timeout, [this]() {
         if (hasNotBeenDetected.size() == 0) {
             if (detectionWorking == 0) {
                 detectObjectTimer->stop();
                 qInfo() << "all detection done";
+                this->getDetectionProgressBarPtr()->hide();
 
                 checkDetectFaces();
             }
@@ -2251,6 +2285,8 @@ void Data::checkDetectObjects() {
                 addHeavyThread([this, imageData]() {
                     if (imageData) {
                         std::string imagePath = imageData->getImagePath();
+                        qDebug() << "checkDetectObjects";
+
                         QImage image = this->loadImageNormal(imagePath, 0, true);
                         image = rotateQImage(image, imageData);
                         std::string modelName = Const::Model::YoloV5::Names::N;
@@ -2330,7 +2366,7 @@ void Data::detectAndRecognizeFaces(ImageData* imageData) {
         return;
     }
 
-    imageData->getFaceDetectionStatus().setStatusLoading();
+    imageData->getFaceDetectionStatusPtr()->setStatusLoading();
     imageData->detectFaces();
 
     {
@@ -2381,7 +2417,7 @@ void Data::detectAndRecognizeFaces(ImageData* imageData) {
                 }
             }
         }
-        imageData->getFaceDetectionStatus().setStatusLoaded();
+        imageData->getFaceDetectionStatusPtr()->setStatusLoaded();
     }
 }
 
@@ -2430,7 +2466,11 @@ QImage loadAnImage(std::string imagePath, int thumbnail) {
         //         qWarning() << "Thumbnail not supported for RAW images";
         //     }
     } else {
+        // auto start = std::chrono::high_resolution_clock::now();
         image.load(QString::fromStdString(imagePathbis));
+        // auto end = std::chrono::high_resolution_clock::now();
+        // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        // qDebug() << imagePathbis << " : ClickableLabel::loadImage execution time:" << duration << "ms";
     }
 
     if (image.isNull()) {

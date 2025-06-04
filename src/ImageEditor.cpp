@@ -889,6 +889,8 @@ ClickableLabel* ImageEditor::createImageDetection() {
 
             ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
             int imageNbr = data->getImagesDataPtr()->getImageNumber();
+            qDebug() << "createImageDetection";
+
             QImage image = data->loadImageNormal(data->getImagesDataPtr()->getCurrentImageData()->getImagePath());
             image = rotateQImage(image, imageData);
             std::string currentImagePath = data->getImagesDataPtr()->getCurrentImageData()->getImagePath();
@@ -1038,17 +1040,10 @@ MainImage* ImageEditor::createImageLabel() {
         }
     });
 
-    // if (imageData->isDetectionStatusLoaded() && imageData->getFaceDetectionStatus().isStatusNotLoaded()) {
-    //     data->addHeavyThread([this, imageData]() {
-    //         if (imageData->getFaceDetectionStatus().isStatusNotLoaded()) {
-    //             data->detectAndRecognizeFaces(imageData);
-    //         }
-    //     });
-    // }
-
     int imageNbr = data->getImagesDataPtr()->getImageNumber();
     if (imageData->isDetectionStatusNotLoaded() && data->getConnectionEnabled()) {
         imageData->setDetectionStatusLoading();
+
         QImage image = data->loadImageNormal(data->getImagesDataPtr()->getCurrentImageData()->getImagePath());
 
         image = rotateQImage(image, imageData);

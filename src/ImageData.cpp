@@ -322,7 +322,7 @@ void ImageData::setDetectedObjects(const std::map<std::string, std::vector<std::
 void ImageData::clearDetectedObjects() {
     detectedObjects.clear();
     setDetectionStatusNotLoaded();
-    getFaceDetectionStatus().setStatusNotLoaded();
+    getFaceDetectionStatusPtr()->setStatusNotLoaded();
 }
 
 /**
@@ -542,8 +542,8 @@ double ImageData::getLongitude() const {
  * @brief Get the face detection status
  * @return The face detection status
  */
-LoadingStatus ImageData::getFaceDetectionStatus() const {
-    return this->faceDetectionStatus;
+LoadingStatus* ImageData::getFaceDetectionStatusPtr() {
+    return &this->faceDetectionStatus;
 }
 
 /**

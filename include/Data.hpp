@@ -63,7 +63,7 @@ class Data : public std::enable_shared_from_this<Data> {
 
     QImage loadAnImageFromRessources(std::string imagePath, int thumbnail);
 
-    std::mutex imageCacheMutex;
+    mutable std::mutex imageCacheMutex;
     bool loadInCache(std::string imagePath, bool setSize = false, QSize size = QSize(0, 0), bool force = false);
     void loadInCacheAsync(std::string imagePath, std::function<void()> callback, bool setSize = false, QSize size = QSize(0, 0), int thumbnail = 0, bool force = false);
 
@@ -72,6 +72,8 @@ class Data : public std::enable_shared_from_this<Data> {
     bool isInCache(std::string imagePath);
     // bool getLoadedImage(std::string imagePath, QImage& image);
     QImage* getImageFromCache(std::string imagePath);
+    QImage getImageFromCacheConst(std::string imagePath) const;
+
     void addImageInCache(const std::string& imagePath, const std::string& thumbnailPath, const QImage& image);
 
     void createThumbnailAsync(const std::string& imagePath, const int maxDim, std::function<void(bool)> callback = nullptr);
@@ -213,17 +215,14 @@ class Data : public std::enable_shared_from_this<Data> {
     QTimer* thumbnailTimer = new QTimer();
     int thumbnailWorking = 0;
     AsyncDeque<std::string> hasNoThumbnail;
-    // std::mutex thumbnailMutex;
 
     QTimer* detectObjectTimer = new QTimer();
     int detectionWorking = 0;
     AsyncDeque<ImageData*> hasNotBeenDetected;
-    // std::mutex detectionMutex;
 
     QTimer* detectFacesTimer = new QTimer();
     int detectionFacesWorking = 0;
     AsyncDeque<ImageData*> hasNotBeenDetectedFaces;
-    // std::mutex detectionFacesMutex;
 
     std::vector<Actions> lastActions = {};
     std::vector<Actions> lastActionsDone = {};
