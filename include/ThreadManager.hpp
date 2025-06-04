@@ -7,6 +7,7 @@
 #include <functional>
 #include <queue>
 
+#include "AsyncDeque.hpp"
 #include "Const.hpp"
 
 class Worker : public QRunnable {
@@ -37,11 +38,8 @@ class ThreadManager : public QObject {
    private:
        void startJob(std::function<void()> job);
     int maxThreads;
-    std::deque<std::function<void()>> taskQueue;
-    std::deque<std::function<void()>> heavyTaskQueue;
-
-    std::mutex taskQueueMutex;
-    std::mutex heavyTaskQueueMutex;
+    AsyncDeque<std::function<void()>> taskQueue;
+    AsyncDeque<std::function<void()>> heavyTaskQueue;
 
     void processQueue();
 };

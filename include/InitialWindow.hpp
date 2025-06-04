@@ -5,6 +5,8 @@
 #include <QMainWindow>
 #include <QProgressBar>
 
+#include "AsyncProgressBar.hpp"
+
 // Forward declarations
 class Data;
 class QProgressDialog;
@@ -63,7 +65,7 @@ class InitialWindow : public QMainWindow {
 
     ClickableLabel* imageLanguage;
 
-    QProgressBar* detectionProgressBar;
+    AsyncProgressBar* detectionProgressBar;
 
     ClickableLabel* imageWifi;
     ClickableLabel* imageDiscord;
@@ -75,7 +77,7 @@ class InitialWindow : public QMainWindow {
 
     ClickableLabel* createImageLanguage();
 
-    QProgressBar* createDetectionProgressBar();
+    AsyncProgressBar* createDetectionProgressBar();
 
     ClickableLabel* createImageWifi();
     ClickableLabel* createImageDiscord();

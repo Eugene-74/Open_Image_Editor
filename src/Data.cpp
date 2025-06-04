@@ -2143,7 +2143,7 @@ void Data::setPersonIdNames(std::map<int, std::string> personIdNames) {
  * @brief Check if the faces has been detected and detect them if not
  */
 void Data::checkDetectFaces() {
-    if (this->getConnectionEnabled() && (!downloadModelIfNotExists(Const::Model::Arcface::NAME, Const::Model::Arcface::GITHUB_TAG) || !downloadModelIfNotExists(Const::Model::Haarcascade::NAME, Const::Model::Haarcascade::GITHUB_TAG))) {
+    if (!this->getConnectionEnabled() && (!downloadModelIfNotExists(Const::Model::Arcface::NAME, Const::Model::Arcface::GITHUB_TAG) || !downloadModelIfNotExists(Const::Model::Haarcascade::NAME, Const::Model::Haarcascade::GITHUB_TAG))) {
         qInfo() << "arcface could not be downloaded cheking in 1 min";
         this->setCenterText(Text::Error::failedDownloadModel().toStdString());
 
@@ -2159,6 +2159,8 @@ void Data::checkDetectFaces() {
     this->getDetectionProgressBarPtr()->setMaximum(this->getImagesDataPtr()->getConst().size());
     this->getDetectionProgressBarPtr()->setValue(0);
     this->getDetectionProgressBarPtr()->setStyleSheet("QProgressBar::chunk { background-color: #00FF00; }");
+    // TODO translate
+    this->getDetectionProgressBarPtr()->setToolTip("Detecting faces...");
 
     for (auto imageData : this->getImagesDataPtr()->getConst()) {
         if (imageData) {
@@ -2176,42 +2178,26 @@ void Data::checkDetectFaces() {
     }
     QObject::connect(detectFacesTimer, &QTimer::timeout, [this]() {
         if (hasNotBeenDetectedFaces.size() == 0) {
-            detectFacesTimer->stop();
-            qInfo() << "all faces detection done";
-            this->getDetectionProgressBarPtr()->hide();
-
-            return;
-        }
-        while (detectionFacesWorking < Const::MAX_WORKING_DETECTION) {
-            detectionFacesWorking++;
-            ImageData* imageData = hasNotBeenDetectedFaces.front();
-            addHeavyThread([this, imageData]() {
-                auto start = std::chrono::high_resolution_clock::now();
-                this->detectAndRecognizeFaces(imageData);
-                auto end = std::chrono::high_resolution_clock::now();
-                std::chrono::duration<double> elapsed = end - start;
-                qInfo() << "detectAndRecognizeFaces execution time:" << elapsed.count() << "seconds";
-                detectionFacesWorking--;
-            });
-            {
-                std::lock_guard<std::mutex> lock(detectionFacesMutex);
+            if (detectionFacesWorking == 0) {
+                detectFacesTimer->stop();
+                qInfo() << "all faces detection done";
+                this->getDetectionProgressBarPtr()->hide();
+            }
+        } else {
+            while (detectionFacesWorking < Const::MAX_WORKING_DETECTION) {
+                detectionFacesWorking++;
+                ImageData* imageData = hasNotBeenDetectedFaces.front();
+                addHeavyThread([this, imageData]() {
+                    auto start = std::chrono::high_resolution_clock::now();
+                    this->detectAndRecognizeFaces(imageData);
+                    auto end = std::chrono::high_resolution_clock::now();
+                    std::chrono::duration<double> elapsed = end - start;
+                    qInfo() << "detectAndRecognizeFaces execution time:" << elapsed.count() << "seconds";
+                    detectionFacesWorking--;
+                    this->getDetectionProgressBarPtr()->setValue(this->getDetectionProgressBarPtr()->value() + 1);
+                });
 
                 hasNotBeenDetectedFaces.pop_front();
-
-                // TODO faire au bon moment pour eviter d'avoir 100 d'avance
-                this->getDetectionProgressBarPtr()->setValue(this->getDetectionProgressBarPtr()->value() + 1);
-
-                if (hasNotBeenDetectedFaces.size() == 0) {
-                    detectFacesTimer->stop();
-
-                    qInfo() << "all faces detection done";
-
-                    this->getDetectionProgressBarPtr()->hide();
-
-                    return;
-                }
-
-
             }
         }
     });
@@ -2228,8 +2214,9 @@ void Data::checkDetectObjects() {
     this->getDetectionProgressBarPtr()->setMaximum(this->getImagesDataPtr()->getConst().size());
     this->getDetectionProgressBarPtr()->setValue(0);
     this->getDetectionProgressBarPtr()->setStyleSheet("QProgressBar::chunk { background-color: #FF0000; } QProgressBar { text-align: center; }");
-
-    if (this->getConnectionEnabled() && !downloadModelIfNotExists(Const::Model::YoloV5::Names::N, Const::Model::YoloV5::GITHUB_TAG)) {
+    // TODO translate
+    this->getDetectionProgressBarPtr()->setToolTip("Detecting objects...");
+    if (!this->getConnectionEnabled() && !downloadModelIfNotExists(Const::Model::YoloV5::Names::N, Const::Model::YoloV5::GITHUB_TAG)) {
         qInfo() << "yolov5n could not be downloaded cheking in 1 min";
         this->setCenterText(Text::Error::failedDownloadModel().toStdString());
 
@@ -2251,52 +2238,39 @@ void Data::checkDetectObjects() {
     }
     QObject::connect(detectObjectTimer, &QTimer::timeout, [this]() {
         if (hasNotBeenDetected.size() == 0) {
-            detectObjectTimer->stop();
-            qInfo() << "all detection done";
-            checkDetectFaces();
-            // this->getDetectionProgressBarPtr()->hide();
+            if (detectionWorking == 0) {
+                detectObjectTimer->stop();
+                qInfo() << "all detection done";
 
-            return;
-        }
-        while (detectionWorking < Const::MAX_WORKING_DETECTION) {
-            detectionWorking++;
-            ImageData* imageData = hasNotBeenDetected.front();
-            addHeavyThread([this, imageData]() {
-                if (imageData) {
-                    std::string imagePath = imageData->getImagePath();
-                    QImage image = this->loadImageNormal(imagePath, 0, true);
-                    image = rotateQImage(image, imageData);
-                    std::string modelName = Const::Model::YoloV5::Names::N;
+                checkDetectFaces();
+            }
+        } else {
+            while (detectionWorking < Const::MAX_WORKING_DETECTION && hasNotBeenDetected.size() > 0) {
+                detectionWorking++;
+                ImageData* imageData = hasNotBeenDetected.front();
+                addHeavyThread([this, imageData]() {
+                    if (imageData) {
+                        std::string imagePath = imageData->getImagePath();
+                        QImage image = this->loadImageNormal(imagePath, 0, true);
+                        image = rotateQImage(image, imageData);
+                        std::string modelName = Const::Model::YoloV5::Names::N;
 
-                    DetectedObjects* detectedObjects = this->detect(imagePath, image, modelName);
-                    if (detectedObjects) {
-                        imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
-                        imageData->setDetectionStatusLoaded();
-                    } else {
-                        imageData->setDetectionStatusNotLoaded();
+                        DetectedObjects* detectedObjects = this->detect(imagePath, image, modelName);
+                        if (detectedObjects) {
+                            imageData->setDetectedObjects(detectedObjects->getDetectedObjects());
+                            imageData->setDetectionStatusLoaded();
+                        } else {
+                            imageData->setDetectionStatusNotLoaded();
+                        }
+                        if (!unloadFromCache(imagePath)) {
+                            qWarning() << "Error unloading image from cache: " << QString::fromStdString(imagePath);
+                        }
                     }
-                    if (!unloadFromCache(imagePath)) {
-                        qWarning() << "Error unloading image from cache: " << QString::fromStdString(imagePath);
-                    }
-                }
-                detectionWorking--;
-            });
-            {
-                std::lock_guard<std::mutex> lock(detectionMutex);
+                    detectionWorking--;
+                    this->getDetectionProgressBarPtr()->setValue(this->getDetectionProgressBarPtr()->value() + 1);
+                });
 
                 hasNotBeenDetected.pop_front();
-                // TODO faire au bon moment pour eviter d'avoir 100 d'avance
-                this->getDetectionProgressBarPtr()->setValue(this->getDetectionProgressBarPtr()->value() + 1);
-            }
-            if (hasNotBeenDetected.size() == 0) {
-                detectObjectTimer->stop();
-
-                qInfo() << "all detection done";
-                checkDetectFaces();
-
-                // this->getDetectionProgressBarPtr()->hide();
-
-                return;
             }
         }
     });
@@ -2328,25 +2302,21 @@ void Data::checkThumbnailAndDetectObjects() {
 
             qInfo() << "all thumbnails created";
             checkDetectObjects();
-            return;
-        }
-        while (thumbnailWorking < Const::MAX_WORKING_THUMBNAIL) {
-            thumbnailWorking++;
+        } else {
+            while (thumbnailWorking < Const::MAX_WORKING_THUMBNAIL) {
+                thumbnailWorking++;
 
-            createAllThumbnailsAsync(hasNoThumbnail.front(), [this](bool done) { thumbnailWorking--; }, false);
-
-            {
-                std::lock_guard<std::mutex> lock(thumbnailMutex);
+                createAllThumbnailsAsync(hasNoThumbnail.front(), [this](bool done) { thumbnailWorking--; }, false);
 
                 hasNoThumbnail.pop_front();
 
-            }
-            if (hasNoThumbnail.size() == 0) {
-                thumbnailTimer->stop();
+                if (hasNoThumbnail.size() == 0) {
+                    thumbnailTimer->stop();
 
-                qInfo() << "all thumbnails created";
-                checkDetectObjects();
-                return;
+                    qInfo() << "all thumbnails created";
+                    checkDetectObjects();
+                    return;
+                }
             }
         }
     });
@@ -2356,6 +2326,7 @@ void Data::checkThumbnailAndDetectObjects() {
 
 void Data::detectAndRecognizeFaces(ImageData* imageData) {
     if (!downloadModelIfNotExists(Const::Model::Arcface::NAME, Const::Model::Arcface::GITHUB_TAG) || !downloadModelIfNotExists(Const::Model::Haarcascade::NAME, Const::Model::Haarcascade::GITHUB_TAG)) {
+        qWarning() << "arcface or haarcascade could not be downloaded, check your connection";
         return;
     }
 
@@ -2379,22 +2350,15 @@ void Data::detectAndRecognizeFaces(ImageData* imageData) {
                         const cv::Mat& embedding2 = *otherFaces[j].getEmbeddingPtr();
                         if (!embedding1.empty() && !embedding2.empty()) {
                             double similarity = cosineSimilarity(embedding1, embedding2);
-                            // qDebug() << "Cosine similarity between face" << i << " from" << imageData->getImagePath() << "and image" << QString::fromStdString(otherImage->getImageName())
-                            //          << "face" << j << ":" << similarity;
                             if (similarity > 0.6) {
                                 if (*((*faces)[i].getPersonIdPtr()) == -1) {
                                     *((*faces)[i].getPersonIdPtr()) = *otherFaces[j].getPersonIdPtr();
-                                    // qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is recognized as face" << j << "from" << QString::fromStdString(otherImage->getImageName());
                                 }
-                                // else {
-                                //     qInfo() << "Face" << i << "from" << imageData->getImagePath() << "is already recognized";
-                                // }
                             }
                         }
                     }
                 }
                 if (*((*faces)[i].getPersonIdPtr()) == -1) {
-                    // qDebug() << "Face" << i << "from" << imageData->getImagePath() << "is not recognized";
                     *((*faces)[i].getPersonIdPtr()) = this->getPersonIdNames().size();
                     auto* personIdNames = this->getPersonIdNamesPtr();
 
@@ -2481,7 +2445,7 @@ QImage loadAnImage(std::string imagePath, int thumbnail) {
  * @brief Get the detection progress bar pointer
  * @return Pointer to the detection progress bar
  */
-QProgressBar* Data::getDetectionProgressBarPtr() {
+AsyncProgressBar* Data::getDetectionProgressBarPtr() {
     return detectionProgressBar;
 }
 
@@ -2489,6 +2453,6 @@ QProgressBar* Data::getDetectionProgressBarPtr() {
  * @brief Set the detection progress bar pointer
  * @param detectionProgressBar Pointer to the detection progress bar
  */
-void Data::setDetectionProgressBarPtr(QProgressBar* detectionProgressBar) {
+void Data::setDetectionProgressBarPtr(AsyncProgressBar* detectionProgressBar) {
     this->detectionProgressBar = detectionProgressBar;
 }

@@ -2,6 +2,7 @@
 
 #include <QImage>
 #include <QMediaPlayer>
+#include <QProgressBar>
 #include <QRunnable>
 #include <QSize>
 #include <QTimer>
@@ -11,10 +12,10 @@
 #include <mutex>
 #include <opencv2/face.hpp>
 #include <string>
-
-#include <QProgressBar>
 #include <vector>
 
+#include "AsyncDeque.hpp"
+#include "AsyncProgressBar.hpp"
 #include "DetectObjectsModel.hpp"
 #include "Folders.hpp"
 #include "ImagesData.hpp"
@@ -179,8 +180,8 @@ class Data : public std::enable_shared_from_this<Data> {
 
     void detectAndRecognizeFaces(ImageData* imageData);
 
-    QProgressBar* getDetectionProgressBarPtr();
-    void setDetectionProgressBarPtr(QProgressBar* detectionProgressBar);
+    AsyncProgressBar* getDetectionProgressBarPtr();
+    void setDetectionProgressBarPtr(AsyncProgressBar* detectionProgressBar);
 
    private:
 #ifdef _WIN32
@@ -198,7 +199,7 @@ class Data : public std::enable_shared_from_this<Data> {
     ImagesData deletedImagesData;
     Sizes sizes;
 
-    QProgressBar* detectionProgressBar = nullptr;
+    AsyncProgressBar* detectionProgressBar = nullptr;
 
     std::vector<int> imagesSelected;
     std::map<int, std::string> personIdNames;
@@ -211,18 +212,18 @@ class Data : public std::enable_shared_from_this<Data> {
 
     QTimer* thumbnailTimer = new QTimer();
     int thumbnailWorking = 0;
-    std::deque<std::string> hasNoThumbnail;
-    std::mutex thumbnailMutex;
+    AsyncDeque<std::string> hasNoThumbnail;
+    // std::mutex thumbnailMutex;
 
     QTimer* detectObjectTimer = new QTimer();
     int detectionWorking = 0;
-    std::list<ImageData*> hasNotBeenDetected;
-    std::mutex detectionMutex;
+    AsyncDeque<ImageData*> hasNotBeenDetected;
+    // std::mutex detectionMutex;
 
     QTimer* detectFacesTimer = new QTimer();
     int detectionFacesWorking = 0;
-    std::list<ImageData*> hasNotBeenDetectedFaces;
-    std::mutex detectionFacesMutex;
+    AsyncDeque<ImageData*> hasNotBeenDetectedFaces;
+    // std::mutex detectionFacesMutex;
 
     std::vector<Actions> lastActions = {};
     std::vector<Actions> lastActionsDone = {};

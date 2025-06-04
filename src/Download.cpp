@@ -87,14 +87,15 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
  * @note This function must be called from an other thread than the main thread.
  */
 bool downloadModelIfNotExists(const std::string& modelName, std::string tag) {
-    if (!hasConnection()) {
-        return false;
-    }
-
     const std::string modeloutputPath = APP_FILES.toStdString() + "/" + modelName;
     if (fs::exists(modeloutputPath)) {
         qInfo() << "Model already exists: " << QString::fromStdString(modeloutputPath);
         return true;
+    }
+
+    if (!hasConnection()) {
+        qWarning() << "No internet connection available. Cannot download model: " << QString::fromStdString(modelName);
+        return false;
     }
 
     return downloadModel(modelName, tag);

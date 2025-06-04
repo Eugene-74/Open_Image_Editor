@@ -638,8 +638,8 @@ ClickableLabel* InitialWindow::createImageLanguage() {
     return newImageLanguage;
 }
 
-QProgressBar* InitialWindow::createDetectionProgressBar() {
-    QProgressBar* newDetectionProgressBar = new QProgressBar();
+AsyncProgressBar* InitialWindow::createDetectionProgressBar() {
+    AsyncProgressBar* newDetectionProgressBar = new AsyncProgressBar();
     newDetectionProgressBar->setAlignment(Qt::AlignCenter);
     newDetectionProgressBar->hide();
 
