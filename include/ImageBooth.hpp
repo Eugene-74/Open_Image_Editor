@@ -105,6 +105,7 @@ class ImageBooth : public QMainWindow {
 
     void countImagesInFolder(Folders* currentFolder, int& totalImages);
 
+    void addActionWithDelay(std::function<void()> unDo, std::function<void()> reDo, int nbrInTotal);
    signals:
     void switchToImageEditor();
     void switchToImageBooth();

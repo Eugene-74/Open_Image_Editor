@@ -1663,31 +1663,33 @@ MapWidget* ImageEditor::createMapWidget() {
  * @param nbrInTotal The total number of images in the data
  */
 void ImageEditor::addActionWithDelay(std::function<void()> unDo, std::function<void()> reDo, int nbrInTotal) {
-    ImageData* imageData = data->getImagesDataPtr()->getImageData(nbrInTotal);
+    int nbrInCurrent = data->getImagesDataPtr()->getImageNumberInCurrent(nbrInTotal);
     data->addAction(
-        [this, imageData, nbrInTotal, unDo]() {
+        [this, nbrInTotal, unDo, nbrInCurrent]() {
             int time = 0;
             if (data->getImagesDataPtr()->getImageNumberInTotal() != nbrInTotal) {
-                data->getImagesDataPtr()->setImageNumber(data->getImagesDataPtr()->getImageDataIdInCurrent(imageData->getImagePathConst()));
+                data->getImagesDataPtr()->setImageNumber(nbrInCurrent);
                 reload();
                 time = TIME_UNDO_VISUALISATION;
             }
-            QTimer::singleShot(time, [this, imageData, nbrInTotal, unDo]() {
+            QTimer::singleShot(time, [this, nbrInTotal, unDo]() {
+                ImageData* imageData = data->getImagesDataPtr()->getImageData(nbrInTotal);
                 if (imageData) {
                     unDo();
                     reload();
                 }
             });
         },
-        [this, imageData, nbrInTotal, reDo]() {
+        [this, nbrInTotal, reDo, nbrInCurrent]() {
             int time = 0;
             if (data->getImagesDataPtr()->getImageNumberInTotal() != nbrInTotal) {
-                data->getImagesDataPtr()->setImageNumber(data->getImagesDataPtr()->getImageDataIdInCurrent(imageData->getImagePathConst()));
+                data->getImagesDataPtr()->setImageNumber(nbrInCurrent);
 
                 reload();
                 time = TIME_UNDO_VISUALISATION;
             }
-            QTimer::singleShot(time, [this, imageData, nbrInTotal, reDo]() {
+            QTimer::singleShot(time, [this, nbrInTotal, reDo]() {
+                ImageData* imageData = data->getImagesDataPtr()->getImageData(nbrInTotal);
                 if (imageData) {
                     reDo();
                     reload();

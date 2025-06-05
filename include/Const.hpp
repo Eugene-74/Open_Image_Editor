@@ -166,7 +166,7 @@ static const std::string GRAY = "#9c9c9c";
 static const std::string WHITE = "#FFFFFF";
 static const std::string RED = "#FF0000";
 static const std::string GREEN = "#00FF00";
-static const std::string BLUE = "#FF0000";
+static const std::string BLUE = "#0000FF";
 static const std::string DARK = "#000000";
 
 static const std::string DARK_RED = "#700c13";

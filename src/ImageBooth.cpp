@@ -342,69 +342,50 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             imageButton->resetBorder();
             data->getImagesSelectedPtr()->erase(it);
 
-            data->addAction(
+            addActionWithDelay(
                 [this, nbr, imageNumberInTotal]() {
-                    if (!isImageVisible(nbr)) {
-                        gotToImage(nbr);
+                    ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                    if (imageButton != nullptr) {
+                        imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
                     }
-                    QTimer::singleShot(TIME_UNDO_VISUALISATION, [this, nbr, imageNumberInTotal]() {
-                        ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
-                        if (imageButton != nullptr) {
-                            imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
-                        }
-                        addNbrToSelectedImages(imageNumberInTotal);
-                    });
+                    addNbrToSelectedImages(imageNumberInTotal);
                 },
                 [this, nbr, imageNumberInTotal]() {
-                    if (!isImageVisible(nbr)) {
-                        gotToImage(nbr);
+                    ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                    if (imageButton != nullptr) {
+                        imageButton->resetBorder();
                     }
-                    QTimer::singleShot(TIME_UNDO_VISUALISATION, [this, nbr, imageNumberInTotal]() {
-                        ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
-                        if (imageButton != nullptr) {
-                            imageButton->resetBorder();
-                        }
-                        removeNbrToSelectedImages(imageNumberInTotal);
-                    });
-                });
+                    removeNbrToSelectedImages(imageNumberInTotal);
+                },
+                imageNumberInTotal);
+
         } else {
             imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
             data->getImagesSelectedPtr()->push_back(imageNumberInTotal);
 
-            data->addAction(
+            addActionWithDelay(
                 [this, nbr, imageNumberInTotal]() {
-                    int time = 0;
-                    if (!isImageVisible(nbr)) {
-                        gotToImage(nbr);
-                        time = TIME_UNDO_VISUALISATION;
+                    ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                    if (imageButton != nullptr) {
+                        imageButton->resetBorder();
                     }
-                    QTimer::singleShot(time, [this, nbr, imageNumberInTotal]() {
-                        ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
-                        if (imageButton != nullptr) {
-                            imageButton->resetBorder();
-                        }
-                        removeNbrToSelectedImages(imageNumberInTotal);
-                    });
+                    removeNbrToSelectedImages(imageNumberInTotal);
                 },
                 [this, nbr, imageNumberInTotal]() {
-                    int time = 0;
-                    if (!isImageVisible(nbr)) {
-                        gotToImage(nbr);
-                        time = TIME_UNDO_VISUALISATION;
+                    ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                    if (imageButton != nullptr) {
+                        imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
                     }
-                    QTimer::singleShot(time, [this, nbr, imageNumberInTotal]() {
-                        ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
-                        if (imageButton != nullptr) {
-                            imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
-                        }
-                        addNbrToSelectedImages(imageNumberInTotal);
-                    });
-                });
+                    addNbrToSelectedImages(imageNumberInTotal);
+                },
+                imageNumberInTotal);
         }
     });
 
     connect(imageButton, &ClickableLabel::shiftLeftClicked, [this, nbr, imageButton]() {
         // select all image beetwen the 2 nbr
+        int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
+
         if (imageShiftSelected >= 0) {
             std::vector<int> modifiedNbr;
             std::vector<int> modifiedNbrInTotal;
@@ -434,43 +415,27 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             reload();
 
             bool select = imageShiftSelectedSelect;
-            data->addAction(
-                [this, modifiedNbr, modifiedNbrInTotal, select]() {
-                    int time = 0;
-                    int minNbr = *std::min_element(modifiedNbr.begin(), modifiedNbr.end());
-                    if (!isImageVisible(minNbr)) {
-                        gotToImage(minNbr);
-                        time = TIME_UNDO_VISUALISATION;
-                    }
-                    QTimer::singleShot(time, [this, modifiedNbrInTotal, select]() {
-                        for (auto nbr : modifiedNbrInTotal) {
-                            if (select) {
-                                removeNbrToSelectedImages(nbr);
-                            } else {
-                                addNbrToSelectedImages(nbr);
-                            }
+
+            addActionWithDelay(
+                [this, nbr, imageNumberInTotal, modifiedNbrInTotal, select]() {
+                    for (auto nbr : modifiedNbrInTotal) {
+                        if (select) {
+                            removeNbrToSelectedImages(nbr);
+                        } else {
+                            addNbrToSelectedImages(nbr);
                         }
-                        reload();
-                    });
+                    }
                 },
-                [this, modifiedNbr, modifiedNbrInTotal, select]() {
-                    int time = 0;
-                    int minNbr = *std::min_element(modifiedNbr.begin(), modifiedNbr.end());
-                    if (!isImageVisible(minNbr)) {
-                        gotToImage(minNbr);
-                        time = TIME_UNDO_VISUALISATION;
-                    }
-                    QTimer::singleShot(time, [this, modifiedNbrInTotal, select]() {
-                        for (auto nbr : modifiedNbrInTotal) {
-                            if (select) {
-                                addNbrToSelectedImages(nbr);
-                            } else {
-                                removeNbrToSelectedImages(nbr);
-                            }
+                [this, nbr, imageNumberInTotal, modifiedNbrInTotal, select]() {
+                    for (auto nbr : modifiedNbrInTotal) {
+                        if (select) {
+                            addNbrToSelectedImages(nbr);
+                        } else {
+                            removeNbrToSelectedImages(nbr);
                         }
-                        reload();
-                    });
-                });
+                    }
+                },
+                imageNumberInTotal);
 
             imageShiftSelected = -1;
         } else {
@@ -1316,4 +1281,37 @@ void ImageBooth::countImagesInFolder(Folders* currentFolder, int& totalImages) {
     for (auto it = subFolders->begin(); it != subFolders->end(); ++it) {
         countImagesInFolder(&(*it), totalImages);
     }
+}
+
+/**
+ * @brief Add an action with a delay for undo and redo operations
+ * @param unDo The function to execute for undo
+ * @param reDo The function to execute for redo
+ * @param nbrInTotal The total number of images in the data
+ */
+void ImageBooth::addActionWithDelay(std::function<void()> unDo, std::function<void()> reDo, int nbrInTotal) {
+    int nbrInCurrent = data->getImagesDataPtr()->getImageNumberInCurrent(nbrInTotal);
+    data->addAction(
+        [this, nbrInCurrent, unDo, nbrInTotal]() {
+            int time = 0;
+            if (!isImageVisible(nbrInCurrent)) {
+                gotToImage(nbrInCurrent);
+                time = TIME_UNDO_VISUALISATION;
+            }
+            QTimer::singleShot(time, [this, unDo, nbrInTotal]() {
+                unDo();
+                reload();
+            });
+        },
+        [this, nbrInCurrent, reDo]() {
+            int time = 0;
+            if (!isImageVisible(nbrInCurrent)) {
+                gotToImage(nbrInCurrent);
+                time = TIME_UNDO_VISUALISATION;
+            }
+            QTimer::singleShot(time, [this, reDo]() {
+                reDo();
+                reload();
+            });
+        });
 }
