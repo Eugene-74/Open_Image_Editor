@@ -207,7 +207,7 @@ bool checkForUpdate() {
     int currentMinor = 0;
     int currentPatch = 0;
     std::sscanf(APP_VERSION, "%d.%d.%d", &currentMajor, &currentMinor, &currentPatch);
-    if (currentMajor < latestMajor || currentMinor < latestMinor || currentPatch < latestPatch) {
+    if (currentMajor < latestMajor || (currentMinor < latestMinor && currentMajor <= latestMajor) || (currentPatch < latestPatch && currentMinor <= latestMinor && currentMajor <= latestMajor)) {
         showQuestionMessage(nullptr, "A new version of the application is available\nDo you want to open the download page?", [latestMajor, latestMinor, latestPatch](bool result) {
                                 if (result) {
                                     std::string downloadUrl = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/v" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + "/" + std::string(INSTALLER_APP_NAME) + "-" + std::to_string(latestMajor) + "." + std::to_string(latestMinor) + "." + std::to_string(latestPatch) + ".exe";
