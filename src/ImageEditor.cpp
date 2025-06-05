@@ -193,7 +193,7 @@ void ImageEditor::reload() {
     checkCache();
 
     if (bigImage) {
-        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), (data->getSizesPtr()->imageEditorSizes->bigImage), false, personsEditor);
+        MainImage* bigImageLabelNew = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), data->getSizesPtr()->imageEditorSizes->bigImage, 0, personsEditor);
 
         bigImageLabelNew->setFixedSize(data->getSizesPtr()->imageEditorSizes->bigImage);
         connect(bigImageLabelNew, &MainImage::leftClicked, [this]() {
@@ -1026,7 +1026,13 @@ MainImage* ImageEditor::createImageLabel() {
         return nullptr;
     }
 
-    MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), *mainImageSize, false, personsEditor);
+    int thumbnail;
+    if (data->isInCache(data->getImagesDataPtr()->getCurrentImageData()->getImagePath())) {
+        thumbnail = 0;
+    } else {
+        thumbnail = Const::Thumbnail::NORMAL_QUALITY;
+    }
+    MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), data->getSizesPtr()->imageEditorSizes->mainImageSize, thumbnail, personsEditor);
 
     std::string currentImagePath = data->getImagesDataPtr()->getCurrentImageData()->getImagePath();
 
@@ -1566,7 +1572,7 @@ void ImageEditor::openBigImageLabel() {
     bigImage = true;
     hide();
 
-    bigImageLabel = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), (data->getSizesPtr()->imageEditorSizes->bigImage), false, personsEditor);
+    bigImageLabel = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), data->getSizesPtr()->imageEditorSizes->bigImage, 0, personsEditor);
     bigImageLabel->setFixedSize(data->getSizesPtr()->imageEditorSizes->bigImage);
 
     mainLayout->addWidget(bigImageLabel);

@@ -15,7 +15,7 @@ class MainImage : public ImageLabel {
     using ImageLabel::ImageLabel;
 
    public:
-    explicit MainImage(std::shared_ptr<Data> data, const QString& i, QSize size = QSize(0, 0), bool setSize = true, bool personsEditor = false, bool square = false, bool force = false);
+    explicit MainImage(std::shared_ptr<Data> data, const QString& imagePath, QSize size, int thumbnail = Const::Thumbnail::NORMAL_QUALITY, bool personsEditor = false);
 
     bool getPersonsEditorConst() const;
     void setPersonsEditor(bool personsEditor);
@@ -40,11 +40,7 @@ class MainImage : public ImageLabel {
 
     bool personsEditor = false;
     QString imagePath;
-    QSize mSize;
-    bool setSize;
-    bool square;
-    bool force;
-
+    int thumbnail;
     std::shared_ptr<Data> data;
 
     bool cropping;

@@ -38,6 +38,7 @@ ImageLabel::ImageLabel(std::shared_ptr<Data> data, const QString& imagePath, QSt
 
     if (isImage(imagePath.toStdString()) || isVideo(imagePath.toStdString())) {
         qImage = data->loadImage(this, imagePath.toStdString(), *sizePtr, setSize, thumbnail, true, square, true, force);
+
     } else {
         qImage = QImage();
     }

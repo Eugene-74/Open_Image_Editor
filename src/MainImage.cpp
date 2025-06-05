@@ -22,44 +22,12 @@
  * @param force Force the image to be loaded even if it is already in the cache
  * @details This constructor initializes the MainImage widget with the specified image and size.
  */
-MainImage::MainImage(std::shared_ptr<Data> data, const QString& imagePath, QSize size, bool setSize, bool personsEditor, bool square, bool force)
-    : ImageLabel(data, imagePath, QString(), nullptr, &size, setSize, 0, square, force),  // Call the appropriate ImageLabel constructor
+MainImage::MainImage(std::shared_ptr<Data> data, const QString& imagePath, QSize size, int thumbnail, bool personsEditor)
+    : ImageLabel(data, imagePath, "", nullptr, &size, false, thumbnail, false, false),  // Call the appropriate ImageLabel constructor
       data(data),
       cropping(false),
       imagePath(imagePath),
-      mSize(size),
-      setSize(setSize),
-      personsEditor(personsEditor),
-      square(square),
-      force(force) {
-    if (data->isInCache(data->getThumbnailPath(imagePath.toStdString(), 0))) {
-        if (isImage(imagePath.toStdString()) || isVideo(imagePath.toStdString())) {
-            qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, 0, true, square, true, force);
-        } else {
-            qImage = QImage();
-        }
-    } else {
-        qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, Const::Thumbnail::NORMAL_QUALITY, true, square, true, force);
-    }
-
-    if (!qImage.isNull()) {
-        this->setPixmap(QPixmap::fromImage(qImage).scaled(mSize - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    } else {
-        this->setText("Error");
-    }
-
-    if (setSize)
-        setFixedSize(mSize);
-    else {
-        QSize scaledSize = qImage.size();
-        scaledSize.scale(mSize, Qt::KeepAspectRatio);
-        setFixedSize(scaledSize);
-    }
-    this->setAlignment(Qt::AlignCenter);
-
-    setMouseTracking(true);
-
-    updateStyleSheet();
+      personsEditor(personsEditor) {
 }
 
 /**
@@ -205,19 +173,12 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
             }
             cropping = true;
 
-            qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, 0, true, square, false, force);
+            qImage = data->loadImage(this, imagePath.toStdString(), QSize(), false, 0, true, false, false, false);
 
             if (!qImage.isNull()) {
-                this->setPixmap(QPixmap::fromImage(qImage).scaled(mSize - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                this->setPixmap(QPixmap::fromImage(qImage).scaled(size() - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
             } else {
                 this->setText("Erreur");
-            }
-            if (setSize)
-                setFixedSize(mSize);
-            else {
-                QSize scaledSize = qImage.size();
-                scaledSize.scale(mSize, Qt::KeepAspectRatio);
-                setFixedSize(scaledSize);
             }
             this->setAlignment(Qt::AlignCenter);
 
