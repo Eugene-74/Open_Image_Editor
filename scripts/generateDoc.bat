@@ -1,13 +1,11 @@
 @echo off
 
 xcopy "%USERPROFILE%\Downloads\docs" . /E /I /Y
-for /f "usebackq tokens=*" %%v in ('dir /b /ad docs') do (
-    findstr /c:"\"%%v\"" versions.json >nul
-    if errorlevel 1 (
-        powershell -Command "(Get-Content versions.json | ConvertFrom-Json) + '%%v' | Set-Content versions.json"
-        powershell -Command "((Get-Content versions.json | ConvertFrom-Json) | Sort-Object) | ConvertTo-Json | Set-Content versions.json"
-    )
-)
+
+REM Ajout automatique des dossiers de version à versions.json
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+    "$versionsPath = 'versions.json'; $dirs = Get-ChildItem -Directory | Where-Object { $_.Name -match '^[0-9]+\.[0-9]+\.[0-9]+$' } | ForEach-Object { $_.Name }; if (Test-Path $versionsPath) { $json = Get-Content $versionsPath | ConvertFrom-Json } else { $json = @() }; foreach ($v in $dirs) { if ($json -notcontains $v) { $json += $v } }; $json = $json | Sort-Object; $json | ConvertTo-Json | Set-Content $versionsPath -Encoding UTF8"
+
 git add .
 git commit -m "Update documentation"
 git push origin gh-pages
