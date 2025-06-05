@@ -1,3 +1,5 @@
-/.vscode
-/build
+.vscode/
+build/
+install/
+
 *.exe
