@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.10</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -125,20 +125,22 @@ $(function(){initNavTree('_main_window_8hpp_source.html',''); initResizable(true
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_function" href="class_main_window.html#aa94fd46b513658e6a3de04e88ab917c0">MainWindow</a>(std::shared_ptr&lt;Data&gt; dat, QWidget* parent = <span class="keyword">nullptr</span>);</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_function" href="class_main_window.html#aa94fd46b513658e6a3de04e88ab917c0">~MainWindow</a>() {}</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    std::shared_ptr&lt;Data&gt; data;</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    QHBoxLayout* mainLayout;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    QHBoxLayout* switchLayout;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>   signals:</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordtype">void</span> switchToImageBooth();</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordtype">void</span> switchToImageEditor();</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    QSize* actionSize = &amp;data-&gt;sizes-&gt;mainWindowSizes-&gt;actionSize;</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>   signals:</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordtype">void</span> switchToImageBooth();</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordtype">void</span> switchToImageEditor();</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>   <span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_main_window.html#a379d8ebd251561f4b5c621902c63584f">enterEvent</a>(QEnterEvent* event) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>   <span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_main_window.html#a379d8ebd251561f4b5c621902c63584f">enterEvent</a>(QEnterEvent* event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>   <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    std::shared_ptr&lt;Data&gt; data;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    QHBoxLayout* mainLayout;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    QHBoxLayout* switchLayout;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    QSize* actionSize = &amp;data-&gt;getSizesPtr()-&gt;mainWindowSizes-&gt;actionSize;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
 </div>
-<div class="ttc" id="aclass_main_window_html_a379d8ebd251561f4b5c621902c63584f"><div class="ttname"><a href="class_main_window.html#a379d8ebd251561f4b5c621902c63584f">MainWindow::enterEvent</a></div><div class="ttdeci">void enterEvent(QEnterEvent *event) override</div><div class="ttdoc">Set the focus to the mainWindow when the mouse enters.</div><div class="ttdef"><b>Definition</b> MainWindow.cpp:62</div></div>
+<div class="ttc" id="aclass_main_window_html_a379d8ebd251561f4b5c621902c63584f"><div class="ttname"><a href="class_main_window.html#a379d8ebd251561f4b5c621902c63584f">MainWindow::enterEvent</a></div><div class="ttdeci">void enterEvent(QEnterEvent *event) override</div><div class="ttdoc">Set the focus to the mainWindow when the mouse enters.</div><div class="ttdef"><b>Definition</b> MainWindow.cpp:60</div></div>
 <div class="ttc" id="aclass_main_window_html_aa94fd46b513658e6a3de04e88ab917c0"><div class="ttname"><a href="class_main_window.html#aa94fd46b513658e6a3de04e88ab917c0">MainWindow::MainWindow</a></div><div class="ttdeci">MainWindow(std::shared_ptr&lt; Data &gt; dat, QWidget *parent=nullptr)</div><div class="ttdoc">Constructor for the MainWindow class.</div><div class="ttdef"><b>Definition</b> MainWindow.cpp:16</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

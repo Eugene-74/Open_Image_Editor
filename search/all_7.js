@@ -11,5 +11,8 @@ var searchData=
   ['isdetectionstatusloaded_8',['isDetectionStatusLoaded',['../class_image_data.html#a2c09894c12c9ce05c135a56703882124',1,'ImageData']]],
   ['isdetectionstatusloading_9',['isDetectionStatusLoading',['../class_image_data.html#aad75ddc9dc8e35f9970abbb405d47de6',1,'ImageData']]],
   ['isdetectionstatusnotloaded_10',['isDetectionStatusNotLoaded',['../class_image_data.html#a282ee4508e6d3f666edd01ef220662b6',1,'ImageData']]],
-  ['isincache_11',['isInCache',['../class_data.html#a5846b78a22423e822db298e960695ba0',1,'Data']]]
+  ['isincache_11',['isInCache',['../class_data.html#a5846b78a22423e822db298e960695ba0',1,'Data']]],
+  ['isstatusloaded_12',['isStatusLoaded',['../class_loading_status.html#a7bcdca7236954a69edaeedb1221931a1',1,'LoadingStatus']]],
+  ['isstatusloading_13',['isStatusLoading',['../class_loading_status.html#a480273f1ff5d54bbf9c58f1f1824eb4f',1,'LoadingStatus']]],
+  ['isstatusnotloaded_14',['isStatusNotLoaded',['../class_loading_status.html#a7669681fef8abb83669287b802ccb688',1,'LoadingStatus']]]
 ];

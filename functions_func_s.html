@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.10</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -107,7 +107,7 @@ $(function(){initNavTree('functions_func_s.html',''); initResizable(true); });
 <div class="textblock">Here is a list of all documented functions with links to the class documentation for each member:</div>
 
 <h3><a id="index_s" name="index_s"></a>- s -</h3><ul>
-<li>save()&#160;:&#160;<a class="el" href="class_detected_objects.html#a3beb3aba26e0eda8c51a1a33c772eeaa">DetectedObjects</a>, <a class="el" href="class_detect_objects_model.html#a7bc0e2d128a112926f7c41a613a1a0b3">DetectObjectsModel</a>, <a class="el" href="class_folders.html#a832f13112910f29184bff9475916806b">Folders</a>, <a class="el" href="class_image_data.html#a3a4d2d2891fd8121f52a20187049f67d">ImageData</a></li>
+<li>save()&#160;:&#160;<a class="el" href="class_detected_objects.html#a3beb3aba26e0eda8c51a1a33c772eeaa">DetectedObjects</a>, <a class="el" href="class_detect_objects_model.html#a7bc0e2d128a112926f7c41a613a1a0b3">DetectObjectsModel</a>, <a class="el" href="class_folders.html#a832f13112910f29184bff9475916806b">Folders</a>, <a class="el" href="class_image_data.html#a3a4d2d2891fd8121f52a20187049f67d">ImageData</a>, <a class="el" href="class_loading_status.html#a81c8293301c87337e69110ec047fa793">LoadingStatus</a></li>
 <li>saveData()&#160;:&#160;<a class="el" href="class_data.html#ab564b449efa1ad6bd6f47a5475f68065">Data</a></li>
 <li>saveMetaData()&#160;:&#160;<a class="el" href="class_image_data.html#ac6b494dcde3641e7cf544ada0b5009a3">ImageData</a>, <a class="el" href="class_meta_data.html#a7a9256d463bc3dbf917208872f68cd57">MetaData</a></li>
 <li>setBackground()&#160;:&#160;<a class="el" href="class_clickable_label.html#aa550596abff263952352227cad6d2d05">ClickableLabel</a></li>
@@ -116,9 +116,14 @@ $(function(){initNavTree('functions_func_s.html',''); initResizable(true); });
 <li>setCenterTextLabel()&#160;:&#160;<a class="el" href="class_data.html#a92ec9e162d2b8c3dda3fa2459b47114d">Data</a></li>
 <li>setClassNames()&#160;:&#160;<a class="el" href="class_detect_objects_model.html#aa056c38a6795587e8534ac6853a5c985">DetectObjectsModel</a></li>
 <li>setConfidence()&#160;:&#160;<a class="el" href="class_detect_objects_model.html#a72761f4dcfea777c241caf3a190f1ab9">DetectObjectsModel</a></li>
+<li>setConnectionEnabled()&#160;:&#160;<a class="el" href="class_data.html#a2344634d6975feb0d69b42842e6e5aa9">Data</a></li>
 <li>setCropSizes()&#160;:&#160;<a class="el" href="class_image_data.html#a3866a896d0ce5525745c0ba2227491bf">ImageData</a></li>
+<li>setCurrentFolders()&#160;:&#160;<a class="el" href="class_data.html#aabf3e89e9660641c99f1d4ae4c4fa440">Data</a></li>
+<li>setDarkMode()&#160;:&#160;<a class="el" href="class_data.html#a553ff195610fc832c64e28db01d5d9f8">Data</a></li>
+<li>setDataLoaded()&#160;:&#160;<a class="el" href="class_meta_data.html#adaca5c0bdfd589300d24a71fb84772b2">MetaData</a></li>
 <li>setDate()&#160;:&#160;<a class="el" href="class_image_data.html#a7f561e13c27d0f005b8e60eaba6556dd">ImageData</a></li>
 <li>setDetectedObjects()&#160;:&#160;<a class="el" href="class_detected_objects.html#a84a2789f6ecd97f0b5b779487e38bc2f">DetectedObjects</a>, <a class="el" href="class_image_data.html#a358d8b960fa3f478b01ad8e233bd8d82">ImageData</a></li>
+<li>setDetectionProgressBarPtr()&#160;:&#160;<a class="el" href="class_data.html#ad24c0b9044f07288aa685614635a13e5">Data</a></li>
 <li>setDetectionStatus()&#160;:&#160;<a class="el" href="class_image_data.html#a2324273170e9701e94254ddd94a8c6d5">ImageData</a></li>
 <li>setDetectionStatusLoaded()&#160;:&#160;<a class="el" href="class_image_data.html#ac7581481a28c7699d9c76f998160b573">ImageData</a></li>
 <li>setDetectionStatusLoading()&#160;:&#160;<a class="el" href="class_image_data.html#a8e5f15bac5086fa00605ba38c809be3c">ImageData</a></li>
@@ -143,10 +148,18 @@ $(function(){initNavTree('functions_func_s.html',''); initResizable(true); });
 <li>setMetaData()&#160;:&#160;<a class="el" href="class_image_data.html#a4f8ea275a7300685d5c1e97aeec04cfc">ImageData</a></li>
 <li>setModel()&#160;:&#160;<a class="el" href="class_data.html#a5c73653394aceb1c7a8b0457f5ed6c8e">Data</a></li>
 <li>setModelName()&#160;:&#160;<a class="el" href="class_detect_objects_model.html#a96be9962e814ae676c4f76020fefe432">DetectObjectsModel</a></li>
+<li>setModelUsed()&#160;:&#160;<a class="el" href="class_detected_objects.html#ae6885400477f12848f521d864db368cc">DetectedObjects</a></li>
 <li>setOptions()&#160;:&#160;<a class="el" href="class_data.html#a91e22fe7608dbb6c77f5832fba0e939f">Data</a></li>
 <li>setOrCreateExifData()&#160;:&#160;<a class="el" href="class_image_data.html#a6a9a7bdc1e8cf0882f19ff0502d537fc">ImageData</a>, <a class="el" href="class_meta_data.html#a8041bdf76ccdcbbd397532342fd78652">MetaData</a></li>
 <li>setOrientation()&#160;:&#160;<a class="el" href="class_image_data.html#a13bcf697bd9ca3945d22be9f1dc53dc9">ImageData</a></li>
 <li>setParent()&#160;:&#160;<a class="el" href="class_folders.html#a63dd19cfbb6b20bd604962c8620e92fa">Folders</a></li>
+<li>setPersonIdNames()&#160;:&#160;<a class="el" href="class_data.html#a79f15829903b5afcbb647b5396aaee20">Data</a></li>
+<li>setPersonsEditor()&#160;:&#160;<a class="el" href="class_main_image.html#a428d8b1552a5c492db2862839fbdc278">MainImage</a></li>
+<li>setSaved()&#160;:&#160;<a class="el" href="class_data.html#ac786800a85d4b16c4949226057b177ae">Data</a></li>
+<li>setStatusLoaded()&#160;:&#160;<a class="el" href="class_loading_status.html#af8248a8729bf38a602278a47b05dc5c9">LoadingStatus</a></li>
+<li>setStatusLoading()&#160;:&#160;<a class="el" href="class_loading_status.html#ace95c97b5f33e916a1e4331e4b19e2a8">LoadingStatus</a></li>
+<li>setStatusNotLoaded()&#160;:&#160;<a class="el" href="class_loading_status.html#a69cb48f32049baa0dd6166c6127a6bcf">LoadingStatus</a></li>
+<li>setText()&#160;:&#160;<a class="el" href="class_clickable_folder_label.html#ab28c8060730ccbefaf481a99460b43ba">ClickableFolderLabel</a></li>
 <li>setXmpData()&#160;:&#160;<a class="el" href="class_meta_data.html#af0f2b20cf3887f906bba8c1a1855408c">MetaData</a></li>
 <li>Sizes()&#160;:&#160;<a class="el" href="class_sizes.html#a76d2b204c769805726f84a5fc716f512">Sizes</a></li>
 <li>sortCurrentImagesData()&#160;:&#160;<a class="el" href="class_data.html#a001016d11a7a0d52d537c4d95e367b4a">Data</a></li>

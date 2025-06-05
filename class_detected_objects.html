@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.10</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -122,15 +122,30 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5eb71da55a0cdd1f364748d2a97981c1" id="r_a5eb71da55a0cdd1f364748d2a97981c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5eb71da55a0cdd1f364748d2a97981c1">clear</a> ()</td></tr>
 <tr class="memdesc:a5eb71da55a0cdd1f364748d2a97981c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the detected objects.  <br /></td></tr>
 <tr class="separator:a5eb71da55a0cdd1f364748d2a97981c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac33059d855d530519771e82a7a6f7a57" id="r_ac33059d855d530519771e82a7a6f7a57"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac33059d855d530519771e82a7a6f7a57">getDetectedObjects</a> ()</td></tr>
-<tr class="memdesc:ac33059d855d530519771e82a7a6f7a57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the detected objects.  <br /></td></tr>
-<tr class="separator:ac33059d855d530519771e82a7a6f7a57"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9794339bc82511ae55f55f2cb4860b13" id="r_a9794339bc82511ae55f55f2cb4860b13"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9794339bc82511ae55f55f2cb4860b13">getDetectedObjectsConst</a> () const</td></tr>
-<tr class="memdesc:a9794339bc82511ae55f55f2cb4860b13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the detected objects (const version)  <br /></td></tr>
-<tr class="separator:a9794339bc82511ae55f55f2cb4860b13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a747df3d559db2a93ff101fe3c3861215" id="r_a747df3d559db2a93ff101fe3c3861215"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a747df3d559db2a93ff101fe3c3861215">getDetectedObjects</a> () -&gt; std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt;</td></tr>
+<tr class="memdesc:a747df3d559db2a93ff101fe3c3861215"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the detected objects.  <br /></td></tr>
+<tr class="separator:a747df3d559db2a93ff101fe3c3861215"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0a7d53a10ebc542ceb7408676ae7042" id="r_ac0a7d53a10ebc542ceb7408676ae7042"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac0a7d53a10ebc542ceb7408676ae7042">getDetectedObjectsConst</a> () const -&gt; std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt;</td></tr>
+<tr class="memdesc:ac0a7d53a10ebc542ceb7408676ae7042"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the detected objects (const version)  <br /></td></tr>
+<tr class="separator:ac0a7d53a10ebc542ceb7408676ae7042"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9db23596c6a2eae6c76207072bdbf291" id="r_a9db23596c6a2eae6c76207072bdbf291"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9db23596c6a2eae6c76207072bdbf291">getDetectedFacesPtr</a> () -&gt; std::vector&lt; <a class="el" href="class_detected_faces.html">DetectedFaces</a> &gt; *</td></tr>
+<tr class="memdesc:a9db23596c6a2eae6c76207072bdbf291"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the detected faces.  <br /></td></tr>
+<tr class="separator:a9db23596c6a2eae6c76207072bdbf291"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a413de39b581f95dcb6f5c8e6cf6b5964" id="r_a413de39b581f95dcb6f5c8e6cf6b5964"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a413de39b581f95dcb6f5c8e6cf6b5964">getDetectedFacesConst</a> () const -&gt; std::vector&lt; <a class="el" href="class_detected_faces.html">DetectedFaces</a> &gt;</td></tr>
+<tr class="memdesc:a413de39b581f95dcb6f5c8e6cf6b5964"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the detected faces.  <br /></td></tr>
+<tr class="separator:a413de39b581f95dcb6f5c8e6cf6b5964"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84a2789f6ecd97f0b5b779487e38bc2f" id="r_a84a2789f6ecd97f0b5b779487e38bc2f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a84a2789f6ecd97f0b5b779487e38bc2f">setDetectedObjects</a> (const std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt; &amp;detectedObjects)</td></tr>
 <tr class="memdesc:a84a2789f6ecd97f0b5b779487e38bc2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the detected objects.  <br /></td></tr>
 <tr class="separator:a84a2789f6ecd97f0b5b779487e38bc2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af72c2c7686b2d7efbc55ac05b17f6de1" id="r_af72c2c7686b2d7efbc55ac05b17f6de1"><td class="memItemLeft" align="right" valign="top"><a id="af72c2c7686b2d7efbc55ac05b17f6de1" name="af72c2c7686b2d7efbc55ac05b17f6de1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>detectFaces</b> (<a class="el" href="class_image_data.html">ImageData</a> imageData)</td></tr>
+<tr class="separator:af72c2c7686b2d7efbc55ac05b17f6de1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf7546b031d528354fcda387d16ae75a" id="r_aaf7546b031d528354fcda387d16ae75a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaf7546b031d528354fcda387d16ae75a">getModelUsed</a> () const</td></tr>
+<tr class="memdesc:aaf7546b031d528354fcda387d16ae75a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the model used for detection.  <br /></td></tr>
+<tr class="separator:aaf7546b031d528354fcda387d16ae75a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6885400477f12848f521d864db368cc" id="r_ae6885400477f12848f521d864db368cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6885400477f12848f521d864db368cc">setModelUsed</a> (const std::string &amp;modelName)</td></tr>
+<tr class="memdesc:ae6885400477f12848f521d864db368cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the model used for detection.  <br /></td></tr>
+<tr class="separator:ae6885400477f12848f521d864db368cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a5eb71da55a0cdd1f364748d2a97981c1" name="a5eb71da55a0cdd1f364748d2a97981c1"></a>
@@ -153,8 +168,48 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ac33059d855d530519771e82a7a6f7a57" name="ac33059d855d530519771e82a7a6f7a57"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac33059d855d530519771e82a7a6f7a57">&#9670;&#160;</a></span>getDetectedObjects()</h2>
+<a id="a413de39b581f95dcb6f5c8e6cf6b5964" name="a413de39b581f95dcb6f5c8e6cf6b5964"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a413de39b581f95dcb6f5c8e6cf6b5964">&#9670;&#160;</a></span>getDetectedFacesConst()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="class_detected_faces.html">DetectedFaces</a> &gt; DetectedObjects::getDetectedFacesConst </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const -&gt; std::vector&lt;<a class="el" href="class_detected_faces.html">DetectedFaces</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the detected faces. </p>
+<dl class="section return"><dt>Returns</dt><dd>A map of detected faces with their bounding boxes and confidence scores </dd></dl>
+
+</div>
+</div>
+<a id="a9db23596c6a2eae6c76207072bdbf291" name="a9db23596c6a2eae6c76207072bdbf291"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9db23596c6a2eae6c76207072bdbf291">&#9670;&#160;</a></span>getDetectedFacesPtr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="class_detected_faces.html">DetectedFaces</a> &gt; * DetectedObjects::getDetectedFacesPtr </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> -&gt; std::vector&lt;<a class="el" href="class_detected_faces.html">DetectedFaces</a>&gt;*</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the detected faces. </p>
+<dl class="section return"><dt>Returns</dt><dd>A map of detected faces with their bounding boxes and confidence scores </dd></dl>
+
+</div>
+</div>
+<a id="a747df3d559db2a93ff101fe3c3861215" name="a747df3d559db2a93ff101fe3c3861215"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a747df3d559db2a93ff101fe3c3861215">&#9670;&#160;</a></span>getDetectedObjects()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -163,7 +218,7 @@ Public Member Functions</h2></td></tr>
           <td class="memname">std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt; DetectedObjects::getDetectedObjects </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
+          <td> -&gt; std::map&lt;std::string, std::vector&lt;std::pair&lt;cv::Rect, float&gt;&gt;&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -173,8 +228,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a9794339bc82511ae55f55f2cb4860b13" name="a9794339bc82511ae55f55f2cb4860b13"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9794339bc82511ae55f55f2cb4860b13">&#9670;&#160;</a></span>getDetectedObjectsConst()</h2>
+<a id="ac0a7d53a10ebc542ceb7408676ae7042" name="ac0a7d53a10ebc542ceb7408676ae7042"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0a7d53a10ebc542ceb7408676ae7042">&#9670;&#160;</a></span>getDetectedObjectsConst()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -183,13 +238,33 @@ Public Member Functions</h2></td></tr>
           <td class="memname">std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt; DetectedObjects::getDetectedObjectsConst </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
+          <td> const -&gt; std::map&lt;std::string, std::vector&lt;std::pair&lt;cv::Rect, float&gt;&gt;&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Get the detected objects (const version) </p>
 <dl class="section return"><dt>Returns</dt><dd>A const map of detected objects with their bounding boxes and confidence scores </dd></dl>
+
+</div>
+</div>
+<a id="aaf7546b031d528354fcda387d16ae75a" name="aaf7546b031d528354fcda387d16ae75a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf7546b031d528354fcda387d16ae75a">&#9670;&#160;</a></span>getModelUsed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string DetectedObjects::getModelUsed </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the model used for detection. </p>
+<dl class="section return"><dt>Returns</dt><dd>The name of the model used </dd></dl>
 
 </div>
 </div>
@@ -266,6 +341,31 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <p>This function replaces the current detected objects with the new ones </p>
+
+</div>
+</div>
+<a id="ae6885400477f12848f521d864db368cc" name="ae6885400477f12848f521d864db368cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6885400477f12848f521d864db368cc">&#9670;&#160;</a></span>setModelUsed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DetectedObjects::setModelUsed </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>modelName</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the model used for detection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">modelName</td><td>The name of the model to set </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

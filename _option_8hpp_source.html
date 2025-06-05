@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.10</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -114,21 +114,33 @@ $(function(){initNavTree('_option_8hpp_source.html',''); initResizable(true); })
 <div class="foldopen" id="foldopen00005" data-start="{" data-end="};">
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno"><a class="line" href="class_option.html">    5</a></span><span class="keyword">class </span>Option {</div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>   <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    std::string getTypeConst() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    std::string* getTypePtr();</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    std::string getValueConst() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    std::string* getValuePtr();</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    Option() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    Option(<span class="keyword">const</span> std::string&amp; type, <span class="keyword">const</span> std::string&amp; value)</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        : type(type), value(value) {</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    }</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>   <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    std::string type;</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    std::string value;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    std::string <a class="code hl_function" href="class_option.html#a1331fd791e32a19390980cb028c4679e">getTypeConst</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    std::string* <a class="code hl_function" href="class_option.html#ad78ce89e8894aa60a085904df97752e3">getTypePtr</a>();</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    std::string <a class="code hl_function" href="class_option.html#a716996490a4cee28d850f6399c2f8e61">getValueConst</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    std::string* <a class="code hl_function" href="class_option.html#a40c419a934f658f8a5d070f80b9b8f9b">getValuePtr</a>();</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_option.html#a656920cbcd4ae74b2326ea1d7a6a39bb">getIntValue</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="class_option.html#a201cce0dc9836ad3843227806c0ea801">getFloatValue</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_option.html#ad99b0522a6b71e7d44fb5c14c53a49e9">getBoolValue</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    std::string <a class="code hl_function" href="class_option.html#a8ba4d64932816a84ee553f16b0ffd7b0">getValueFromList</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    Option() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    Option(<span class="keyword">const</span> std::string&amp; type, <span class="keyword">const</span> std::string&amp; value)</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        : type(type), value(value) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    }</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>   <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    std::string type;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    std::string value;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
 </div>
+<div class="ttc" id="aclass_option_html_a1331fd791e32a19390980cb028c4679e"><div class="ttname"><a href="class_option.html#a1331fd791e32a19390980cb028c4679e">Option::getTypeConst</a></div><div class="ttdeci">std::string getTypeConst() const</div><div class="ttdoc">Get the type of the option as a constant string.</div><div class="ttdef"><b>Definition</b> Option.cpp:8</div></div>
+<div class="ttc" id="aclass_option_html_a201cce0dc9836ad3843227806c0ea801"><div class="ttname"><a href="class_option.html#a201cce0dc9836ad3843227806c0ea801">Option::getFloatValue</a></div><div class="ttdeci">double getFloatValue() const</div><div class="ttdoc">Get the value as a float if the type is &quot;float&quot;.</div><div class="ttdef"><b>Definition</b> Option.cpp:51</div></div>
+<div class="ttc" id="aclass_option_html_a40c419a934f658f8a5d070f80b9b8f9b"><div class="ttname"><a href="class_option.html#a40c419a934f658f8a5d070f80b9b8f9b">Option::getValuePtr</a></div><div class="ttdeci">std::string * getValuePtr()</div><div class="ttdoc">Get a pointer to the value string of the option.</div><div class="ttdef"><b>Definition</b> Option.cpp:32</div></div>
+<div class="ttc" id="aclass_option_html_a656920cbcd4ae74b2326ea1d7a6a39bb"><div class="ttname"><a href="class_option.html#a656920cbcd4ae74b2326ea1d7a6a39bb">Option::getIntValue</a></div><div class="ttdeci">int getIntValue() const</div><div class="ttdoc">Get the value as an integer if the type is &quot;int&quot;.</div><div class="ttdef"><b>Definition</b> Option.cpp:40</div></div>
+<div class="ttc" id="aclass_option_html_a716996490a4cee28d850f6399c2f8e61"><div class="ttname"><a href="class_option.html#a716996490a4cee28d850f6399c2f8e61">Option::getValueConst</a></div><div class="ttdeci">std::string getValueConst() const</div><div class="ttdoc">Get the value of the option as a constant string.</div><div class="ttdef"><b>Definition</b> Option.cpp:24</div></div>
+<div class="ttc" id="aclass_option_html_a8ba4d64932816a84ee553f16b0ffd7b0"><div class="ttname"><a href="class_option.html#a8ba4d64932816a84ee553f16b0ffd7b0">Option::getValueFromList</a></div><div class="ttdeci">std::string getValueFromList() const</div><div class="ttdoc">Get the first value from a list if the type is &quot;list&quot;.</div><div class="ttdef"><b>Definition</b> Option.cpp:73</div></div>
+<div class="ttc" id="aclass_option_html_ad78ce89e8894aa60a085904df97752e3"><div class="ttname"><a href="class_option.html#ad78ce89e8894aa60a085904df97752e3">Option::getTypePtr</a></div><div class="ttdeci">std::string * getTypePtr()</div><div class="ttdoc">Get a pointer to the type string of the option.</div><div class="ttdef"><b>Definition</b> Option.cpp:16</div></div>
+<div class="ttc" id="aclass_option_html_ad99b0522a6b71e7d44fb5c14c53a49e9"><div class="ttname"><a href="class_option.html#ad99b0522a6b71e7d44fb5c14c53a49e9">Option::getBoolValue</a></div><div class="ttdeci">bool getBoolValue() const</div><div class="ttdoc">Get the value as a boolean if the type is &quot;bool&quot;.</div><div class="ttdef"><b>Definition</b> Option.cpp:62</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

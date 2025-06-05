@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.10</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -140,6 +140,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abbf445413e36a5219f7ce12b1337e7f3" id="r_abbf445413e36a5219f7ce12b1337e7f3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abbf445413e36a5219f7ce12b1337e7f3">MainImage</a> (std::shared_ptr&lt; <a class="el" href="class_data.html">Data</a> &gt; data, const QString &amp;i, QSize size=QSize(0, 0), bool setSize=true, bool personsEditor=false, bool square=false, bool force=false)</td></tr>
 <tr class="memdesc:abbf445413e36a5219f7ce12b1337e7f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for the <a class="el" href="class_main_image.html">MainImage</a> class.  <br /></td></tr>
 <tr class="separator:abbf445413e36a5219f7ce12b1337e7f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61292f2f72fe4eef21331fbada798136" id="r_a61292f2f72fe4eef21331fbada798136"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a61292f2f72fe4eef21331fbada798136">getPersonsEditorConst</a> () const</td></tr>
+<tr class="memdesc:a61292f2f72fe4eef21331fbada798136"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the personsEditor status.  <br /></td></tr>
+<tr class="separator:a61292f2f72fe4eef21331fbada798136"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a428d8b1552a5c492db2862839fbdc278" id="r_a428d8b1552a5c492db2862839fbdc278"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a428d8b1552a5c492db2862839fbdc278">setPersonsEditor</a> (bool personsEditor)</td></tr>
+<tr class="memdesc:a428d8b1552a5c492db2862839fbdc278"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the personsEditor status.  <br /></td></tr>
+<tr class="separator:a428d8b1552a5c492db2862839fbdc278"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c4678a1d3f50da0ec617f64bd3d2f5b" id="r_a4c4678a1d3f50da0ec617f64bd3d2f5b"><td class="memItemLeft" align="right" valign="top"><a id="a4c4678a1d3f50da0ec617f64bd3d2f5b" name="a4c4678a1d3f50da0ec617f64bd3d2f5b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateStyleSheet</b> ()</td></tr>
 <tr class="memdesc:a4c4678a1d3f50da0ec617f64bd3d2f5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the style sheet of the <a class="el" href="class_main_image.html">MainImage</a> widget. <br /></td></tr>
@@ -147,9 +153,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>updateStyleSheet</b> 
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a9aeca1cff190f916e89895f0e45ae2d4" id="r_a9aeca1cff190f916e89895f0e45ae2d4"><td class="memItemLeft" align="right" valign="top"><a id="a9aeca1cff190f916e89895f0e45ae2d4" name="a9aeca1cff190f916e89895f0e45ae2d4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>personsEditor</b> = false</td></tr>
-<tr class="separator:a9aeca1cff190f916e89895f0e45ae2d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44c0de2039faaad8d6fce797b1718828" id="r_a44c0de2039faaad8d6fce797b1718828"><td class="memItemLeft" align="right" valign="top"><a id="a44c0de2039faaad8d6fce797b1718828" name="a44c0de2039faaad8d6fce797b1718828"></a>
 QString&#160;</td><td class="memItemRight" valign="bottom"><b>border_color</b> = QString::fromStdString(Const::Color::TRANSPARENT1)</td></tr>
 <tr class="separator:a44c0de2039faaad8d6fce797b1718828"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -249,6 +252,26 @@ Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a61292f2f72fe4eef21331fbada798136" name="a61292f2f72fe4eef21331fbada798136"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61292f2f72fe4eef21331fbada798136">&#9670;&#160;</a></span>getPersonsEditorConst()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MainImage::getPersonsEditorConst </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the personsEditor status. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the personsEditor is enabled, false otherwise </dd></dl>
+
+</div>
+</div>
 <a id="a320004859e4683538a4b6fca0bb394f6" name="a320004859e4683538a4b6fca0bb394f6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a320004859e4683538a4b6fca0bb394f6">&#9670;&#160;</a></span>mouseMoveEvent()</h2>
 
@@ -383,6 +406,31 @@ Protected Member Functions</h2></td></tr>
 </dl>
 <p>This function is called when the widget needs to be repainted. It draws the cropping rectangle.</p>
 <p>It also draws detected objects if the personsEditor is enabled and there are detected objects in the image data. </p>
+
+</div>
+</div>
+<a id="a428d8b1552a5c492db2862839fbdc278" name="a428d8b1552a5c492db2862839fbdc278"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a428d8b1552a5c492db2862839fbdc278">&#9670;&#160;</a></span>setPersonsEditor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MainImage::setPersonsEditor </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>personsEditor</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the personsEditor status. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">personsEditor</td><td>True to enable the personsEditor, false to disable it </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

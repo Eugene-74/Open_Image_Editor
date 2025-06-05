@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.10</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -111,11 +111,16 @@ $(function(){initNavTree('class_detected_objects.html',''); initResizable(true);
 <p>This is the complete list of members for <a class="el" href="class_detected_objects.html">DetectedObjects</a>, including all inherited members.</p>
 <table class="directory">
   <tr class="even"><td class="entry"><a class="el" href="class_detected_objects.html#a5eb71da55a0cdd1f364748d2a97981c1">clear</a>()</td><td class="entry"><a class="el" href="class_detected_objects.html">DetectedObjects</a></td><td class="entry"></td></tr>
-  <tr class="odd"><td class="entry"><a class="el" href="class_detected_objects.html#ac33059d855d530519771e82a7a6f7a57">getDetectedObjects</a>()</td><td class="entry"><a class="el" href="class_detected_objects.html">DetectedObjects</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_detected_objects.html#a9794339bc82511ae55f55f2cb4860b13">getDetectedObjectsConst</a>() const</td><td class="entry"><a class="el" href="class_detected_objects.html">DetectedObjects</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>detectFaces</b>(ImageData imageData) (defined in <a class="el" href="class_detected_objects.html">DetectedObjects</a>)</td><td class="entry"><a class="el" href="class_detected_objects.html">DetectedObjects</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_detected_objects.html#a413de39b581f95dcb6f5c8e6cf6b5964">getDetectedFacesConst</a>() const -&gt; std::vector&lt; DetectedFaces &gt;</td><td class="entry"><a class="el" href="class_detected_objects.html">DetectedObjects</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="class_detected_objects.html#a9db23596c6a2eae6c76207072bdbf291">getDetectedFacesPtr</a>() -&gt; std::vector&lt; DetectedFaces &gt; *</td><td class="entry"><a class="el" href="class_detected_objects.html">DetectedObjects</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_detected_objects.html#a747df3d559db2a93ff101fe3c3861215">getDetectedObjects</a>() -&gt; std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt;</td><td class="entry"><a class="el" href="class_detected_objects.html">DetectedObjects</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="class_detected_objects.html#ac0a7d53a10ebc542ceb7408676ae7042">getDetectedObjectsConst</a>() const -&gt; std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt;</td><td class="entry"><a class="el" href="class_detected_objects.html">DetectedObjects</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_detected_objects.html#aaf7546b031d528354fcda387d16ae75a">getModelUsed</a>() const</td><td class="entry"><a class="el" href="class_detected_objects.html">DetectedObjects</a></td><td class="entry"></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="class_detected_objects.html#ae8474a81461d07d841ec703670ff2ab1">load</a>(std::ifstream &amp;in)</td><td class="entry"><a class="el" href="class_detected_objects.html">DetectedObjects</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_detected_objects.html#a3beb3aba26e0eda8c51a1a33c772eeaa">save</a>(std::ofstream &amp;out) const</td><td class="entry"><a class="el" href="class_detected_objects.html">DetectedObjects</a></td><td class="entry"></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="class_detected_objects.html#a84a2789f6ecd97f0b5b779487e38bc2f">setDetectedObjects</a>(const std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt; &amp;detectedObjects)</td><td class="entry"><a class="el" href="class_detected_objects.html">DetectedObjects</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_detected_objects.html#ae6885400477f12848f521d864db368cc">setModelUsed</a>(const std::string &amp;modelName)</td><td class="entry"><a class="el" href="class_detected_objects.html">DetectedObjects</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

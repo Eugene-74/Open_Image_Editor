@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.10</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -119,9 +119,9 @@ Inheritance diagram for ThreadManager:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8c6c6f3881027ebdcb4e242353ebe2e7" id="r_a8c6c6f3881027ebdcb4e242353ebe2e7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8c6c6f3881027ebdcb4e242353ebe2e7">ThreadManager</a> (QObject *parent=nullptr, int maxThreads=std::max(QThreadPool::globalInstance() -&gt;maxThreadCount() - FREE_THREAD, 1))</td></tr>
-<tr class="memdesc:a8c6c6f3881027ebdcb4e242353ebe2e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thread manager.  <br /></td></tr>
-<tr class="separator:a8c6c6f3881027ebdcb4e242353ebe2e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aceef52f327855509d70fd5ddd0b45081" id="r_aceef52f327855509d70fd5ddd0b45081"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aceef52f327855509d70fd5ddd0b45081">ThreadManager</a> (QObject *parent=nullptr, int maxThreads=QThreadPool::globalInstance() -&gt;maxThreadCount())</td></tr>
+<tr class="memdesc:aceef52f327855509d70fd5ddd0b45081"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thread manager.  <br /></td></tr>
+<tr class="separator:aceef52f327855509d70fd5ddd0b45081"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18eb12d3d752075318c3672c8efffd5b" id="r_a18eb12d3d752075318c3672c8efffd5b"><td class="memItemLeft" align="right" valign="top"><a id="a18eb12d3d752075318c3672c8efffd5b" name="a18eb12d3d752075318c3672c8efffd5b"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>~ThreadManager</b> ()</td></tr>
 <tr class="memdesc:a18eb12d3d752075318c3672c8efffd5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Close all threads and clear thread queue. <br /></td></tr>
@@ -147,8 +147,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeAllThreads</b> 
 <tr class="separator:ad61eca9bce1a696e74e90c5c653b0685"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a8c6c6f3881027ebdcb4e242353ebe2e7" name="a8c6c6f3881027ebdcb4e242353ebe2e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c6c6f3881027ebdcb4e242353ebe2e7">&#9670;&#160;</a></span>ThreadManager()</h2>
+<a id="aceef52f327855509d70fd5ddd0b45081" name="aceef52f327855509d70fd5ddd0b45081"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aceef52f327855509d70fd5ddd0b45081">&#9670;&#160;</a></span>ThreadManager()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -161,7 +161,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeAllThreads</b> 
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>maxThreads</em></span><span class="paramdefsep"> = </span><span class="paramdefval">std::max(QThreadPool::globalInstance()-&gt;maxThreadCount()&#160;-&#160;FREE_THREAD,&#160;1)</span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>maxThreads</em></span><span class="paramdefsep"> = </span><span class="paramdefval">QThreadPool::globalInstance()-&gt;maxThreadCount()</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

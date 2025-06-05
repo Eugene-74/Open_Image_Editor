@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.10</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -141,9 +141,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>print</b> () const</t
 <tr class="memitem:a5176633ff501b40080f8f20d46620dba" id="r_a5176633ff501b40080f8f20d46620dba"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5176633ff501b40080f8f20d46620dba">get</a> () const</td></tr>
 <tr class="memdesc:a5176633ff501b40080f8f20d46620dba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a string representation of the image data.  <br /></td></tr>
 <tr class="separator:a5176633ff501b40080f8f20d46620dba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25e49cbb613dc9d8fbcf5c3a9e776aaa" id="r_a25e49cbb613dc9d8fbcf5c3a9e776aaa"><td class="memItemLeft" align="right" valign="top"><a id="a25e49cbb613dc9d8fbcf5c3a9e776aaa" name="a25e49cbb613dc9d8fbcf5c3a9e776aaa"></a>
-std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getDetectedObjects</b> ()</td></tr>
+<tr class="memitem:ade4225dcaa95691b03923e30bd33c8a3" id="r_ade4225dcaa95691b03923e30bd33c8a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_detected_objects.html">DetectedObjects</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ade4225dcaa95691b03923e30bd33c8a3">getDetectedObjectsWithAll</a> ()</td></tr>
+<tr class="memdesc:ade4225dcaa95691b03923e30bd33c8a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the detected objects with all information.  <br /></td></tr>
+<tr class="separator:ade4225dcaa95691b03923e30bd33c8a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25e49cbb613dc9d8fbcf5c3a9e776aaa" id="r_a25e49cbb613dc9d8fbcf5c3a9e776aaa"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a25e49cbb613dc9d8fbcf5c3a9e776aaa">getDetectedObjects</a> ()</td></tr>
+<tr class="memdesc:a25e49cbb613dc9d8fbcf5c3a9e776aaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the detected objects.  <br /></td></tr>
 <tr class="separator:a25e49cbb613dc9d8fbcf5c3a9e776aaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d48bf99a823cfa06cd98d045196077c" id="r_a0d48bf99a823cfa06cd98d045196077c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_detected_faces.html">DetectedFaces</a> &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0d48bf99a823cfa06cd98d045196077c">getDetectedFacesPtr</a> ()</td></tr>
+<tr class="memdesc:a0d48bf99a823cfa06cd98d045196077c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the detected faces.  <br /></td></tr>
+<tr class="separator:a0d48bf99a823cfa06cd98d045196077c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d7e0e23b2d65eba00fffc84642afd34" id="r_a7d7e0e23b2d65eba00fffc84642afd34"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_detected_faces.html">DetectedFaces</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7d7e0e23b2d65eba00fffc84642afd34">getDetectedFacesConst</a> () const</td></tr>
+<tr class="memdesc:a7d7e0e23b2d65eba00fffc84642afd34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the detected faces.  <br /></td></tr>
+<tr class="separator:a7d7e0e23b2d65eba00fffc84642afd34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a358d8b960fa3f478b01ad8e233bd8d82" id="r_a358d8b960fa3f478b01ad8e233bd8d82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a358d8b960fa3f478b01ad8e233bd8d82">setDetectedObjects</a> (const std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt; &amp;detectedObjects)</td></tr>
 <tr class="memdesc:a358d8b960fa3f478b01ad8e233bd8d82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the detected objects for the image.  <br /></td></tr>
 <tr class="separator:a358d8b960fa3f478b01ad8e233bd8d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,6 +160,9 @@ std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clearDetectedObjects</b> ()</td></tr>
 <tr class="memdesc:ad24d7ad3591bb7a703b11a2cbd5919b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the detected objects for the image. <br /></td></tr>
 <tr class="separator:ad24d7ad3591bb7a703b11a2cbd5919b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0968baf8e4ee4a796653e700a1fe19f3" id="r_a0968baf8e4ee4a796653e700a1fe19f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0968baf8e4ee4a796653e700a1fe19f3">detectFaces</a> ()</td></tr>
+<tr class="memdesc:a0968baf8e4ee4a796653e700a1fe19f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detect faces in the image and extract embeddings.  <br /></td></tr>
+<tr class="separator:a0968baf8e4ee4a796653e700a1fe19f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f561e13c27d0f005b8e60eaba6556dd" id="r_a7f561e13c27d0f005b8e60eaba6556dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7f561e13c27d0f005b8e60eaba6556dd">setDate</a> (long date)</td></tr>
 <tr class="memdesc:a7f561e13c27d0f005b8e60eaba6556dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the date for the image.  <br /></td></tr>
 <tr class="separator:a7f561e13c27d0f005b8e60eaba6556dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -270,6 +282,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setOrCreateExifData</
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clearMetaData</b> ()</td></tr>
 <tr class="memdesc:ad01b78e5b42c00407dd4593bed49cae6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the metadata of the image. <br /></td></tr>
 <tr class="separator:ad01b78e5b42c00407dd4593bed49cae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ca2c6b1d63e1c56e4607acb2882049c" id="r_a3ca2c6b1d63e1c56e4607acb2882049c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_loading_status.html">LoadingStatus</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3ca2c6b1d63e1c56e4607acb2882049c">getFaceDetectionStatusPtr</a> ()</td></tr>
+<tr class="memdesc:a3ca2c6b1d63e1c56e4607acb2882049c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the face detection status.  <br /></td></tr>
+<tr class="separator:a3ca2c6b1d63e1c56e4607acb2882049c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a17cdbc441944bcbcb5b0a7c9ae121055" name="a17cdbc441944bcbcb5b0a7c9ae121055"></a>
@@ -419,6 +434,26 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clearMetaData</b> ()<
 
 </div>
 </div>
+<a id="a0968baf8e4ee4a796653e700a1fe19f3" name="a0968baf8e4ee4a796653e700a1fe19f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0968baf8e4ee4a796653e700a1fe19f3">&#9670;&#160;</a></span>detectFaces()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ImageData::detectFaces </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Detect faces in the image and extract embeddings. </p>
+<p>This function uses the detectedObjects to find faces in the image and extracts embeddings for each face. It sets the face detection status to loading while processing and updates it to loaded once done. </p>
+
+</div>
+</div>
 <a id="a5176633ff501b40080f8f20d46620dba" name="a5176633ff501b40080f8f20d46620dba"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5176633ff501b40080f8f20d46620dba">&#9670;&#160;</a></span>get()</h2>
 
@@ -477,6 +512,106 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clearMetaData</b> ()<
 
 <p>Get the date for the image. </p>
 <dl class="section return"><dt>Returns</dt><dd>The date of the image </dd></dl>
+
+</div>
+</div>
+<a id="a7d7e0e23b2d65eba00fffc84642afd34" name="a7d7e0e23b2d65eba00fffc84642afd34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d7e0e23b2d65eba00fffc84642afd34">&#9670;&#160;</a></span>getDetectedFacesConst()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="class_detected_faces.html">DetectedFaces</a> &gt; ImageData::getDetectedFacesConst </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the detected faces. </p>
+<dl class="section return"><dt>Returns</dt><dd>A map of detected faces with their bounding boxes and confidence scores </dd></dl>
+
+</div>
+</div>
+<a id="a0d48bf99a823cfa06cd98d045196077c" name="a0d48bf99a823cfa06cd98d045196077c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d48bf99a823cfa06cd98d045196077c">&#9670;&#160;</a></span>getDetectedFacesPtr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="class_detected_faces.html">DetectedFaces</a> &gt; * ImageData::getDetectedFacesPtr </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the detected faces. </p>
+<dl class="section return"><dt>Returns</dt><dd>A map of detected faces with their bounding boxes and confidence scores </dd></dl>
+
+</div>
+</div>
+<a id="a25e49cbb613dc9d8fbcf5c3a9e776aaa" name="a25e49cbb613dc9d8fbcf5c3a9e776aaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25e49cbb613dc9d8fbcf5c3a9e776aaa">&#9670;&#160;</a></span>getDetectedObjects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt; std::string, std::vector&lt; std::pair&lt; cv::Rect, float &gt; &gt; &gt; ImageData::getDetectedObjects </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the detected objects. </p>
+<dl class="section return"><dt>Returns</dt><dd>A map of detected objects with their bounding boxes and confidence scores </dd></dl>
+
+</div>
+</div>
+<a id="ade4225dcaa95691b03923e30bd33c8a3" name="ade4225dcaa95691b03923e30bd33c8a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade4225dcaa95691b03923e30bd33c8a3">&#9670;&#160;</a></span>getDetectedObjectsWithAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_detected_objects.html">DetectedObjects</a> ImageData::getDetectedObjectsWithAll </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the detected objects with all information. </p>
+<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="class_detected_objects.html">DetectedObjects</a> object containing all detected objects </dd></dl>
+
+</div>
+</div>
+<a id="a3ca2c6b1d63e1c56e4607acb2882049c" name="a3ca2c6b1d63e1c56e4607acb2882049c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ca2c6b1d63e1c56e4607acb2882049c">&#9670;&#160;</a></span>getFaceDetectionStatusPtr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_loading_status.html">LoadingStatus</a> * ImageData::getFaceDetectionStatusPtr </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the face detection status. </p>
+<dl class="section return"><dt>Returns</dt><dd>The face detection status </dd></dl>
 
 </div>
 </div>

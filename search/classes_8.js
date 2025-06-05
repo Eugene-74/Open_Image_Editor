@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['sizes_0',['Sizes',['../class_sizes.html',1,'']]]
+  ['qimageandpath_0',['QImageAndPath',['../class_q_image_and_path.html',1,'']]]
 ];

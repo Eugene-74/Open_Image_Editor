@@ -34,7 +34,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="icon.ico"/></td>
   <td id="projectalign">
-   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.9</span>
+   <div id="projectname">OpenImageEditor<span id="projectnumber">&#160;1.0.10</span>
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -115,59 +115,57 @@ $(function(){initNavTree('_folders_8hpp_source.html',''); initResizable(true); }
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
 <div class="foldopen" id="foldopen00007" data-start="{" data-end="};">
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="class_folders.html">    7</a></span><span class="keyword">class </span>Folders {</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>   <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    Folders* parent = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    std::string name;</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    std::vector&lt;std::string&gt; files;</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>   <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    std::vector&lt;Folders&gt; folders;</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>   <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    Folders() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    Folders(std::string name)</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        : name(name), parent(<span class="keyword">nullptr</span>) {}</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    Folders(std::string name, Folders* parent)</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        : name(name), parent(parent) {}</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="comment">// Constructeur de copie</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    Folders(<span class="keyword">const</span> Folders&amp; other)</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        : name(other.name), files(other.files), folders(other.folders) {}</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>   <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    Folders() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    Folders(std::string name)</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        : name(name), parent(<span class="keyword">nullptr</span>) {}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    Folders(std::string name, Folders* parent)</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        : name(name), parent(parent) {}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    Folders(<span class="keyword">const</span> Folders&amp; other)</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        : name(other.name), files(other.files), folders(other.folders) {}</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    Folders&amp; <a class="code hl_function" href="class_folders.html#a81d8155a2289d5677881d40976599a2c">operator=</a>(<span class="keyword">const</span> Folders&amp; other);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_folders.html#ad7d90513ce0f409125e4e77fe5fb0edb">operator==</a>(<span class="keyword">const</span> Folders&amp; other) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_folders.html#a832f13112910f29184bff9475916806b">save</a>(std::ofstream&amp; out) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_folders.html#a36104e51156b97ff1d85b8e16b0e7b3e">load</a>(std::ifstream&amp; in);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_folders.html#aaa63ca280c10fc90c09cc29e38c80a02">clear</a>();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_folders.html#a37d380b2a155a287f102e8a8680d3570">clearRecursively</a>();</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    Folders&amp; <a class="code hl_function" href="class_folders.html#a81d8155a2289d5677881d40976599a2c">operator=</a>(<span class="keyword">const</span> Folders&amp; other);</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_folders.html#ad7d90513ce0f409125e4e77fe5fb0edb">operator==</a>(<span class="keyword">const</span> Folders&amp; other) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_folders.html#ae7c6e9a8d1eaa2b11b14ddf8cba4ac42">addFolder</a>(std::string name);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">void</span> addFile(std::string name);</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_folders.html#a832f13112910f29184bff9475916806b">save</a>(std::ofstream&amp; out) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_folders.html#a36104e51156b97ff1d85b8e16b0e7b3e">load</a>(std::ifstream&amp; in);</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_folders.html#aaa63ca280c10fc90c09cc29e38c80a02">clear</a>();</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_folders.html#a37d380b2a155a287f102e8a8680d3570">clearRecursively</a>();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">void</span> print() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    std::string <a class="code hl_function" href="class_folders.html#a094a51c63d2015cc13841c350e9a86cb">getName</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    std::vector&lt;Folders&gt;* <a class="code hl_function" href="class_folders.html#a2d25dcb2f653b9d87b9b1503f71f31c6">getFolders</a>();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    std::vector&lt;Folders&gt; <a class="code hl_function" href="class_folders.html#a87e5fb4beba7de8d75456aa8c511c938">getFoldersConst</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_folders.html#ae7c6e9a8d1eaa2b11b14ddf8cba4ac42">addFolder</a>(std::string name);</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> addFile(std::string name);</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">void</span> print() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    std::string <a class="code hl_function" href="class_folders.html#a094a51c63d2015cc13841c350e9a86cb">getName</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    std::vector&lt;Folders&gt;* <a class="code hl_function" href="class_folders.html#a2d25dcb2f653b9d87b9b1503f71f31c6">getFolders</a>();</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    std::vector&lt;Folders&gt; <a class="code hl_function" href="class_folders.html#a87e5fb4beba7de8d75456aa8c511c938">getFoldersConst</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    std::vector&lt;std::string&gt; <a class="code hl_function" href="class_folders.html#ad50756b6b18c380743c25252d402f342">getFiles</a>();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::vector&lt;std::string&gt;* <a class="code hl_function" href="class_folders.html#a64f2be435357f0439046a42bb24d51d1">getFilesPtr</a>();</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::vector&lt;std::string&gt; <a class="code hl_function" href="class_folders.html#af6aa7e3b4b19b25c9cb776d83d818a71">getFilesConst</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    Folders* <a class="code hl_function" href="class_folders.html#ae30a85d912bcf148f1bcb287630fd64b">getFolder</a>(<span class="keywordtype">int</span> index);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    std::string* <a class="code hl_function" href="class_folders.html#a14ad9b09357294c542292f9b92e070c1">getFile</a>(<span class="keywordtype">int</span> index);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    Folders* <a class="code hl_function" href="class_folders.html#ac7e386a81be29484d75f4501c78728f5">getParent</a>();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_folders.html#a63dd19cfbb6b20bd604962c8620e92fa">setParent</a>(Folders* parent);</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    std::vector&lt;std::string&gt; <a class="code hl_function" href="class_folders.html#ad50756b6b18c380743c25252d402f342">getFiles</a>();</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    std::vector&lt;std::string&gt;* <a class="code hl_function" href="class_folders.html#a64f2be435357f0439046a42bb24d51d1">getFilesPtr</a>();</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    std::vector&lt;std::string&gt; <a class="code hl_function" href="class_folders.html#af6aa7e3b4b19b25c9cb776d83d818a71">getFilesConst</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>   <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    std::string name;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    Folders* parent = <span class="keyword">nullptr</span>;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    Folders* <a class="code hl_function" href="class_folders.html#ae30a85d912bcf148f1bcb287630fd64b">getFolder</a>(<span class="keywordtype">int</span> index);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    std::string* <a class="code hl_function" href="class_folders.html#a14ad9b09357294c542292f9b92e070c1">getFile</a>(<span class="keywordtype">int</span> index);</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    Folders* <a class="code hl_function" href="class_folders.html#ac7e386a81be29484d75f4501c78728f5">getParent</a>();</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_folders.html#a63dd19cfbb6b20bd604962c8620e92fa">setParent</a>(Folders* parent);</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    std::vector&lt;Folders&gt; folders;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    std::vector&lt;std::string&gt; files;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
 </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keywordtype">bool</span> getIfExist(<a class="code hl_class" href="class_folders.html">Folders</a>* currentFolder, <span class="keyword">const</span> std::string&amp; folderName);</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keywordtype">bool</span> getIfExist(<a class="code hl_class" href="class_folders.html">Folders</a>* currentFolder, <span class="keyword">const</span> std::string&amp; folderName);</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="keywordtype">bool</span> containMedia(<span class="keyword">const</span> std::string&amp; path);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keywordtype">bool</span> containMedia(<span class="keyword">const</span> std::string&amp; path);</div>
 <div class="ttc" id="aclass_folders_html"><div class="ttname"><a href="class_folders.html">Folders</a></div><div class="ttdef"><b>Definition</b> Folders.hpp:7</div></div>
 <div class="ttc" id="aclass_folders_html_a094a51c63d2015cc13841c350e9a86cb"><div class="ttname"><a href="class_folders.html#a094a51c63d2015cc13841c350e9a86cb">Folders::getName</a></div><div class="ttdeci">std::string getName() const</div><div class="ttdoc">Give you the name of the Folder.</div><div class="ttdef"><b>Definition</b> Folders.cpp:123</div></div>
 <div class="ttc" id="aclass_folders_html_a14ad9b09357294c542292f9b92e070c1"><div class="ttname"><a href="class_folders.html#a14ad9b09357294c542292f9b92e070c1">Folders::getFile</a></div><div class="ttdeci">std::string * getFile(int index)</div><div class="ttdoc">Give you the file at the index.</div><div class="ttdef"><b>Definition</b> Folders.cpp:189</div></div>

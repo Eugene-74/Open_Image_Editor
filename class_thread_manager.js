@@ -1,6 +1,6 @@
 var class_thread_manager =
 [
-    [ "ThreadManager", "class_thread_manager.html#a8c6c6f3881027ebdcb4e242353ebe2e7", null ],
+    [ "ThreadManager", "class_thread_manager.html#aceef52f327855509d70fd5ddd0b45081", null ],
     [ "~ThreadManager", "class_thread_manager.html#a18eb12d3d752075318c3672c8efffd5b", null ],
     [ "addHeavyThread", "class_thread_manager.html#ad65cff6ff9add9276a29929342a5e244", null ],
     [ "addHeavyThreadToFront", "class_thread_manager.html#ac3d80cbe18043a043ac4d34e2396f9e8", null ],
