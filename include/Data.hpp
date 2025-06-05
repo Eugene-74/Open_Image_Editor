@@ -238,5 +238,5 @@ cv::dnn::Net load_net(std::string model);
 
 QImage rotateQImage(QImage image, ImageData* imageData);
 
-QImage loadAnImage(std::string imagePath, int thumbnail);
+QImage loadAnImage(std::string imagePath);
 QImage loadAnImageWithRotation(ImageData imageData, int thumbnail);

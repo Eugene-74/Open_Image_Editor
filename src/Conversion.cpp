@@ -21,6 +21,7 @@
 #include <string>
 
 #include "Const.hpp"
+#include "Data.hpp"
 #include "Verification.hpp"
 
 namespace fs = std::filesystem;
@@ -67,14 +68,15 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
             progressDialog->setMaximum(3);
             QApplication::processEvents();
         }
-        QImage image;
-        if (isHeicOrHeif(inputPath)) {
-            image = readHeicAndHeif(inputPath);
-        } else if (isRaw(inputPath)) {
-            image = readRaw(inputPath);
-        } else {
-            image.load(QString::fromStdString(inputPath));
-        }
+
+        QImage image = loadAnImage(inputPath);
+        // if (isHeicOrHeif(inputPath)) {
+        //     image = readHeicAndHeif(inputPath);
+        // } else if (isRaw(inputPath)) {
+        //     image = readRaw(inputPath);
+        // } else {
+        //     image.load(QString::fromStdString(inputPath));
+        // }
 
         if (image.isNull()) {
             qWarning() << "Could not open or find the image : " << QString::fromStdString(inputPath);
@@ -85,19 +87,19 @@ bool convertImageWithMetadata(const std::string& inputPath, const std::string& o
             QApplication::processEvents();
         }
 
+        // TODO Support pas les accens
         std::unique_ptr<Exiv2::Image> exivImage(Exiv2::ImageFactory::open(inputPath).release());
-        exivImage->readMetadata();
 
+        exivImage->readMetadata();
         if (isHeicOrHeif(outputPath)) {
             writeHeicAndHeif(image, outputPath);
-
         } else {
             if (!image.save(QString::fromStdString(outputPath))) {
                 qWarning() << "Could not write the image : " << QString::fromStdString(outputPath);
                 return false;
-            } else {
             }
         }
+
         if (progressDialog) {
             progressDialog->setValue(2);
             QApplication::processEvents();

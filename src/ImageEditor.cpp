@@ -1083,6 +1083,7 @@ MainImage* ImageEditor::createImageLabel() {
 void ImageEditor::reloadImageLabel() {
     if (imageLabel) {
         MainImage* imageLabelNew = createImageLabel();
+        populateMetadataFields();
 
         fixedFrame->layout()->replaceWidget(imageLabel, imageLabelNew);
 
@@ -1409,42 +1410,23 @@ void ImageEditor::deleteImage() {
  * @brief Populate the metadata fields with data from the current image
  * @details This function retrieves the metadata from the current image and populates the corresponding fields in the UI.
  */
-// void ImageEditor::populateMetadataFields() {
-//     ImagesData* imagesData = data->getImagesDataPtr();
-//     ImageData* imageData = imagesData->getCurrentImageData();
-//     Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
+void ImageEditor::populateMetadataFields() {
+    ImagesData* imagesData = data->getImagesDataPtr();
+    ImageData* imageData = imagesData->getCurrentImageData();
+    Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
 
-//     if (data->getDarkMode()) {
-//         dateEdit->setStyleSheet("QDateTimeEdit { color: white; }");
-//     } else {
-//         dateEdit->setStyleSheet("QDateTimeEdit { color: black; }");
-//     }
-
-//     if (exifData["Exif.Image.DateTime"].count() != 0) {
-//         QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
-//         QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
-//         if (dateTime.date() == QDate::currentDate()) {
-//             dateEdit->setStyleSheet("QDateTimeEdit { color: red; }");
-//         }
-//         dateEdit->setDateTime(dateTime);
-//     } else {
-//         dateEdit->setDateTime(QDateTime::currentDateTime());
-//         dateEdit->setStyleSheet("QDateTimeEdit { color: red; }");
-//     }
-//     dateEdit->update();
-
-//     if (mapEditor) {
-//         double latitude = imageData->getLatitude();
-//         double longitude = imageData->getLongitude();
-//         editGeo->setImageData(imageData);
-//         if (latitude == 0 && longitude == 0) {
-//             editGeo->removeMapPoint();
-//         } else {
-//             editGeo->moveMapPoint(latitude, longitude);
-//             editGeo->setMapCenter(latitude, longitude);
-//         }
-//     }
-// }
+    if (mapEditor) {
+        double latitude = imageData->getLatitude();
+        double longitude = imageData->getLongitude();
+        editGeo->setImageData(imageData);
+        if (latitude == 0 && longitude == 0) {
+            editGeo->removeMapPoint();
+        } else {
+            editGeo->moveMapPoint(latitude, longitude);
+            editGeo->setMapCenter(latitude, longitude);
+        }
+    }
+}
 
 /**
  * @brief Validate and save the metadata fields

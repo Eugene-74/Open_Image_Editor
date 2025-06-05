@@ -67,7 +67,7 @@ class ImageEditor : public QMainWindow {
     void deleteImage();
     void unDeleteImage();
 
-    // void populateMetadataFields();
+    void populateMetadataFields();
     void validateMetadata();
 
     void startImageOpen();

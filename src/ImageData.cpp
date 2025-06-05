@@ -552,10 +552,10 @@ LoadingStatus* ImageData::getFaceDetectionStatusPtr() {
  *          It sets the face detection status to loading while processing and updates it to loaded once done.
  */
 void ImageData::detectFaces() {
-    if (faceDetectionStatus.isStatusNotLoaded()) {
-        if (detectedObjects.getDetectedFacesPtr()->size() > 0) {
-            return;
-        }
+    // if (faceDetectionStatus.isStatusNotLoaded()) {
+    if (detectedObjects.getDetectedFacesPtr()->size() > 0) {
+        return;
+    }
         detectedObjects.detectFaces(*this);
 
         auto* faces = detectedObjects.getDetectedFacesPtr();
@@ -568,7 +568,6 @@ void ImageData::detectFaces() {
             } else if (img.channels() == 1) {
                 cv::cvtColor(img, img, cv::COLOR_GRAY2BGR);
             }
-            // cv::Mat img = cv::imread(this->getImagePath());
             if (img.empty()) {
                 qWarning() << "Failed to load image for embedding extraction:" << QString::fromStdString(this->getImagePath());
                 continue;
@@ -584,5 +583,5 @@ void ImageData::detectFaces() {
             cv::Mat embedding = detectEmbedding(faceROI);
             *faceData.getEmbeddingPtr() = embedding;
         }
-    }
+        // }
 }

@@ -260,7 +260,7 @@ QImage Data::loadImageNormal(std::string imagePath, int thumbnail, bool force) {
         if (!image.isNull() && !force) {
             return image;
         } else {
-            image = loadAnImage(thumbnailPath, thumbnail);
+            image = loadAnImage(thumbnailPath);
         }
     }
 
@@ -2430,7 +2430,8 @@ void Data::detectAndRecognizeFaces(ImageData* imageData) {
  */
 QImage loadAnImageWithRotation(ImageData imageData, int thumbnail) {
     std::string imagePath = imageData.getImagePathConst();
-    QImage image = loadAnImage(imagePath, thumbnail);
+    // TODO get thumbnail path
+    QImage image = loadAnImage(imagePath);
     image = rotateQImage(image, &imageData);
     return image;
 }
@@ -2441,7 +2442,7 @@ QImage loadAnImageWithRotation(ImageData imageData, int thumbnail) {
  * @param thumbnail Thumbnail size (0 for no thumbnail)
  * @return QImage object containing the image data
  */
-QImage loadAnImage(std::string imagePath, int thumbnail) {
+QImage loadAnImage(std::string imagePath) {
     std::string imagePathbis = imagePath;
 
     QImage image;
@@ -2453,11 +2454,7 @@ QImage loadAnImage(std::string imagePath, int thumbnail) {
     }
 
     if (isHeicOrHeif(imagePathbis)) {
-        if (thumbnail == 0) {
-            image = readHeicAndHeif(imagePathbis);
-        } else {
-            qWarning() << "Thumbnail not supported for HEIC/HEIF images";
-        }
+        image = readHeicAndHeif(imagePathbis);
 
         // } else if (isRaw(imagePathbis)) {
         //     if (thumbnail == 0) {
@@ -2466,11 +2463,7 @@ QImage loadAnImage(std::string imagePath, int thumbnail) {
         //         qWarning() << "Thumbnail not supported for RAW images";
         //     }
     } else {
-        // auto start = std::chrono::high_resolution_clock::now();
         image.load(QString::fromStdString(imagePathbis));
-        // auto end = std::chrono::high_resolution_clock::now();
-        // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        // qDebug() << imagePathbis << " : ClickableLabel::loadImage execution time:" << duration << "ms";
     }
 
     if (image.isNull()) {
