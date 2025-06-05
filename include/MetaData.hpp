@@ -23,6 +23,8 @@ class MetaData {
 
     int getImageOrientation();
     long getTimestamp();
+    void setTimestamp(long timestamp);
+
     QString getTimestampString();
 
     void setLatitude(double latitude);
@@ -30,6 +32,9 @@ class MetaData {
 
     void setLongitude(double longitude);
     double getLongitude() const;
+
+    int getOrientation() const;
+    void setOrientation(int orientation);
 
     bool modifyExifValue(const std::string& key, const std::string& newValue);
     bool modifyXmpValue(const std::string& key, const std::string& newValue);

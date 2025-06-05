@@ -84,6 +84,16 @@ long MetaData::getTimestamp() {
 }
 
 /**
+ * @brief Set the timestamp in the metadata
+ * @param timestamp The timestamp in seconds since the Unix epoch
+ */
+void MetaData::setTimestamp(long timestamp) {
+    QDateTime dateTime = QDateTime::fromSecsSinceEpoch(timestamp);
+    QString dateTimeStr = dateTime.toString("yyyy:MM:dd HH:mm:ss");
+    modifyExifValue("Exif.Image.DateTime", dateTimeStr.toStdString());
+}
+
+/**
  * @brief Get the timestamp string from the metadata
  * @return The timestamp string in the format "yyyy-MM-dd HH:mm:ss"
  */
@@ -233,11 +243,6 @@ void MetaData::loadData(const std::string& imagePath) {
             iptcMetaData = image->iptcData();
 
             setDataLoaded(true);
-
-            // auto pos = exifMetaData.findKey(Exiv2::ExifKey("Exif.Image.DateTime"));
-            // if (pos == exifMetaData.end()) {
-            // qWarning() << "Erreur : 'Exif.Image.DateTime' n'existe pas dans les métadonnées.";
-            // }
         }
     } catch (const Exiv2::Error& e) {
         qWarning() << "Erreur lors de la lecture des métadonnées EXIF, Xmp ou Iptc : " << e.what();
@@ -533,4 +538,33 @@ Exiv2::XmpData MetaData::getXmpMetaDataConst() const {
  */
 Exiv2::IptcData MetaData::getIptcMetaDataConst() const {
     return iptcMetaData;
+}
+
+/**
+ * @brief Set the orientation in the metadata
+ * @param orientation The orientation to set (1-8)
+ */
+void MetaData::setOrientation(int orientation) {
+    if (orientation < 1 || orientation > 8) {
+        qWarning() << "Orientation invalide : " << orientation;
+        orientation = 1;
+    }
+    modifyExifValue("Exif.Image.Orientation", std::to_string(orientation));
+}
+
+/**
+ * @brief Get the orientation from the metadata
+ * @return The orientation (1-8)
+ */
+int MetaData::getOrientation() const {
+    for (auto& entry : exifMetaData) {
+        if (entry.key() == "Exif.Image.Orientation") {
+#ifdef _WIN32
+            return entry.toLong();
+#else
+            return entry.toInt64();
+#endif
+        }
+    }
+    return 1;
 }

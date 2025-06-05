@@ -390,9 +390,9 @@ void ImageEditor::updateButtons() {
             dateEdit->setStyleSheet("QDateTimeEdit { color: black; }");
         }
 
-        if (exifData["Exif.Image.DateTime"].count() != 0) {
-            QString dateTimeStr = QString::fromStdString(exifData["Exif.Image.DateTime"].toString());
-            QDateTime dateTime = QDateTime::fromString(dateTimeStr, "yyyy:MM:dd HH:mm:ss");
+        if (imageData->getDate() != 0) {
+            long dateTimeLong = imageData->getDate();
+            QDateTime dateTime = QDateTime::fromSecsSinceEpoch(dateTimeLong);
             dateEdit->setDateTime(dateTime);
             if (!dateTime.isValid()) {
                 dateEdit->setDateTime(QDateTime::currentDateTime());
@@ -1440,20 +1440,15 @@ void ImageEditor::validateMetadata() {
 
     QString lastDate = metaData->getTimestampString();
 
-    QString dateTimeStr = dateEdit->dateTime().toString("yyyy:MM:dd HH:mm:ss");
-    metaData->modifyExifValue("Exif.Image.DateTime", dateTimeStr.toStdString());
-    imageData->saveMetaData();
+    imageData->setDate(dateEdit->dateTime().toSecsSinceEpoch());
 
+    // TODO re do X)
     data.get()->addAction(
         [this, lastDate, metaData]() {
-            metaData->modifyExifValue("Exif.Image.DateTime", lastDate.toStdString());
-            data->getImagesDataPtr()->getCurrentImageData()->saveMetaData();
-            reload();
+            // reload();
         },
-        [this, dateTimeStr, metaData]() {
-            metaData->modifyExifValue("Exif.Image.DateTime", dateTimeStr.toStdString());
-            data->getImagesDataPtr()->getCurrentImageData()->saveMetaData();
-            reload();
+        [this, metaData]() {
+            // reload();
         });
 }
 
@@ -1529,10 +1524,8 @@ void ImageEditor::rotateLeft() {
     ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
     imageData->clearDetectedObjects();
 
-    std::string extension = imageData->getImageExtension();
-    int nbr = data->getImagesDataPtr()->getImageNumber();
-    int imageInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
-    data->rotateLeft(imageInTotal, extension, [this]() { reload(); });
+    imageData->rotate(Const::Rotation::LEFT);
+    reload();
 }
 
 /**
@@ -1543,11 +1536,8 @@ void ImageEditor::rotateRight() {
     ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
     imageData->clearDetectedObjects();
 
-    std::string extension = imageData->getImageExtension();
-    int nbr = data->getImagesDataPtr()->getImageNumber();
-    int imageInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
-
-    data->rotateRight(imageInTotal, extension, [this]() { reload(); });
+    imageData->rotate(Const::Rotation::RIGHT);
+    reload();
 }
 
 /**
@@ -1558,11 +1548,8 @@ void ImageEditor::mirrorUpDown() {
     ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
     imageData->clearDetectedObjects();
 
-    std::string extension = imageData->getImageExtension();
-    int nbr = data->getImagesDataPtr()->getImageNumber();
-    int imageInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
-
-    data->mirrorUpDown(imageInTotal, extension, [this]() { reload(); });
+    imageData->mirror(true);
+    reload();
 }
 
 /**
@@ -1572,11 +1559,9 @@ void ImageEditor::mirrorUpDown() {
 void ImageEditor::mirrorLeftRight() {
     ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
     imageData->clearDetectedObjects();
-    std::string extension = imageData->getImageExtension();
-    int nbr = data->getImagesDataPtr()->getImageNumber();
-    int imageInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
 
-    data->mirrorLeftRight(imageInTotal, extension, [this]() { reload(); });
+    imageData->mirror(false);
+    reload();
 }
 
 /**

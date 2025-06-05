@@ -107,18 +107,21 @@ class ImageData {
         std::string getExtension();
         void setExtension(std::string extension);
 
-       private:
-        MetaData metaData;
-        DetectedObjects detectedObjects;
+        bool rotate(int rotation);
+        bool mirror(bool UpDown) ;
+        
+           private:
+            MetaData metaData;
+            DetectedObjects detectedObjects;
 
-        Folders folders;
-        DetectionStatus detectionStatus = DetectionStatus::NotLoaded;
-        LoadingStatus faceDetectionStatus;
+            Folders folders;
+            DetectionStatus detectionStatus = DetectionStatus::NotLoaded;
+            LoadingStatus faceDetectionStatus;
 
-        std::vector<std::vector<QPoint>> cropSizes;
-        int orientation;
-        long date = 0;
-        double latitude = 0.0;
-        double longitude = 0.0;
-        std::string extension = "";
-};
+            std::vector<std::vector<QPoint>> cropSizes;
+            int orientation;
+            long date = 0;
+            double latitude = 0.0;
+            double longitude = 0.0;
+            std::string extension = "";
+        };

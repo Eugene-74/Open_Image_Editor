@@ -234,8 +234,13 @@ void ImageData::loadData() {
         if (!metaData.getDataLoadedConst()) {
             metaData.loadData(getImagePath());
 
-            setOrientation(metaData.getImageOrientation());
-            setDate(metaData.getTimestamp());
+            if (orientation == Const::Orientation::UNDEFINED) {
+                setOrientation(metaData.getImageOrientation());
+            }
+
+            if (date == 0) {
+                setDate(metaData.getTimestamp());
+            }
 
             auto exifData = metaData.getExifData();
             if (metaData.getLatitude() != -1 &&
@@ -277,8 +282,8 @@ int ImageData::getImageOrientation() {
  */
 void ImageData::turnImage(int rotation) {
     this->orientation = rotation;
-    metaData.modifyExifValue("Exif.Image.Orientation", std::to_string(rotation));
-    saveMetaData();
+    // metaData.modifyExifValue("Exif.Image.Orientation", std::to_string(rotation));
+    // saveMetaData();
 }
 
 /**
@@ -629,4 +634,139 @@ void ImageData::setExtension(std::string extension) {
     } else {
         qWarning() << "Extension not supported as image:" << QString::fromStdString(extension);
     }
+}
+
+bool ImageData::rotate(int rotation) {
+    if (rotation != Const::Rotation::LEFT && rotation != Const::Rotation::RIGHT) {
+        qWarning() << "Rotation invalide : " << rotation;
+        return false;
+    }
+    if (rotation == Const::Rotation::LEFT) {
+        switch (orientation) {
+            case Const::Orientation::NORMAL:
+                orientation = Const::Orientation::ROTATE_270;
+                break;
+            case Const::Orientation::FLIP_HORIZONTAL:
+                orientation = Const::Orientation::TRANSVERSE;
+                break;
+            case Const::Orientation::ROTATE_180:
+                orientation = Const::Orientation::ROTATE_90;
+                break;
+            case Const::Orientation::FLIP_VERTICAL:
+                orientation = Const::Orientation::TRANSPOSE;
+                break;
+            case Const::Orientation::TRANSPOSE:
+                orientation = Const::Orientation::FLIP_HORIZONTAL;
+                break;
+            case Const::Orientation::ROTATE_90:
+                orientation = Const::Orientation::NORMAL;
+                break;
+            case Const::Orientation::TRANSVERSE:
+                orientation = Const::Orientation::FLIP_VERTICAL;
+                break;
+            case Const::Orientation::ROTATE_270:
+                orientation = Const::Orientation::ROTATE_180;
+                break;
+            default:
+                orientation = Const::Orientation::NORMAL;
+                break;
+        }
+    }
+    if (rotation == Const::Rotation::RIGHT) {
+        switch (orientation) {
+            case Const::Orientation::NORMAL:
+                orientation = Const::Orientation::ROTATE_90;
+                break;
+            case Const::Orientation::FLIP_HORIZONTAL:
+                orientation = Const::Orientation::TRANSPOSE;
+                break;
+            case Const::Orientation::ROTATE_180:
+                orientation = Const::Orientation::ROTATE_270;
+                break;
+            case Const::Orientation::FLIP_VERTICAL:
+                orientation = Const::Orientation::TRANSVERSE;
+                break;
+            case Const::Orientation::TRANSPOSE:
+                orientation = Const::Orientation::FLIP_VERTICAL;
+                break;
+            case Const::Orientation::ROTATE_90:
+                orientation = Const::Orientation::ROTATE_180;
+                break;
+            case Const::Orientation::TRANSVERSE:
+                orientation = Const::Orientation::FLIP_HORIZONTAL;
+                break;
+            case Const::Orientation::ROTATE_270:
+                orientation = Const::Orientation::NORMAL;
+                break;
+            default:
+                orientation = Const::Orientation::NORMAL;
+                break;
+        }
+    }
+
+    return true;
+}
+
+bool ImageData::mirror(bool UpDown) {
+    if (UpDown) {
+        switch (orientation) {
+            case Const::Orientation::NORMAL:
+                orientation = Const::Orientation::FLIP_VERTICAL;
+                break;
+            case Const::Orientation::ROTATE_180:
+                orientation = Const::Orientation::FLIP_HORIZONTAL;
+                break;
+            case Const::Orientation::ROTATE_90:
+                orientation = Const::Orientation::TRANSVERSE;
+                break;
+            case Const::Orientation::ROTATE_270:
+                orientation = Const::Orientation::TRANSPOSE;
+                break;
+            case Const::Orientation::FLIP_HORIZONTAL:
+                orientation = Const::Orientation::ROTATE_180;
+                break;
+            case Const::Orientation::FLIP_VERTICAL:
+                orientation = Const::Orientation::NORMAL;
+                break;
+            case Const::Orientation::TRANSPOSE:
+                orientation = Const::Orientation::ROTATE_270;
+                break;
+            case Const::Orientation::TRANSVERSE:
+                orientation = Const::Orientation::ROTATE_90;
+                break;
+            default:
+                break;
+        }
+    } else {
+        switch (orientation) {
+            case Const::Orientation::NORMAL:
+                orientation = Const::Orientation::FLIP_HORIZONTAL;
+                break;
+            case Const::Orientation::ROTATE_180:
+                orientation = Const::Orientation::FLIP_VERTICAL;
+                break;
+            case Const::Orientation::ROTATE_90:
+                orientation = Const::Orientation::TRANSPOSE;
+                break;
+            case Const::Orientation::ROTATE_270:
+                orientation = Const::Orientation::TRANSVERSE;
+                break;
+            case Const::Orientation::FLIP_HORIZONTAL:
+                orientation = Const::Orientation::NORMAL;
+                break;
+            case Const::Orientation::FLIP_VERTICAL:
+                orientation = Const::Orientation::ROTATE_180;
+                break;
+            case Const::Orientation::TRANSPOSE:
+                orientation = Const::Orientation::ROTATE_90;
+                break;
+            case Const::Orientation::TRANSVERSE:
+                orientation = Const::Orientation::ROTATE_270;
+                break;
+            default:
+                break;
+        }
+    }
+
+    return true;
 }

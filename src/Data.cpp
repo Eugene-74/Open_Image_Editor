@@ -25,6 +25,7 @@
 #include "Data.hpp"
 #include "Download.hpp"
 #include "FacesRecognition.hpp"
+#include "GPS_Conversion.hpp"
 #include "Network.hpp"
 #include "ObjectRecognition.hpp"
 #include "Text.hpp"
@@ -694,10 +695,50 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
 
             std::string destinationFile;
 
+            Exiv2::ExifData exifData;
+            Exiv2::IptcData iptcData;
+            Exiv2::XmpData xmpData;
+            if (isExifPath(imageData->getExportImageName())) {
+                imageData->loadData();
+                exifData = imageData->getMetaDataPtr()->getExifData();
+                iptcData = imageData->getMetaDataPtr()->getIptcData();
+                xmpData = imageData->getMetaDataPtr()->getXmpData();
+
+                // if (exifData["Exif.Image.DateTime"].count() != 0) {
+                //     std::string date = exifData["Exif.Image.DateTime"].toString();
+                //     imageData->setDate(imageData->getMetaDataPtr()->getTimestamp());
+                // }
+                // if (exifData["Exif.GPSInfo.GPSLatitude"].count() != 0 && exifData["Exif.GPSInfo.GPSLongitude"].count() != 0) {
+                //     double latitude = convertGpsCoordinateToDecimal(exifData["Exif.GPSInfo.GPSLatitude"].toString());
+                //     double longitude = convertGpsCoordinateToDecimal(exifData["Exif.GPSInfo.GPSLongitude"].toString());
+                //     imageData->setLatitude(latitude);
+                //     imageData->setLongitude(longitude);
+                // }
+                // if (imageData->getOrientation() == Const::Orientation::UNDEFINED) {
+                //     imageData->setOrientation(imageData->getMetaDataPtr()->getImageOrientation());
+                // }
+                if (imageData->getOrientation() != Const::Orientation::UNDEFINED) {
+                    imageData->getMetaDataPtr()->setOrientation(imageData->getOrientation());
+                    qDebug() << "Set orientation to : " << imageData->getOrientation();
+                }
+
+                if (imageData->getDate() != 0) {
+                    imageData->getMetaDataPtr()->setTimestamp(imageData->getDate());
+                }
+
+                if (imageData->getLatitude() >= 0 && imageData->getLongitude() >= 0) {
+                    imageData->getMetaDataPtr()->setLatitude(imageData->getLatitude());
+                    imageData->getMetaDataPtr()->setLongitude(imageData->getLongitude());
+                }
+                imageData->saveMetaData();
+            }
+            // TODO faire rotation pour les images sans exif
+
             if (dateInName) {
                 imageData->loadData();
-                Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
-                if (exifData["Exif.Image.DateTime"].count() != 0) {
+                // Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
+
+                if (isExifPath(imageData->getExportImageName()) && (exifData["Exif.Image.DateTime"].count() != 0)) {
                     std::string date = exifData["Exif.Image.DateTime"].toString();
                     std::replace(date.begin(), date.end(), ':', '-');
                     std::replace(date.begin(), date.end(), ' ', '_');
@@ -709,18 +750,18 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
                 destinationFile = destinationPath + "/" + folderName + "/" + fileName;
             }
 
-            if (!imageData->getCropSizes().empty() || imageData->hasExtension()) {
-                if (imageData->hasExtension()) {
-                    // Change the extension of destinationFile to imageData->getExtension()
-                    std::string newExtension = imageData->getExtension();
-                    std::string::size_type dotPos = destinationFile.find_last_of('.');
-                    if (dotPos != std::string::npos) {
-                        destinationFile = destinationFile.substr(0, dotPos) + newExtension;
-                    } else {
-                        destinationFile += newExtension;
-                    }
-                    // qDebug() << "Copying image to extension : " << QString::fromStdString(destinationFile);
+            // if (!imageData->getCropSizes().empty() || imageData->hasExtension()) {
+            if (imageData->hasExtension()) {
+                // Change the extension of destinationFile to imageData->getExtension()
+                std::string newExtension = imageData->getExtension();
+                std::string::size_type dotPos = destinationFile.find_last_of('.');
+                if (dotPos != std::string::npos) {
+                    destinationFile = destinationFile.substr(0, dotPos) + newExtension;
+                } else {
+                    destinationFile += newExtension;
                 }
+                // qDebug() << "Copying image to extension : " << QString::fromStdString(destinationFile);
+            }
 
                 QImage image = loadAnImage(imageData->getImagePath());
 
@@ -737,23 +778,21 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
 
                 saveAnImage(destinationFile, image);
 
-                std::unique_ptr<Exiv2::Image> srcImage = Exiv2::ImageFactory::open(imageData->getImagePath());
-                srcImage->readMetadata();
-                std::unique_ptr<Exiv2::Image> destImage = Exiv2::ImageFactory::open(destinationFile);
-                destImage->setExifData(srcImage->exifData());
-                destImage->setIptcData(srcImage->iptcData());
-                destImage->setXmpData(srcImage->xmpData());
-                destImage->writeMetadata();
-            }
-
-            else {
-                QFile::copy(QString::fromStdString(imageData->getImagePath()), QString::fromStdString(destinationFile));
-            }
-            if (progressDialog.wasCanceled()) {
-                return;
-            }
-            progressDialog.setValue(progress++);
-            QApplication::processEvents();
+                if (isExifPath(imageData->getExportImageName())) {
+                    std::unique_ptr<Exiv2::Image> destImage = Exiv2::ImageFactory::open(destinationFile);
+                    destImage->setExifData(exifData);
+                    destImage->setIptcData(iptcData);
+                    destImage->setXmpData(xmpData);
+                    destImage->writeMetadata();
+                }
+                // else {
+                //     QFile::copy(QString::fromStdString(imageData->getImagePath()), QString::fromStdString(destinationFile));
+                // }
+                if (progressDialog.wasCanceled()) {
+                    return;
+                }
+                progressDialog.setValue(progress++);
+                QApplication::processEvents();
         }
     }
 }
@@ -1256,7 +1295,7 @@ void Data::realRotate(int nbr, int rotation, std::function<void()> reload) {
  */
 void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
     ImageData* imageData = imagesData.getImageData(nbr);
-    imageData = this->getImagesDataPtr()->getImageData(imageData->getImagePath());
+    // imageData = this->getImagesDataPtr()->getImageData(imageData->getImagePath());
 
     if (!isTurnable(imageData->getImagePath())) {
         qWarning() << "Image not turnable : " << imageData->getImagePath();
@@ -1327,7 +1366,7 @@ void Data::exifRotate(int nbr, int rotation, std::function<void()> reload) {
     }
 
     imageData->turnImage(orientation);
-    imageData->saveMetaData();
+    // imageData->saveMetaData();
 
     reload();
 }
