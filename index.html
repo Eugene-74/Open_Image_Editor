@@ -33,26 +33,21 @@
 <body>
     <h1>Documentation</h1>
     <ul id="doc-list">
-        <!-- Les liens seront ajoutés ici -->
     </ul>
     <script>
-        // Liste des fichiers à afficher (à générer dynamiquement côté serveur ou build)
-        const docFiles = [
-            "1.0.10",
-            "1.0.11",
-            "1.0.12"
-            // Ajoutez ici d'autres fichiers si besoin
-        ];
-
-        const list = document.getElementById('doc-list');
-        docFiles.forEach(file => {
-            const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.href = file;
-            a.textContent = `Ouvrir la documentation ${file}`;
-            li.appendChild(a);
-            list.appendChild(li);
-        });
+            fetch('versions.json')
+                .then(res => res.json())
+                .then(docFiles => {
+                    const list = document.getElementById('doc-list');
+                    docFiles.forEach(file => {
+                        const li = document.createElement('li');
+                        const a = document.createElement('a');
+                    a.href = file + '/';
+                    a.textContent = `Ouvrir la documentation ${file}`;
+                    li.appendChild(a);
+                    list.appendChild(li);
+                });
+            });
     </script>
 </body>
 
