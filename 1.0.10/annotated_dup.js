@@ -1,0 +1,35 @@
+var annotated_dup =
+[
+    [ "checkForMissingTranslation", null, [
+      [ "TranslationEditor", "classcheck_for_missing_translation_1_1_translation_editor.html", null ]
+    ] ],
+    [ "Actions", "class_actions.html", null ],
+    [ "AsyncDeque", "class_async_deque.html", null ],
+    [ "AsyncProgressBar", "class_async_progress_bar.html", null ],
+    [ "AsyncVector", "class_async_vector.html", null ],
+    [ "ClickableFolderLabel", "class_clickable_folder_label.html", "class_clickable_folder_label" ],
+    [ "ClickableLabel", "class_clickable_label.html", "class_clickable_label" ],
+    [ "ConversionDialog", "class_conversion_dialog.html", "class_conversion_dialog" ],
+    [ "Data", "class_data.html", "class_data" ],
+    [ "DetectedFaces", "class_detected_faces.html", "class_detected_faces" ],
+    [ "DetectedObjects", "class_detected_objects.html", "class_detected_objects" ],
+    [ "DetectObjectsModel", "class_detect_objects_model.html", "class_detect_objects_model" ],
+    [ "fileSelector", "classfile_selector.html", "classfile_selector" ],
+    [ "Folders", "class_folders.html", "class_folders" ],
+    [ "ImageBooth", "class_image_booth.html", "class_image_booth" ],
+    [ "ImageData", "class_image_data.html", "class_image_data" ],
+    [ "ImageEditor", "class_image_editor.html", "class_image_editor" ],
+    [ "ImagesData", "class_images_data.html", "class_images_data" ],
+    [ "InitialWindow", "class_initial_window.html", "class_initial_window" ],
+    [ "LoadingStatus", "class_loading_status.html", "class_loading_status" ],
+    [ "MainImage", "class_main_image.html", "class_main_image" ],
+    [ "MainWindow", "class_main_window.html", "class_main_window" ],
+    [ "MapWidget", "class_map_widget.html", "class_map_widget" ],
+    [ "MetaData", "class_meta_data.html", "class_meta_data" ],
+    [ "Option", "class_option.html", "class_option" ],
+    [ "QImageAndPath", "class_q_image_and_path.html", null ],
+    [ "Sizes", "class_sizes.html", "class_sizes" ],
+    [ "ThreadManager", "class_thread_manager.html", "class_thread_manager" ],
+    [ "TranslationManager", "class_translation_manager.html", null ],
+    [ "Worker", "class_worker.html", "class_worker" ]
+];
