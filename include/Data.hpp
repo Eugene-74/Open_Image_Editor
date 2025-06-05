@@ -100,7 +100,7 @@ class Data : public std::enable_shared_from_this<Data> {
     void loadData();
     void clear();
 
-    bool isDeleted(int imageNbr);
+    bool isDeleted(int nbrInTotal);
 
     void addAction(std::function<void()> unDo, std::function<void()> reDo);
     void addActionDone(Actions action);

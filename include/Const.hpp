@@ -161,7 +161,9 @@ static const QString ES = ":/icons/es.png";
 
 namespace Color {
 static const std::string TRANSPARENT1 = "transparent";
+static const std::string VERY_LIGHT_GRAY = "#dbdbdb";
 static const std::string LIGHT_GRAY = "#b3b3b3";
+
 static const std::string GRAY = "#9c9c9c";
 static const std::string WHITE = "#FFFFFF";
 static const std::string RED = "#FF0000";

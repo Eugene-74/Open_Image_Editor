@@ -108,8 +108,8 @@ void Data::removeDeletedImages() {
  * @param imageNbr nbr of the image in the imagesData list
  * @return true if the image is deleted false otherwise
  */
-bool Data::isDeleted(int imageNbr) {
-    std::string imagePath = imagesData.getImageData(imageNbr)->getImagePathConst();
+bool Data::isDeleted(int nbrInTotal) {
+    std::string imagePath = imagesData.getImageData(nbrInTotal)->getImagePathConst();
     auto it = std::find_if(getDeletedImagesDataPtr()->get()->begin(),
                            getDeletedImagesDataPtr()->get()->end(),
                            [imagePath, this](ImageData* imgPtr) {
@@ -117,7 +117,7 @@ bool Data::isDeleted(int imageNbr) {
                            });
 
     if (it != getDeletedImagesDataPtr()->get()->end()) {
-        imagesData.getImageData(imageNbr)->print();
+        imagesData.getImageData(nbrInTotal)->print();
 
         return true;
     }

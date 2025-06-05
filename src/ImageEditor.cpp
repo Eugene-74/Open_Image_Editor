@@ -997,15 +997,20 @@ ClickableLabel* ImageEditor::createImageNext() {
  * @param imageNbr Number of the image to preview
  * @return The ClickableLabel for the preview
  */
-ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int imageNbr) {
+ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int nbrInCurrent) {
     if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
     ClickableLabel* previewButton = new ClickableLabel(data, QString::fromStdString(imagePath), "", this, previewSize, false, Const::Thumbnail::NORMAL_QUALITY, false);
+
+    int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbrInCurrent);
+    if (data->isDeleted(imageNumberInTotal)) {
+        previewButton->setOpacity(0.3);
+    }
     previewButton->setInitialBorder(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
-    connect(previewButton, &ClickableLabel::leftClicked, [this, imageNbr]() {
-        data->getImagesDataPtr()->setImageNumber(imageNbr);
+    connect(previewButton, &ClickableLabel::leftClicked, [this, nbrInCurrent]() {
+        data->getImagesDataPtr()->setImageNumber(nbrInCurrent);
         reload();
     });
 

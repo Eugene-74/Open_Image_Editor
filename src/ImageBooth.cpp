@@ -279,7 +279,7 @@ void ImageBooth::onScroll(int value) {
  * @param nbr Index of the image in the current folder
  * @return Pointer to the created ClickableLabel object
  */
-ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
+ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbrInCurrent) {
     if (data->getImagesDataPtr()->getCurrent()->size() <= 0) {
         return nullptr;
     }
@@ -295,14 +295,14 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         imageButton = new ClickableLabel(data, Const::ImagePath::LOADING,
                                          "", this, imageSize, false, 0, true);
         QPointer<ImageBooth> self = this;
-        data->createAllThumbnailsAsync(imagePath, [self, imagePath, nbr](bool result) {
+        data->createAllThumbnailsAsync(imagePath, [self, imagePath, nbrInCurrent](bool result) {
             if (self) {
                 if (result) {
                     QHBoxLayout* lineLayout = nullptr;
-                    ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbr, lineLayout);
+                    ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbrInCurrent, lineLayout);
                     if (lastImageButton != nullptr) {
-                        QMetaObject::invokeMethod(self, [lineLayout, lastImageButton, self, imagePath, nbr]() {
-                            ClickableLabel* newImageButton = self->createImage(imagePath, nbr);
+                        QMetaObject::invokeMethod(self, [lineLayout, lastImageButton, self, imagePath, nbrInCurrent]() {
+                            ClickableLabel* newImageButton = self->createImage(imagePath, nbrInCurrent);
                             if (lineLayout != nullptr) {
                                 lineLayout->replaceWidget(lastImageButton, newImageButton);
                                 lastImageButton->deleteLater();
@@ -314,9 +314,11 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             } }, true);
     }
 
+    int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbrInCurrent);
+    if (data->isDeleted(imageNumberInTotal)) {
+        imageButton->setOpacity(0.3);
+    }
     imageButton->setInitialBorder(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
-
-    int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
 
     if (std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal) != data->getImagesSelectedPtr()->end()) {
         imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
@@ -330,28 +332,28 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         }
     }
 
-    connect(imageButton, &ClickableLabel::leftClicked, [this, nbr]() {
-        data->getImagesDataPtr()->setImageNumber(nbr);
+    connect(imageButton, &ClickableLabel::leftClicked, [this, nbrInCurrent]() {
+        data->getImagesDataPtr()->setImageNumber(nbrInCurrent);
         switchToImageEditor();
     });
 
-    connect(imageButton, &ClickableLabel::ctrlLeftClicked, [this, nbr, imageButton]() {
-        int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
+    connect(imageButton, &ClickableLabel::ctrlLeftClicked, [this, nbrInCurrent, imageButton]() {
+        int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbrInCurrent);
         auto it = std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal);
         if (it != data->getImagesSelectedPtr()->end()) {
             imageButton->resetBorder();
             data->getImagesSelectedPtr()->erase(it);
 
             addActionWithDelay(
-                [this, nbr, imageNumberInTotal]() {
-                    ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                [this, nbrInCurrent, imageNumberInTotal]() {
+                    ClickableLabel* imageButton = getClickableLabelIfExist(nbrInCurrent);
                     if (imageButton != nullptr) {
                         imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
                     }
                     addNbrToSelectedImages(imageNumberInTotal);
                 },
-                [this, nbr, imageNumberInTotal]() {
-                    ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                [this, nbrInCurrent, imageNumberInTotal]() {
+                    ClickableLabel* imageButton = getClickableLabelIfExist(nbrInCurrent);
                     if (imageButton != nullptr) {
                         imageButton->resetBorder();
                     }
@@ -364,15 +366,15 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             data->getImagesSelectedPtr()->push_back(imageNumberInTotal);
 
             addActionWithDelay(
-                [this, nbr, imageNumberInTotal]() {
-                    ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                [this, nbrInCurrent, imageNumberInTotal]() {
+                    ClickableLabel* imageButton = getClickableLabelIfExist(nbrInCurrent);
                     if (imageButton != nullptr) {
                         imageButton->resetBorder();
                     }
                     removeNbrToSelectedImages(imageNumberInTotal);
                 },
-                [this, nbr, imageNumberInTotal]() {
-                    ClickableLabel* imageButton = getClickableLabelIfExist(nbr);
+                [this, nbrInCurrent, imageNumberInTotal]() {
+                    ClickableLabel* imageButton = getClickableLabelIfExist(nbrInCurrent);
                     if (imageButton != nullptr) {
                         imageButton->setBorder(COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED, COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED);
                     }
@@ -382,9 +384,9 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
         }
     });
 
-    connect(imageButton, &ClickableLabel::shiftLeftClicked, [this, nbr, imageButton]() {
+    connect(imageButton, &ClickableLabel::shiftLeftClicked, [this, nbrInCurrent, imageButton]() {
         // select all image beetwen the 2 nbr
-        int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
+        int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbrInCurrent);
 
         if (imageShiftSelected >= 0) {
             std::vector<int> modifiedNbr;
@@ -392,23 +394,23 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
 
             int imageShiftSelectedInCurrent = data->getImagesDataPtr()->getImageNumberInCurrent(imageShiftSelected);
 
-            int start = std::min(imageShiftSelectedInCurrent, nbr);
-            int end = std::max(imageShiftSelectedInCurrent, nbr);
+            int start = std::min(imageShiftSelectedInCurrent, nbrInCurrent);
+            int end = std::max(imageShiftSelectedInCurrent, nbrInCurrent);
 
             for (int i = start; i <= end; ++i) {
-                int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(i);
-                auto it = std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal);
+                int imageNumberInTotalBis = data->getImagesDataPtr()->getImageNumberInTotal(i);
+                auto it = std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotalBis);
                 if (it != data->getImagesSelectedPtr()->end()) {
                     if (!imageShiftSelectedSelect) {
                         data->getImagesSelectedPtr()->erase(it);
                         modifiedNbr.push_back(i);
-                        modifiedNbrInTotal.push_back(imageNumberInTotal);
+                        modifiedNbrInTotal.push_back(imageNumberInTotalBis);
                     }
                 } else {
                     if (imageShiftSelectedSelect) {
-                        data->getImagesSelectedPtr()->push_back(imageNumberInTotal);
+                        data->getImagesSelectedPtr()->push_back(imageNumberInTotalBis);
                         modifiedNbr.push_back(i);
-                        modifiedNbrInTotal.push_back(imageNumberInTotal);
+                        modifiedNbrInTotal.push_back(imageNumberInTotalBis);
                     }
                 }
             }
@@ -417,7 +419,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             bool select = imageShiftSelectedSelect;
 
             addActionWithDelay(
-                [this, nbr, imageNumberInTotal, modifiedNbrInTotal, select]() {
+                [this, nbrInCurrent, imageNumberInTotal, modifiedNbrInTotal, select]() {
                     for (auto nbr : modifiedNbrInTotal) {
                         if (select) {
                             removeNbrToSelectedImages(nbr);
@@ -426,7 +428,9 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
                         }
                     }
                 },
-                [this, nbr, imageNumberInTotal, modifiedNbrInTotal, select]() {
+                [this, nbrInCurrent, imageNumberInTotal, modifiedNbrInTotal, select]() {
+                    qDebug() << "Adding or removing images from selection BIS";
+
                     for (auto nbr : modifiedNbrInTotal) {
                         if (select) {
                             addNbrToSelectedImages(nbr);
@@ -440,7 +444,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbr) {
             imageShiftSelected = -1;
         } else {
             // Select the first image
-            int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbr);
 
             auto it = std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal);
             if (it != data->getImagesSelectedPtr()->end()) {
@@ -610,17 +613,17 @@ void ImageBooth::updateImages() {
     for (int i = 1 + folderLinesNbr; i < 1 + imageLinesNbr + folderLinesNbr; i++) {
         QHBoxLayout* lineLayout = qobject_cast<QHBoxLayout*>(linesLayout->itemAt(i)->layout());
         for (int j = 0; j < lineLayout->count(); j++) {
-            int imageNbr = (lineNbr - foldersLineNumber + i - 1) * data->getSizesPtr()->imagesBoothSizes->widthImageNumber + j;
+            int nbrInCurrent = (lineNbr - foldersLineNumber + i - 1) * data->getSizesPtr()->imagesBoothSizes->widthImageNumber + j;
             ClickableLabel* lastImageButton = qobject_cast<ClickableLabel*>(lineLayout->itemAt(j)->widget());
-            if (imageNbr >= data->getImagesDataPtr()->getCurrent()->size()) {
+            if (nbrInCurrent >= data->getImagesDataPtr()->getCurrent()->size()) {
                 lastImageButton->hide();
             } else {
                 std::string imagePath;
                 ClickableLabel* imageButton;
-                if (data->getImagesDataPtr()->getImageDataInCurrent(imageNbr)) {
-                    imagePath = data->getImagesDataPtr()->getImageDataInCurrent(imageNbr)->getImagePath();
+                if (data->getImagesDataPtr()->getImageDataInCurrent(nbrInCurrent)) {
+                    imagePath = data->getImagesDataPtr()->getImageDataInCurrent(nbrInCurrent)->getImagePath();
                     // auto start = std::chrono::high_resolution_clock::now();
-                    imageButton = createImage(imagePath, imageNbr);
+                    imageButton = createImage(imagePath, nbrInCurrent);
                     // auto end = std::chrono::high_resolution_clock::now();
                     // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
                     // qDebug() << "onScroll() execution time:" << duration << "ms";
@@ -633,7 +636,7 @@ void ImageBooth::updateImages() {
 
                 lastImageButton->deleteLater();
 
-                int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(imageNbr);
+                int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbrInCurrent);
 
                 auto it = std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal);
                 if (it != data->getImagesSelectedPtr()->end()) {
@@ -797,37 +800,6 @@ ClickableLabel* ImageBooth::createImageDelete() {
                 data->setSaved(false);
             },
             imageNumberInTotal);
-        //     data->addAction(
-        //         [this, imagesSelectedBefore, savedBefore]() {
-        //             if (!isImageVisible(imagesSelectedBefore.at(0))) {
-        //                 gotToImage(imagesSelectedBefore.at(0));
-        //             }
-        //             for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-        //                 if (data->isDeleted(imagesSelectedBefore.at(i))) {
-        //                     data->unPreDeleteImage(imagesSelectedBefore.at(i));
-        //                 } else {
-        //                     data->preDeleteImage(imagesSelectedBefore.at(i));
-        //                 }
-        //             }
-        //             if (savedBefore) {
-        //                 data->setSaved(true);
-        //             }
-        //             reload();
-        //         },
-        //         [this, imagesSelectedBefore]() {
-        //             if (!isImageVisible(imagesSelectedBefore.at(0))) {
-        //                 gotToImage(imagesSelectedBefore.at(0));
-        //             }
-        //             for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-        //                 if (data->isDeleted(imagesSelectedBefore.at(i))) {
-        //                     data->unPreDeleteImage(imagesSelectedBefore.at(i));
-        //                 } else {
-        //                     data->preDeleteImage(imagesSelectedBefore.at(i));
-        //                 }
-        //             }
-        //             data->setSaved(false);
-        //             reload();
-        //         });
     });
 
     return imageDeleteNew;

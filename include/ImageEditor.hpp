@@ -78,7 +78,7 @@ class ImageEditor : public QMainWindow {
 
     void addActionWithDelay(std::function<void()> unDo, std::function<void()> reDo, int nbrInTotal);
 
-    ClickableLabel* createImagePreview(std::string imagePath, int imageNbr);
+    ClickableLabel* createImagePreview(std::string imagePath, int nbrInCurrent);
 
     ClickableLabel* createImageRotateRight();
     ClickableLabel* createImageRotateLeft();

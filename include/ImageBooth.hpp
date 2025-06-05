@@ -100,7 +100,7 @@ class ImageBooth : public QMainWindow {
     void openFolder(int index);
 
     void createFirstImages();
-    ClickableLabel* createImage(std::string imagePath, int nbr);
+    ClickableLabel* createImage(std::string imagePath, int nbrInCurrent);
     void updateVisibleImages(bool force = false);
 
     void countImagesInFolder(Folders* currentFolder, int& totalImages);
