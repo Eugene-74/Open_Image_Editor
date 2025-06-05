@@ -47,11 +47,11 @@ class ImageEditor : public QMainWindow {
     void nextImage(int nbr = 1);
     void previousImage(int nbr = 1);
 
-    void rotateLeft();
-    void rotateRight();
+    void rotateLeft(bool action = true);
+    void rotateRight(bool action = true);
 
-    void mirrorUpDown();
-    void mirrorLeftRight();
+    void mirrorUpDown(bool action = true);
+    void mirrorLeftRight(bool action = true);
 
     void createPreview();
     void updatePreview();
@@ -75,6 +75,8 @@ class ImageEditor : public QMainWindow {
 
     void checkCache();
     void checkLoadedImage();
+
+    void addActionWithDelay(std::function<void()> unDo, std::function<void()> reDo, int nbrInTotal);
 
     ClickableLabel* createImagePreview(std::string imagePath, int imageNbr);
 

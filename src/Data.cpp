@@ -704,19 +704,6 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
                 iptcData = imageData->getMetaDataPtr()->getIptcData();
                 xmpData = imageData->getMetaDataPtr()->getXmpData();
 
-                // if (exifData["Exif.Image.DateTime"].count() != 0) {
-                //     std::string date = exifData["Exif.Image.DateTime"].toString();
-                //     imageData->setDate(imageData->getMetaDataPtr()->getTimestamp());
-                // }
-                // if (exifData["Exif.GPSInfo.GPSLatitude"].count() != 0 && exifData["Exif.GPSInfo.GPSLongitude"].count() != 0) {
-                //     double latitude = convertGpsCoordinateToDecimal(exifData["Exif.GPSInfo.GPSLatitude"].toString());
-                //     double longitude = convertGpsCoordinateToDecimal(exifData["Exif.GPSInfo.GPSLongitude"].toString());
-                //     imageData->setLatitude(latitude);
-                //     imageData->setLongitude(longitude);
-                // }
-                // if (imageData->getOrientation() == Const::Orientation::UNDEFINED) {
-                //     imageData->setOrientation(imageData->getMetaDataPtr()->getImageOrientation());
-                // }
                 if (imageData->getOrientation() != Const::Orientation::UNDEFINED) {
                     imageData->getMetaDataPtr()->setOrientation(imageData->getOrientation());
                     qDebug() << "Set orientation to : " << imageData->getOrientation();
@@ -775,7 +762,9 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
                         image = image.copy(cropRect);
                     }
                 }
-
+                if (!isExifPath(imageData->getExportImageName())) {
+                    rotateQImage(image, imageData);
+                }
                 saveAnImage(destinationFile, image);
 
                 if (isExifPath(imageData->getExportImageName())) {

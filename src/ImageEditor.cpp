@@ -1341,67 +1341,34 @@ void ImageEditor::deleteImage() {
 
     if (data->isDeleted(nbrInTotal)) {
         data->unPreDeleteImage(nbrInTotal);
-        data->addAction(
-            [this, nbrInTotal, saved]() {
-                int time = 0;
-                if (data->getImagesDataPtr()->getImageNumberInTotal() != nbrInTotal) {
-                    data->getImagesDataPtr()->setImageNumber(nbrInTotal);
-                    reload();
-                    time = TIME_UNDO_VISUALISATION;
+        addActionWithDelay(
+            [this, saved, nbrInTotal]() {
+                if (saved) {
+                    data->setSaved(true);
                 }
-                QTimer::singleShot(time, [this, nbrInTotal, saved]() {
-                    if (saved) {
-                        data->setSaved(true);
-                    }
-                    data->preDeleteImage(nbrInTotal);
-                    reload();
-                });
+                data->preDeleteImage(nbrInTotal);
             },
             [this, nbrInTotal]() {
-                int time = 0;
-                if (data->getImagesDataPtr()->getImageNumberInTotal() != nbrInTotal) {
-                    data->getImagesDataPtr()->setImageNumber(nbrInTotal);
-                    reload();
-                    time = TIME_UNDO_VISUALISATION;
-                }
-                QTimer::singleShot(time, [this, nbrInTotal]() {
-                    data->setSaved(false);
-                    data->unPreDeleteImage(nbrInTotal);
-                });
-            });
+                data->setSaved(false);
+                data->unPreDeleteImage(nbrInTotal);
+            },
+            nbrInTotal);
 
         updateButtons();
     } else {
         data->preDeleteImage(nbrInTotal);
-        data->addAction(
-            [this, nbrInTotal, saved]() {
-                int time = 0;
-                if (data->getImagesDataPtr()->getImageNumberInTotal() != nbrInTotal) {
-                    data->getImagesDataPtr()->setImageNumber(nbrInTotal);
-                    reload();
-                    time = TIME_UNDO_VISUALISATION;
+        addActionWithDelay(
+            [this, saved, nbrInTotal]() {
+                if (saved) {
+                    data->setSaved(true);
                 }
-                QTimer::singleShot(time, [this, nbrInTotal, saved]() {
-                    if (saved) {
-                        data->setSaved(true);
-                    }
-                    data->unPreDeleteImage(nbrInTotal);
-                    reload();
-                });
+                data->unPreDeleteImage(nbrInTotal);
             },
             [this, nbrInTotal]() {
-                int time = 0;
-                if (data->getImagesDataPtr()->getImageNumberInTotal() != nbrInTotal) {
-                    data->getImagesDataPtr()->setImageNumber(nbrInTotal);
-                    reload();
-                    time = TIME_UNDO_VISUALISATION;
-                }
-                QTimer::singleShot(time, [this, nbrInTotal]() {
-                    data->setSaved(false);
-                    data->preDeleteImage(nbrInTotal);
-                    reload();
-                });
-            });
+                data->setSaved(false);
+                data->preDeleteImage(nbrInTotal);
+            },
+            nbrInTotal);
         updateButtons();
     }
     data->setSaved(false);
@@ -1438,18 +1405,20 @@ void ImageEditor::validateMetadata() {
     ImageData* imageData = imagesData->getCurrentImageData();
     MetaData* metaData = imageData->getMetaDataPtr();
 
-    QString lastDate = metaData->getTimestampString();
+    long lastDate = imageData->getDate();
+    long newDate = dateEdit->dateTime().toSecsSinceEpoch();
 
-    imageData->setDate(dateEdit->dateTime().toSecsSinceEpoch());
+    imageData->setDate(newDate);
 
-    // TODO re do X)
-    data.get()->addAction(
-        [this, lastDate, metaData]() {
-            // reload();
+    int nbrInTotal = data->getImagesDataPtr()->getImageNumberInTotal();
+    addActionWithDelay(
+        [this, imageData, lastDate]() {
+            imageData->setDate(lastDate);
         },
-        [this, metaData]() {
-            // reload();
-        });
+        [this, imageData, newDate]() {
+            imageData->setDate(newDate);
+        },
+        nbrInTotal);
 }
 
 /**
@@ -1520,48 +1489,68 @@ void ImageEditor::checkCache() {
  * @brief Rotate the image to the left
  * @details This function rotates the current image to the left and updates the image label.
  */
-void ImageEditor::rotateLeft() {
+void ImageEditor::rotateLeft(bool action) {
     ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
     imageData->clearDetectedObjects();
 
     imageData->rotate(Const::Rotation::LEFT);
     reload();
+
+    if (action) {
+        int nbrInTotal = data->getImagesDataPtr()->getImageNumberInTotal();
+        addActionWithDelay([this]() { rotateRight(false); }, [this]() { rotateLeft(false); }, nbrInTotal);
+    }
 }
 
 /**
  * @brief Rotate the image to the right
  * @details This function rotates the current image to the right and updates the image label.
  */
-void ImageEditor::rotateRight() {
+void ImageEditor::rotateRight(bool action) {
     ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
     imageData->clearDetectedObjects();
 
     imageData->rotate(Const::Rotation::RIGHT);
     reload();
+
+    if (action) {
+        int nbrInTotal = data->getImagesDataPtr()->getImageNumberInTotal();
+        addActionWithDelay([this]() { rotateLeft(false); }, [this]() { rotateRight(false); }, nbrInTotal);
+    }
 }
 
 /**
  * @brief Mirror the image up and down
  * @details This function mirrors the current image up-down and updates the image label.
  */
-void ImageEditor::mirrorUpDown() {
+void ImageEditor::mirrorUpDown(bool action) {
     ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
     imageData->clearDetectedObjects();
 
     imageData->mirror(true);
     reload();
+
+    if (action) {
+        int nbrInTotal = data->getImagesDataPtr()->getImageNumberInTotal();
+        addActionWithDelay([this]() { mirrorUpDown(false); }, [this]() { mirrorUpDown(false); }, nbrInTotal);
+    }
 }
 
 /**
  * @brief Mirror the image left and right
  * @details This function mirrors the current image left-right and updates the image label.
  */
-void ImageEditor::mirrorLeftRight() {
+void ImageEditor::mirrorLeftRight(bool action) {
     ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
     imageData->clearDetectedObjects();
 
     imageData->mirror(false);
     reload();
+
+    if (action) {
+        int nbrInTotal = data->getImagesDataPtr()->getImageNumberInTotal();
+        addActionWithDelay([this]() { mirrorLeftRight(false); }, [this]() { mirrorLeftRight(false); }, nbrInTotal);
+    }
 }
 
 /**
@@ -1665,4 +1654,44 @@ MapWidget* ImageEditor::createMapWidget() {
     });
 
     return mapWidget;
+}
+
+/**
+ * @brief Add an action with a delay for undo and redo operations
+ * @param unDo The function to execute for undo
+ * @param reDo The function to execute for redo
+ * @param nbrInTotal The total number of images in the data
+ */
+void ImageEditor::addActionWithDelay(std::function<void()> unDo, std::function<void()> reDo, int nbrInTotal) {
+    ImageData* imageData = data->getImagesDataPtr()->getImageData(nbrInTotal);
+    data->addAction(
+        [this, imageData, nbrInTotal, unDo]() {
+            int time = 0;
+            if (data->getImagesDataPtr()->getImageNumberInTotal() != nbrInTotal) {
+                data->getImagesDataPtr()->setImageNumber(data->getImagesDataPtr()->getImageDataIdInCurrent(imageData->getImagePathConst()));
+                reload();
+                time = TIME_UNDO_VISUALISATION;
+            }
+            QTimer::singleShot(time, [this, imageData, nbrInTotal, unDo]() {
+                if (imageData) {
+                    unDo();
+                    reload();
+                }
+            });
+        },
+        [this, imageData, nbrInTotal, reDo]() {
+            int time = 0;
+            if (data->getImagesDataPtr()->getImageNumberInTotal() != nbrInTotal) {
+                data->getImagesDataPtr()->setImageNumber(data->getImagesDataPtr()->getImageDataIdInCurrent(imageData->getImagePathConst()));
+
+                reload();
+                time = TIME_UNDO_VISUALISATION;
+            }
+            QTimer::singleShot(time, [this, imageData, nbrInTotal, reDo]() {
+                if (imageData) {
+                    reDo();
+                    reload();
+                }
+            });
+        });
 }
