@@ -659,6 +659,7 @@ void ImageBooth::keyReleaseEvent(QKeyEvent* event) {
             } else {
                 openFolder(-2);
             }
+            // TODO add action
         } break;
 
         case Qt::Key_Z:
@@ -668,6 +669,38 @@ void ImageBooth::keyReleaseEvent(QKeyEvent* event) {
                 } else {
                     data->unDoAction();
                 }
+            }
+            break;
+        case Qt::Key_A:
+            if (event->modifiers() & Qt::ControlModifier) {
+                if (data->getImagesDataPtr()->getCurrent()->size() <= 0) {
+                    return;
+                }
+                std::vector<int> imagesSelectedBefore = *data->getImagesSelectedPtr();
+                for (size_t i = 0; i < data->getImagesDataPtr()->getCurrent()->size(); ++i) {
+                    int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(i);
+                    if (std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal) == data->getImagesSelectedPtr()->end()) {
+                        data->getImagesSelectedPtr()->push_back(imageNumberInTotal);
+                    }
+                }
+                reload();
+
+                int nbrInTotal = data->getImagesDataPtr()->getImageDataId(data->getImagesDataPtr()->getCurrent()->at(0)->getImagePath());
+
+                addActionWithDelay(
+                    [this, imagesSelectedBefore]() {
+                        data->getImagesSelectedPtr()->clear();
+                        *data->getImagesSelectedPtr() = imagesSelectedBefore;
+                    },
+                    [this]() {
+                        for (size_t i = 0; i < data->getImagesDataPtr()->getCurrent()->size(); ++i) {
+                            int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(i);
+                            if (std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), imageNumberInTotal) == data->getImagesSelectedPtr()->end()) {
+                                data->getImagesSelectedPtr()->push_back(imageNumberInTotal);
+                            }
+                        }
+                    },
+                    nbrInTotal);
             }
             break;
 
@@ -739,11 +772,9 @@ ClickableLabel* ImageBooth::createImageDelete() {
 
         bool savedBefore = data->getSaved();
 
-        data->addAction(
+        int imageNumberInTotal = imagesSelectedBefore.at(0);
+        addActionWithDelay(
             [this, imagesSelectedBefore, savedBefore]() {
-                if (!isImageVisible(imagesSelectedBefore.at(0))) {
-                    gotToImage(imagesSelectedBefore.at(0));
-                }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
                     if (data->isDeleted(imagesSelectedBefore.at(i))) {
                         data->unPreDeleteImage(imagesSelectedBefore.at(i));
@@ -754,12 +785,8 @@ ClickableLabel* ImageBooth::createImageDelete() {
                 if (savedBefore) {
                     data->setSaved(true);
                 }
-                reload();
             },
             [this, imagesSelectedBefore]() {
-                if (!isImageVisible(imagesSelectedBefore.at(0))) {
-                    gotToImage(imagesSelectedBefore.at(0));
-                }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
                     if (data->isDeleted(imagesSelectedBefore.at(i))) {
                         data->unPreDeleteImage(imagesSelectedBefore.at(i));
@@ -768,8 +795,39 @@ ClickableLabel* ImageBooth::createImageDelete() {
                     }
                 }
                 data->setSaved(false);
-                reload();
-            });
+            },
+            imageNumberInTotal);
+        //     data->addAction(
+        //         [this, imagesSelectedBefore, savedBefore]() {
+        //             if (!isImageVisible(imagesSelectedBefore.at(0))) {
+        //                 gotToImage(imagesSelectedBefore.at(0));
+        //             }
+        //             for (int i = 0; i < imagesSelectedBefore.size(); i++) {
+        //                 if (data->isDeleted(imagesSelectedBefore.at(i))) {
+        //                     data->unPreDeleteImage(imagesSelectedBefore.at(i));
+        //                 } else {
+        //                     data->preDeleteImage(imagesSelectedBefore.at(i));
+        //                 }
+        //             }
+        //             if (savedBefore) {
+        //                 data->setSaved(true);
+        //             }
+        //             reload();
+        //         },
+        //         [this, imagesSelectedBefore]() {
+        //             if (!isImageVisible(imagesSelectedBefore.at(0))) {
+        //                 gotToImage(imagesSelectedBefore.at(0));
+        //             }
+        //             for (int i = 0; i < imagesSelectedBefore.size(); i++) {
+        //                 if (data->isDeleted(imagesSelectedBefore.at(i))) {
+        //                     data->unPreDeleteImage(imagesSelectedBefore.at(i));
+        //                 } else {
+        //                     data->preDeleteImage(imagesSelectedBefore.at(i));
+        //                 }
+        //             }
+        //             data->setSaved(false);
+        //             reload();
+        //         });
     });
 
     return imageDeleteNew;
@@ -854,29 +912,44 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
         data->getImagesSelectedPtr()->clear();
         reload();
 
-        data->addAction(
+        int imageNumberInTotal = imagesSelectedBefore.at(0);
+        addActionWithDelay(
             [this, imagesSelectedBefore]() {
-                int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-                if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-                    gotToImage(imagesSelectedBeforeInCurrent0);
-                }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
                     std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->rotateLeft(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
-                reload();
             },
             [this, imagesSelectedBefore]() {
-                int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-                if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-                    gotToImage(imagesSelectedBeforeInCurrent0);
-                }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
                     std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->rotateRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
-                reload();
-            });
+            },
+            imageNumberInTotal);
+        // data->addAction(
+        //     [this, imagesSelectedBefore]() {
+        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
+        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
+        //             gotToImage(imagesSelectedBeforeInCurrent0);
+        //         }
+        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
+        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
+        //             data->rotateLeft(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+        //         }
+        //         reload();
+        //     },
+        //     [this, imagesSelectedBefore]() {
+        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
+        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
+        //             gotToImage(imagesSelectedBeforeInCurrent0);
+        //         }
+        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
+        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
+        //             data->rotateRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+        //         }
+        //         reload();
+        //     });
     });
 
     return imageRotateRightNew;
@@ -907,29 +980,44 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
         data->getImagesSelectedPtr()->clear();
         reload();
 
-        data->addAction(
+        int imageNumberInTotal = imagesSelectedBefore.at(0);
+        addActionWithDelay(
             [this, imagesSelectedBefore]() {
-                int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-                if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-                    gotToImage(imagesSelectedBeforeInCurrent0);
-                }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
                     std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->rotateRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
-                reload();
             },
             [this, imagesSelectedBefore]() {
-                int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-                if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-                    gotToImage(imagesSelectedBeforeInCurrent0);
-                }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
                     std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->rotateLeft(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
-                reload();
-            });
+            },
+            imageNumberInTotal);
+        // data->addAction(
+        //     [this, imagesSelectedBefore]() {
+        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
+        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
+        //             gotToImage(imagesSelectedBeforeInCurrent0);
+        //         }
+        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
+        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
+        //             data->rotateRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+        //         }
+        //         reload();
+        //     },
+        //     [this, imagesSelectedBefore]() {
+        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
+        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
+        //             gotToImage(imagesSelectedBeforeInCurrent0);
+        //         }
+        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
+        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
+        //             data->rotateLeft(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+        //         }
+        //         reload();
+        //     });
     });
 
     return imageRotateLeftNew;
@@ -961,29 +1049,44 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
         data->getImagesSelectedPtr()->clear();
         reload();
 
-        data->addAction(
+        int imageNumberInTotal = imagesSelectedBefore.at(0);
+        addActionWithDelay(
             [this, imagesSelectedBefore]() {
-                int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-                if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-                    gotToImage(imagesSelectedBeforeInCurrent0);
-                }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
                     std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->mirrorUpDown(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
-                reload();
             },
             [this, imagesSelectedBefore]() {
-                int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-                if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-                    gotToImage(imagesSelectedBeforeInCurrent0);
-                }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
                     std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->mirrorUpDown(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
-                reload();
-            });
+            },
+            imageNumberInTotal);
+        // data->addAction(
+        //     [this, imagesSelectedBefore]() {
+        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
+        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
+        //             gotToImage(imagesSelectedBeforeInCurrent0);
+        //         }
+        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
+        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
+        //             data->mirrorUpDown(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+        //         }
+        //         reload();
+        //     },
+        //     [this, imagesSelectedBefore]() {
+        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
+        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
+        //             gotToImage(imagesSelectedBeforeInCurrent0);
+        //         }
+        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
+        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
+        //             data->mirrorUpDown(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+        //         }
+        //         reload();
+        //     });
     });
 
     return imageMirrorUpDownNew;
@@ -1014,29 +1117,44 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
         data->getImagesSelectedPtr()->clear();
         reload();
 
-        data->addAction(
+        int imageNumberInTotal = imagesSelectedBefore.at(0);
+        addActionWithDelay(
             [this, imagesSelectedBefore]() {
-                int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-                if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-                    gotToImage(imagesSelectedBeforeInCurrent0);
-                }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
                     std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->mirrorLeftRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
-                reload();
             },
             [this, imagesSelectedBefore]() {
-                int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-                if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-                    gotToImage(imagesSelectedBeforeInCurrent0);
-                }
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
                     std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
                     data->mirrorLeftRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
                 }
-                reload();
-            });
+            },
+            imageNumberInTotal);
+        // data->addAction(
+        //     [this, imagesSelectedBefore]() {
+        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
+        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
+        //             gotToImage(imagesSelectedBeforeInCurrent0);
+        //         }
+        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
+        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
+        //             data->mirrorLeftRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+        //         }
+        //         reload();
+        //     },
+        //     [this, imagesSelectedBefore]() {
+        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
+        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
+        //             gotToImage(imagesSelectedBeforeInCurrent0);
+        //         }
+        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
+        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
+        //             data->mirrorLeftRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+        //         }
+        //         reload();
+        //     });
     });
 
     return imageMirrorLeftRightNew;
@@ -1079,37 +1197,47 @@ ClickableLabel* ImageBooth::createImageConversion() {
             showInformationMessage(this, "No image selected", "You need to select an image to convert it");
             return;
         }
-        if (data->getImagesSelectedPtr()->size() > 0) {
-            QString selectedFormat = launchConversionDialog();
-            if (selectedFormat != nullptr) {
-                // QProgressDialog* progressDialog = new QProgressDialog(QString("Converting images : "), QString("Cancel"), 0, 3);
-                // progressDialog->setWindowModality(Qt::WindowModal);
-                // progressDialog->setAutoClose(false);
-                // progressDialog->show();
+        std::vector<QString> lastSelectedFormat;
+        for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
+            lastSelectedFormat.push_back(QString::fromStdString(data->getImagesDataPtr()->getImageData(data->getImagesSelectedPtr()->at(i))->getImageExtension()));
+        }
 
+        QString newSelectedFormat;
+        if (data->getImagesSelectedPtr()->size() > 0) {
+            newSelectedFormat = launchConversionDialog();
+            if (newSelectedFormat != nullptr) {
                 for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
                     QString inputImagePath = QString::fromStdString(data->getImagesDataPtr()->getImageData(data->getImagesSelectedPtr()->at(i))->getImagePath());
-                    // if (progressDialog->wasCanceled()) {
-                    //     break;
-                    // }
-                    data->getImagesDataPtr()->getImageData(i)->setExtension(selectedFormat.toStdString());
-                    // convertion(inputImagePath, selectedFormat, progressDialog);
-                    // progressDialog->setLabelText(QString("Converting image %1/%2").arg(i + 1).arg(data->getImagesSelectedPtr()->size()));
+                    data->getImagesDataPtr()->getImageData(i)->setExtension(newSelectedFormat.toStdString());
                 }
-                // progressDialog->close();
-                // delete progressDialog;
 
                 data->getImagesSelectedPtr()->clear();
                 reload();
             }
         }
-        data->addAction(
-            [this]() {
-                showErrorMessage(this, "Impossible de revenir en arrière");
+        std::vector<int> imagesSelectedBefore = *data->getImagesSelectedPtr();
+        int imageNumberInTotal = imagesSelectedBefore.at(0);
+        addActionWithDelay(
+            [this, imagesSelectedBefore, lastSelectedFormat]() {
+                for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
+                    QString inputImagePath = QString::fromStdString(data->getImagesDataPtr()->getImageData(data->getImagesSelectedPtr()->at(i))->getImagePath());
+                    data->getImagesDataPtr()->getImageData(i)->setExtension(lastSelectedFormat.at(i).toStdString());
+                }
             },
-            [this]() {
-                showErrorMessage(this, "Impossible de revenir en arrière");
-            });
+            [this, imagesSelectedBefore, newSelectedFormat]() {
+                for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
+                    QString inputImagePath = QString::fromStdString(data->getImagesDataPtr()->getImageData(data->getImagesSelectedPtr()->at(i))->getImagePath());
+                    data->getImagesDataPtr()->getImageData(i)->setExtension(newSelectedFormat.toStdString());
+                }
+            },
+            imageNumberInTotal);
+        // data->addAction(
+        //     [this]() {
+        //         showErrorMessage(this, "Impossible de revenir en arrière");
+        //     },
+        //     [this]() {
+        //         showErrorMessage(this, "Impossible de revenir en arrière");
+        //     });
     });
 
     return imageConversionNew;
