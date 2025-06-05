@@ -1,3 +1,6 @@
+
+@REM Penser a supprimer le build et recompiler avant
+
 mkdir build
 cd build
 mkdir coverage
