@@ -2,6 +2,8 @@
 #include <QDialog>
 #include <QProgressDialog>
 
+#include "ImageData.hpp"
+
 // Forward declarations
 class QComboBox;
 
@@ -10,7 +12,6 @@ class ConversionDialog : public QDialog {
 
    public:
     ConversionDialog(QWidget* parent = nullptr);
-    // : QDialog(parent);
 
     QString getSelectedFormat() const;
 
@@ -19,10 +20,10 @@ class ConversionDialog : public QDialog {
    private:
 };
 
-void launchConversionDialogAndConvert(const QString& inputImagePath);
+void launchConversionDialog(ImageData* imageData);
 QString launchConversionDialog();
-void convertion(const QString& inputImagePath, const QString& selectedFormat, QProgressDialog* progressDialog = nullptr);
-bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath, QProgressDialog* progressDialog = nullptr);
+// void convertion(const QString& inputImagePath, const QString& selectedFormat, QProgressDialog* progressDialog = nullptr);
+// bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath, QProgressDialog* progressDialog = nullptr);
 
 QImage readHeicAndHeif(const std::string& filePath);
 bool writeHeicAndHeif(const QImage& image, const std::string& imagePath);

@@ -708,16 +708,34 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
             } else {
                 destinationFile = destinationPath + "/" + folderName + "/" + fileName;
             }
-            if (!imageData->getCropSizes().empty()) {
-                QImage image(QString::fromStdString(imageData->getImagePath()));
-                if (!image.isNull()) {
+
+            if (!imageData->getCropSizes().empty() || imageData->hasExtension()) {
+                if (imageData->hasExtension()) {
+                    // Change the extension of destinationFile to imageData->getExtension()
+                    std::string newExtension = imageData->getExtension();
+                    std::string::size_type dotPos = destinationFile.find_last_of('.');
+                    if (dotPos != std::string::npos) {
+                        destinationFile = destinationFile.substr(0, dotPos) + newExtension;
+                    } else {
+                        destinationFile += newExtension;
+                    }
+                    // qDebug() << "Copying image to extension : " << QString::fromStdString(destinationFile);
+                }
+
+                QImage image = loadAnImage(imageData->getImagePath());
+
+                if (image.isNull()) {
+                    continue;
+                }
+                if (!imageData->getCropSizes().empty()) {
                     std::vector<QPoint> cropPoints = imageData->getCropSizes().back();
                     if (cropPoints.size() == 2) {
                         QRect cropRect = QRect(cropPoints[0], cropPoints[1]).normalized();
                         image = image.copy(cropRect);
                     }
                 }
-                image.save(QString::fromStdString(destinationFile));
+
+                saveAnImage(destinationFile, image);
 
                 std::unique_ptr<Exiv2::Image> srcImage = Exiv2::ImageFactory::open(imageData->getImagePath());
                 srcImage->readMetadata();
@@ -726,7 +744,9 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
                 destImage->setIptcData(srcImage->iptcData());
                 destImage->setXmpData(srcImage->xmpData());
                 destImage->writeMetadata();
-            } else {
+            }
+
+            else {
                 QFile::copy(QString::fromStdString(imageData->getImagePath()), QString::fromStdString(destinationFile));
             }
             if (progressDialog.wasCanceled()) {
@@ -2472,6 +2492,26 @@ QImage loadAnImage(std::string imagePath) {
         return image;
     }
     return image;
+}
+
+/**
+ * @brief Save an image to a destination path
+ * @param destinationPath Path where the image should be saved
+ * @param image QImage object containing the image data
+ * @return true if the image was saved successfully, false otherwise
+ */
+bool saveAnImage(std::string destinationPath, QImage image) {
+    if (isHeicOrHeif(destinationPath)) {
+        writeHeicAndHeif(image, destinationPath);
+        return true;
+    } else {
+        if (image.save(QString::fromStdString(destinationPath))) {
+            return true;
+        }
+    }
+    qWarning() << "Could not write the image : " << QString::fromStdString(destinationPath);
+
+    return false;
 }
 
 /**

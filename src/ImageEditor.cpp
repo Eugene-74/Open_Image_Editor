@@ -376,7 +376,7 @@ void ImageEditor::updateButtons() {
     }
 
     if (nameEdit) {
-        nameEdit->setText(QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImageName()));
+        nameEdit->setText(QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getExportImageName()));
     }
 
     if (dateEdit) {
@@ -794,7 +794,8 @@ ClickableLabel* ImageEditor::createImageConversion() {
     imageConversionNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(imageConversionNew, &ClickableLabel::clicked, [this]() {
-        launchConversionDialogAndConvert(QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()));
+        launchConversionDialog(data->getImagesDataPtr()->getCurrentImageData());
+        reload();
     });
 
     return imageConversionNew;

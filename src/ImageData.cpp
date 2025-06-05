@@ -173,6 +173,18 @@ std::string ImageData::getImageName() const {
     return imagePath.substr(lastSlash + 1);
 }
 
+std::string ImageData::getExportImageName() const {
+    std::string imagePath = getImagePathConst();
+    size_t lastSlash = imagePath.find_last_of("/\\");
+    if (this->hasExtension()) {
+        size_t dotPos = imagePath.find_last_of('.');
+        if (dotPos != std::string::npos) {
+            return imagePath.substr(lastSlash + 1, dotPos - lastSlash - 1) + this->extension;
+        }
+    }
+    return imagePath.substr(lastSlash + 1);
+}
+
 /**
  * @brief Get the path of the image
  * @return
@@ -334,6 +346,9 @@ void ImageData::save(std::ofstream& out) const {
     out.write(reinterpret_cast<const char*>(&date), sizeof(date));
     out.write(reinterpret_cast<const char*>(&latitude), sizeof(latitude));
     out.write(reinterpret_cast<const char*>(&longitude), sizeof(longitude));
+    size_t extensionSize = extension.size();
+    out.write(reinterpret_cast<const char*>(&extensionSize), sizeof(extensionSize));
+    out.write(extension.data(), extensionSize);
 
     folders.save(out);
 
@@ -360,6 +375,10 @@ void ImageData::load(std::ifstream& in) {
     in.read(reinterpret_cast<char*>(&date), sizeof(date));
     in.read(reinterpret_cast<char*>(&latitude), sizeof(latitude));
     in.read(reinterpret_cast<char*>(&longitude), sizeof(longitude));
+    size_t extensionSize;
+    in.read(reinterpret_cast<char*>(&extensionSize), sizeof(extensionSize));
+    extension.resize(extensionSize);
+    in.read(&extension[0], extensionSize);
 
     folders.load(in);
 
@@ -552,36 +571,62 @@ LoadingStatus* ImageData::getFaceDetectionStatusPtr() {
  *          It sets the face detection status to loading while processing and updates it to loaded once done.
  */
 void ImageData::detectFaces() {
-    // if (faceDetectionStatus.isStatusNotLoaded()) {
     if (detectedObjects.getDetectedFacesPtr()->size() > 0) {
         return;
     }
-        detectedObjects.detectFaces(*this);
+    detectedObjects.detectFaces(*this);
 
-        auto* faces = detectedObjects.getDetectedFacesPtr();
-        for (auto& faceData : *faces) {
-            QImage qImage = loadAnImageWithRotation(*this, 0);
-            cv::Mat img = QImageToCvMat(qImage);
-            // Ensure the image has 3 channels (BGR) for DNN
-            if (img.channels() == 4) {
-                cv::cvtColor(img, img, cv::COLOR_BGRA2BGR);
-            } else if (img.channels() == 1) {
-                cv::cvtColor(img, img, cv::COLOR_GRAY2BGR);
-            }
-            if (img.empty()) {
-                qWarning() << "Failed to load image for embedding extraction:" << QString::fromStdString(this->getImagePath());
-                continue;
-            }
-            cv::Rect faceRect = faceData.getFaceRect();
-            cv::Mat faceROI;
-            try {
-                faceROI = img(faceRect).clone();
-            } catch (...) {
-                qWarning() << "Invalid face rectangle for cropping.";
-                continue;
-            }
-            cv::Mat embedding = detectEmbedding(faceROI);
-            *faceData.getEmbeddingPtr() = embedding;
+    auto* faces = detectedObjects.getDetectedFacesPtr();
+    for (auto& faceData : *faces) {
+        QImage qImage = loadAnImageWithRotation(*this, 0);
+        cv::Mat img = QImageToCvMat(qImage);
+        // Ensure the image has 3 channels (BGR) for DNN
+        if (img.channels() == 4) {
+            cv::cvtColor(img, img, cv::COLOR_BGRA2BGR);
+        } else if (img.channels() == 1) {
+            cv::cvtColor(img, img, cv::COLOR_GRAY2BGR);
         }
-        // }
+        if (img.empty()) {
+            qWarning() << "Failed to load image for embedding extraction:" << QString::fromStdString(this->getImagePath());
+            continue;
+        }
+        cv::Rect faceRect = faceData.getFaceRect();
+        cv::Mat faceROI;
+        try {
+            faceROI = img(faceRect).clone();
+        } catch (...) {
+            qWarning() << "Invalid face rectangle for cropping.";
+            continue;
+        }
+        cv::Mat embedding = detectEmbedding(faceROI);
+        *faceData.getEmbeddingPtr() = embedding;
+    }
+}
+
+bool ImageData::hasExtension() const {
+    if (extension.empty()) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @brief Get the extension of the image
+ * @return The extension of the image
+ */
+std::string
+ImageData::getExtension() {
+    return extension;
+}
+
+/**
+ * @brief Set the extension of the image
+ * @param extension The extension to set for the image
+ */
+void ImageData::setExtension(std::string extension) {
+    if (std::find(Const::Extension::IMAGE.begin(), Const::Extension::IMAGE.end(), extension) != Const::Extension::IMAGE.end()) {
+        this->extension = extension;
+    } else {
+        qWarning() << "Extension not supported as image:" << QString::fromStdString(extension);
+    }
 }

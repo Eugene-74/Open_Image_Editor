@@ -240,3 +240,5 @@ QImage rotateQImage(QImage image, ImageData* imageData);
 
 QImage loadAnImage(std::string imagePath);
 QImage loadAnImageWithRotation(ImageData imageData, int thumbnail);
+
+bool saveAnImage(std::string destinationPath, QImage image);

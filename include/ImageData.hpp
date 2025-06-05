@@ -11,8 +11,6 @@
 // Forward declaration
 class QPoint;
 
-// class MetaData;
-
 class ImageData {
     enum class DetectionStatus {
         NotLoaded,
@@ -57,7 +55,6 @@ class ImageData {
         void setLongitude(double longitude);
         double getLongitude() const;
 
-        // DetectionStatus getDetectionStatus() const;
         void setDetectionStatus(DetectionStatus detectionStatus);
         void setDetectionStatusLoading();
         void setDetectionStatusNotLoaded();
@@ -77,6 +74,7 @@ class ImageData {
         void addFolders(const std::vector<std::string>& toAddFolders);
 
         std::string getImageName() const;
+        std::string getExportImageName() const;
 
         std::string getImagePath();
         std::string getImagePathConst() const;
@@ -105,6 +103,10 @@ class ImageData {
 
         LoadingStatus* getFaceDetectionStatusPtr();
 
+        bool hasExtension() const;
+        std::string getExtension();
+        void setExtension(std::string extension);
+
        private:
         MetaData metaData;
         DetectedObjects detectedObjects;
@@ -118,4 +120,5 @@ class ImageData {
         long date = 0;
         double latitude = 0.0;
         double longitude = 0.0;
-    };
+        std::string extension = "";
+};

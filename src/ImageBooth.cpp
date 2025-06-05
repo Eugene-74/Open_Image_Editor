@@ -1117,21 +1117,22 @@ ClickableLabel* ImageBooth::createImageConversion() {
         if (data->getImagesSelectedPtr()->size() > 0) {
             QString selectedFormat = launchConversionDialog();
             if (selectedFormat != nullptr) {
-                QProgressDialog* progressDialog = new QProgressDialog(QString("Converting images : "), QString("Cancel"), 0, 3);
-                progressDialog->setWindowModality(Qt::WindowModal);
-                progressDialog->setAutoClose(false);
-                progressDialog->show();
+                // QProgressDialog* progressDialog = new QProgressDialog(QString("Converting images : "), QString("Cancel"), 0, 3);
+                // progressDialog->setWindowModality(Qt::WindowModal);
+                // progressDialog->setAutoClose(false);
+                // progressDialog->show();
 
                 for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
                     QString inputImagePath = QString::fromStdString(data->getImagesDataPtr()->getImageData(data->getImagesSelectedPtr()->at(i))->getImagePath());
-                    if (progressDialog->wasCanceled()) {
-                        break;
-                    }
-                    convertion(inputImagePath, selectedFormat, progressDialog);
-                    progressDialog->setLabelText(QString("Converting image %1/%2").arg(i + 1).arg(data->getImagesSelectedPtr()->size()));
+                    // if (progressDialog->wasCanceled()) {
+                    //     break;
+                    // }
+                    data->getImagesDataPtr()->getImageData(i)->setExtension(selectedFormat.toStdString());
+                    // convertion(inputImagePath, selectedFormat, progressDialog);
+                    // progressDialog->setLabelText(QString("Converting image %1/%2").arg(i + 1).arg(data->getImagesSelectedPtr()->size()));
                 }
-                progressDialog->close();
-                delete progressDialog;
+                // progressDialog->close();
+                // delete progressDialog;
 
                 data->getImagesSelectedPtr()->clear();
                 reload();
