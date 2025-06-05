@@ -4,13 +4,15 @@
 #include <QSize>
 
 #include "Const.hpp"
+#include "ImageLabel.hpp"
 
 // Forward declaration
 class QMouseEvent;
 class Data;
 
-class MainImage : public QLabel {
+class MainImage : public ImageLabel {
     Q_OBJECT
+    using ImageLabel::ImageLabel;
 
    public:
     explicit MainImage(std::shared_ptr<Data> data, const QString& i, QSize size = QSize(0, 0), bool setSize = true, bool personsEditor = false, bool square = false, bool force = false);
@@ -34,24 +36,17 @@ class MainImage : public QLabel {
 
    private:
     bool inFace(QPoint point);
+    QImage qImage;
 
     bool personsEditor = false;
-
     QString imagePath;
     QSize mSize;
     bool setSize;
-    int thumbnail;
     bool square;
     bool force;
 
     std::shared_ptr<Data> data;
 
-    QPixmap defaultPixmap;
-
-    int border = 0;
-    int border_radius = 5;
-
-    QImage qImage;
     bool cropping;
     bool drawingRectangle = false;
 
@@ -61,16 +56,5 @@ class MainImage : public QLabel {
     void cropImage();
     std::vector<QPoint> adjustPointsForOrientation(const std::vector<QPoint>& points, int orientation, QSize imageSize);
 
-   public:
-        //    TODO make private
-        void updateStyleSheet();
-
-        QString border_color = QString::fromStdString(Const::Color::TRANSPARENT1);
-        QString hover_border_color = QString::fromStdString(Const::Color::TRANSPARENT1);
-
-        QString background_color = QString::fromStdString(Const::Color::TRANSPARENT1);
-        QString hover_background_color = QString::fromStdString(Const::Color::TRANSPARENT1);
-
-       private:
-        int lastSelectedFaceIndex = -1;
+    int lastSelectedFaceIndex = -1;
 };

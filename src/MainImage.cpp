@@ -23,7 +23,15 @@
  * @details This constructor initializes the MainImage widget with the specified image and size.
  */
 MainImage::MainImage(std::shared_ptr<Data> data, const QString& imagePath, QSize size, bool setSize, bool personsEditor, bool square, bool force)
-    : data(data), cropping(false), imagePath(imagePath), mSize(size), setSize(setSize), personsEditor(personsEditor), square(square), force(force) {
+    : ImageLabel(data, imagePath, QString(), nullptr, &size, setSize, 0, square, force),  // Call the appropriate ImageLabel constructor
+      data(data),
+      cropping(false),
+      imagePath(imagePath),
+      mSize(size),
+      setSize(setSize),
+      personsEditor(personsEditor),
+      square(square),
+      force(force) {
     if (data->isInCache(data->getThumbnailPath(imagePath.toStdString(), 0))) {
         if (isImage(imagePath.toStdString()) || isVideo(imagePath.toStdString())) {
             qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, 0, true, square, true, force);
@@ -52,35 +60,6 @@ MainImage::MainImage(std::shared_ptr<Data> data, const QString& imagePath, QSize
     setMouseTracking(true);
 
     updateStyleSheet();
-}
-
-/**
- * @brief Update the style sheet of the MainImage widget
- */
-void MainImage::updateStyleSheet() {
-    QString styleSheet = QString(R"(
-        QLabel {
-            border: %1px solid %3;
-            border-radius: %2px;
-            background-color: %5;
-        }
-        QLabel:hover {
-            border: %1px solid %4;
-            border-radius: %2px;
-            background-color: %6; 
-        }
-        QLabel:disabled {
-            background-color: rgba(200, 200, 200, 1);
-
-        }
-    )")
-                             .arg(border)
-                             .arg(border_radius)
-                             .arg(border_color)
-                             .arg(hover_border_color)
-                             .arg(background_color)
-                             .arg(hover_background_color);
-    this->setStyleSheet(styleSheet);
 }
 
 /**
@@ -201,7 +180,7 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
             } else {
                 if (!inFace(event->pos())) {
                     emit leftClicked();
-                    hover_background_color = QString::fromStdString(CLICK_BACKGROUND_COLOR);
+                    setHoverBackgroundColor(CLICK_BACKGROUND_COLOR);
                     updateStyleSheet();
                 }
             }
@@ -226,7 +205,7 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
             }
             cropping = true;
 
-            qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, thumbnail, true, square, false, force);
+            qImage = data->loadImage(this, imagePath.toStdString(), mSize, setSize, 0, true, square, false, force);
 
             if (!qImage.isNull()) {
                 this->setPixmap(QPixmap::fromImage(qImage).scaled(mSize - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -263,7 +242,7 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
                         emit leftClicked();
                     }
                 }
-                hover_background_color = QString::fromStdString(HOVER_BACKGROUND_COLOR);
+                setHoverBackgroundColor(HOVER_BACKGROUND_COLOR);
                 updateStyleSheet();
             }
         }

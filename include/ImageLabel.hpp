@@ -45,6 +45,30 @@ class ImageLabel : public QLabel {
     void mouseReleaseEvent(QMouseEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
 
+    void updateStyleSheet();
+
+    void setBorder(int border);
+    void setBorderRadius(int border_radius);
+
+    void setDisabledColor(std::string borderColor, std::string backgroundColor);
+    void setDisabledBorderColor(std::string borderColor);
+    void setDisabledBackgroundColor(std::string backgroundColor);
+
+    void setInitialBorderColor(std::string borderColor);
+    void setInitialHoverBorderColor(std::string hoverBorderColor);
+    void setBorderColor(std::string borderColor);
+    void setHoverBorderColor(std::string hoverBorderColor);
+
+    void setInitialBackgroundColor(std::string backgroundColor);
+    void setInitialHoverBackgroundColor(std::string hoverBackgroundColor);
+    void setBackgroundColor(std::string backgroundColor);
+    void setHoverBackgroundColor(std::string hoverBackgroundColor);
+
+    void setLogoColor(QColor logoColor);
+    void setLogoTextColor(QColor logoTextColor);
+
+    void setLogoVisible(bool logoVisible);
+
    private:
     int border = 0;
     int border_radius = 0;
@@ -70,28 +94,4 @@ class ImageLabel : public QLabel {
 
     std::string initial_background_color = Const::Color::TRANSPARENT1;
     std::string initial_hover_background_color = Const::Color::TRANSPARENT1;
-
-    void updateStyleSheet();
-
-    void setBorder(int border);
-    void setBorderRadius(int border_radius);
-
-    void setDisabledColor(std::string borderColor, std::string backgroundColor);
-    void setDisabledBorderColor(std::string borderColor);
-    void setDisabledBackgroundColor(std::string backgroundColor);
-
-    void setInitialBorderColor(std::string borderColor);
-    void setInitialHoverBorderColor(std::string hoverBorderColor);
-    void setBorderColor(std::string borderColor);
-    void setHoverBorderColor(std::string hoverBorderColor);
-
-    void setInitialBackgroundColor(std::string backgroundColor);
-    void setInitialHoverBackgroundColor(std::string hoverBackgroundColor);
-    void setBackgroundColor(std::string backgroundColor);
-    void setHoverBackgroundColor(std::string hoverBackgroundColor);
-
-    void setLogoColor(QColor logoColor);
-    void setLogoTextColor(QColor logoTextColor);
-
-    void setLogoVisible(bool logoVisible);
 };
