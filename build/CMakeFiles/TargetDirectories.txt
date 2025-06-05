@@ -1,0 +1,8 @@
+C:/Users/eugen/Documents/MesDocuments/git/Open_Image_Editor/build/CMakeFiles/OpenImageEditorLib.dir
+C:/Users/eugen/Documents/MesDocuments/git/Open_Image_Editor/build/CMakeFiles/OpenImageEditor-1.0.10.dir
+C:/Users/eugen/Documents/MesDocuments/git/Open_Image_Editor/build/CMakeFiles/edit_cache.dir
+C:/Users/eugen/Documents/MesDocuments/git/Open_Image_Editor/build/CMakeFiles/rebuild_cache.dir
+C:/Users/eugen/Documents/MesDocuments/git/Open_Image_Editor/build/CMakeFiles/OpenImageEditorLib_autogen_timestamp_deps.dir
+C:/Users/eugen/Documents/MesDocuments/git/Open_Image_Editor/build/CMakeFiles/OpenImageEditorLib_autogen.dir
+C:/Users/eugen/Documents/MesDocuments/git/Open_Image_Editor/build/CMakeFiles/OpenImageEditor-1.0.10_autogen_timestamp_deps.dir
+C:/Users/eugen/Documents/MesDocuments/git/Open_Image_Editor/build/CMakeFiles/OpenImageEditor-1.0.10_autogen.dir

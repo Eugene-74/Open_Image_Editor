@@ -1,0 +1,110 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="">
+        <file>icons/noWifi.png</file>
+        <file>icons/icon.ico</file>
+
+        <file>icons/fr.png</file>
+        <file>icons/en.png</file>
+        <file>icons/es.png</file>
+
+    </qresource>
+    
+    <qresource prefix="">
+        <file>images/loading.png</file>
+        <file>images/error.png</file>
+    </qresource>
+
+
+    <qresource prefix="">
+        <file>255-255-255-255/icons/before.png</file>
+        <file>255-255-255-255/icons/next.png</file>
+        <file>255-255-255-255/icons/rotateLeft.png</file>
+        <file>255-255-255-255/icons/rotateRight.png</file>
+        <file>255-255-255-255/icons/gimp.png</file>
+        <file>255-255-255-255/icons/delete.png</file>
+        <file>255-255-255-255/icons/save.png</file>
+        <file>255-255-255-255/icons/export.png</file>
+        <file>255-255-255-255/icons/mirrorUpDown.png</file> 
+        <file>255-255-255-255/icons/mirrorLeftRight.png</file>
+        <file>255-255-255-255/icons/conversion.png</file>
+        <file>255-255-255-255/icons/editFilters.png</file>
+        <file>255-255-255-255/icons/map.png</file>
+        <file>255-255-255-255/icons/editPersons.png</file>
+        <file>255-255-255-255/icons/folder.png</file>
+        <file>255-255-255-255/icons/allImages.png</file>
+        <file>255-255-255-255/icons/back.png</file>
+
+
+
+
+        <file>255-255-255-255/icons/imageBooth.png</file>
+        <file>255-255-255-255/icons/addImages.png</file>
+
+        <file>255-255-255-255/icons/home.png</file>
+
+        <file>255-255-255-255/icons/wifi.png</file>
+        <file>255-255-255-255/icons/discord.png</file>
+        <file>255-255-255-255/icons/github.png</file>
+        <file>255-255-255-255/icons/option.png</file>
+
+        <file>255-255-255-255/icons/icon.ico</file>
+
+
+
+
+
+
+        <file>0-0-0-255/icons/before.png</file>
+        <file>0-0-0-255/icons/next.png</file>
+        <file>0-0-0-255/icons/rotateLeft.png</file>
+        <file>0-0-0-255/icons/rotateRight.png</file>
+        <file>0-0-0-255/icons/gimp.png</file>
+        <file>0-0-0-255/icons/delete.png</file>
+        <file>0-0-0-255/icons/save.png</file>
+        <file>0-0-0-255/icons/export.png</file>
+        <file>0-0-0-255/icons/mirrorUpDown.png</file> 
+        <file>0-0-0-255/icons/mirrorLeftRight.png</file>
+        <file>0-0-0-255/icons/conversion.png</file>
+        <file>0-0-0-255/icons/editFilters.png</file>
+        <file>0-0-0-255/icons/map.png</file>
+        <file>0-0-0-255/icons/editPersons.png</file>
+        <file>0-0-0-255/icons/folder.png</file>
+        <file>0-0-0-255/icons/allImages.png</file>
+        <file>0-0-0-255/icons/back.png</file>
+
+
+
+
+
+        <file>0-0-0-255/icons/imageBooth.png</file>
+        <file>0-0-0-255/icons/addImages.png</file>
+
+        <file>0-0-0-255/icons/home.png</file>
+
+        <file>0-0-0-255/icons/wifi.png</file>
+        <file>0-0-0-255/icons/discord.png</file>
+        <file>0-0-0-255/icons/github.png</file>
+        <file>0-0-0-255/icons/option.png</file>
+
+        <file>0-0-0-255/icons/icon.ico</file>
+    </qresource>
+    <qresource prefix="">
+        <file>0-0-0-255/images/loading.png</file>
+        <file>255-255-255-255/images/loading.png</file>
+
+        <file>0-0-0-255/images/error.png</file>
+        <file>255-255-255-255/images/error.png</file>
+
+    </qresource>
+    <qresource prefix="">
+        <file>MapView.qml</file>
+        <file>images/pin.png</file>
+        <file>images/otherPin.png</file>
+    </qresource>
+
+    <qresource prefix="">
+        <file>translations/en.csv</file>
+        <file>translations/fr.csv</file>
+        <file>translations/es.csv</file>
+    </qresource>
+</RCC>
