@@ -21,6 +21,7 @@ move /Y Doxyfile.tmp Doxyfile
 doxygen Doxyfile
 
 xcopy docs "%USERPROFILE%\Downloads\docs\"%APP_VERSION% /E /I /Y
+rmdir /S /Q "%USERPROFILE%\Downloads\docs"
 
 git stash push -m "Sauvegarde avant déploiement des docs"
 
