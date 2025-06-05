@@ -39,6 +39,9 @@ const int TIME_UNDO_VISUALISATION = 500;
 
 const int TIME_BEFORE_REZISE = 100;
 
+const float DELETE_IMAGE_OPACITY = 0.3;
+const float DELETE_MAIN_IMAGE_OPACITY = 0.5;
+
 const std::string THUMBNAIL_PATH = APP_FILES.toStdString() + "/thumbnails";
 
 const std::string IMAGESDATA_SAVE_PATH = APP_FILES.toStdString() + "/save." + APP_NAME;

@@ -1006,7 +1006,7 @@ ClickableLabel* ImageEditor::createImagePreview(std::string imagePath, int nbrIn
 
     int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbrInCurrent);
     if (data->isDeleted(imageNumberInTotal)) {
-        previewButton->setOpacity(0.3);
+        previewButton->setOpacity(DELETE_IMAGE_OPACITY);
     }
     previewButton->setInitialBorder(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
     connect(previewButton, &ClickableLabel::leftClicked, [this, nbrInCurrent]() {
@@ -1033,13 +1033,15 @@ MainImage* ImageEditor::createImageLabel() {
         thumbnail = Const::Thumbnail::NORMAL_QUALITY;
     }
     MainImage* imageLabelNew = new MainImage(data, QString::fromStdString(data->getImagesDataPtr()->getCurrentImageData()->getImagePath()), data->getSizesPtr()->imageEditorSizes->mainImageSize, thumbnail, personsEditor);
-
+    if (data->isDeleted(data->getImagesDataPtr()->getImageNumberInTotal())) {
+        imageLabelNew->setOpacity(DELETE_MAIN_IMAGE_OPACITY);
+    }
     std::string currentImagePath = data->getImagesDataPtr()->getCurrentImageData()->getImagePath();
 
     ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
 
     connect(imageLabelNew, &MainImage::imageCropted, [this]() {
-        updatePreview();
+        reload();
     });
 
     if (!data->isInCache(currentImagePath)) {
@@ -1365,7 +1367,6 @@ void ImageEditor::deleteImage() {
             },
             nbrInTotal);
 
-        updateButtons();
     } else {
         data->preDeleteImage(nbrInTotal);
         addActionWithDelay(
@@ -1380,8 +1381,9 @@ void ImageEditor::deleteImage() {
                 data->preDeleteImage(nbrInTotal);
             },
             nbrInTotal);
-        updateButtons();
     }
+    reload();
+
     data->setSaved(false);
 }
 

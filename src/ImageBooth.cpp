@@ -316,7 +316,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbrInCurrent)
 
     int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbrInCurrent);
     if (data->isDeleted(imageNumberInTotal)) {
-        imageButton->setOpacity(0.3);
+        imageButton->setOpacity(DELETE_IMAGE_OPACITY);
     }
     imageButton->setInitialBorder(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
