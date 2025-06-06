@@ -774,7 +774,6 @@ ClickableLabel* ImageBooth::createImageDelete() {
         data->setSaved(false);
 
         bool savedBefore = data->getSaved();
-
         int imageNumberInTotal = imagesSelectedBefore.at(0);
         addActionWithDelay(
             [this, imagesSelectedBefore, savedBefore]() {
@@ -878,50 +877,33 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
         }
         std::vector<int> imagesSelectedBefore = *data->getImagesSelectedPtr();
         for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
-            std::string extension = data->getImagesDataPtr()->get()->at(data->getImagesSelectedPtr()->at(i))->getImageExtension();
-            data->rotateRight(data->getImagesSelectedPtr()->at(i), extension, [this]() {}, false);
+            ImageData* imageData = data->getImagesDataPtr()->getImageData(imagesSelectedBefore.at(i));
+            imageData->clearDetectedObjects();
+            imageData->rotate(Const::Rotation::RIGHT);
         }
         data->getImagesSelectedPtr()->clear();
         reload();
+
 
         int imageNumberInTotal = imagesSelectedBefore.at(0);
         addActionWithDelay(
             [this, imagesSelectedBefore]() {
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-                    data->rotateLeft(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+                    ImageData* imageData = data->getImagesDataPtr()->getImageData(imagesSelectedBefore.at(i));
+                    imageData->clearDetectedObjects();
+                    imageData->rotate(Const::Rotation::LEFT);
                 }
+                *data->getImagesSelectedPtr() = imagesSelectedBefore;
             },
             [this, imagesSelectedBefore]() {
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-                    data->rotateRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+                    ImageData* imageData = data->getImagesDataPtr()->getImageData(imagesSelectedBefore.at(i));
+                    imageData->clearDetectedObjects();
+                    imageData->rotate(Const::Rotation::RIGHT);
                 }
+                *data->getImagesSelectedPtr() = imagesSelectedBefore;
             },
             imageNumberInTotal);
-        // data->addAction(
-        //     [this, imagesSelectedBefore]() {
-        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-        //             gotToImage(imagesSelectedBeforeInCurrent0);
-        //         }
-        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-        //             data->rotateLeft(imagesSelectedBefore.at(i), extension, [this]() {}, false);
-        //         }
-        //         reload();
-        //     },
-        //     [this, imagesSelectedBefore]() {
-        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-        //             gotToImage(imagesSelectedBeforeInCurrent0);
-        //         }
-        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-        //             data->rotateRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
-        //         }
-        //         reload();
-        //     });
     });
 
     return imageRotateRightNew;
@@ -946,8 +928,9 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
         }
         std::vector<int> imagesSelectedBefore = *data->getImagesSelectedPtr();
         for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
-            std::string extension = data->getImagesDataPtr()->get()->at(data->getImagesSelectedPtr()->at(i))->getImageExtension();
-            data->rotateLeft(data->getImagesSelectedPtr()->at(i), extension, [this]() {}, false);
+            ImageData* imageData = data->getImagesDataPtr()->getImageData(imagesSelectedBefore.at(i));
+            imageData->clearDetectedObjects();
+            imageData->rotate(Const::Rotation::LEFT);
         }
         data->getImagesSelectedPtr()->clear();
         reload();
@@ -956,40 +939,21 @@ ClickableLabel* ImageBooth::createImageRotateLeft() {
         addActionWithDelay(
             [this, imagesSelectedBefore]() {
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-                    data->rotateRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+                    ImageData* imageData = data->getImagesDataPtr()->getImageData(imagesSelectedBefore.at(i));
+                    imageData->clearDetectedObjects();
+                    imageData->rotate(Const::Rotation::RIGHT);
                 }
+                *data->getImagesSelectedPtr() = imagesSelectedBefore;
             },
             [this, imagesSelectedBefore]() {
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-                    data->rotateLeft(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+                    ImageData* imageData = data->getImagesDataPtr()->getImageData(imagesSelectedBefore.at(i));
+                    imageData->clearDetectedObjects();
+                    imageData->rotate(Const::Rotation::LEFT);
                 }
+                *data->getImagesSelectedPtr() = imagesSelectedBefore;
             },
             imageNumberInTotal);
-        // data->addAction(
-        //     [this, imagesSelectedBefore]() {
-        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-        //             gotToImage(imagesSelectedBeforeInCurrent0);
-        //         }
-        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-        //             data->rotateRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
-        //         }
-        //         reload();
-        //     },
-        //     [this, imagesSelectedBefore]() {
-        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-        //             gotToImage(imagesSelectedBeforeInCurrent0);
-        //         }
-        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-        //             data->rotateLeft(imagesSelectedBefore.at(i), extension, [this]() {}, false);
-        //         }
-        //         reload();
-        //     });
     });
 
     return imageRotateLeftNew;
@@ -1015,8 +979,9 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
         std::vector<int> imagesSelectedBefore = *data->getImagesSelectedPtr();
 
         for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
-            std::string extension = data->getImagesDataPtr()->get()->at(data->getImagesSelectedPtr()->at(i))->getImageExtension();
-            data->mirrorUpDown(data->getImagesSelectedPtr()->at(i), extension, [this]() {}, false);
+            ImageData* imageData = data->getImagesDataPtr()->getImageData(imagesSelectedBefore.at(i));
+            imageData->clearDetectedObjects();
+            imageData->mirror(true);
         }
         data->getImagesSelectedPtr()->clear();
         reload();
@@ -1025,40 +990,21 @@ ClickableLabel* ImageBooth::createImageMirrorUpDown() {
         addActionWithDelay(
             [this, imagesSelectedBefore]() {
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-                    data->mirrorUpDown(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+                    ImageData* imageData = data->getImagesDataPtr()->getImageData(imagesSelectedBefore.at(i));
+                    imageData->clearDetectedObjects();
+                    imageData->mirror(true);
                 }
+                *data->getImagesSelectedPtr() = imagesSelectedBefore;
             },
             [this, imagesSelectedBefore]() {
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-                    data->mirrorUpDown(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+                    ImageData* imageData = data->getImagesDataPtr()->getImageData(imagesSelectedBefore.at(i));
+                    imageData->clearDetectedObjects();
+                    imageData->mirror(true);
                 }
+                *data->getImagesSelectedPtr() = imagesSelectedBefore;
             },
             imageNumberInTotal);
-        // data->addAction(
-        //     [this, imagesSelectedBefore]() {
-        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-        //             gotToImage(imagesSelectedBeforeInCurrent0);
-        //         }
-        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-        //             data->mirrorUpDown(imagesSelectedBefore.at(i), extension, [this]() {}, false);
-        //         }
-        //         reload();
-        //     },
-        //     [this, imagesSelectedBefore]() {
-        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-        //             gotToImage(imagesSelectedBeforeInCurrent0);
-        //         }
-        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-        //             data->mirrorUpDown(imagesSelectedBefore.at(i), extension, [this]() {}, false);
-        //         }
-        //         reload();
-        //     });
     });
 
     return imageMirrorUpDownNew;
@@ -1083,8 +1029,9 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
         }
         std::vector<int> imagesSelectedBefore = *data->getImagesSelectedPtr();
         for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
-            std::string extension = data->getImagesDataPtr()->get()->at(data->getImagesSelectedPtr()->at(i))->getImageExtension();
-            data->mirrorLeftRight(data->getImagesSelectedPtr()->at(i), extension, [this]() {}, false);
+            ImageData* imageData = data->getImagesDataPtr()->getImageData(imagesSelectedBefore.at(i));
+            imageData->clearDetectedObjects();
+            imageData->mirror(false);
         }
         data->getImagesSelectedPtr()->clear();
         reload();
@@ -1093,40 +1040,21 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
         addActionWithDelay(
             [this, imagesSelectedBefore]() {
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-                    data->mirrorLeftRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+                    ImageData* imageData = data->getImagesDataPtr()->getImageData(imagesSelectedBefore.at(i));
+                    imageData->clearDetectedObjects();
+                    imageData->mirror(false);
                 }
+                *data->getImagesSelectedPtr() = imagesSelectedBefore;
             },
             [this, imagesSelectedBefore]() {
                 for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-                    std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-                    data->mirrorLeftRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
+                    ImageData* imageData = data->getImagesDataPtr()->getImageData(imagesSelectedBefore.at(i));
+                    imageData->clearDetectedObjects();
+                    imageData->mirror(false);
                 }
+                *data->getImagesSelectedPtr() = imagesSelectedBefore;
             },
             imageNumberInTotal);
-        // data->addAction(
-        //     [this, imagesSelectedBefore]() {
-        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-        //             gotToImage(imagesSelectedBeforeInCurrent0);
-        //         }
-        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-        //             data->mirrorLeftRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
-        //         }
-        //         reload();
-        //     },
-        //     [this, imagesSelectedBefore]() {
-        //         int imagesSelectedBeforeInCurrent0 = data->getImagesDataPtr()->getImageNumberInCurrent(imagesSelectedBefore.at(0));
-        //         if (!isImageVisible(imagesSelectedBeforeInCurrent0)) {
-        //             gotToImage(imagesSelectedBeforeInCurrent0);
-        //         }
-        //         for (int i = 0; i < imagesSelectedBefore.size(); i++) {
-        //             std::string extension = data->getImagesDataPtr()->get()->at(imagesSelectedBefore.at(i))->getImageExtension();
-        //             data->mirrorLeftRight(imagesSelectedBefore.at(i), extension, [this]() {}, false);
-        //         }
-        //         reload();
-        //     });
     });
 
     return imageMirrorLeftRightNew;
@@ -1195,21 +1123,16 @@ ClickableLabel* ImageBooth::createImageConversion() {
                     QString inputImagePath = QString::fromStdString(data->getImagesDataPtr()->getImageData(data->getImagesSelectedPtr()->at(i))->getImagePath());
                     data->getImagesDataPtr()->getImageData(i)->setExtension(lastSelectedFormat.at(i).toStdString());
                 }
+                *data->getImagesSelectedPtr() = imagesSelectedBefore;
             },
             [this, imagesSelectedBefore, newSelectedFormat]() {
                 for (int i = 0; i < data->getImagesSelectedPtr()->size(); i++) {
                     QString inputImagePath = QString::fromStdString(data->getImagesDataPtr()->getImageData(data->getImagesSelectedPtr()->at(i))->getImagePath());
                     data->getImagesDataPtr()->getImageData(i)->setExtension(newSelectedFormat.toStdString());
                 }
+                *data->getImagesSelectedPtr() = imagesSelectedBefore;
             },
             imageNumberInTotal);
-        // data->addAction(
-        //     [this]() {
-        //         showErrorMessage(this, "Impossible de revenir en arrière");
-        //     },
-        //     [this]() {
-        //         showErrorMessage(this, "Impossible de revenir en arrière");
-        //     });
     });
 
     return imageConversionNew;
