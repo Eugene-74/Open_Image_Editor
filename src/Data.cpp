@@ -888,7 +888,12 @@ void Data::saveData() {
     outFile.write(reinterpret_cast<const char*>(&pathSize), sizeof(pathSize));
     outFile.write(currentFolderPath.c_str(), pathSize);
 
-    // Save personIdNames map
+    size_t imagesSelectedSize = imagesSelected.size();
+    outFile.write(reinterpret_cast<const char*>(&imagesSelectedSize), sizeof(imagesSelectedSize));
+    for (const auto& selected : imagesSelected) {
+        outFile.write(reinterpret_cast<const char*>(&selected), sizeof(selected));
+    }
+
     size_t personIdNamesSize = personIdNames.size();
     outFile.write(reinterpret_cast<const char*>(&personIdNamesSize), sizeof(personIdNamesSize));
     for (const auto& [id, name] : personIdNames) {
@@ -970,7 +975,15 @@ void Data::loadData() {
         inFile.read(&currentFolderPath[0], pathSize);
         currentFolder = findFolderByPath(rootFolders, currentFolderPath);
 
-        // Load personIdNames map
+        size_t imagesSelectedSize;
+        inFile.read(reinterpret_cast<char*>(&imagesSelectedSize), sizeof(imagesSelectedSize));
+        imagesSelected.clear();
+        for (size_t i = 0; i < imagesSelectedSize; ++i) {
+            int selected;
+            inFile.read(reinterpret_cast<char*>(&selected), sizeof(selected));
+            imagesSelected.push_back(selected);
+        }
+
         size_t personIdNamesSize;
         inFile.read(reinterpret_cast<char*>(&personIdNamesSize), sizeof(personIdNamesSize));
         for (size_t i = 0; i < personIdNamesSize; ++i) {

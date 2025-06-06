@@ -318,7 +318,8 @@ void startLog() {
  */
 void InitialWindow::closeEvent(QCloseEvent* event) {
     if (!data->getSaved() && data->getDeletedImagesDataPtr()->get()->size() > 0) {
-        showQuestionMessage(this, "Do you want to save before quit ?",
+        // TODO translate
+        showQuestionMessage(this, "Do you want to delete predeleted images before quit ?",
                             [this, event](bool result) {
                                 if (imageEditor != nullptr) {
                                     data->removeDeletedImages();
