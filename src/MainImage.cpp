@@ -23,11 +23,36 @@
  * @details This constructor initializes the MainImage widget with the specified image and size.
  */
 MainImage::MainImage(std::shared_ptr<Data> data, const QString& imagePath, QSize size, int thumbnail, bool personsEditor)
-    : ImageLabel(data, imagePath, "", nullptr, &size, false, thumbnail, false, false),  // Call the appropriate ImageLabel constructor
+    : ImageLabel(data),
       data(data),
       cropping(false),
       imagePath(imagePath),
       personsEditor(personsEditor) {
+    if (isImage(imagePath.toStdString()) || isVideo(imagePath.toStdString())) {
+        qImage = data->loadImage(this, imagePath.toStdString(), size, false, thumbnail, true, false, true, false);
+
+    } else {
+        qImage = QImage();
+    }
+
+    if (!qImage.isNull()) {
+        setPixmap(QPixmap::fromImage(qImage).scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        setCursor(Qt::PointingHandCursor);
+    } else {
+        setText("Error : null image");
+    }
+
+    QSize scaledSize = qImage.size();
+    scaledSize.scale(size, Qt::KeepAspectRatio);
+    setFixedSize(scaledSize);
+
+    this->setAlignment(Qt::AlignCenter);
+
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+    setMouseTracking(true);
+
+    updateStyleSheet();
 }
 
 /**
@@ -323,7 +348,7 @@ void MainImage::cropImage() {
  * @details It also draws detected objects if the personsEditor is enabled and there are detected objects in the image data.
  */
 void MainImage::paintEvent(QPaintEvent* event) {
-    QLabel::paintEvent(event);
+    ImageLabel::paintEvent(event);
 
     QPainter painter(this);
     if (drawingRectangle) {
@@ -333,19 +358,14 @@ void MainImage::paintEvent(QPaintEvent* event) {
     if (this->getPersonsEditorConst() && !data->getImagesDataPtr()->getCurrentImageData()->getDetectedObjects().empty()) {
         std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects = data->getImagesDataPtr()->getCurrentImageData()->getDetectedObjects();
 
-        // Calculate the scale factors
         QSize scaledPixmapSize = qImage.size();
         scaledPixmapSize.scale(this->size(), Qt::KeepAspectRatio);
         double xScale = static_cast<double>(scaledPixmapSize.width()) / qImage.width();
         double yScale = static_cast<double>(scaledPixmapSize.height()) / qImage.height();
-
-        // Calculate the offsets
         int xOffset = (this->width() - scaledPixmapSize.width()) / 2;
         int yOffset = (this->height() - scaledPixmapSize.height()) / 2;
-
         for (const auto& [key, value] : detectedObjects) {
             for (const auto& [rect, confidence] : value) {
-                // Adjust the rectangle coordinates
                 int adjustedX = static_cast<int>(rect.x * xScale) + xOffset;
                 int adjustedY = static_cast<int>(rect.y * yScale) + yOffset;
                 int adjustedWidth = static_cast<int>(rect.width * xScale);
@@ -358,7 +378,6 @@ void MainImage::paintEvent(QPaintEvent* event) {
                 } else {
                     painter.setPen(Qt::red);
                 }
-
                 painter.drawRect(qRect);
                 painter.drawText(qRect.topLeft(), QString::fromStdString(key) + " " + QString::number(confidence * 100, 'f', 2) + "%");
             }
@@ -371,7 +390,6 @@ void MainImage::paintEvent(QPaintEvent* event) {
             float confidence = faceData.getConfidence();
             int personId = faceData.getPersonIdConst();
 
-            // Adjust the rectangle coordinates
             int adjustedX = static_cast<int>(rect.x * xScale) + xOffset;
             int adjustedY = static_cast<int>(rect.y * yScale) + yOffset;
             int adjustedWidth = static_cast<int>(rect.width * xScale);

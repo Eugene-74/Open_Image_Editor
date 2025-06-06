@@ -68,6 +68,13 @@ ImageLabel::ImageLabel(std::shared_ptr<Data> data, const QString& imagePath, QSt
 }
 
 /**
+ * @brief Constructor for ImageLabel with only data
+ * @param data Pointer to Data
+ */
+ImageLabel::ImageLabel(std::shared_ptr<Data> data) {
+}
+
+/**
  * @brief Emit the right signal when the label is clicked (left, right, shift left, ctrl left)
  * @param event Mouse event
  * @details This function also calls the base class mouseReleaseEvent function
