@@ -894,6 +894,8 @@ void Data::saveData() {
         outFile.write(reinterpret_cast<const char*>(&selected), sizeof(selected));
     }
 
+    outFile.write(reinterpret_cast<const char*>(&saved), sizeof(saved));
+
     size_t personIdNamesSize = personIdNames.size();
     outFile.write(reinterpret_cast<const char*>(&personIdNamesSize), sizeof(personIdNamesSize));
     for (const auto& [id, name] : personIdNames) {
@@ -983,6 +985,8 @@ void Data::loadData() {
             inFile.read(reinterpret_cast<char*>(&selected), sizeof(selected));
             imagesSelected.push_back(selected);
         }
+
+        inFile.read(reinterpret_cast<char*>(&saved), sizeof(saved));
 
         size_t personIdNamesSize;
         inFile.read(reinterpret_cast<char*>(&personIdNamesSize), sizeof(personIdNamesSize));
