@@ -888,12 +888,6 @@ void Data::saveData() {
     outFile.write(reinterpret_cast<const char*>(&pathSize), sizeof(pathSize));
     outFile.write(currentFolderPath.c_str(), pathSize);
 
-    size_t imagesSelectedSize = imagesSelected.size();
-    outFile.write(reinterpret_cast<const char*>(&imagesSelectedSize), sizeof(imagesSelectedSize));
-    for (const auto& selected : imagesSelected) {
-        outFile.write(reinterpret_cast<const char*>(&selected), sizeof(selected));
-    }
-
     outFile.write(reinterpret_cast<const char*>(&saved), sizeof(saved));
 
     size_t personIdNamesSize = personIdNames.size();
@@ -976,15 +970,6 @@ void Data::loadData() {
         std::string currentFolderPath(pathSize, '\0');
         inFile.read(&currentFolderPath[0], pathSize);
         currentFolder = findFolderByPath(rootFolders, currentFolderPath);
-
-        size_t imagesSelectedSize;
-        inFile.read(reinterpret_cast<char*>(&imagesSelectedSize), sizeof(imagesSelectedSize));
-        imagesSelected.clear();
-        for (size_t i = 0; i < imagesSelectedSize; ++i) {
-            int selected;
-            inFile.read(reinterpret_cast<char*>(&selected), sizeof(selected));
-            imagesSelected.push_back(selected);
-        }
 
         inFile.read(reinterpret_cast<char*>(&saved), sizeof(saved));
 
