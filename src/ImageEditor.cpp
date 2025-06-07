@@ -72,7 +72,8 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
 
     QLabel* nameLabel = new QLabel(Text::name() + " : ", this);
     nameEdit = new QLabel("", this);
-    dateEdit = new QDateTimeEdit(this);
+    dateEdit = new QDateTimeEdit(QDateTime::currentDateTime(), this);
+
     QLabel* dateLabel = new QLabel("     " + Text::date() + " : ", this);
 
     nameAndDateLayout->addWidget(nameLabel);
@@ -83,44 +84,45 @@ ImageEditor::ImageEditor(std::shared_ptr<Data> dat, QWidget* parent)
     nameAndDateLayout->addWidget(dateEdit);
 
     QCalendarWidget* calendarWidget = dateEdit->calendarWidget();
-    calendarWidget->setGridVisible(true);
     calendarWidget->setFirstDayOfWeek(Qt::Monday);
     calendarWidget->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
     calendarWidget->setNavigationBarVisible(true);
 
     validateButton = new QPushButton(Text::validate(), this);
+    QFont validateFont = validateButton->font();
+    validateFont.setPointSize(data.get()->getSizesPtr()->fontSize);
+    validateButton->setFont(validateFont);
+    int buttonHeight = QFontMetrics(validateFont).height() * 1.4;
+    int buttonWidth = QFontMetrics(validateFont).horizontalAdvance(validateButton->text()) * 1.4;
+    validateButton->setFixedSize(buttonWidth, buttonHeight);
     connect(validateButton, &QPushButton::clicked, this, &ImageEditor::validateMetadata);
 
     buttonLayout = new QVBoxLayout();
     buttonLayout->setAlignment(Qt::AlignCenter);
 
-    if (data.get()->getSizesPtr()->fontSize <= 5) {
-        qInfo() << "text size is too small : " << data.get()->getSizesPtr()->fontSize;
-        nameLabel->hide();
-        nameEdit->hide();
-        dateLabel->hide();
-        dateEdit->hide();
-        validateButton->hide();
-    } else {
-        QFont font = nameLabel->font();
-        font.setPointSize(data.get()->getSizesPtr()->fontSize);
-        nameLabel->setFont(font);
+    QFont font = nameLabel->font();
+    font.setPointSize(data.get()->getSizesPtr()->fontSize);
+    nameLabel->setFont(font);
 
-        font = nameEdit->font();
-        font.setPointSize(data.get()->getSizesPtr()->fontSize);
-        nameEdit->setFont(font);
+    font = nameEdit->font();
+    font.setPointSize(data.get()->getSizesPtr()->fontSize);
+    nameEdit->setFont(font);
 
-        font = dateLabel->font();
-        font.setPointSize(data.get()->getSizesPtr()->fontSize);
-        dateLabel->setFont(font);
+    font = dateLabel->font();
+    font.setPointSize(data.get()->getSizesPtr()->fontSize);
+    dateLabel->setFont(font);
 
-        font = dateEdit->font();
-        font.setPointSize(data.get()->getSizesPtr()->fontSize);
-        dateEdit->setFont(font);
+    font = dateEdit->font();
+    font.setPointSize(data.get()->getSizesPtr()->fontSize);
+    dateEdit->setFont(font);
 
-        nameAndDateLayout->addWidget(validateButton);
-        buttonLayout->addWidget(nameAndDateWidget);
-    }
+    QFont dateEditFont = dateEdit->font();
+    int dateEditHeight = QFontMetrics(dateEditFont).height() * 1.4;
+    int dateEditWidth = QFontMetrics(dateEditFont).horizontalAdvance(dateEdit->text()) * 1.4;
+    dateEdit->setFixedSize(dateEditWidth, dateEditHeight);
+
+    nameAndDateLayout->addWidget(validateButton);
+    buttonLayout->addWidget(nameAndDateWidget);
 
     imageLabelLayout = new QVBoxLayout();
     imageLabelLayout->setAlignment(Qt::AlignCenter);
@@ -207,15 +209,6 @@ void ImageEditor::reload() {
 
         updateButtons();
         updatePreview();
-
-        // if (bigImage || mapEditor) {
-        //     for (int i = 0; i < infoLayout->count(); ++i) {
-        //         QWidget* widget = infoLayout->itemAt(i)->widget();
-        //         if (widget) {
-        //             widget->hide();
-        //         }
-        //     }
-        // }
 
         if (imagesData->get()->size() <= 0) {
             addImagesFromFolder(data, this);

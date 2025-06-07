@@ -39,9 +39,9 @@ void Sizes::update() {
     screenGeometry = screenR.size() / pixelRatio;
     // qDebug() << "Screen geometry:" << screenGeometry;
 
-    int maxSize = std::max(screenGeometry.width(), screenGeometry.height());
+    int minSize = std::min(screenGeometry.width(), screenGeometry.height());
     // qDebug() << "Max size:" << maxSize;
-    linkButton = QSize(maxSize * 1 / 50, maxSize * 1 / 50);
+    linkButton = QSize(minSize * 1 / 48, minSize * 1 / 48);
 
     fontSize = (screenGeometry.height()) / 100;
 
@@ -54,16 +54,15 @@ void Sizes::update() {
  * @brief Update the sizes of the imageEditor
  */
 void Sizes::ImageEditorSizes::update() {
-    if (parentSizes->screenGeometry.width() < parentSizes->screenGeometry.height()) {
-        actionSize = QSize((parentSizes->screenGeometry.width() * 1 / 24) / parentSizes->pixelRatio, (parentSizes->screenGeometry.width() * 1 / 24) / parentSizes->pixelRatio);
-    } else {
-        actionSize = QSize((parentSizes->screenGeometry.height() * 1 / 24) / parentSizes->pixelRatio, (parentSizes->screenGeometry.height() * 1 / 24) / parentSizes->pixelRatio);
-    }
+    int minSize = std::min(parentSizes->screenGeometry.width(), parentSizes->screenGeometry.height());
 
-    previewSize = (parentSizes->screenGeometry * 1 / 12);
-    mainImageSize = (parentSizes->screenGeometry * 4 / 6);
+    actionSize = QSize((minSize * 1 / 32) / parentSizes->pixelRatio, (minSize * 1 / 32) / parentSizes->pixelRatio);
 
-    bigImage = parentSizes->screenGeometry - QSize(0, parentSizes->linkButton.height()) - QSize(mainLayoutMargins[0] + mainLayoutMargins[2], mainLayoutMargins[1] + mainLayoutMargins[3]) - QSize(mainLayoutSpacing * 0, mainLayoutSpacing * 2);
+    float ratio = static_cast<float>(parentSizes->screenGeometry.width()) / parentSizes->screenGeometry.height();
+    previewSize = QSize(minSize * ratio, minSize) * 1 / 12;
+    mainImageSize = QSize(minSize * ratio, minSize) * 4 / 6;
+
+    bigImage = parentSizes->screenGeometry - QSize(0, parentSizes->linkButton.height()) * 2 - QSize(mainLayoutMargins[0] + mainLayoutMargins[2], mainLayoutMargins[1] + mainLayoutMargins[3]) - QSize(mainLayoutSpacing * 0, mainLayoutSpacing * 2);
 }
 
 /**
