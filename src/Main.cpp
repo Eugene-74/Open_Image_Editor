@@ -6,6 +6,7 @@
 #include <QGuiApplication>
 #include <QIcon>
 #include <QMessageBox>
+#include <QQmlApplicationEngine>
 #include <QScreen>
 
 #include "InitialWindow.hpp"
@@ -22,11 +23,19 @@
 int main(int argc, char* argv[]) {
     try {
         QApplication app(argc, argv);
-
         app.setWindowIcon(QIcon(":/icons/icon.ico"));
 
         InitialWindow window;
+        window.setWindowState(Qt::WindowActive);
         window.showMaximized();
+        window.raise();
+        window.activateWindow();
+        window.setFocus();
+        // #ifdef Q_OS_WIN
+        // #include <windows.h>
+        //         HWND hwnd = reinterpret_cast<HWND>(window.winId());
+        //         SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+        // #endif
         QScreen* screen = QGuiApplication::primaryScreen();
 
         QRect screenGeometry = screen->geometry();

@@ -320,7 +320,7 @@ void ImageEditor::createButtons() {
     imageSave = createImageSave();
     imageExport = createImageExport();
 
-    imageEditExif = createImageEditExif();
+    imageEditMap = createImageEditMap();
 
     imageConversion = createImageConversion();
 
@@ -338,7 +338,7 @@ void ImageEditor::createButtons() {
     actionButtonLayout->addWidget(imageExport);
     actionButtonLayout->addWidget(imageConversion);
 
-    actionButtonLayout->addWidget(imageEditExif);
+    actionButtonLayout->addWidget(imageEditMap);
     actionButtonLayout->addWidget(imagePersons);
 
     buttonImageBefore = createImageBefore();
@@ -755,15 +755,15 @@ ClickableLabel* ImageEditor::createImageMirrorLeftRight() {
  * @brief Create a button to open the editor for EXIF metadata for the image editor
  * @return A pointer to the ClickableLabel object representing the edit EXIF button
  */
-ClickableLabel* ImageEditor::createImageEditExif() {
+ClickableLabel* ImageEditor::createImageEditMap() {
     if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
-    ClickableLabel* imageEditExifNew = new ClickableLabel(data, Const::IconPath::MAP, Text::Tooltip::ImageEditor::map(), this, actionSize);
-    imageEditExifNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
+    ClickableLabel* imageEditMapNew = new ClickableLabel(data, Const::IconPath::MAP, Text::Tooltip::ImageEditor::map(), this, actionSize);
+    imageEditMapNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
-    connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
+    connect(imageEditMapNew, &ClickableLabel::clicked, [this]() {
         if (mapEditor) {
             mapEditor = false;
         } else {
@@ -778,7 +778,7 @@ ClickableLabel* ImageEditor::createImageEditExif() {
         reload();
     });
 
-    return imageEditExifNew;
+    return imageEditMapNew;
 }
 
 /**

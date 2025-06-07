@@ -62,7 +62,7 @@ class ImageBooth : public QMainWindow {
     ClickableLabel* imageDelete;
     ClickableLabel* imageSave;
     ClickableLabel* imageExport;
-    ClickableLabel* imageEditExif;
+    ClickableLabel* imageEditMap;
     ClickableLabel* imageConversion;
     ClickableLabel* editFilters;
 
@@ -91,7 +91,7 @@ class ImageBooth : public QMainWindow {
     ClickableLabel* createImageDelete();
     ClickableLabel* createImageSave();
     ClickableLabel* createImageExport();
-    ClickableLabel* createImageEditExif();
+    ClickableLabel* createImageEditMap();
     ClickableLabel* createImageConversion();
     ClickableLabel* createEditFilters();
 
@@ -106,6 +106,8 @@ class ImageBooth : public QMainWindow {
     void countImagesInFolder(Folders* currentFolder, int& totalImages);
 
     void addActionWithDelay(std::function<void()> unDo, std::function<void()> reDo, int nbrInTotal);
+    void exportImage();
+
    signals:
     void switchToImageEditor();
     void switchToImageBooth();

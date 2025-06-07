@@ -725,7 +725,7 @@ void ImageBooth::createButtons() {
     imageSave = createImageSave();
     imageExport = createImageExport();
 
-    imageEditExif = createImageEditExif();
+    imageEditMap = createImageEditMap();
 
     imageConversion = createImageConversion();
 
@@ -739,7 +739,7 @@ void ImageBooth::createButtons() {
     actionButtonLayout->addWidget(imageSave);
     actionButtonLayout->addWidget(imageExport);
     actionButtonLayout->addWidget(imageConversion);
-    actionButtonLayout->addWidget(imageEditExif);
+    actionButtonLayout->addWidget(imageEditMap);
     actionButtonLayout->addWidget(editFilters);
 }
 
@@ -851,9 +851,8 @@ ClickableLabel* ImageBooth::createImageExport() {
     imageExportNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(imageExportNew, &ClickableLabel::clicked, [this]() {
+        this->exportImage();
     });
-
-    imageExportNew->setDisabled(true);
 
     return imageExportNew;
 }
@@ -1064,20 +1063,20 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
  * @brief Create the edit exif image button
  * @return Pointer to the created ClickableLabel object
  */
-ClickableLabel* ImageBooth::createImageEditExif() {
+ClickableLabel* ImageBooth::createImageEditMap() {
     if (data->getImagesDataPtr()->get()->size() <= 0) {
         return nullptr;
     }
 
-    auto* imageEditExifNew = new ClickableLabel(data, Const::IconPath::MAP, Text::Tooltip::ImageBooth::map(), this, actionSize);
-    imageEditExifNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
+    auto* imageEditMapNew = new ClickableLabel(data, Const::IconPath::MAP, Text::Tooltip::ImageBooth::map(), this, actionSize);
+    imageEditMapNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
-    connect(imageEditExifNew, &ClickableLabel::clicked, [this]() {
+    connect(imageEditMapNew, &ClickableLabel::clicked, [this]() {
     });
 
-    imageEditExifNew->setDisabled(true);
+    imageEditMapNew->hide();
 
-    return imageEditExifNew;
+    return imageEditMapNew;
 }
 
 /**
@@ -1337,4 +1336,24 @@ void ImageBooth::addActionWithDelay(std::function<void()> unDo, std::function<vo
                 reload();
             });
         });
+}
+
+/**
+ * @brief Export the image to a specified path
+ * @details This function opens a dialog to select the export path and whether to include the date in the image name.
+ */
+void ImageBooth::exportImage() {
+    std::map<std::string, std::string> result;
+    std::map<std::string, Option> map = {
+        {"Date in image Name", Option("bool", "false")},
+        {"Export path", Option("directory", PICTURES_PATH.toStdString())}};
+    result = showOptionsDialog(this, "export", map);
+    std::string exportPath = result["Export path"];
+    bool dateInName = (result["Date in image Name"] == "true");
+
+    if (exportPath == "") {
+        return;
+    }
+
+    data->exportImages(exportPath, dateInName);
 }

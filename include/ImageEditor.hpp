@@ -89,7 +89,7 @@ class ImageEditor : public QMainWindow {
     ClickableLabel* createImageExport();
     ClickableLabel* createImageConversion();
 
-    ClickableLabel* createImageEditExif();
+    ClickableLabel* createImageEditMap();
     ClickableLabel* createImageDetection();
 
     ClickableLabel* createImageGimp();
@@ -150,7 +150,7 @@ class ImageEditor : public QMainWindow {
 
     ClickableLabel* imageConversion;
 
-    ClickableLabel* imageEditExif;
+    ClickableLabel* imageEditMap;
     ClickableLabel* imagePersons;
     ClickableLabel* imageGimp;
 

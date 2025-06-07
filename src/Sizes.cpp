@@ -37,11 +37,11 @@ void Sizes::update() {
     pixelRatio = screen->devicePixelRatio();
 #endif
     screenGeometry = screenR.size() / pixelRatio;
-    if (screenGeometry.width() < screenGeometry.height()) {
-        linkButton = QSize(screenGeometry.width() * 1 / 20, screenGeometry.width() * 1 / 20);
-    } else {
-        linkButton = QSize(screenGeometry.height() * 1 / 20, screenGeometry.height() * 1 / 20);
-    }
+    // qDebug() << "Screen geometry:" << screenGeometry;
+
+    int maxSize = std::max(screenGeometry.width(), screenGeometry.height());
+    // qDebug() << "Max size:" << maxSize;
+    linkButton = QSize(maxSize * 1 / 50, maxSize * 1 / 50);
 
     fontSize = (screenGeometry.height()) / 100;
 

@@ -7,6 +7,8 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
+#include "Const.hpp"
+
 /**
  * @brief Constructor for the MapWidget class
  * @param parent Pointer to the parent QWidget (usually the main window)
@@ -19,7 +21,6 @@ MapWidget::MapWidget(QWidget* parent, ImageData* imageData)
     quickView = new QQuickView();
     quickView->setResizeMode(QQuickView::SizeRootObjectToView);
     quickView->setSource(QUrl(QStringLiteral("qrc:/MapView.qml")));
-
     QWidget* container = QWidget::createWindowContainer(quickView, this);
     container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     container->setMinimumSize(0, 0);

@@ -30,6 +30,8 @@ copy ..\..\install\cacert.pem .
 copy ..\..\LICENSE .
 copy ..\..\README.md .
 copy ..\..\AppConfig.txt .
+copy ..\..\src\ressources\MapView.txt .
+
 
 
 
@@ -39,7 +41,8 @@ cd bin
 
 copy ..\..\%EXECUTABLE% .
 
-windeployqt6.exe --release --qmldir ..\..\..\src\ressources %EXECUTABLE%
+windeployqt6.exe  --qmldir=..\..\..\src\ressources --release C:\Users\eugen\Documents\MesDocuments\git\Open_Image_Editor\build\release\bin\%EXECUTABLE%
+
 
 C:\mingw-bundledlls\mingw-bundledlls C:\Users\eugen\Documents\MesDocuments\git\Open_Image_Editor\build\release\bin\%EXECUTABLE% > dependencies.txt
 

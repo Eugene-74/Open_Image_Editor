@@ -46,7 +46,7 @@ class InitialWindow : public QMainWindow {
     void clearWindows();
 
    private:
-    QSize linkButton;
+    // QSize linkButton;
 
     QTimer* resizeTimer;
     ImageEditor* imageEditor = nullptr;

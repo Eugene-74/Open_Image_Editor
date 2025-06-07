@@ -41,6 +41,7 @@ InitialWindow::InitialWindow() {
     resizeTimer->setInterval(TIME_BEFORE_REZISE);
     resizeTimer->setSingleShot(true);
     connect(resizeTimer, &QTimer::timeout, this, [this]() {
+
         emit reload();
     });
 
@@ -117,7 +118,7 @@ InitialWindow::InitialWindow() {
         layout = new QVBoxLayout;
         windowLayout->addLayout(layout);
 
-        linkButton = data->getSizesPtr()->linkButton / 2;
+        // linkButton = data->getSizesPtr()->linkButton / 2;
 
         imageLanguage = createImageLanguage();
         imageLanguage->setAlignment(Qt::AlignLeft);
@@ -519,7 +520,7 @@ void InitialWindow::showMainWindow() {
 }
 
 ClickableLabel* InitialWindow::createImageHome() {
-    ClickableLabel* newImageHome = new ClickableLabel(data, Const::IconPath::HOME, Text::Tooltip::home(), this, &linkButton, false, 0, true);
+    ClickableLabel* newImageHome = new ClickableLabel(data, Const::IconPath::HOME, Text::Tooltip::home(), this, &data->getSizesPtr()->linkButton, false, 0, true);
     newImageHome->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(newImageHome, &ClickableLabel::clicked, [this]() {
@@ -560,7 +561,7 @@ ClickableLabel* InitialWindow::createImageHome() {
 }
 
 ClickableLabel* InitialWindow::createImageBack() {
-    ClickableLabel* newImageBack = new ClickableLabel(data, Const::IconPath::BACK, Text::Tooltip::back_folder(), this, &linkButton, false, 0, true);
+    ClickableLabel* newImageBack = new ClickableLabel(data, Const::IconPath::BACK, Text::Tooltip::back_folder(), this, &data->getSizesPtr()->linkButton, false, 0, true);
     newImageBack->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(newImageBack, &ClickableLabel::clicked, [this]() {
@@ -622,7 +623,7 @@ ClickableLabel* InitialWindow::createImageLanguage() {
         language = Const::IconPath::Language::EN;
     }
 
-    ClickableLabel* newImageLanguage = new ClickableLabel(data, language, Text::Tooltip::language(), this, &linkButton, false, 0, true);
+    ClickableLabel* newImageLanguage = new ClickableLabel(data, language, Text::Tooltip::language(), this, &data->getSizesPtr()->linkButton, false, 0, true);
     newImageLanguage->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(newImageLanguage, &ClickableLabel::clicked, [this]() {
@@ -651,13 +652,13 @@ ClickableLabel*
 InitialWindow::createImageWifi() {
     ClickableLabel* newImageWifi;
     if (data->getConnectionEnabled()) {
-        newImageWifi = new ClickableLabel(data, Const::IconPath::WIFI, Text::Tooltip::wifi(), this, &linkButton, false, 0, true);
+        newImageWifi = new ClickableLabel(data, Const::IconPath::WIFI, Text::Tooltip::wifi(), this, &data->getSizesPtr()->linkButton, false, 0, true);
         connect(newImageWifi, &ClickableLabel::clicked, [this]() {
             data->setConnectionEnabled(false);
             reload();
         });
     } else {
-        newImageWifi = new ClickableLabel(data, Const::IconPath::NO_WIFI, Text::Tooltip::noWifi(), this, &linkButton, false, 0, true);
+        newImageWifi = new ClickableLabel(data, Const::IconPath::NO_WIFI, Text::Tooltip::noWifi(), this, &data->getSizesPtr()->linkButton, false, 0, true);
         connect(newImageWifi, &ClickableLabel::clicked, [this]() {
             if (hasConnection()) {
                 data->setConnectionEnabled(true);
@@ -686,7 +687,7 @@ InitialWindow::createImageWifi() {
  * @details It also sets up a signal to handle the reload event and update the label accordingly.
  */
 ClickableLabel* InitialWindow::createImageDiscord() {
-    ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Text::Tooltip::discord(), this, &linkButton, false, 0, true);
+    ClickableLabel* newImageDiscord = new ClickableLabel(data, Const::IconPath::DISCORD, Text::Tooltip::discord(), this, &data->getSizesPtr()->linkButton, false, 0, true);
     newImageDiscord->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(newImageDiscord, &ClickableLabel::clicked, [this]() {
@@ -710,7 +711,7 @@ ClickableLabel* InitialWindow::createImageDiscord() {
  * @details It also sets up a signal to handle the reload event and update the label accordingly.
  */
 ClickableLabel* InitialWindow::createImageGithub() {
-    ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Text::Tooltip::github(), this, &linkButton, false, 0, true);
+    ClickableLabel* newImageGithub = new ClickableLabel(data, Const::IconPath::GITHUB, Text::Tooltip::github(), this, &data->getSizesPtr()->linkButton, false, 0, true);
     newImageGithub->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(newImageGithub, &ClickableLabel::clicked, [this]() {
@@ -727,7 +728,7 @@ ClickableLabel* InitialWindow::createImageGithub() {
     return newImageGithub;
 }
 ClickableLabel* InitialWindow::createImageOption() {
-    ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Text::Tooltip::option(), this, &linkButton, false, 0, true);
+    ClickableLabel* newImageOption = new ClickableLabel(data, Const::IconPath::OPTION, Text::Tooltip::option(), this, &data->getSizesPtr()->linkButton, false, 0, true);
     newImageOption->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(newImageOption, &ClickableLabel::clicked, [this]() {
@@ -793,6 +794,10 @@ void InitialWindow::resizeEvent(QResizeEvent* event) {
         }
         resizeTimer->start();
     }
+    // if (data && data->getSizesPtr()) {
+    //     linkButton = data->getSizesPtr()->linkButton;
+    //     qDebug() << "Resize event triggered, linkButton size:" << linkButton;
+    // }
 
     QMainWindow::resizeEvent(event);
 }
