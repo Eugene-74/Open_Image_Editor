@@ -90,16 +90,28 @@ Item {
                 map.removeMapItem(currentMarker);
                 currentMarker.destroy();
             }
-            
             currentMarker = Qt.createQmlObject(
                 'import QtQuick; import QtLocation ; import QtPositioning; MapQuickItem { coordinate: QtPositioning.coordinate(' + coordinate.latitude + ', ' + coordinate.longitude + '); anchorPoint.x: 24; anchorPoint.y: 48; sourceItem: Image { source: "qrc:/images/pin.png"; width: 48; height: 48; } }',
                 map
             );
             map.addMapItem(currentMarker);
-
             currentCoordinate = coordinate;
+        }
 
-            
+        function removeAllPoints() {
+            var itemsToRemove = [];
+            for (var i = 0; i < map.mapItems.length; ++i) {
+                var item = map.mapItems[i];
+                if (item && item.destroy) {
+                    itemsToRemove.push(item);
+                }
+            }
+            for (var j = 0; j < itemsToRemove.length; ++j) {
+                map.removeMapItem(itemsToRemove[j]);
+                itemsToRemove[j].destroy();
+            }
+            currentMarker = null;
+            currentCoordinate = null;
         }
 
         function setInitialPoint(coordinate) {

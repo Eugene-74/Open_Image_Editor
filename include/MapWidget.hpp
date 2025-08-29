@@ -25,6 +25,8 @@ class MapWidget : public QDialog {
 
     void setImageData(ImageData* imageData);
 
+    void removeAllPoints();
+
    private:
     QQuickView* quickView;
     ImageData* imageData = nullptr;

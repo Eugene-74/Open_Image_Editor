@@ -72,6 +72,8 @@ class ImageBooth : public QMainWindow {
 
     ClickableLabel* editFilters;
 
+    MapWidget* mapWidget = nullptr;
+
     std::vector<QHBoxLayout*>
         lineLayouts;
 

@@ -131,3 +131,18 @@ void MapWidget::setImageData(ImageData* imageData) {
 void MapWidget::reject() {
     // Do nothing (normal)
 }
+
+void MapWidget::removeAllPoints() {
+    if (!quickView)
+        return;
+
+    QQuickItem* rootItem = quickView->rootObject();
+    if (!rootItem)
+        return;
+
+    QQuickItem* mapItem = rootItem->findChild<QQuickItem*>("mapView");
+    if (!mapItem)
+        return;
+
+    QMetaObject::invokeMethod(mapItem, "removeAllPoints");
+}

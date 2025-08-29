@@ -1148,6 +1148,7 @@ ClickableLabel* ImageBooth::createImageEditMap() {
             }
         }
         updateMapWidget();
+        
     });
 
     return imageEditMapNew;
@@ -1379,7 +1380,7 @@ void ImageBooth::exportImage() {
  * @return A pointer to the MapWidget object
  */
 MapWidget* ImageBooth::createMapWidget() {
-    MapWidget* mapWidget = new MapWidget(this, [this](double latitude, double longitude) {
+    mapWidget = new MapWidget(this, [this](double latitude, double longitude) {
         for (int imageIndex : *(data->getImagesSelectedPtr())) {
             ImageData* imageData = data->getImagesDataPtr()->getImageData(imageIndex);
 
@@ -1387,26 +1388,6 @@ MapWidget* ImageBooth::createMapWidget() {
                 imageData->setLatitude(latitude);
                 imageData->setLongitude(longitude);
                 imageData->saveMetaData();
-            }
-        }
-    });
-    // if (!mapEditor) {
-    //     qDebug() << "Map editor is disabled";
-    //     // mapWidget->hide();
-    //     // mapWidget->update();
-    //     for (int i = 0; i < centralLayout->count(); ++i) {
-    //         QWidget* widget = centralLayout->itemAt(i)->widget();
-    //         if (widget) {
-    //             widget->hide();
-    //         }
-    //     }
-    // TODO marche pas
-    // }
-    data->addThreadToFront([this, mapWidget]() {
-        for (int imageIndex : *(data->getImagesSelectedPtr())) {
-            ImageData* imageData = data->getImagesDataPtr()->getImageData(imageIndex);
-            if (imageData && imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
-                mapWidget->addMapPointForOthers(imageData->getLatitude(), imageData->getLongitude());
             }
         }
     });
@@ -1420,26 +1401,18 @@ void ImageBooth::updateMapWidget() {
     if (!centralLayout) {
         return;
     }
-    MapWidget* oldMapWidget = nullptr;
-    for (int i = 0; i < centralLayout->count(); ++i) {
-        QWidget* widget = centralLayout->itemAt(i)->widget();
-        oldMapWidget = qobject_cast<MapWidget*>(widget);
-        if (oldMapWidget) {
-            centralLayout->removeWidget(oldMapWidget);
-            oldMapWidget->deleteLater();
-            break;
-        }
+    if (!mapWidget) {
+        mapWidget = createMapWidget();
+        centralLayout->addWidget(mapWidget);
     }
-    if (!mapEditor) {
-        return;
-    }
-    MapWidget* mapWidget = createMapWidget();
-    centralLayout->addWidget(mapWidget);
+    mapWidget->removeAllPoints();
 
-    for (int imageIndex : *(data->getImagesSelectedPtr())) {
-        ImageData* imageData = data->getImagesDataPtr()->getImageData(imageIndex);
-        if (imageData && imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
-            mapWidget->addMapPointForOthers(imageData->getLatitude(), imageData->getLongitude());
+    data->addThreadToFront([this]() {
+        for (int imageIndex : *(data->getImagesSelectedPtr())) {
+            ImageData* imageData = data->getImagesDataPtr()->getImageData(imageIndex);
+            if (imageData && imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
+                mapWidget->addMapPointForOthers(imageData->getLatitude(), imageData->getLongitude());
+            }
         }
-    }
+    });
 }
