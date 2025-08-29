@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Data.hpp"
+#include "MapWidget.hpp"
 
 // Forward declaration
 class QScrollArea;
@@ -45,6 +46,10 @@ class ImageBooth : public QMainWindow {
     QSpacerItem* spacer;
 
     QVBoxLayout* mainLayout;
+    QHBoxLayout* centralLayout;
+
+    bool mapEditor = false;
+
     QVBoxLayout* linesLayout;
 
     QSize* imageSize = &data->getSizesPtr()->imagesBoothSizes->imageSize;
@@ -62,8 +67,9 @@ class ImageBooth : public QMainWindow {
     ClickableLabel* imageDelete;
     ClickableLabel* imageSave;
     ClickableLabel* imageExport;
-    ClickableLabel* imageEditMap;
     ClickableLabel* imageConversion;
+    ClickableLabel* imageEditMap;
+
     ClickableLabel* editFilters;
 
     std::vector<QHBoxLayout*>
@@ -91,8 +97,8 @@ class ImageBooth : public QMainWindow {
     ClickableLabel* createImageDelete();
     ClickableLabel* createImageSave();
     ClickableLabel* createImageExport();
-    ClickableLabel* createImageEditMap();
     ClickableLabel* createImageConversion();
+    ClickableLabel* createImageEditMap();
     ClickableLabel* createEditFilters();
 
     void openFiltersPopup();
@@ -107,6 +113,9 @@ class ImageBooth : public QMainWindow {
 
     void addActionWithDelay(std::function<void()> unDo, std::function<void()> reDo, int nbrInTotal);
     void exportImage();
+
+    MapWidget* createMapWidget();
+    void updateMapWidget();
 
    signals:
     void switchToImageEditor();

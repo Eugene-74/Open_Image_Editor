@@ -14,8 +14,7 @@
  * @param parent Pointer to the parent QWidget (usually the main window)
  * @param imageData Pointer to the ImageData object containing image metadata
  */
-MapWidget::MapWidget(QWidget* parent, ImageData* imageData)
-    : QDialog(parent), imageData(imageData) {
+MapWidget::MapWidget(QWidget* parent, std::function<void(double, double)> validate) : QDialog(parent), validate(validate) {
     QVBoxLayout* layout = new QVBoxLayout(this);
 
     quickView = new QQuickView();
@@ -118,9 +117,7 @@ void MapWidget::addMapPointForOthers(double latitude, double longitude) {
  * @param longitude Longitude of the validated point
  */
 void MapWidget::onCoordinateValidated(double latitude, double longitude) {
-    imageData->setLatitude(latitude);
-    imageData->setLongitude(longitude);
-    imageData->saveMetaData();
+    validate(latitude, longitude);
 }
 
 /**

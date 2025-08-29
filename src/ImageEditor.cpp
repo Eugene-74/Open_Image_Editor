@@ -1646,7 +1646,14 @@ bool ImageEditor::eventFilter(QObject* obj, QEvent* event) {
 MapWidget* ImageEditor::createMapWidget() {
     ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
 
-    MapWidget* mapWidget = new MapWidget(this, imageData);
+    MapWidget* mapWidget = new MapWidget(this, [this](double latitude, double longitude) {
+        ImageData* imageData = data->getImagesDataPtr()->getCurrentImageData();
+        if (imageData) {
+            imageData->setLatitude(latitude);
+            imageData->setLongitude(longitude);
+            imageData->saveMetaData();
+        }
+    });
     if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
         mapWidget->setMapCenter(imageData->getLatitude(), imageData->getLongitude());
         mapWidget->moveMapPoint(imageData->getLatitude(), imageData->getLongitude());

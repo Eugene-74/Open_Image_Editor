@@ -14,7 +14,7 @@
 class MapWidget : public QDialog {
     Q_OBJECT
    public:
-    MapWidget(QWidget* parent, ImageData* imageData);
+    MapWidget(QWidget* parent, std::function<void(double, double)> validate);
 
     void setMapCenter(double latitude, double longitude);
 
@@ -27,8 +27,8 @@ class MapWidget : public QDialog {
 
    private:
     QQuickView* quickView;
-    ImageData* imageData;
-
+    ImageData* imageData = nullptr;
+    std::function<void(double, double)> validate;
    private slots:
     void onCoordinateValidated(double latitude, double longitude);
 

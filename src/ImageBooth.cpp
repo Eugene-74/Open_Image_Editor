@@ -83,14 +83,17 @@ ImageBooth::ImageBooth(std::shared_ptr<Data> dat, QWidget* parent)
     setCentralWidget(centralWidget);
 
     mainLayout = new QVBoxLayout(centralWidget);
+
+    centralLayout = new QHBoxLayout();
     actionButtonLayout = new QHBoxLayout();
     actionButtonLayout->setAlignment(Qt::AlignCenter);
     mainLayout->addLayout(actionButtonLayout);
+    mainLayout->addLayout(centralLayout);
 
     createButtons();
 
     scrollLayout = new QHBoxLayout();
-    mainLayout->addLayout(scrollLayout);
+    centralLayout->addLayout(scrollLayout);
 
     scrollArea = new QScrollArea(centralWidget);
     scrollArea->setWidgetResizable(true);
@@ -382,6 +385,7 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbrInCurrent)
                 },
                 imageNumberInTotal);
         }
+        updateMapWidget();
     });
 
     connect(imageButton, &ClickableLabel::shiftLeftClicked, [this, nbrInCurrent, imageButton]() {
@@ -442,6 +446,8 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbrInCurrent)
                 imageNumberInTotal);
 
             imageShiftSelected = -1;
+            updateMapWidget();
+
         } else {
             // Select the first image
 
@@ -1060,26 +1066,6 @@ ClickableLabel* ImageBooth::createImageMirrorLeftRight() {
 }
 
 /**
- * @brief Create the edit exif image button
- * @return Pointer to the created ClickableLabel object
- */
-ClickableLabel* ImageBooth::createImageEditMap() {
-    if (data->getImagesDataPtr()->get()->size() <= 0) {
-        return nullptr;
-    }
-
-    auto* imageEditMapNew = new ClickableLabel(data, Const::IconPath::MAP, Text::Tooltip::ImageBooth::map(), this, actionSize);
-    imageEditMapNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
-
-    connect(imageEditMapNew, &ClickableLabel::clicked, [this]() {
-    });
-
-    imageEditMapNew->hide();
-
-    return imageEditMapNew;
-}
-
-/**
  * @brief Create the image conversion button
  * @return Pointer to the created ClickableLabel object
  */
@@ -1138,6 +1124,36 @@ ClickableLabel* ImageBooth::createImageConversion() {
 }
 
 /**
+ * @brief Create a button to open the editor for EXIF metadata for the image editor
+ * @return A pointer to the ClickableLabel object representing the edit EXIF button
+ */
+ClickableLabel* ImageBooth::createImageEditMap() {
+    if (data->getImagesDataPtr()->get()->size() <= 0) {
+        return nullptr;
+    }
+
+    ClickableLabel* imageEditMapNew = new ClickableLabel(data, Const::IconPath::MAP, Text::Tooltip::ImageEditor::map(), this, actionSize);
+    imageEditMapNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
+
+    connect(imageEditMapNew, &ClickableLabel::clicked, [this]() {
+        if (mapEditor) {
+            mapEditor = false;
+        } else {
+            mapEditor = true;
+            for (int i = 0; i < centralLayout->count(); ++i) {
+                QWidget* widget = centralLayout->itemAt(i)->widget();
+                if (widget) {
+                    widget->setHidden(false);
+                }
+            }
+        }
+        updateMapWidget();
+    });
+
+    return imageEditMapNew;
+}
+
+/**
  * @brief Create the edit filters button
  * @return Pointer to the created ClickableLabel object
  */
@@ -1178,7 +1194,7 @@ void ImageBooth::openFiltersPopup() {
 
     QVBoxLayout* mainLayout = new QVBoxLayout(dialog);
 
-    QHBoxLayout* imageVideoLayout = new QHBoxLayout();
+    QVBoxLayout* imageVideoLayout = new QVBoxLayout();
     QCheckBox* imageCheckbox = new QCheckBox("image", dialog);
     QCheckBox* videoCheckbox = new QCheckBox("video", dialog);
 
@@ -1356,4 +1372,74 @@ void ImageBooth::exportImage() {
     }
 
     data->exportImages(exportPath, dateInName);
+}
+
+/**
+ * @brief Create a MapWidget for displaying the map
+ * @return A pointer to the MapWidget object
+ */
+MapWidget* ImageBooth::createMapWidget() {
+    MapWidget* mapWidget = new MapWidget(this, [this](double latitude, double longitude) {
+        for (int imageIndex : *(data->getImagesSelectedPtr())) {
+            ImageData* imageData = data->getImagesDataPtr()->getImageData(imageIndex);
+
+            if (imageData) {
+                imageData->setLatitude(latitude);
+                imageData->setLongitude(longitude);
+                imageData->saveMetaData();
+            }
+        }
+    });
+    // if (!mapEditor) {
+    //     qDebug() << "Map editor is disabled";
+    //     // mapWidget->hide();
+    //     // mapWidget->update();
+    //     for (int i = 0; i < centralLayout->count(); ++i) {
+    //         QWidget* widget = centralLayout->itemAt(i)->widget();
+    //         if (widget) {
+    //             widget->hide();
+    //         }
+    //     }
+    // TODO marche pas
+    // }
+    data->addThreadToFront([this, mapWidget]() {
+        for (int imageIndex : *(data->getImagesSelectedPtr())) {
+            ImageData* imageData = data->getImagesDataPtr()->getImageData(imageIndex);
+            if (imageData && imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
+                mapWidget->addMapPointForOthers(imageData->getLatitude(), imageData->getLongitude());
+            }
+        }
+    });
+
+    return mapWidget;
+}
+/**
+ * @brief Re-create the MapWidget and update it with the selected images' locations
+ */
+void ImageBooth::updateMapWidget() {
+    if (!centralLayout) {
+        return;
+    }
+    MapWidget* oldMapWidget = nullptr;
+    for (int i = 0; i < centralLayout->count(); ++i) {
+        QWidget* widget = centralLayout->itemAt(i)->widget();
+        oldMapWidget = qobject_cast<MapWidget*>(widget);
+        if (oldMapWidget) {
+            centralLayout->removeWidget(oldMapWidget);
+            oldMapWidget->deleteLater();
+            break;
+        }
+    }
+    if (!mapEditor) {
+        return;
+    }
+    MapWidget* mapWidget = createMapWidget();
+    centralLayout->addWidget(mapWidget);
+
+    for (int imageIndex : *(data->getImagesSelectedPtr())) {
+        ImageData* imageData = data->getImagesDataPtr()->getImageData(imageIndex);
+        if (imageData && imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
+            mapWidget->addMapPointForOthers(imageData->getLatitude(), imageData->getLongitude());
+        }
+    }
 }
