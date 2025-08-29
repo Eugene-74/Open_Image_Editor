@@ -1136,19 +1136,15 @@ ClickableLabel* ImageBooth::createImageEditMap() {
     imageEditMapNew->setInitialBackground(Const::Color::TRANSPARENT1, Const::Color::LIGHT_GRAY);
 
     connect(imageEditMapNew, &ClickableLabel::clicked, [this]() {
+        // TODO ne marche pas comletement
         if (mapEditor) {
             mapEditor = false;
+            mapWidget->deleteLater();
+            mapWidget = nullptr;
         } else {
             mapEditor = true;
-            for (int i = 0; i < centralLayout->count(); ++i) {
-                QWidget* widget = centralLayout->itemAt(i)->widget();
-                if (widget) {
-                    widget->setHidden(false);
-                }
-            }
         }
         updateMapWidget();
-        
     });
 
     return imageEditMapNew;
@@ -1390,6 +1386,7 @@ MapWidget* ImageBooth::createMapWidget() {
                 imageData->saveMetaData();
             }
         }
+        updateMapWidget();
     });
 
     return mapWidget;
@@ -1398,6 +1395,9 @@ MapWidget* ImageBooth::createMapWidget() {
  * @brief Re-create the MapWidget and update it with the selected images' locations
  */
 void ImageBooth::updateMapWidget() {
+    if (!mapEditor) {
+        return;
+    }
     if (!centralLayout) {
         return;
     }
