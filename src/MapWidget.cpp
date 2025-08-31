@@ -1,3 +1,4 @@
+
 #include "MapWidget.hpp"
 
 #include <QGeoCoordinate>
@@ -6,8 +7,104 @@
 #include <QUrl>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <cmath>
+#include <vector>
 
 #include "Const.hpp"
+
+/**
+ * @brief Calculate the distance between two geographic coordinates
+ *
+ * @param a First coordinate
+ * @param b Second coordinate
+ * @return Distance between the two coordinates
+ */
+static double distanceCoords(const QGeoCoordinate& a, const QGeoCoordinate& b) {
+    double dLat = a.latitude() - b.latitude();
+    double dLon = a.longitude() - b.longitude();
+    return std::sqrt(dLat * dLat + dLon * dLon);
+}
+
+/**
+ * @brief Set the list of coordinates to be displayed on the map
+ *
+ * @param coords List of geographic coordinates
+ * @param clusterDistance Distance threshold for clustering points
+ */
+void MapWidget::setCoordinatesList(const std::vector<QGeoCoordinate>& selectedCoords, const std::vector<QGeoCoordinate>& notSelectedCoords, double clusterDistance) {
+    if (!quickView) return;
+    QQuickItem* rootItem = quickView->rootObject();
+    if (!rootItem) return;
+    QQuickItem* mapItem = rootItem->findChild<QQuickItem*>("mapView");
+    if (!mapItem) return;
+
+    QMetaObject::invokeMethod(mapItem, "removeAllPoints");
+
+    struct Cluster {
+        QGeoCoordinate center;
+        int count;
+    };
+    std::vector<Cluster> clusters;
+
+    // Add blue points (not selected)
+    for (const auto& coord : notSelectedCoords) {
+        bool found = false;
+        for (auto& cluster : clusters) {
+            if (distanceCoords(cluster.center, coord) < clusterDistance) {
+                cluster.center.setLatitude((cluster.center.latitude() * cluster.count + coord.latitude()) / (cluster.count + 1));
+                cluster.center.setLongitude((cluster.center.longitude() * cluster.count + coord.longitude()) / (cluster.count + 1));
+                cluster.count++;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            clusters.push_back({coord, 1});
+        }
+    }
+
+    if (clusters.size() > 100) {
+        std::partial_sort(clusters.begin(), clusters.begin() + 100, clusters.end(), [](const Cluster& a, const Cluster& b) {
+            return a.count > b.count;
+        });
+        clusters.resize(100);
+    }
+
+    for (const auto& cluster : clusters) {
+        QVariant coordVar = QVariant::fromValue(cluster.center);
+        QMetaObject::invokeMethod(mapItem, "addPointForOthers", Q_ARG(QVariant, coordVar), Q_ARG(QVariant, QVariant(QStringLiteral("otherPin"))));
+    }
+
+    clusters.clear();
+    // Add red points (selected)
+    for (const auto& coord : selectedCoords) {
+        bool found = false;
+        for (auto& cluster : clusters) {
+            if (distanceCoords(cluster.center, coord) < clusterDistance) {
+                cluster.center.setLatitude((cluster.center.latitude() * cluster.count + coord.latitude()) / (cluster.count + 1));
+                cluster.center.setLongitude((cluster.center.longitude() * cluster.count + coord.longitude()) / (cluster.count + 1));
+                cluster.count++;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            clusters.push_back({coord, 1});
+        }
+    }
+
+    if (clusters.size() > 100) {
+        std::partial_sort(clusters.begin(), clusters.begin() + 100, clusters.end(), [](const Cluster& a, const Cluster& b) {
+            return a.count > b.count;
+        });
+        clusters.resize(100);
+    }
+
+    for (const auto& cluster : clusters) {
+        QVariant coordVar = QVariant::fromValue(cluster.center);
+        QMetaObject::invokeMethod(mapItem, "addPointForOthers", Q_ARG(QVariant, coordVar), Q_ARG(QVariant, QVariant(QStringLiteral("pin"))));
+    }
+}
 
 /**
  * @brief Constructor for the MapWidget class
@@ -96,7 +193,13 @@ void MapWidget::removeMapPoint() {
     QMetaObject::invokeMethod(mapItem, "removePoint");
 }
 
-void MapWidget::addMapPointForOthers(double latitude, double longitude) {
+/**
+ * @brief Add a map point for other images
+ *
+ * @param latitude Latitude of the map point
+ * @param longitude Longitude of the map point
+ */
+void MapWidget::addMapPointForOthers(double latitude, double longitude, const QString& pinFile) {
     if (!quickView)
         return;
 
@@ -110,7 +213,9 @@ void MapWidget::addMapPointForOthers(double latitude, double longitude) {
 
     QGeoCoordinate pointCoordinate(latitude, longitude);
 
-    QMetaObject::invokeMethod(mapItem, "addPointForOthers", Q_ARG(QVariant, QVariant::fromValue(pointCoordinate)));
+    QMetaObject::invokeMethod(mapItem, "addPointForOthers",
+                              Q_ARG(QVariant, QVariant::fromValue(pointCoordinate)),
+                              Q_ARG(QVariant, QVariant(pinFile)));
 }
 
 /**
@@ -134,6 +239,9 @@ void MapWidget::reject() {
     // Do nothing (normal)
 }
 
+/**
+ * @brief Remove all points from the map
+ */
 void MapWidget::removeAllPoints() {
     if (!quickView)
         return;

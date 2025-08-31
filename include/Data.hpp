@@ -242,3 +242,5 @@ QImage loadAnImage(std::string imagePath);
 QImage loadAnImageWithRotation(ImageData imageData, int thumbnail);
 
 bool saveAnImage(std::string destinationPath, QImage image);
+
+std::tuple<double, double, int> calculateMapCenterAndZoom(const std::vector<ImageData*>& images);

@@ -1385,20 +1385,51 @@ void ImageEditor::deleteImage() {
  * @details This function retrieves the metadata from the current image and populates the corresponding fields in the UI.
  */
 void ImageEditor::populateMetadataFields() {
-    ImagesData* imagesData = data->getImagesDataPtr();
-    ImageData* imageData = imagesData->getCurrentImageData();
-    Exiv2::ExifData exifData = imageData->getMetaDataPtr()->getExifData();
-
     if (mapEditor) {
-        double latitude = imageData->getLatitude();
-        double longitude = imageData->getLongitude();
-        editGeo->setImageData(imageData);
-        if (latitude == 0 && longitude == 0) {
-            editGeo->removeMapPoint();
-        } else {
-            editGeo->moveMapPoint(latitude, longitude);
-            editGeo->setMapCenter(latitude, longitude);
-        }
+        data->addThreadToFront([this]() {
+            ImagesData* imagesData = data->getImagesDataPtr();
+            ImageData* imageData = imagesData->getCurrentImageData();
+            double latitude = imageData->getLatitude();
+            double longitude = imageData->getLongitude();
+
+            ImagesData* imagesDataToShow = new ImagesData(*imagesData);
+            std::vector<ImageData*> filteredImages;
+            for (ImageData* img : imagesDataToShow->getConst()) {
+                if (img && img != imageData && img->getLatitude() != 0 && img->getLongitude() != 0) {
+                    filteredImages.push_back(img);
+                }
+            }
+            imagesDataToShow->get()->clear();
+            for (ImageData* img : filteredImages) {
+                imagesDataToShow->get()->push_back(img);
+            }
+
+            // Crée une liste de coordonnées pour les images non sélectionnées (hors imageData courant)
+            std::vector<QGeoCoordinate> notSelectedCoords;
+            for (ImageData* img : imagesDataToShow->getConst()) {
+                if (img && img != imageData && img->getLatitude() != 0 && img->getLongitude() != 0) {
+                    notSelectedCoords.emplace_back(img->getLatitude(), img->getLongitude());
+                }
+            }
+            editGeo->setCoordinatesList({}, notSelectedCoords);
+
+            std::vector<ImageData*> selectedImages;
+            for (ImageData* imageData : imagesDataToShow->getConst()) {
+                if (imageData) {
+                    selectedImages.push_back(imageData);
+                }
+            }
+            auto [centerLat, centerLon, zoom] = calculateMapCenterAndZoom(selectedImages);
+            qDebug() << "Map center:" << centerLat << centerLon << "Zoom:" << zoom;
+            editGeo->setMapCenter(centerLat, centerLon, zoom);
+
+            editGeo->setImageData(imageData);
+            if (latitude == 0 && longitude == 0) {
+                editGeo->removeMapPoint();
+            } else {
+                editGeo->moveMapPoint(latitude, longitude);
+            }
+        });
     }
 }
 
@@ -1654,17 +1685,17 @@ MapWidget* ImageEditor::createMapWidget() {
             imageData->saveMetaData();
         }
     });
-    if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
-        mapWidget->setMapCenter(imageData->getLatitude(), imageData->getLongitude());
-        mapWidget->moveMapPoint(imageData->getLatitude(), imageData->getLongitude());
-    }
-    data->addThreadToFront([this, mapWidget]() {
-        for (ImageData* imageData : data->getImagesDataPtr()->getConst()) {
-            if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
-                mapWidget->addMapPointForOthers(imageData->getLatitude(), imageData->getLongitude());
-            }
-        }
-    });
+    // if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
+    //     mapWidget->setMapCenter(imageData->getLatitude(), imageData->getLongitude());
+    //     mapWidget->moveMapPoint(imageData->getLatitude(), imageData->getLongitude());
+    // }
+    // data->addThreadToFront([this, mapWidget]() {
+    //     for (ImageData* imageData : data->getImagesDataPtr()->getConst()) {
+    //         if (imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
+    //             mapWidget->addMapPointForOthers(imageData->getLatitude(), imageData->getLongitude());
+    //         }
+    //     }
+    // });
 
     return mapWidget;
 }

@@ -1391,9 +1391,7 @@ MapWidget* ImageBooth::createMapWidget() {
 
     return mapWidget;
 }
-/**
- * @brief Re-create the MapWidget and update it with the selected images' locations
- */
+
 void ImageBooth::updateMapWidget() {
     if (!mapEditor) {
         return;
@@ -1408,12 +1406,25 @@ void ImageBooth::updateMapWidget() {
     mapWidget->removeAllPoints();
 
     data->addThreadToFront([this]() {
+        std::vector<QGeoCoordinate> selectedCoords;
         for (int imageIndex : *(data->getImagesSelectedPtr())) {
             ImageData* imageData = data->getImagesDataPtr()->getImageData(imageIndex);
             if (imageData && imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
-                mapWidget->addMapPointForOthers(imageData->getLatitude(), imageData->getLongitude());
+                selectedCoords.emplace_back(imageData->getLatitude(), imageData->getLongitude());
             }
         }
+        std::vector<QGeoCoordinate> notSelectedCoords;
+        for (int i = 0; i < data->getImagesDataPtr()->get()->size(); ++i) {
+            if (std::find(data->getImagesSelectedPtr()->begin(), data->getImagesSelectedPtr()->end(), i) == data->getImagesSelectedPtr()->end()) {
+                ImageData* imageData = data->getImagesDataPtr()->getImageData(i);
+                if (imageData && imageData->getLatitude() != 0 && imageData->getLongitude() != 0) {
+                    notSelectedCoords.emplace_back(imageData->getLatitude(), imageData->getLongitude());
+                }
+            }
+        }
+
+        mapWidget->setCoordinatesList(selectedCoords, notSelectedCoords);
+
         std::vector<ImageData*> selectedImages;
         for (int imageIndex : *(data->getImagesSelectedPtr())) {
             ImageData* imageData = data->getImagesDataPtr()->getImageData(imageIndex);
@@ -1422,52 +1433,7 @@ void ImageBooth::updateMapWidget() {
             }
         }
         auto [centerLat, centerLon, zoom] = calculateMapCenterAndZoom(selectedImages);
-        qDebug() << "Map center:" << centerLat << centerLon << "Zoom:" << zoom;
         mapWidget->setMapCenter(centerLat, centerLon, zoom);
     });
 }
 
-std::tuple<double, double, int> calculateMapCenterAndZoom(const std::vector<ImageData*>& images) {
-    if (images.empty()) {
-        return std::make_tuple(48.8566, 2.3522, 6);
-    }
-    double minLat = 90.0, maxLat = -90.0, minLon = 180.0, maxLon = -180.0;
-    for (const auto& img : images) {
-        double lat = img->getLatitude();
-        double lon = img->getLongitude();
-        if (lat == 0 && lon == 0) continue;
-        minLat = std::min(minLat, lat);
-        maxLat = std::max(maxLat, lat);
-        minLon = std::min(minLon, lon);
-        maxLon = std::max(maxLon, lon);
-    }
-    double centerLat = (minLat + maxLat) / 2.0;
-    double centerLon = (minLon + maxLon) / 2.0;
-    double latDiff = maxLat - minLat;
-    double lonDiff = maxLon - minLon;
-    double maxDiff = std::max(latDiff, lonDiff);
-    int zoom = 1;
-    if (maxDiff < 0.0005)
-        zoom = 18;
-    else if (maxDiff < 0.001)
-        zoom = 17;
-    else if (maxDiff < 0.005)
-        zoom = 16;
-    else if (maxDiff < 0.01)
-        zoom = 15;
-    else if (maxDiff < 0.05)
-        zoom = 13;
-    else if (maxDiff < 0.1)
-        zoom = 12;
-    else if (maxDiff < 0.5)
-        zoom = 10;
-    else if (maxDiff < 1.0)
-        zoom = 8;
-    else if (maxDiff < 5.0)
-        zoom = 6;
-    else if (maxDiff < 10.0)
-        zoom = 4;
-    else
-        zoom = 2;
-    return std::make_tuple(centerLat, centerLon, zoom);
-}

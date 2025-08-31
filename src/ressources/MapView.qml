@@ -122,17 +122,16 @@ Item {
 
         }
 
-        function addPointForOthers(coordinate) {
+        function addPointForOthers(coordinate, pinFile) {
+            var pinSource = "qrc:/images/" + pinFile + ".png";
             var marker = Qt.createQmlObject(
-                'import QtQuick; import QtLocation ; import QtPositioning; MapQuickItem { coordinate: QtPositioning.coordinate(' + coordinate.latitude + ', ' + coordinate.longitude + '); anchorPoint.x: 24; anchorPoint.y: 48; sourceItem: Image { source: "qrc:/images/otherPin.png"; width: 48; height: 48; } }',
-                map
+            'import QtQuick; import QtLocation ; import QtPositioning; MapQuickItem { coordinate: QtPositioning.coordinate(' + coordinate.latitude + ', ' + coordinate.longitude + '); anchorPoint.x: 24; anchorPoint.y: 48; sourceItem: Image { source: "' + pinSource + '"; width: 48; height: 48; } }',
+            map
             );
             map.addMapItem(marker);
         }
 
         function removePoint() {
-            console.log("Removing point");
-
             if (currentMarker) {
                 map.removeMapItem(currentMarker);
                 currentMarker.destroy();

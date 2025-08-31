@@ -124,5 +124,3 @@ class ImageBooth : public QMainWindow {
     void switchToImageBooth();
     void switchToMainWindow();
 };
-
-std::tuple<double, double, int> calculateMapCenterAndZoom(const std::vector<ImageData*>& images);
