@@ -38,7 +38,7 @@ MapWidget::MapWidget(QWidget* parent, std::function<void(double, double)> valida
  * @param latitude Latitude of the center point
  * @param longitude Longitude of the center point
  */
-void MapWidget::setMapCenter(double latitude, double longitude) {
+void MapWidget::setMapCenter(double latitude, double longitude, double zoom) {
     if (!quickView)
         return;
 
@@ -52,6 +52,8 @@ void MapWidget::setMapCenter(double latitude, double longitude) {
 
     QGeoCoordinate newCenter(latitude, longitude);
     mapItem->setProperty("center", QVariant::fromValue(newCenter));
+
+    QMetaObject::invokeMethod(mapItem, "setZoomLevel", Q_ARG(QVariant, QVariant::fromValue(zoom)));
 }
 
 /**

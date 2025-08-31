@@ -83,7 +83,9 @@ Item {
             }
         }
 
-        
+        function setZoomLevel(level) {
+            map.zoomLevel = level;
+        }
 
         function addPoint(coordinate) {
             if (currentMarker) {

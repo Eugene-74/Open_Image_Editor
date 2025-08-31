@@ -16,7 +16,7 @@ class MapWidget : public QDialog {
    public:
     MapWidget(QWidget* parent, std::function<void(double, double)> validate);
 
-    void setMapCenter(double latitude, double longitude);
+    void setMapCenter(double latitude, double longitude, double zoom = 14);
 
     void moveMapPoint(double latitude, double longitude);
     void removeMapPoint();
