@@ -433,8 +433,6 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbrInCurrent)
                     }
                 },
                 [this, nbrInCurrent, imageNumberInTotal, modifiedNbrInTotal, select]() {
-                    qDebug() << "Adding or removing images from selection BIS";
-
                     for (auto nbr : modifiedNbrInTotal) {
                         if (select) {
                             addNbrToSelectedImages(nbr);

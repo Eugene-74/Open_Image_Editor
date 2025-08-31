@@ -706,7 +706,6 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
 
                 if (imageData->getOrientation() != Const::Orientation::UNDEFINED) {
                     imageData->getMetaDataPtr()->setOrientation(imageData->getOrientation());
-                    qDebug() << "Set orientation to : " << imageData->getOrientation();
                 }
 
                 if (imageData->getDate() != 0) {
@@ -747,7 +746,6 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
                 } else {
                     destinationFile += newExtension;
                 }
-                // qDebug() << "Copying image to extension : " << QString::fromStdString(destinationFile);
             }
 
                 QImage image = loadAnImage(imageData->getImagePath());
