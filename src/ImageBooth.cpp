@@ -1425,14 +1425,23 @@ void ImageBooth::updateMapWidget() {
 
         mapWidget->setCoordinatesList(selectedCoords, notSelectedCoords);
 
-        std::vector<ImageData*> selectedImages;
-        for (int imageIndex : *(data->getImagesSelectedPtr())) {
-            ImageData* imageData = data->getImagesDataPtr()->getImageData(imageIndex);
-            if (imageData) {
-                selectedImages.push_back(imageData);
+        std::vector<ImageData*> selectedImagesForCenter;
+        if (!data->getImagesSelectedPtr()->empty()) {
+            for (int imageIndex : *(data->getImagesSelectedPtr())) {
+                ImageData* imageData = data->getImagesDataPtr()->getImageData(imageIndex);
+                if (imageData) {
+                    selectedImagesForCenter.push_back(imageData);
+                }
+            }
+        } else {
+            for (int i = 0; i < data->getImagesDataPtr()->get()->size(); ++i) {
+                ImageData* imageData = data->getImagesDataPtr()->getImageData(i);
+                if (imageData) {
+                    selectedImagesForCenter.push_back(imageData);
+                }
             }
         }
-        auto [centerLat, centerLon, zoom] = calculateMapCenterAndZoom(selectedImages);
+        auto [centerLat, centerLon, zoom] = calculateMapCenterAndZoom(selectedImagesForCenter);
         mapWidget->setMapCenter(centerLat, centerLon, zoom);
     });
 }
