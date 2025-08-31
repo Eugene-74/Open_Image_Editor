@@ -2288,6 +2288,9 @@ void Data::checkDetectFaces() {
  * @brief Check if the objetcs has been detected and detect them if not
  */
 void Data::checkDetectObjects() {
+    // TODO make the app crash
+    return;
+
     if (!this->getConnectionEnabled() && !downloadModelIfNotExists(Const::Model::YoloV5::Names::N, Const::Model::YoloV5::GITHUB_TAG)) {
         qInfo() << "yolov5n could not be downloaded cheking in 1 min";
         this->setCenterText(Text::Error::failedDownloadModel().toStdString());
