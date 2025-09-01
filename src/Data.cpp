@@ -2383,6 +2383,7 @@ void Data::checkThumbnailAndDetectObjects() {
             hasNoThumbnail.push_back(imageData->getImagePath());
         }
     }
+    // TODO fait crash
     QObject::connect(thumbnailTimer, &QTimer::timeout, [this]() {
         if (hasNoThumbnail.size() == 0) {
             thumbnailTimer->stop();
@@ -2391,19 +2392,24 @@ void Data::checkThumbnailAndDetectObjects() {
             checkDetectObjects();
         } else {
             while (thumbnailWorking < Const::MAX_WORKING_THUMBNAIL) {
+                // {
+                //     std::lock_guard<std::mutex> lock(hasNoThumbnailMutex);
                 thumbnailWorking++;
+                    // }
 
-                createAllThumbnailsAsync(hasNoThumbnail.front(), [this](bool done) { thumbnailWorking--; }, false);
+                    createAllThumbnailsAsync(hasNoThumbnail.front(), [this](bool done) {
+                    // std::lock_guard<std::mutex> lock(hasNoThumbnailMutex);
+                     thumbnailWorking--; }, false);
 
-                hasNoThumbnail.pop_front();
+                    hasNoThumbnail.pop_front();
 
-                if (hasNoThumbnail.size() == 0) {
-                    thumbnailTimer->stop();
+                    if (hasNoThumbnail.size() == 0) {
+                        thumbnailTimer->stop();
 
-                    qInfo() << "all thumbnails created";
-                    checkDetectObjects();
-                    return;
-                }
+                        qInfo() << "all thumbnails created";
+                        checkDetectObjects();
+                        return;
+                    }
             }
         }
     });

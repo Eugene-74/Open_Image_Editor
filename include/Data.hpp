@@ -213,8 +213,9 @@ class Data : public std::enable_shared_from_this<Data> {
     std::map<std::string, Option> options;
 
     QTimer* thumbnailTimer = new QTimer();
-    int thumbnailWorking = 0;
+    std::atomic<int> thumbnailWorking = 0;
     AsyncDeque<std::string> hasNoThumbnail;
+    // std::mutex hasNoThumbnailMutex;
 
     QTimer* detectObjectTimer = new QTimer();
     int detectionWorking = 0;
