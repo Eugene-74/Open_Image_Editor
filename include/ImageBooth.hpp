@@ -2,6 +2,7 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include <memory>
 #include <vector>
 
 #include "Data.hpp"
@@ -28,9 +29,7 @@ class ImageBooth : public QMainWindow {
     void enterEvent(QEnterEvent* event) override;
 
    private:
-    QTimer* updateTimer = new QTimer(this);
     int getCurrentFoldersSize();
-    // QTimer* updateTimer;
     int imageShiftSelected = -1;
     bool imageShiftSelectedSelect;
     std::shared_ptr<Data> data;
