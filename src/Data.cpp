@@ -2348,7 +2348,13 @@ void Data::checkDetectObjects() {
                         }
                     }
                     detectionWorking--;
-                    this->getDetectionProgressBarPtr()->setValue(this->getDetectionProgressBarPtr()->value() + 1);
+                    // this->getDetectionProgressBarPtr()->setValue(this->getDetectionProgressBarPtr()->value() + 1);
+                    QMetaObject::invokeMethod(
+                        this->getDetectionProgressBarPtr(),
+                        [bar = this->getDetectionProgressBarPtr()]() {
+                            bar->setValue(bar->value() + 1);
+                        },
+                        Qt::QueuedConnection);
                 });
 
                 hasNotBeenDetected.pop_front();
