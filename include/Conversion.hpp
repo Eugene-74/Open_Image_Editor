@@ -1,11 +1,10 @@
 #pragma once
+#include <QComboBox>
 #include <QDialog>
 #include <QProgressDialog>
+#include <memory>
 
 #include "ImageData.hpp"
-
-// Forward declarations
-class QComboBox;
 
 class ConversionDialog : public QDialog {
     Q_OBJECT
@@ -15,15 +14,12 @@ class ConversionDialog : public QDialog {
 
     QString getSelectedFormat() const;
 
-    QComboBox* comboBox;
-
    private:
+    std::unique_ptr<QComboBox> comboBox;
 };
 
 void launchConversionDialog(ImageData* imageData);
 QString launchConversionDialog();
-// void convertion(const QString& inputImagePath, const QString& selectedFormat, QProgressDialog* progressDialog = nullptr);
-// bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath, QProgressDialog* progressDialog = nullptr);
 
 QImage readHeicAndHeif(const std::string& filePath);
 bool writeHeicAndHeif(const QImage& image, const std::string& imagePath);

@@ -35,7 +35,7 @@ ConversionDialog::ConversionDialog(QWidget* parent)
     : QDialog(parent) {
     setWindowTitle("Choose Output File Type");
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    std::unique_ptr<QVBoxLayout> layout = std::make_unique<QVBoxLayout>(this);
 
     // Liste des formats de sortie possibles
     QStringList formats;
@@ -44,87 +44,16 @@ ConversionDialog::ConversionDialog(QWidget* parent)
     }
 
     // ComboBox pour choisir le format de sortie
-    comboBox = new QComboBox(this);
+    comboBox = std::make_unique<QComboBox>(this);
     comboBox->addItems(formats);
-    layout->addWidget(comboBox);
+    layout->addWidget(comboBox.get());
 
     // Bouton pour valider le choix
-    QPushButton* okButton = new QPushButton("OK", this);
-    layout->addWidget(okButton);
+    std::unique_ptr<QPushButton> okButton = std::make_unique<QPushButton>("OK", this);
+    layout->addWidget(okButton.get());
 
-    connect(okButton, &QPushButton::clicked, this, &ConversionDialog::accept);
+    connect(okButton.get(), &QPushButton::clicked, this, &ConversionDialog::accept);
 }
-
-/**
- * @brief Convert the image to the selected format and copy the metaData if possible
- * @param inputPath Path to the input image
- * @param outputPath Path to the output image
- * @return true if the conversion is successful, false otherwise
- */
-// bool convertImageWithMetadata(const std::string& inputPath, const std::string& outputPath, QProgressDialog* progressDialog) {
-//     try {
-//         if (progressDialog) {
-//             progressDialog->setValue(0);
-//             progressDialog->setMaximum(3);
-//             QApplication::processEvents();
-//         }
-
-//         QImage image = loadAnImage(inputPath);
-//         // if (isHeicOrHeif(inputPath)) {
-//         //     image = readHeicAndHeif(inputPath);
-//         // } else if (isRaw(inputPath)) {
-//         //     image = readRaw(inputPath);
-//         // } else {
-//         //     image.load(QString::fromStdString(inputPath));
-//         // }
-
-//         if (image.isNull()) {
-//             qWarning() << "Could not open or find the image : " << QString::fromStdString(inputPath);
-//             return false;
-//         }
-//         if (progressDialog) {
-//             progressDialog->setValue(1);
-//             QApplication::processEvents();
-//         }
-
-//         // TODO Support pas les accens
-//         std::unique_ptr<Exiv2::Image> exivImage(Exiv2::ImageFactory::open(inputPath).release());
-
-//         exivImage->readMetadata();
-//         if (isHeicOrHeif(outputPath)) {
-//             writeHeicAndHeif(image, outputPath);
-//         } else {
-//             if (!image.save(QString::fromStdString(outputPath))) {
-//                 qWarning() << "Could not write the image : " << QString::fromStdString(outputPath);
-//                 return false;
-//             }
-//         }
-
-//         if (progressDialog) {
-//             progressDialog->setValue(2);
-//             QApplication::processEvents();
-//         }
-//         if (isExifPath(inputPath) && isExifPath(outputPath)) {
-//             std::unique_ptr<Exiv2::Image> exivOutputImage = Exiv2::ImageFactory::open(outputPath);
-//             exivOutputImage->readMetadata();
-
-//             exivOutputImage->setExifData(exivImage->exifData());
-//             exivOutputImage->setIptcData(exivImage->iptcData());
-//             exivOutputImage->setXmpData(exivImage->xmpData());
-
-//             exivOutputImage->writeMetadata();
-//         }
-//         if (progressDialog) {
-//             progressDialog->setValue(3);
-//         }
-
-//         qInfo() << "Image converted successfully with metadata";
-//         return true;
-//     } catch (const Exiv2::Error& e) {
-//         qCritical() << "Error: " << e.what();
-//         return false;
-//     }
-// }
 
 /**
  * @brief Read a HEIC/HEIF image and return it as a QImage
