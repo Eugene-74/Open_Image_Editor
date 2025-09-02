@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-std::map<std::string, std::string>* openTranslation(const std::string& filePath);
+std::unique_ptr<std::map<std::string, std::string>> openTranslation(const std::string& filePath);
 
 std::string getTranslation(const std::map<std::string, std::string>& translations,
                            const std::map<std::string, std::string>& defaultTranslations,

@@ -28,8 +28,8 @@ QString TranslationManager::translateQ(const std::string& key) const {
     return QString::fromStdString(getTranslation(translations, defaultTranslations, key));
 }
 
-std::map<std::string, std::string>* openTranslation(const std::string& language) {
-    std::map<std::string, std::string>* translations = new std::map<std::string, std::string>();
+std::unique_ptr<std::map<std::string, std::string>> openTranslation(const std::string& language) {
+    auto translations = std::make_unique<std::map<std::string, std::string>>();
     QString filePath = QString(":/translations/%1.csv").arg(QString::fromStdString(language));
     QFile file(filePath);
 
