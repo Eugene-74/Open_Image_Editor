@@ -8,8 +8,6 @@ class Sizes {
    public:
     Sizes();
 
-    // Sizes(Data* parent);
-    // std::shared_ptr<Data> data;
     QScreen* screen;
     QRect screenR;
     QSize screenGeometry;
@@ -23,9 +21,9 @@ class Sizes {
     class ImagesBoothSizes;
     class MainWindowSizes;
 
-    ImageEditorSizes* imageEditorSizes;
-    ImagesBoothSizes* imagesBoothSizes;
-    MainWindowSizes* mainWindowSizes;
+    std::unique_ptr<ImageEditorSizes> imageEditorSizes;
+    std::unique_ptr<ImagesBoothSizes> imagesBoothSizes;
+    std::unique_ptr<MainWindowSizes> mainWindowSizes;
     void update();
 };
 
@@ -54,8 +52,6 @@ class Sizes::ImagesBoothSizes {
     ImagesBoothSizes(Sizes* parent)
         : parentSizes(parent) {
           };
-    //   Cast to int
-    // int imagesPerLine = std::stoi(parentSizes->data->options["Sizes::imageBooth::ImagesPerLine"].value);
     int imagesPerLine = 10;
 
     QSize imageSize;

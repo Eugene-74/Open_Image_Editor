@@ -104,9 +104,9 @@ void Sizes::MainWindowSizes::update() {
  * @brief Constructor for the Sizes class
  */
 Sizes::Sizes() {
-    imageEditorSizes = new ImageEditorSizes(this);
-    imagesBoothSizes = new ImagesBoothSizes(this);
-    mainWindowSizes = new MainWindowSizes(this);
+    imageEditorSizes = std::make_unique<ImageEditorSizes>(this);
+    imagesBoothSizes = std::make_unique<ImagesBoothSizes>(this);
+    mainWindowSizes = std::make_unique<MainWindowSizes>(this);
     update();
 }
 
