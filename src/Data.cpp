@@ -2252,7 +2252,7 @@ void Data::checkDetectFaces() {
         // TODO translate
         this->getDetectionProgressBarPtr()->setToolTip("Detecting faces...");
     }
-    QObject::connect(detectFacesTimer, &QTimer::timeout, [this]() {
+    QObject::connect(detectFacesTimer.get(), &QTimer::timeout, [this]() {
         if (hasNotBeenDetectedFaces.size() == 0) {
             if (detectionFacesWorking == 0) {
                 detectFacesTimer->stop();
@@ -2314,7 +2314,7 @@ void Data::checkDetectObjects() {
         // TODO translate
         this->getDetectionProgressBarPtr()->setToolTip("Detecting objects...");
     }
-    QObject::connect(detectObjectTimer, &QTimer::timeout, [this]() {
+    QObject::connect(detectObjectTimer.get(), &QTimer::timeout, [this]() {
         if (hasNotBeenDetected.size() == 0) {
             if (detectionWorking == 0) {
                 detectObjectTimer->stop();
@@ -2377,7 +2377,7 @@ void Data::checkThumbnailAndDetectObjects() {
             hasNoThumbnail.push_back(imageData->getImagePath());
         }
     }
-    QObject::connect(thumbnailTimer, &QTimer::timeout, [this]() {
+    QObject::connect(thumbnailTimer.get(), &QTimer::timeout, [this]() {
         if (hasNoThumbnail.size() == 0) {
             thumbnailTimer->stop();
 

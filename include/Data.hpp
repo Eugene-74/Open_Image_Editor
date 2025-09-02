@@ -211,15 +211,18 @@ class Data : public std::enable_shared_from_this<Data> {
     DetectObjectsModel model;
     std::map<std::string, Option> options;
 
-    QTimer* thumbnailTimer = new QTimer();
+    // QTimer* thumbnailTimer = new QTimer();
+    std::unique_ptr<QTimer> thumbnailTimer = std::make_unique<QTimer>();
     std::atomic<int> thumbnailWorking = 0;
     AsyncDeque<std::string> hasNoThumbnail;
 
-    QTimer* detectObjectTimer = new QTimer();
+    // QTimer* detectObjectTimer = new QTimer();
+    std::unique_ptr<QTimer> detectObjectTimer = std::make_unique<QTimer>();
     std::atomic<int> detectionWorking = 0;
     AsyncDeque<ImageData*> hasNotBeenDetected;
 
-    QTimer* detectFacesTimer = new QTimer();
+    // QTimer* detectFacesTimer = new QTimer();
+    std::unique_ptr<QTimer> detectFacesTimer = std::make_unique<QTimer>();
     std::atomic<int> detectionFacesWorking = 0;
     AsyncDeque<ImageData*> hasNotBeenDetectedFaces;
 
