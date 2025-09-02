@@ -1,5 +1,4 @@
 #pragma once
-
 #include <QImage>
 #include <QMediaPlayer>
 #include <QProgressBar>
@@ -215,14 +214,13 @@ class Data : public std::enable_shared_from_this<Data> {
     QTimer* thumbnailTimer = new QTimer();
     std::atomic<int> thumbnailWorking = 0;
     AsyncDeque<std::string> hasNoThumbnail;
-    // std::mutex hasNoThumbnailMutex;
 
     QTimer* detectObjectTimer = new QTimer();
-    int detectionWorking = 0;
+    std::atomic<int> detectionWorking = 0;
     AsyncDeque<ImageData*> hasNotBeenDetected;
 
     QTimer* detectFacesTimer = new QTimer();
-    int detectionFacesWorking = 0;
+    std::atomic<int> detectionFacesWorking = 0;
     AsyncDeque<ImageData*> hasNotBeenDetectedFaces;
 
     std::vector<Actions> lastActions = {};

@@ -179,13 +179,10 @@ void ThreadManager::startJob(std::function<void()> job) {
         }
 
         Worker* worker = new Worker(std::move(job), [this]() { processQueue(); });
+        // worker will be auto deleted
         if (!QThreadPool::globalInstance()->tryStart(worker)) {
             qCritical() << "Could not start thread";
             qInfo() << "Could not start thread. Active threads: " << getThreadCount();
-            // taskQueue.push_front(std::move(worker->job));  // Re-add the job to the front of the queue
-            delete worker;
-        } else {
-            // qInfo() << "Thread started successfully. Active threads: " << getThreadCount();
         }
     } catch (const std::exception& e) {
         qCritical() << "Exception in startJob: " << e.what();

@@ -1420,7 +1420,7 @@ void ImageEditor::populateMetadataFields() {
                 }
             }
             auto [centerLat, centerLon, zoom] = calculateMapCenterAndZoom(selectedImages);
-            qDebug() << "Map center:" << centerLat << centerLon << "Zoom:" << zoom;
+            // qDebug() << "Map center:" << centerLat << centerLon << "Zoom:" << zoom;
             editGeo->setMapCenter(centerLat, centerLon, zoom);
 
             editGeo->setImageData(imageData);
