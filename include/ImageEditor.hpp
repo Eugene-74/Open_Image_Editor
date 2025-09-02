@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <iostream>
+#include <memory>
 
 #include "Data.hpp"
 #include "MapWidget.hpp"
@@ -154,7 +155,7 @@ class ImageEditor : public QMainWindow {
     ClickableLabel* imagePersons;
     ClickableLabel* imageGimp;
 
-    QTimer* imageOpenTimer = new QTimer(this);
+    std::unique_ptr<QTimer> imageOpenTimer = std::make_unique<QTimer>(this);
 
     bool bigImage = false;
 

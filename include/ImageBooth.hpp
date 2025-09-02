@@ -2,7 +2,6 @@
 
 #include <QMainWindow>
 #include <QTimer>
-#include <memory>
 #include <vector>
 
 #include "Data.hpp"

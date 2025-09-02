@@ -1467,7 +1467,7 @@ void ImageEditor::startImageOpen() {
         imageOpenTimer->stop();
     }
 
-    connect(imageOpenTimer, &QTimer::timeout, this, [this]() {
+    connect(imageOpenTimer.get(), &QTimer::timeout, this, [this]() {
         QPointer<ImageEditor> self = this;
         if (self && data != nullptr) {
             data->loadInCacheAsync(data->getImagesDataPtr()->getCurrentImageData()->getImagePath(), [self]() {
