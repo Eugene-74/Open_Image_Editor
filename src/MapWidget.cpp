@@ -112,12 +112,12 @@ void MapWidget::setCoordinatesList(const std::vector<QGeoCoordinate>& selectedCo
  * @param imageData Pointer to the ImageData object containing image metadata
  */
 MapWidget::MapWidget(QWidget* parent, std::function<void(double, double)> validate) : QDialog(parent), validate(validate) {
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    auto layout = std::make_unique<QVBoxLayout>(this);
 
-    quickView = new QQuickView();
+    quickView = std::make_unique<QQuickView>();
     quickView->setResizeMode(QQuickView::SizeRootObjectToView);
     quickView->setSource(QUrl(QStringLiteral("qrc:/MapView.qml")));
-    QWidget* container = QWidget::createWindowContainer(quickView, this);
+    QWidget* container = QWidget::createWindowContainer(quickView.get(), this);
     container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     container->setMinimumSize(0, 0);
 

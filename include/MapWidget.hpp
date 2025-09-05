@@ -31,7 +31,7 @@ class MapWidget : public QDialog {
     void setCoordinatesList(const std::vector<QGeoCoordinate>& selectedCoords, const std::vector<QGeoCoordinate>& notSelectedCoords, double clusterDistance = 0.0005);
 
    private:
-    QQuickView* quickView;
+    std::unique_ptr<QQuickView> quickView;
     ImageData* imageData = nullptr;
     std::function<void(double, double)> validate;
    private slots:

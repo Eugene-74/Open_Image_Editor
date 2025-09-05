@@ -215,7 +215,7 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
                     Folders folders = Folders(imagePath);
                     rootFolder.addFile(imagePath);
                     folders.addFolder(fs::absolute(entry.path()).parent_path().string());
-                    ImageData* imageData = new ImageData(folders);
+                    auto imageData = new ImageData(folders);
                     imageData->loadData();
                     imageData->clearMetaData();
                     imagesData->addImage(imageData);
