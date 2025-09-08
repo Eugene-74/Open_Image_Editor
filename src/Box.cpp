@@ -34,7 +34,7 @@
  * @details The dialog will be deleted automatically when closed
  */
 void showModalDialog(QWidget* parent, QMessageBox::Icon icon, const std::string& text, const std::string& title, int posX, int posY, bool async) {
-    auto msgBox = std::make_unique<QMessageBox>(parent);
+    auto* msgBox = new QMessageBox(parent);
     msgBox->setIcon(icon);
     msgBox->setText(QString::fromStdString(text));
     msgBox->setWindowTitle(QString::fromStdString(title));
@@ -153,46 +153,46 @@ std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std:
     std::map<std::string, QWidget*> widgets;
 
     for (const auto& [key, option] : options) {
-        auto rowLayout = std::make_unique<QHBoxLayout>();
-        auto label = std::make_unique<QLabel>(QString::fromStdString(key));
-        rowLayout->addWidget(label.get());
+        auto* rowLayout = new QHBoxLayout();
+        auto* label = new QLabel(QString::fromStdString(key));
+        rowLayout->addWidget(label);
 
         if (option.getTypeConst() == "bool") {
-            auto checkBox = std::make_unique<QCheckBox>();
+            auto* checkBox = new QCheckBox();
             checkBox->setChecked(option.getValueConst() == "true");
-            rowLayout->addWidget(checkBox.get());
-            widgets[key] = checkBox.get();
+            rowLayout->addWidget(checkBox);
+            widgets[key] = checkBox;
         } else if (option.getTypeConst() == "text") {
-            auto lineEdit = std::make_unique<QLineEdit>();
+            auto* lineEdit = new QLineEdit();
             lineEdit->setText(QString::fromStdString(option.getValueConst()));
-            rowLayout->addWidget(lineEdit.get());
-            widgets[key] = lineEdit.get();
+            rowLayout->addWidget(lineEdit);
+            widgets[key] = lineEdit;
         } else if (option.getTypeConst() == "file") {
-            auto lineEdit = std::make_unique<QLineEdit>();
+            auto* lineEdit = new QLineEdit();
             lineEdit->setText(QString::fromStdString(option.getValueConst()));
-            auto browseButton = std::make_unique<QPushButton>("Browse");
-            rowLayout->addWidget(lineEdit.get());
-            rowLayout->addWidget(browseButton.get());
-            widgets[key] = lineEdit.get();
+            auto* browseButton = new QPushButton("Browse");
+            rowLayout->addWidget(lineEdit);
+            rowLayout->addWidget(browseButton);
+            widgets[key] = lineEdit;
 
-            QObject::connect(browseButton.get(), &QPushButton::clicked, [lineEditPtr = lineEdit.get(), parent]() {
+            QObject::connect(browseButton, &QPushButton::clicked, [lineEdit, parent]() {
                 QString filePath = QFileDialog::getOpenFileName(parent, "Select File");
                 if (!filePath.isEmpty()) {
-                    lineEditPtr->setText(filePath);
+                    lineEdit->setText(filePath);
                 }
             });
         } else if (option.getTypeConst() == "directory") {
-            auto lineEdit = std::make_unique<QLineEdit>();
+            auto* lineEdit = new QLineEdit();
             lineEdit->setText(QString::fromStdString(option.getValueConst()));
-            auto browseButton = std::make_unique<QPushButton>("Browse");
-            rowLayout->addWidget(lineEdit.get());
-            rowLayout->addWidget(browseButton.get());
-            widgets[key] = lineEdit.get();
+            auto* browseButton = new QPushButton("Browse");
+            rowLayout->addWidget(lineEdit);
+            rowLayout->addWidget(browseButton);
+            widgets[key] = lineEdit;
 
-            QObject::connect(browseButton.get(), &QPushButton::clicked, [lineEditPtr = lineEdit.get(), parent]() {
+            QObject::connect(browseButton, &QPushButton::clicked, [lineEdit, parent]() {
                 QString dirPath = QFileDialog::getExistingDirectory(parent, "Select Directory");
                 if (!dirPath.isEmpty()) {
-                    lineEditPtr->setText(dirPath);
+                    lineEdit->setText(dirPath);
                 }
             });
         } else if (option.getTypeConst() == "list") {
@@ -218,33 +218,33 @@ std::map<std::string, std::string> showOptionsDialog(QWidget* parent, const std:
             rowLayout->addWidget(comboBox.get());
             widgets[key] = comboBox.get();
         } else if (option.getTypeConst() == "int") {
-            auto spinBox = std::make_unique<QSpinBox>();
+            auto* spinBox = new QSpinBox();
             spinBox->setMinimum(INT_MIN);
             spinBox->setMaximum(INT_MAX);
             spinBox->setValue(std::stoi(option.getValueConst()));
-            rowLayout->addWidget(spinBox.get());
-            widgets[key] = spinBox.get();
+            rowLayout->addWidget(spinBox);
+            widgets[key] = spinBox;
         } else if (option.getTypeConst() == "float") {
-            auto doubleSpinBox = std::make_unique<QDoubleSpinBox>();
+            auto* doubleSpinBox = new QDoubleSpinBox();
             doubleSpinBox->setMinimum(-1e9);
             doubleSpinBox->setMaximum(1e9);
             doubleSpinBox->setDecimals(6);
             doubleSpinBox->setValue(std::stod(option.getValueConst()));
-            rowLayout->addWidget(doubleSpinBox.get());
-            widgets[key] = doubleSpinBox.get();
+            rowLayout->addWidget(doubleSpinBox);
+            widgets[key] = doubleSpinBox;
         }
-        layout->addLayout(rowLayout.get());
+        layout->addLayout(rowLayout);
     }
 
-    auto buttonsLayout = std::make_unique<QHBoxLayout>();
-    auto okButton = std::make_unique<QPushButton>("OK");
-    auto cancelButton = std::make_unique<QPushButton>("Cancel");
-    buttonsLayout->addWidget(okButton.get());
-    buttonsLayout->addWidget(cancelButton.get());
-    layout->addLayout(buttonsLayout.get());
+    auto* buttonsLayout = new QHBoxLayout();
+    auto* okButton = new QPushButton("OK");
+    auto* cancelButton = new QPushButton("Cancel");
+    buttonsLayout->addWidget(okButton);
+    buttonsLayout->addWidget(cancelButton);
+    layout->addLayout(buttonsLayout);
 
-    QObject::connect(okButton.get(), &QPushButton::clicked, &dialog, &QDialog::accept);
-    QObject::connect(cancelButton.get(), &QPushButton::clicked, &dialog, &QDialog::reject);
+    QObject::connect(okButton, &QPushButton::clicked, &dialog, &QDialog::accept);
+    QObject::connect(cancelButton, &QPushButton::clicked, &dialog, &QDialog::reject);
 
     std::map<std::string, std::string> results;
 
