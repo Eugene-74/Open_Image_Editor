@@ -1,7 +1,7 @@
 #pragma once
 
 #define APP_NAME_STR "OpenImageEditor"
-#define APP_VERSION "1.1.0"
+#define APP_VERSION "1.1.1"
 #define LNK_APP_NAME "Image Editor"
 #define INSTALLER_APP_NAME "Image_Editor_Installer"
 #define COMPANY_NAME "OpenImageEditor firm"
