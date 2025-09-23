@@ -184,6 +184,10 @@ class Data : public std::enable_shared_from_this<Data> {
     AsyncProgressBar* getDetectionProgressBarPtr();
     void setDetectionProgressBarPtr(AsyncProgressBar* detectionProgressBar);
 
+    void detectPowerState();
+    bool isOnBattery() const;
+    bool isPowerSaveMode() const;
+
    private:
 #ifdef _WIN32
     Folders rootFolders = Folders("");
@@ -227,6 +231,10 @@ class Data : public std::enable_shared_from_this<Data> {
     std::vector<Actions> lastActionsDone = {};
 
     std::mutex detectAndRecognizeFacesMutex;
+
+    // Power state
+    bool onBattery = false;
+    bool powerSaveMode = false;
 
     Folders* findFirstFolderWithAllImagesSub(Folders* currentFolder);
     void createFolders(Folders* currentFolders, std::string path);

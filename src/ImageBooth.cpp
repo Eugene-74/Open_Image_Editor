@@ -31,12 +31,14 @@ ImageBooth::ImageBooth(std::shared_ptr<Data> dat, QWidget* parent)
     data->getImagesDataPtr()->getCurrent()->clear();
 
     imageQuality = Const::Thumbnail::POOR_QUALITY;
-    int i = Const::Thumbnail::THUMBNAIL_SIZES.size() - 2;
-    while (i > 0 && imageQuality == Const::Thumbnail::POOR_QUALITY) {
-        if (imageSize->height() + imageSize->width() >= Const::Thumbnail::THUMBNAIL_SIZES[i]) {
-            imageQuality = Const::Thumbnail::THUMBNAIL_SIZES[i + 1];
+    if (!data->isPowerSaveMode()) {
+        int i = Const::Thumbnail::THUMBNAIL_SIZES.size() - 2;
+        while (i > 0 && imageQuality == Const::Thumbnail::POOR_QUALITY) {
+            if (imageSize->height() + imageSize->width() >= Const::Thumbnail::THUMBNAIL_SIZES[i]) {
+                imageQuality = Const::Thumbnail::THUMBNAIL_SIZES[i + 1];
+            }
+            i--;
         }
-        i--;
     }
 
     if (data->getCurrentFolders()->getName() == "*") {
@@ -297,24 +299,52 @@ ClickableLabel* ImageBooth::createImage(std::string imagePath, int nbrInCurrent)
     } else {
         imageButton = new ClickableLabel(data, Const::ImagePath::LOADING,
                                          "", this, imageSize, false, 0, true);
-        QPointer<ImageBooth> self = this;
-        data->createAllThumbnailsAsync(imagePath, [self, imagePath, nbrInCurrent](bool result) {
-            if (self) {
-                if (result) {
-                    QHBoxLayout* lineLayout = nullptr;
-                    ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbrInCurrent, lineLayout);
-                    if (lastImageButton != nullptr) {
-                        QMetaObject::invokeMethod(self, [lineLayout, lastImageButton, self, imagePath, nbrInCurrent]() {
-                            ClickableLabel* newImageButton = self->createImage(imagePath, nbrInCurrent);
-                            if (lineLayout != nullptr) {
-                                lineLayout->replaceWidget(lastImageButton, newImageButton);
-                                lastImageButton->deleteLater();
-                            } else {
-                                newImageButton->deleteLater();
-                        } }, Qt::QueuedConnection);
+
+        // If we're in power save mode (on battery), avoid heavy immediate thumbnail creation.
+        // Schedule a delayed, low-priority thumbnail creation so UI shows faster and battery is preserved.
+        if (data->isPowerSaveMode()) {
+            QPointer<ImageBooth> self = this;
+            QTimer::singleShot(5000, this, [self, imagePath, nbrInCurrent]() {
+                if (!self) return;
+                // create thumbnails but don't push to front to avoid disturbing UI responsiveness
+                self->data->createAllThumbnailsAsync(imagePath, [self, imagePath, nbrInCurrent](bool result) {
+                    if (self && result) {
+                        QHBoxLayout* lineLayout = nullptr;
+                        ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbrInCurrent, lineLayout);
+                        if (lastImageButton != nullptr) {
+                            QMetaObject::invokeMethod(self, [lineLayout, lastImageButton, self, imagePath, nbrInCurrent]() {
+                                ClickableLabel* newImageButton = self->createImage(imagePath, nbrInCurrent);
+                                if (lineLayout != nullptr) {
+                                    lineLayout->replaceWidget(lastImageButton, newImageButton);
+                                    lastImageButton->deleteLater();
+                                } else {
+                                    newImageButton->deleteLater();
+                                }
+                            }, Qt::QueuedConnection);
+                        }
+                    } }, false);
+            });
+        } else {
+            QPointer<ImageBooth> self = this;
+            data->createAllThumbnailsAsync(imagePath, [self, imagePath, nbrInCurrent](bool result) {
+                if (self) {
+                    if (result) {
+                        QHBoxLayout* lineLayout = nullptr;
+                        ClickableLabel* lastImageButton = self->getClickableLabelIfExist(nbrInCurrent, lineLayout);
+                        if (lastImageButton != nullptr) {
+                            QMetaObject::invokeMethod(self, [lineLayout, lastImageButton, self, imagePath, nbrInCurrent]() {
+                                ClickableLabel* newImageButton = self->createImage(imagePath, nbrInCurrent);
+                                if (lineLayout != nullptr) {
+                                    lineLayout->replaceWidget(lastImageButton, newImageButton);
+                                    lastImageButton->deleteLater();
+                                } else {
+                                    newImageButton->deleteLater();
+                                }
+                            }, Qt::QueuedConnection);
+                        }
                     }
-                }
-            } }, true);
+                } }, true);
+        }
     }
 
     int imageNumberInTotal = data->getImagesDataPtr()->getImageNumberInTotal(nbrInCurrent);
@@ -887,7 +917,6 @@ ClickableLabel* ImageBooth::createImageRotateRight() {
         data->getImagesSelectedPtr()->clear();
         reload();
 
-
         int imageNumberInTotal = imagesSelectedBefore.at(0);
         addActionWithDelay(
             [this, imagesSelectedBefore]() {
@@ -1443,4 +1472,3 @@ void ImageBooth::updateMapWidget() {
         mapWidget->setMapCenter(centerLat, centerLon, zoom);
     });
 }
-

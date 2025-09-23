@@ -18,6 +18,9 @@
 #include <opencv2/opencv.hpp>
 #include <regex>
 #include <unordered_set>
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
 
 #include "Box.hpp"
 #include "Const.hpp"
@@ -2617,4 +2620,33 @@ std::tuple<double, double, int> calculateMapCenterAndZoom(const std::vector<Imag
         zoom = 2;
 
     return std::make_tuple(centerLat, centerLon, zoom);
+}
+
+void Data::detectPowerState() {
+#ifdef Q_OS_WIN
+    SYSTEM_POWER_STATUS status;
+    if (GetSystemPowerStatus(&status)) {
+        if (status.ACLineStatus == 0) {
+            onBattery = true;
+        } else {
+            onBattery = false;
+        }
+    } else {
+        onBattery = false;
+    }
+#else
+    onBattery = false;
+#endif
+    powerSaveMode = onBattery;
+    if (powerSaveMode) {
+        qInfo() << "Power save mode enabled: running on battery, reducing preload and image quality";
+    }
+}
+
+bool Data::isOnBattery() const {
+    return onBattery;
+}
+
+bool Data::isPowerSaveMode() const {
+    return powerSaveMode;
 }
