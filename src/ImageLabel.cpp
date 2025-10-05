@@ -331,11 +331,16 @@ void ImageLabel::setBorder(int border) {
  * @details This function also calls the base class paintEvent function
  */
 void ImageLabel::paintEvent(QPaintEvent* event) {
+    if (!event) return;  // Safety check for null event
+
     QLabel::paintEvent(event);
 
-    if (logoVisible) {
+    if (logoVisible && !logoText.isEmpty() && this->height() > 0) {
         int radius = static_cast<int>(sqrt(this->height()) * 1.5f);
         int fontSize = radius / logoText.length() * 1.5f;
+
+        // Ensure fontSize is reasonable (minimum 1, maximum 100)
+        fontSize = qBound(1, fontSize, 100);
 
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);

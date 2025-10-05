@@ -61,10 +61,12 @@ MainImage::MainImage(std::shared_ptr<Data> data, const QString& imagePath, QSize
  * @details This function is called when the mouse is pressed on the widget. It emits signals based on the mouse button pressed and the state of the widget.
  */
 void MainImage::mousePressEvent(QMouseEvent* event) {
+    if (!event) return;  // Safety check for null event
+
     if (event->button() == Qt::LeftButton) {
-        if (personsEditor) {
+        if (personsEditor && data && data->getImagesDataPtr() && data->getImagesDataPtr()->getCurrentImageData()) {
             auto detectedFaces = data->getImagesDataPtr()->getCurrentImageData()->getDetectedFacesPtr();
-            if (detectedFaces) {
+            if (detectedFaces && !qImage.isNull() && qImage.width() > 0 && qImage.height() > 0) {
                 QSize scaledPixmapSize = qImage.size();
                 scaledPixmapSize.scale(this->size(), Qt::KeepAspectRatio);
                 double xScale = static_cast<double>(scaledPixmapSize.width()) / qImage.width();
@@ -86,6 +88,7 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
                     }
                     faceIndex++;
                 }
+                // TODO doesn't work anymore IDK Why
                 if (clickedFaceIndex != -1) {
                     if (lastSelectedFaceIndex == clickedFaceIndex) {
                         auto& faceData = (*detectedFaces)[clickedFaceIndex];
@@ -118,8 +121,10 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
                                 return;
                             } else if (!optionDone[Text::Option::ImageEditor::renameFace().toStdString()].empty()) {
                                 auto* personIdNamesPtr = data->getPersonIdNamesPtr();
-                                (*personIdNamesPtr)[personId] = optionDone[Text::Option::ImageEditor::renameFace().toStdString()];
-                                update();
+                                if (personIdNamesPtr) {
+                                    (*personIdNamesPtr)[personId] = optionDone[Text::Option::ImageEditor::renameFace().toStdString()];
+                                    update();
+                                }
                             }
                             if (!optionDone[Text::Option::ImageEditor::mergeFace().toStdString()].empty()) {
                                 std::string mergeWithName = optionDone[Text::Option::ImageEditor::mergeFace().toStdString()];
@@ -136,17 +141,29 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
                                         }
                                     }
                                     if (mergeWithId != -1 && mergeWithId != personId) {
-                                        for (ImageData* imageData : *data->getImagesDataPtr()->get()) {
-                                            auto otherDetectedFaces = imageData->getDetectedFacesPtr();
-                                            for (auto& otherFace : *otherDetectedFaces) {
-                                                if (otherFace.getPersonIdConst() == personId) {
-                                                    *otherFace.getPersonIdPtr() = mergeWithId;
+                                        auto* imagesDataPtr = data->getImagesDataPtr();
+                                        if (imagesDataPtr && imagesDataPtr->get()) {
+                                            for (ImageData* imageData : *imagesDataPtr->get()) {
+                                                if (imageData) {
+                                                    auto otherDetectedFaces = imageData->getDetectedFacesPtr();
+                                                    if (otherDetectedFaces) {
+                                                        for (auto& otherFace : *otherDetectedFaces) {
+                                                            if (otherFace.getPersonIdConst() == personId) {
+                                                                auto* personIdPtr = otherFace.getPersonIdPtr();
+                                                                if (personIdPtr) {
+                                                                    *personIdPtr = mergeWithId;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
                                         auto* personIdNamesPtr = data->getPersonIdNamesPtr();
-                                        personIdNamesPtr->erase(personId);
-                                        update();
+                                        if (personIdNamesPtr) {
+                                            personIdNamesPtr->erase(personId);
+                                            update();
+                                        }
                                     }
                                 }
                             }
@@ -188,6 +205,8 @@ void MainImage::mousePressEvent(QMouseEvent* event) {
  * @details It also handles the cropping rectangle drawing if the mouse is pressed and the cropping mode is enabled.
  */
 void MainImage::mouseReleaseEvent(QMouseEvent* event) {
+    if (!event) return;  // Safety check for null event
+
     if (!drawingRectangle) {
         emit clicked();
     }
@@ -198,7 +217,9 @@ void MainImage::mouseReleaseEvent(QMouseEvent* event) {
             }
             cropping = true;
 
-            qImage = data->loadImage(this, imagePath.toStdString(), QSize(), false, 0, true, false, false, false);
+            if (data) {
+                qImage = data->loadImage(this, imagePath.toStdString(), QSize(), false, 0, true, false, false, false);
+            }
 
             if (!qImage.isNull()) {
                 this->setPixmap(QPixmap::fromImage(qImage).scaled(size() - QSize(5, 5), Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -348,6 +369,8 @@ void MainImage::cropImage() {
  * @details It also draws detected objects if the personsEditor is enabled and there are detected objects in the image data.
  */
 void MainImage::paintEvent(QPaintEvent* event) {
+    if (!event) return;  // Safety check for null event
+
     ImageLabel::paintEvent(event);
 
     QPainter painter(this);
@@ -355,8 +378,17 @@ void MainImage::paintEvent(QPaintEvent* event) {
         painter.setPen(Qt::DashLine);
         painter.drawRect(QRect(cropStart, cropEnd));
     }
-    if (this->getPersonsEditorConst() && !data->getImagesDataPtr()->getCurrentImageData()->getDetectedObjects().empty()) {
+
+    // Add null checks and validation before accessing data
+    if (this->getPersonsEditorConst() && data && data->getImagesDataPtr() &&
+        data->getImagesDataPtr()->getCurrentImageData() &&
+        !data->getImagesDataPtr()->getCurrentImageData()->getDetectedObjects().empty()) {
         std::map<std::string, std::vector<std::pair<cv::Rect, float>>> detectedObjects = data->getImagesDataPtr()->getCurrentImageData()->getDetectedObjects();
+
+        // Validate qImage before using it
+        if (qImage.isNull() || qImage.width() == 0 || qImage.height() == 0) {
+            return;  // Exit early if image is invalid
+        }
 
         QSize scaledPixmapSize = qImage.size();
         scaledPixmapSize.scale(this->size(), Qt::KeepAspectRatio);
@@ -382,43 +414,47 @@ void MainImage::paintEvent(QPaintEvent* event) {
                 painter.drawText(qRect.topLeft(), QString::fromStdString(key) + " " + QString::number(confidence * 100, 'f', 2) + "%");
             }
         }
+
+        // Add null checks for detected faces
         auto detectedFaces = data->getImagesDataPtr()->getCurrentImageData()->getDetectedFacesPtr();
-        const auto& personIdNames = data->getPersonIdNames();
-        int faceIdx = 0;
-        for (const auto& faceData : *detectedFaces) {
-            cv::Rect rect = faceData.getFaceRect();
-            float confidence = faceData.getConfidence();
-            int personId = faceData.getPersonIdConst();
+        if (detectedFaces) {
+            const auto& personIdNames = data->getPersonIdNames();
+            int faceIdx = 0;
+            for (const auto& faceData : *detectedFaces) {
+                cv::Rect rect = faceData.getFaceRect();
+                float confidence = faceData.getConfidence();
+                int personId = faceData.getPersonIdConst();
 
-            int adjustedX = static_cast<int>(rect.x * xScale) + xOffset;
-            int adjustedY = static_cast<int>(rect.y * yScale) + yOffset;
-            int adjustedWidth = static_cast<int>(rect.width * xScale);
-            int adjustedHeight = static_cast<int>(rect.height * yScale);
+                int adjustedX = static_cast<int>(rect.x * xScale) + xOffset;
+                int adjustedY = static_cast<int>(rect.y * yScale) + yOffset;
+                int adjustedWidth = static_cast<int>(rect.width * xScale);
+                int adjustedHeight = static_cast<int>(rect.height * yScale);
 
-            QRect qRect(adjustedX, adjustedY, adjustedWidth, adjustedHeight);
+                QRect qRect(adjustedX, adjustedY, adjustedWidth, adjustedHeight);
 
-            if (faceIdx == lastSelectedFaceIndex) {
-                QPen thickPen(Qt::green);
-                thickPen.setWidth(4);
-                painter.setPen(thickPen);
-            } else {
-                painter.setPen(Qt::green);
-            }
-            painter.drawRect(qRect);
-
-            QString label;
-            if (personId != -1) {
-                auto it = personIdNames.find(personId);
-                if (it != personIdNames.end()) {
-                    label = QString::fromStdString(it->second);
+                if (faceIdx == lastSelectedFaceIndex) {
+                    QPen thickPen(Qt::green);
+                    thickPen.setWidth(4);
+                    painter.setPen(thickPen);
                 } else {
-                    label = QString("Error with ID : %1").arg(personId);
+                    painter.setPen(Qt::green);
                 }
-            } else {
-                label = QString("Face %1%").arg(confidence * 100, 0, 'f', 2);
+                painter.drawRect(qRect);
+
+                QString label;
+                if (personId != -1) {
+                    auto it = personIdNames.find(personId);
+                    if (it != personIdNames.end()) {
+                        label = QString::fromStdString(it->second);
+                    } else {
+                        label = QString("Error with ID : %1").arg(personId);
+                    }
+                } else {
+                    label = QString("Face %1%").arg(confidence * 100, 0, 'f', 2);
+                }
+                painter.drawText(qRect.topLeft(), label);
+                faceIdx++;
             }
-            painter.drawText(qRect.topLeft(), label);
-            faceIdx++;
         }
     }
 }
@@ -428,6 +464,8 @@ void MainImage::paintEvent(QPaintEvent* event) {
  * @param event Pointer to the mouse event
  */
 void MainImage::mouseMoveEvent(QMouseEvent* event) {
+    if (!event) return;  // Safety check for null event
+
     if (drawingRectangle) {
         cropEnd = event->pos();
         update();
@@ -509,9 +547,9 @@ void MainImage::setPersonsEditor(bool personsEditor) {
  */
 bool MainImage::inFace(QPoint point) {
     bool clickedOnFace = false;
-    if (personsEditor) {
+    if (personsEditor && data && data->getImagesDataPtr() && data->getImagesDataPtr()->getCurrentImageData()) {
         auto detectedFaces = data->getImagesDataPtr()->getCurrentImageData()->getDetectedFacesPtr();
-        if (detectedFaces) {
+        if (detectedFaces && !qImage.isNull() && qImage.width() > 0 && qImage.height() > 0) {
             QSize scaledPixmapSize = qImage.size();
             scaledPixmapSize.scale(this->size(), Qt::KeepAspectRatio);
             double xScale = static_cast<double>(scaledPixmapSize.width()) / qImage.width();
