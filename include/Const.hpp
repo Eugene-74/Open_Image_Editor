@@ -46,6 +46,7 @@ const std::string THUMBNAIL_PATH = APP_FILES.toStdString() + "/thumbnails";
 
 const std::string IMAGESDATA_SAVE_PATH = APP_FILES.toStdString() + "/save." + APP_NAME;
 const std::string OPTIONS_SAVE_PATH = APP_FILES.toStdString() + "/option." + APP_NAME;
+const std::string DB_PATH = APP_FILES.toStdString() + "/ImageData.db";
 
 const std::map<std::string, Option> DEFAULT_OPTIONS = {
     {"Language", Option("list", "en|en|fr|es")},
@@ -229,4 +230,3 @@ const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_SELECT = 
 
 const std::string COLOR_BACKGROUND_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = Const::Color::GREEN;
 const std::string COLOR_BACKGROUND_HOVER_IMAGE_BOOTH_SELECTED_MULTIPLE_UNSELECT = Const::Color::GREEN;
-

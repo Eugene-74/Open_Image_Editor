@@ -9,6 +9,7 @@
 #include <QQmlApplicationEngine>
 #include <QScreen>
 
+#include "Database.hpp"
 #include "InitialWindow.hpp"
 #include "Recover.hpp"
 #include "Text.hpp"
@@ -24,6 +25,11 @@ int main(int argc, char* argv[]) {
     try {
         QApplication app(argc, argv);
         app.setWindowIcon(QIcon(":/icons/icon.ico"));
+
+        // initialize DB (placed in APP_FILES alongside options, thumbnails, etc.)
+        if (!initDatabase()) {
+            qWarning() << "Database initialization failed.";
+        }
 
         InitialWindow window;
         window.setWindowState(Qt::WindowActive);
