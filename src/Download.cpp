@@ -7,12 +7,47 @@
 #include <QThread>
 #include <filesystem>
 #include <fstream>
+#include <mutex>
+#include <unordered_set>
 
 #include "AppConfig.hpp"
 #include "Const.hpp"
 #include "Network.hpp"
 
 namespace fs = std::filesystem;
+
+// Track active downloads (thread-safe) to prevent duplicate downloads
+namespace {
+static std::mutex g_activeDownloadsMutex;
+static std::unordered_set<std::string> g_activeDownloads;
+
+static bool try_start_download(const std::string& key) {
+    std::lock_guard<std::mutex> lock(g_activeDownloadsMutex);
+    if (g_activeDownloads.find(key) != g_activeDownloads.end()) {
+        return false;
+    }
+    g_activeDownloads.insert(key);
+    return true;
+}
+
+static void finish_download(const std::string& key) {
+    std::lock_guard<std::mutex> lock(g_activeDownloadsMutex);
+    g_activeDownloads.erase(key);
+}
+
+// RAII guard to ensure the active-downloads entry is removed
+struct ScopedDownloadLock {
+    std::string key;
+    bool owns = false;
+    explicit ScopedDownloadLock(const std::string& k) : key(k), owns(try_start_download(k)) {}
+    ~ScopedDownloadLock() {
+        if (owns) finish_download(key);
+    }
+    bool owns_lock() const {
+        return owns;
+    }
+};
+}  // namespace
 
 /**
  * @brief Callback function for writing data received from the server and saving it to a file
@@ -111,11 +146,18 @@ bool downloadModel(const std::string& modelName, std::string tag) {
     if (!hasConnection()) {
         return false;
     }
+    // Prevent concurrent downloads of the same model
+    const std::string modelOutputPath = APP_FILES.toStdString() + "/" + modelName;
+    ScopedDownloadLock modelGuard(std::string("model:") + modelOutputPath);
+    if (!modelGuard.owns_lock()) {
+        qInfo() << "Download already in progress for model: " << QString::fromStdString(modelName);
+        return false;
+    }
 
     bool result = false;
     if (QThread::currentThread() == QApplication::instance()->thread()) {
         const std::string url = "https://github.com/" + std::string(REPO_OWNER) + "/" + std::string(REPO_NAME) + "/releases/download/" + tag + "/" + std::string(modelName);
-        const std::string modelOutputPath = APP_FILES.toStdString() + "/" + modelName;
+        // modelOutputPath already computed above
 
         QProgressDialog progressDialog("Downloading " + QString::fromStdString(modelName), nullptr, 0, 100);
         progressDialog.setWindowModality(Qt::ApplicationModal);
@@ -173,6 +215,13 @@ bool downloadFileIfNotExists(const std::string& url, const std::string& outputPa
  */
 bool downloadFile(const std::string& url, const std::string& outputPath, QProgressDialog* progressDialog) {
     if (!hasConnection()) {
+        return false;
+    }
+
+    // Prevent concurrent downloads of the same output path
+    ScopedDownloadLock fileGuard(std::string("file:") + outputPath);
+    if (!fileGuard.owns_lock()) {
+        qInfo() << "Download already in progress for file: " << QString::fromStdString(outputPath);
         return false;
     }
 
