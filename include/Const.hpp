@@ -24,6 +24,8 @@ const QString CACHE_PATH = QStandardPaths::writableLocation(QStandardPaths::Cach
 const QString APPDATA_PATH = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 const QString APP_FILES = APPDATA_PATH + "/" + QString::fromStdString(APP_NAME);
 
+const std::string INIT_SQL_FILE = APP_FILES.toStdString() + "/init_database.sql";
+
 const QString DOWNLOAD_PATH = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
 
 const int PREVIEW_NBR = 3;

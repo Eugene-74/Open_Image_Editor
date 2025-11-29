@@ -97,3 +97,6 @@ bool isDarkMode();
 
 bool checkForUpdate();
 void startLog();
+
+// TODO add affichage DB version
+// bool check for DB version

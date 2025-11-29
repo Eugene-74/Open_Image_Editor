@@ -21,6 +21,7 @@
 #include "Box.hpp"
 #include "Const.hpp"
 #include "Data.hpp"
+#include "DataBase.hpp"
 #include "FileSelector.hpp"
 #include "Folders.hpp"
 #include "ImagesData.hpp"
@@ -206,17 +207,22 @@ bool addSubfolders(Folders& rootFolder, ImagesData* imagesData, const std::strin
                 addSubfolders(*subFolder, imagesData, entry.path().string(), nbrImage, progressDialog);
             }
         } else {
-            if (isImage(entry.path().filename().string())
-                // || isVideo(entry.path().filename().string())
-            ) {
+            if (isImage(entry.path().filename().string())) {
                 std::string imagePath = entry.path().string();
                 std::replace(imagePath.begin(), imagePath.end(), '\\', '/');
                 if (imagesData->getImageData(imagePath) == nullptr) {
                     Folders folders = Folders(imagePath);
+                    int id;
+                    addImageData(QString::fromStdString(imagePath), id);
                     rootFolder.addFile(imagePath);
                     folders.addFolder(fs::absolute(entry.path()).parent_path().string());
                     auto imageData = new ImageData(folders);
                     imageData->loadData();
+
+                    setImageOrientation(id, imageData->getImageOrientation());
+                    setImageLatLon(id, imageData->getMetaData().getLongitude(), imageData->getMetaData().getLatitude());
+                    setImageTimestamp(id, imageData->getMetaData().getTimestamp());
+
                     imageData->clearMetaData();
                     imagesData->addImage(imageData);
                 }
