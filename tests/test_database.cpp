@@ -207,3 +207,39 @@ TEST(DatabaseTest, OrientationLatLonTimestamp) {
     QFile::remove(tmp);
     QFile::remove(QString::fromStdString(DB_PATH));
 }
+TEST(DatabaseTest, GetImageIdByPath) {
+    QFile::remove(QString::fromStdString(DB_PATH));
+    ASSERT_TRUE(initDatabase());
+
+    // create ImagesData table
+    QString createSql =
+        "CREATE TABLE IF NOT EXISTS ImagesData (Id INTEGER PRIMARY KEY AUTOINCREMENT, ImagePath TEXT);";
+    QString tmp = QDir::tempPath() + "/create_images_table_for_getid.sql";
+    QFile f(tmp);
+    if (f.exists()) f.remove();
+    ASSERT_TRUE(f.open(QIODevice::WriteOnly | QIODevice::Text));
+    f.write(createSql.toUtf8());
+    f.close();
+    ASSERT_TRUE(executeSqlFile(tmp));
+
+    // When no row exists, getImageIdByPath should indicate not found
+    int outId = -42;
+    EXPECT_FALSE(getImageIdByPath("/no/such/path.jpg", outId));
+
+    // Insert an image and verify getImageIdByPath finds it
+    int insertedId = -1;
+    EXPECT_TRUE(addImageData("/tmp/get_image_id.jpg", insertedId));
+    EXPECT_GT(insertedId, 0);
+
+    int foundId = -1;
+    EXPECT_TRUE(getImageIdByPath("/tmp/get_image_id.jpg", foundId));
+    EXPECT_EQ(foundId, insertedId);
+
+    // Removing the image should make getImageIdByPath return false again
+    EXPECT_TRUE(removeImageData(insertedId));
+    int afterRemoveId = -1;
+    EXPECT_FALSE(getImageIdByPath("/tmp/get_image_id.jpg", afterRemoveId));
+
+    QFile::remove(tmp);
+    QFile::remove(QString::fromStdString(DB_PATH));
+}

@@ -879,3 +879,44 @@ bool getImageTimestamp(int id, long& outTimestamp) {
     sqlite3_close(db);
     return false;
 }
+
+/**
+ * @brief Get the image Id by its path.
+ * @param imagePath The path of the image.
+ * @param outId Output parameter to store the image Id.
+ * @return True on success, false on error.
+ */
+bool getImageIdByPath(const QString& imagePath, int& outId) {
+    outId = -1;
+    QString dbPath = databasePath();
+    sqlite3* db = nullptr;
+    int rc = sqlite3_open(dbPath.toStdString().c_str(), &db);
+    if (rc != SQLITE_OK) {
+        qWarning() << "Can't open database:" << sqlite3_errmsg(db);
+        if (db) sqlite3_close(db);
+        return false;
+    }
+
+    const char* sql = "SELECT Id FROM ImagesData WHERE ImagePath = ? LIMIT 1;";
+    sqlite3_stmt* stmt = nullptr;
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        qWarning() << "Failed to prepare select Id by ImagePath statement:" << sqlite3_errmsg(db);
+        if (stmt) sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        return false;
+    }
+
+    sqlite3_bind_text(stmt, 1, imagePath.toUtf8().constData(), -1, SQLITE_TRANSIENT);
+    rc = sqlite3_step(stmt);
+    if (rc == SQLITE_ROW) {
+        outId = sqlite3_column_int(stmt, 0);
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        return true;
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+    return false;
+}

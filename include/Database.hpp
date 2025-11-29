@@ -45,3 +45,5 @@ bool getImageLatLon(int id, double& outLatitude, double& outLongitude);
 bool setImageTimestamp(int id, long timestamp);
 
 bool getImageTimestamp(int id, long& outTimestamp);
+
+bool getImageIdByPath(const QString& imagePath, int& outId);
