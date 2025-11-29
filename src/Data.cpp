@@ -715,7 +715,7 @@ void Data::copyTo(Folders rootFolders, std::string destinationPath, bool dateInN
                     imageData->getMetaDataPtr()->setTimestamp(imageData->getDate());
                 }
 
-                if (imageData->getLatitude() >= 0 && imageData->getLongitude() >= 0) {
+                if (imageData->getLatitude() > 0 && imageData->getLongitude() > 0) {
                     imageData->getMetaDataPtr()->setLatitude(imageData->getLatitude());
                     imageData->getMetaDataPtr()->setLongitude(imageData->getLongitude());
                 }

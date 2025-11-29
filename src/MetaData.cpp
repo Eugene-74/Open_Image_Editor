@@ -475,7 +475,7 @@ double MetaData::getLatitude() const {
             return entry.toFloat();
         }
     }
-    return -1;
+    return 0;
 }
 
 /**
@@ -497,7 +497,7 @@ double MetaData::getLongitude() const {
             return entry.toFloat();
         }
     }
-    return -1;
+    return 0;
 }
 
 /**

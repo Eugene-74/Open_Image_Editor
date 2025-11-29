@@ -243,8 +243,8 @@ void ImageData::loadData() {
             }
 
             auto exifData = metaData.getExifData();
-            if (metaData.getLatitude() != -1 &&
-                metaData.getLongitude() != -1) {
+            if (metaData.getLatitude() != 0 &&
+                metaData.getLongitude() != 0) {
                 latitude = convertGpsCoordinateToDecimal(exifData["Exif.GPSInfo.GPSLatitude"].toString());
                 longitude = convertGpsCoordinateToDecimal(exifData["Exif.GPSInfo.GPSLongitude"].toString());
             }

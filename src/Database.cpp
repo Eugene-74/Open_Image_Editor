@@ -542,6 +542,64 @@ bool setImageLatLon(int id, double latitude, double longitude) {
     int coordsId = -1;
     sqlite3_stmt* stmt = nullptr;
 
+    // If latitude and longitude are both exactly 0, set CoordId = NULL
+    if (latitude == 0.0 && longitude == 0.0) {
+        const char* upd_null_sql = "UPDATE MetaData SET CoordId = NULL WHERE Id = ?;";
+        rc = sqlite3_prepare_v2(db, upd_null_sql, -1, &stmt, nullptr);
+        if (rc != SQLITE_OK) {
+            qWarning() << "Failed to prepare update MetaData CoordId=NULL statement:" << sqlite3_errmsg(db);
+            ok = false;
+        } else {
+            sqlite3_bind_int(stmt, 1, id);
+            rc = sqlite3_step(stmt);
+            if (rc != SQLITE_DONE && rc != SQLITE_ROW) {
+                // even if no row was updated, we'll try to insert below
+            }
+            int changes = sqlite3_changes(db);
+            sqlite3_finalize(stmt);
+            stmt = nullptr;
+
+            if (changes == 0 && ok) {
+                const char* ins_meta_null_sql = "INSERT INTO MetaData (Id, CoordId) VALUES (?, NULL);";
+                rc = sqlite3_prepare_v2(db, ins_meta_null_sql, -1, &stmt, nullptr);
+                if (rc != SQLITE_OK) {
+                    qWarning() << "Failed to prepare insert MetaData (NULL CoordId) statement:" << sqlite3_errmsg(db);
+                    ok = false;
+                } else {
+                    sqlite3_bind_int(stmt, 1, id);
+                    rc = sqlite3_step(stmt);
+                    if (rc != SQLITE_DONE) {
+                        qWarning() << "Failed to insert MetaData with NULL CoordId:" << sqlite3_errmsg(db);
+                        ok = false;
+                    }
+                    sqlite3_finalize(stmt);
+                    stmt = nullptr;
+                }
+            }
+        }
+
+        if (!ok) {
+            rc = sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, &errMsg);
+            if (rc != SQLITE_OK) {
+                qWarning() << "Failed to rollback transaction:" << (errMsg ? errMsg : "(null)");
+                if (errMsg) sqlite3_free(errMsg);
+            }
+            sqlite3_close(db);
+            return false;
+        }
+
+        rc = sqlite3_exec(db, "COMMIT;", nullptr, nullptr, &errMsg);
+        if (rc != SQLITE_OK) {
+            qWarning() << "Failed to commit transaction:" << (errMsg ? errMsg : "(null)");
+            if (errMsg) sqlite3_free(errMsg);
+            sqlite3_close(db);
+            return false;
+        }
+
+        sqlite3_close(db);
+        return true;
+    }
+
     // 1) Try to find existing Coords with same latitude and longitude
     const char* find_coords_sql = "SELECT Id FROM Coords WHERE latitude = ? AND longitude = ? LIMIT 1;";
     rc = sqlite3_prepare_v2(db, find_coords_sql, -1, &stmt, nullptr);
